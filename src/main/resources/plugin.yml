@@ -1,0 +1,4 @@
+name: Multiverse-Inventories
+main: com.onarandombox.multiverseinventories.MultiverseInventories
+version: b${build.number}
+author: dumptruckman
