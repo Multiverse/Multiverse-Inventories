@@ -14,12 +14,7 @@ public class WorldGroup implements ConfigurationSerializable {
 
     private String name = "";
     private HashSet<World> worlds = new HashSet<World>();
-    private boolean sharingInventory = false;
-    private boolean sharingArmor = false;
-    private boolean sharingHealth = false;
-    private boolean sharingExp = false;
-    private boolean sharingHunger = false;
-    private boolean sharingEffects = false;
+    private Shares shares = new Shares();
 
     private HashMap<Player, WorldGroupPlayer> playerData = null;
 
@@ -56,52 +51,8 @@ public class WorldGroup implements ConfigurationSerializable {
         return worlds;
     }
 
-    public boolean isSharingInventory() {
-        return sharingInventory;
-    }
-
-    public void setSharingInventory(boolean sharingInventory) {
-        this.sharingInventory = sharingInventory;
-    }
-
-    public boolean isSharingArmor() {
-        return sharingArmor;
-    }
-
-    public void setSharingArmor(boolean sharingArmor) {
-        this.sharingArmor = sharingArmor;
-    }
-
-    public boolean isSharingHealth() {
-        return sharingHealth;
-    }
-
-    public void setSharingHealth(boolean sharingHealth) {
-        this.sharingHealth = sharingHealth;
-    }
-
-    public boolean isSharingExp() {
-        return sharingExp;
-    }
-
-    public void setSharingExp(boolean sharingExp) {
-        this.sharingExp = sharingExp;
-    }
-
-    public boolean isSharingHunger() {
-        return sharingHunger;
-    }
-
-    public void setSharingHunger(boolean sharingHunger) {
-        this.sharingHunger = sharingHunger;
-    }
-
-    public boolean isSharingEffects() {
-        return sharingEffects;
-    }
-
-    public void setSharingEffects(boolean sharingEffects) {
-        this.sharingEffects = sharingEffects;
+    public Shares getShares() {
+        return shares;
     }
 
     public WorldGroupPlayer getPlayerData(Player player) {
