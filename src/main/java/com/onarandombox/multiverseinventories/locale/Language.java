@@ -50,7 +50,7 @@ public enum Language {
         MVIManager.getPlugin().getDataFolder().mkdirs();
 
         // Check if the language file exists.  If not, create it.
-        File languageFile = new File(MVIManager.getPlugin().getDataFolder(), MVIConfigImpl.LANGUAGE_FILE_NAME.getString());
+        File languageFile = new File(MVIManager.getPlugin().getDataFolder(), MVIManager.getConfig().getLanguageFileName());
         if (!languageFile.exists()) {
             languageFile.createNewFile();
         }

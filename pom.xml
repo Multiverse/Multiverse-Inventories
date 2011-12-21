@@ -12,6 +12,11 @@
 
     <repositories>
         <repository>
+          <id>bukkit-repo</id>
+          <name>Bukkit</name>
+          <url>http://repo.bukkit.org/artifactory/repo</url>
+        </repository>
+        <repository>
             <id>OnARandomBox</id>
             <url>http://repo.onarandombox.com/content/groups/public/</url>
         </repository>
@@ -108,7 +113,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>1.0.1-R1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

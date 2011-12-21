@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.config;
 
+import com.onarandombox.multiverseinventories.data.Shares;
 import org.bukkit.configuration.file.FileConfiguration;
 
 /**
@@ -22,4 +23,6 @@ public interface MVIConfig {
     public String getLanguageFileName();
 
     public void loadWorldGroups();
+
+    //public Shares getDefaultShares();
 }

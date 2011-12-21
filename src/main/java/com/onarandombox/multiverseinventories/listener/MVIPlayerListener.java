@@ -20,9 +20,10 @@ public class MVIPlayerListener extends PlayerListener {
     }
 
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+        Player player = event.getPlayer();
         World fromWorld = event.getFrom();
-        World toWorld = event.getPlayer().getWorld();
-        // A precaution..
+        World toWorld = player.getWorld();
+        // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {
             return;
         }
@@ -34,14 +35,46 @@ public class MVIPlayerListener extends PlayerListener {
                 currentShares.mergeShares(toWorldGroup.getShares());
             }
         }
-        currentShares.fillNullsWithDefaults();
 
         List<WorldGroup> fromWorldGroups = MVIManager.getWorldGroups().get(fromWorld);
         for (WorldGroup fromWorldGroup : fromWorldGroups) {
+            // persist current stats in world group
             if (!currentShares.isSharingInventory()) {
-                // persist inventory in world group
+
+            }
+            if (!currentShares.isSharingHealth()) {
+                
+            }
+            if (!currentShares.isSharingHunger()) {
+
+            }
+            if (!currentShares.isSharingExp()) {
+
+            }
+            if (!currentShares.isSharingEffects()) {
+                
             }
         }
 
+        /*
+        // Set player defaults
+        if (!currentShares.isSharingInventory()) {
+            player.getInventory().clear();
+        }
+        if (!currentShares.isSharingHealth()) {
+            player.setHealth(20);
+        }
+        if (!currentShares.isSharingHunger()) {
+            player.setFoodLevel(20);
+            player.setExhaustion(0);
+            player.setSaturation(0);
+        }
+        if (!currentShares.isSharingExp()) {
+            player.setExp(0);
+            player.setLevel(0);
+        }
+        if (!currentShares.isSharingEffects()) {
+            
+        }*/
     }
 }

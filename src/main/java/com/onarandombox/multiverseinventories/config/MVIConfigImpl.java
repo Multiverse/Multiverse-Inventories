@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.config;
 
 import com.onarandombox.multiverseinventories.MVIManager;
+import com.onarandombox.multiverseinventories.data.Shares;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -16,6 +17,13 @@ public class MVIConfigImpl implements MVIConfig {
         LANGUAGE_FILE_NAME("settings.language_file", "english.yml", "# This is the language file you wish to use."),
         DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
         DATA_SAVE_PERIOD("settings.data.save_every", 120, "# This is often plugin data is written to the disk.", "# This setting indicates the maximum amount of inventory rollback possible in the event of a server crash."),
+
+        DEFAULT_SHARING_INV("defaults.sharing.inventory", true, "# "),
+        DEFAULT_SHARING_ARMOR("defaults.sharing.armor", true, "# "),
+        DEFAULT_SHARING_HEALTH("defaults.sharing.health", true, "# "),
+        DEFAULT_SHARING_HUNGER("defaults.sharing.hunger", true, "# "),
+        DEFAULT_SHARING_EXP("defaults.sharing.experience", true, "# "),
+        DEFAULT_SHARING_EFFECTS("defaults.sharing.effects", true, "# "),
         ;
 
         private String path;
@@ -92,10 +100,12 @@ public class MVIConfigImpl implements MVIConfig {
         config.load();
 
         // Sets defaults config values
-        setDefaults();
+        this.setDefaults();
 
         // Saves the configuration from memory to file
         config.save();
+
+        //this.setDefaultShares();
     }
 
     /**
@@ -109,6 +119,10 @@ public class MVIConfigImpl implements MVIConfig {
             }
         }
     }
+
+    /*public void setDefaultShares() {
+        MVIManager.setDefaultShares(this.getDefaultShares());
+    }*/
 
     @Override
     public FileConfiguration getConfig() {
@@ -134,4 +148,14 @@ public class MVIConfigImpl implements MVIConfig {
     public void loadWorldGroups() {
         
     }
+
+    /*@Override
+    public Shares getDefaultShares() {
+        return new Shares(
+                Path.DEFAULT_SHARING_INV.getBoolean(),
+                Path.DEFAULT_SHARING_HEALTH.getBoolean(),
+                Path.DEFAULT_SHARING_HUNGER.getBoolean(),
+                Path.DEFAULT_SHARING_EXP.getBoolean(),
+                Path.DEFAULT_SHARING_EFFECTS.getBoolean());
+    }*/
 }

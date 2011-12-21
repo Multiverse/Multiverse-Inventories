@@ -16,8 +16,6 @@ public class WorldGroup implements ConfigurationSerializable {
     private HashSet<World> worlds = new HashSet<World>();
     private Shares shares = new Shares();
 
-    private HashMap<Player, WorldGroupPlayer> playerData = null;
-
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
 
@@ -53,9 +51,5 @@ public class WorldGroup implements ConfigurationSerializable {
 
     public Shares getShares() {
         return shares;
-    }
-
-    public WorldGroupPlayer getPlayerData(Player player) {
-        return this.playerData.get(player);
     }
 }

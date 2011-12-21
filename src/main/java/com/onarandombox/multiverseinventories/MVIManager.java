@@ -3,17 +3,12 @@ package com.onarandombox.multiverseinventories;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.config.MVIConfigImpl;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
-import com.onarandombox.multiverseinventories.data.MVIData;
-import com.onarandombox.multiverseinventories.data.MVIDataImpl;
-import com.onarandombox.multiverseinventories.data.Shares;
-import com.onarandombox.multiverseinventories.data.WorldGroup;
+import com.onarandombox.multiverseinventories.data.*;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -27,6 +22,7 @@ public class MVIManager {
     private static MVIConfig config = null;
     private static MVIData data = null;
 
+    private static HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
     private static HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
     private static Shares defaultShares = new Shares();
 
@@ -35,6 +31,7 @@ public class MVIManager {
         MVIManager.core = null;
         MVIManager.config = null;
         MVIManager.data = null;
+        MVIManager.worldProfiles = null;
         MVIManager.worldGroups = null;
         MVIManager.defaultShares = null;
     }
@@ -77,11 +74,19 @@ public class MVIManager {
         return MVIManager.data;
     }
 
+    public static WorldProfile getWorldProfile(World world) {
+        return MVIManager.worldProfiles.get(world);
+    }
+
     public static HashMap<World, List<WorldGroup>> getWorldGroups() {
         return MVIManager.worldGroups;
     }
 
-    public static Shares getDefaultShares() {
-        return defaultShares;
+    public static void setDefaultShares(Shares shares) {
+        MVIManager.defaultShares = shares;
     }
+
+    //public static Shares getDefaultShares() {
+    //    return defaultShares;
+    //}
 }

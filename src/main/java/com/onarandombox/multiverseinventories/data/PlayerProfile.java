@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class WorldGroupPlayer implements ConfigurationSerializable {
+public class PlayerProfile implements ConfigurationSerializable {
 
     private ItemStack[] inventoryContents = null;
     private ItemStack[] armorContents = null;
@@ -29,7 +29,7 @@ public class WorldGroupPlayer implements ConfigurationSerializable {
         return result;
     }
 
-    public static WorldGroupPlayer deserialize(Map<String, Object> args) {
+    public static PlayerProfile deserialize(Map<String, Object> args) {
         Player player;
         return null;
     }

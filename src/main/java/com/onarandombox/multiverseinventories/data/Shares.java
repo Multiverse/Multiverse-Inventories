@@ -7,100 +7,76 @@ import com.onarandombox.multiverseinventories.MVIManager;
  */
 public class Shares {
 
-    private Boolean sharingInventory = null;
-    private Boolean sharingArmor = null;
-    private Boolean sharingHealth = null;
-    private Boolean sharingExp = null;
-    private Boolean sharingHunger = null;
-    private Boolean sharingEffects = null;
+    private boolean sharingInventory = false;
+    private boolean sharingHealth = false;
+    private boolean sharingHunger = false;
+    private boolean sharingExp = false;
+    private boolean sharingEffects = false;
+
+    /*
+    public Shares() {
+        this(MVIManager.getDefaultShares());
+    }
+
+    public Shares(Shares shares) {
+        this(shares.isSharingInventory(), shares.isSharingHealth(), shares.isSharingExp(),
+                shares.isSharingHunger(), shares.isSharingEffects());
+    }
+
+    public Shares(boolean sharingInventory, boolean sharingHealth, boolean sharingHunger,
+                  boolean sharingExp, boolean sharingEffects) {
+        this.sharingInventory = sharingInventory;
+        this.sharingHealth = sharingHealth;
+        this.sharingHunger = sharingHunger;
+        this.sharingExp = sharingExp;
+        this.sharingEffects = sharingEffects;
+    }*/
 
     public void mergeShares(Shares newShares) {
-        if (newShares.isSharingInventory() != null) {
-            this.setSharingInventory(newShares.isSharingInventory());
-        }
-        if (newShares.isSharingArmor() != null) {
-            this.setSharingArmor(newShares.isSharingArmor());
-        }
-        if (newShares.isSharingHealth() != null) {
-            this.setSharingHealth(newShares.isSharingHealth());
-        }
-        if (newShares.isSharingExp() != null) {
-            this.setSharingExp(newShares.isSharingExp());
-        }
-        if (newShares.isSharingHunger() != null) {
-            this.setSharingHunger(newShares.isSharingHunger());
-        }
-        if (newShares.isSharingEffects() != null) {
-            this.setSharingEffects(newShares.isSharingEffects());
-        }
+        this.setSharingInventory(newShares.isSharingInventory());
+        this.setSharingHealth(newShares.isSharingHealth());
+        this.setSharingHunger(newShares.isSharingHunger());
+        this.setSharingExp(newShares.isSharingExp());
+        this.setSharingEffects(newShares.isSharingEffects());
     }
 
-    public void fillNullsWithDefaults() {
-        if (this.isSharingInventory() == null) {
-            this.setSharingInventory(MVIManager.getDefaultShares().isSharingInventory());
-        }
-        if (this.isSharingArmor() == null) {
-            this.setSharingArmor(MVIManager.getDefaultShares().isSharingArmor());
-        }
-        if (this.isSharingHealth() == null) {
-            this.setSharingHealth(MVIManager.getDefaultShares().isSharingHealth());
-        }
-        if (this.isSharingExp() == null) {
-            this.setSharingExp(MVIManager.getDefaultShares().isSharingExp());
-        }
-        if (this.isSharingHunger() == null) {
-            this.setSharingHunger(MVIManager.getDefaultShares().isSharingHunger());
-        }
-        if (this.isSharingEffects() == null) {
-            this.setSharingEffects(MVIManager.getDefaultShares().isSharingEffects());
-        }
-    }
-
-    public Boolean isSharingInventory() {
+    public boolean isSharingInventory() {
         return sharingInventory;
     }
 
-    public void setSharingInventory(Boolean sharingInventory) {
+    public void setSharingInventory(boolean sharingInventory) {
         this.sharingInventory = sharingInventory;
     }
 
-    public Boolean isSharingArmor() {
-        return sharingArmor;
-    }
-
-    public void setSharingArmor(Boolean sharingArmor) {
-        this.sharingArmor = sharingArmor;
-    }
-
-    public Boolean isSharingHealth() {
+    public boolean isSharingHealth() {
         return sharingHealth;
     }
 
-    public void setSharingHealth(Boolean sharingHealth) {
+    public void setSharingHealth(boolean sharingHealth) {
         this.sharingHealth = sharingHealth;
     }
 
-    public Boolean isSharingExp() {
-        return sharingExp;
-    }
-
-    public void setSharingExp(Boolean sharingExp) {
-        this.sharingExp = sharingExp;
-    }
-
-    public Boolean isSharingHunger() {
+    public boolean isSharingHunger() {
         return sharingHunger;
     }
 
-    public void setSharingHunger(Boolean sharingHunger) {
+    public void setSharingHunger(boolean sharingHunger) {
         this.sharingHunger = sharingHunger;
     }
 
-    public Boolean isSharingEffects() {
+    public boolean isSharingExp() {
+        return sharingExp;
+    }
+
+    public void setSharingExp(boolean sharingExp) {
+        this.sharingExp = sharingExp;
+    }
+
+    public boolean isSharingEffects() {
         return sharingEffects;
     }
 
-    public void setSharingEffects(Boolean sharingEffects) {
+    public void setSharingEffects(boolean sharingEffects) {
         this.sharingEffects = sharingEffects;
     }
 }
