@@ -5,11 +5,13 @@ import com.onarandombox.multiverseinventories.config.MVIConfigImpl;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.data.MVIDataImpl;
-import com.onarandombox.multiverseinventories.data.MVIWorldGroup;
+import com.onarandombox.multiverseinventories.data.WorldGroup;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,7 +24,7 @@ public class MVIManager {
     private static MultiverseCore core = null;
     private static MVIConfig config = null;
     private static MVIData data = null;
-    private static List<MVIWorldGroup> worldGroups = new ArrayList<MVIWorldGroup>();
+    private static HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
 
     protected static void wipeStaticInstances() {
         MVIManager.pluginInstance = null;
@@ -70,11 +72,17 @@ public class MVIManager {
         return MVIManager.data;
     }
 
-    public static void setWorldGroups(List<MVIWorldGroup> worldGroups) {
-        MVIManager.worldGroups = worldGroups;
+    public static HashMap<World, List<WorldGroup>> getWorldGroups() {
+        return MVIManager.worldGroups;
     }
 
-    public static List<MVIWorldGroup> getWorldGroups() {
-        return MVIManager.worldGroups;
+    public static void validatePlayer(Player player, World world) {
+        List<WorldGroup> worldGroups = WorldGroup.getGroupsForWorld(world);
+
+        for (WorldGroup worldGroup : worldGroups) {
+            if (worldGroup.isSharingInventory()) {
+                
+            }
+        }
     }
 }

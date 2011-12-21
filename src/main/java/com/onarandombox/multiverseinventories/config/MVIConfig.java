@@ -2,8 +2,6 @@ package com.onarandombox.multiverseinventories.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.IOException;
-
 /**
  * @author dumptruckman
  */

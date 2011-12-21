@@ -1,5 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
+import org.bukkit.entity.Player;
+
 import java.io.IOException;
 
 /**

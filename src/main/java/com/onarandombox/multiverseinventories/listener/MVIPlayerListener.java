@@ -12,7 +12,7 @@ public class MVIPlayerListener extends PlayerListener {
 
     public void onPlayerLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-
+        
     }
 
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
