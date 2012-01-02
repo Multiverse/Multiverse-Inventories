@@ -7,13 +7,6 @@ import org.bukkit.configuration.file.FileConfiguration;
  */
 public interface ProfilesConfig {
 
-    /**
-     * Loads the configuration data into memory and sets defaults
-     *
-     * @throws java.io.IOException
-     */
-    public void load() throws Exception;
-
     public FileConfiguration getConfig();
 
     public boolean isDebugging();

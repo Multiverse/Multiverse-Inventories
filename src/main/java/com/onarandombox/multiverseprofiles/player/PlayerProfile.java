@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseprofiles.data;
+package com.onarandombox.multiverseprofiles.player;
 
 import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;

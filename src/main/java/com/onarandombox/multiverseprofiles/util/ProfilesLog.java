@@ -2,6 +2,7 @@ package com.onarandombox.multiverseprofiles.util;
 
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,18 +11,17 @@ import java.util.logging.Logger;
  * @author dumptruckman, SwearWord
  */
 public class ProfilesLog {
-    private static Logger LOG = null;
-    private static String NAME = "";
-    private static String VERSION = "";
+    private static Logger LOG = Logger.getLogger("Minecraft");
+    private static String NAME = "Multiverse-Profiles";
+    private static String VERSION = "v.???";
 
     /**
      * Prepares the log for use.
      */
-    public static void load() {
-        PluginDescriptionFile pdf = MultiverseProfiles.getPlugin().getDescription();
+    public static void init(JavaPlugin plugin) {
+        PluginDescriptionFile pdf = plugin.getDescription();
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
-        LOG = Logger.getLogger("Minecraft");
     }
 
     /**
@@ -81,7 +81,7 @@ public class ProfilesLog {
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
-        LOG.info(getString(message, showVersion));
+        ProfilesLog.log(Level.INFO, getString(message, showVersion));
     }
 
     /**
@@ -89,11 +89,11 @@ public class ProfilesLog {
      *
      * @param message Log message
      */
-    public static void debug(String message) {
+    /*public static void debug(String message) {
         if (MultiverseProfiles.getConfig().isDebugging()) {
             LOG.info(getString(message, true));
         }
-    }
+    }*/
 
     /**
      * Warning level logging.

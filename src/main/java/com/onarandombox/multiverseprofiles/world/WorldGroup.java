@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseprofiles.data;
+package com.onarandombox.multiverseprofiles.world;
 
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -19,7 +19,7 @@ public class WorldGroup implements ConfigurationSerializable {
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
 
-        //result.put("world", this.getBlock().getMVWorld());
+        //result.put("world", this.getBlock().getWorld());
 
         return result;
     }

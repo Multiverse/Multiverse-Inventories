@@ -3,6 +3,7 @@ package com.onarandombox.multiverseprofiles.util;
 import com.onarandombox.MultiverseCore.utils.DebugLog;
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -12,17 +13,17 @@ import java.util.logging.Level;
  */
 public class ProfilesDebug {
     private static DebugLog LOG = null;
-    private static String NAME = "";
-    private static String VERSION = "";
+    private static String NAME = "Multiverse-Profiles";
+    private static String VERSION = "v.???";
 
     /**
      * Prepares the log for use.
      */
-    public static void load() {
-        PluginDescriptionFile pdf = MultiverseProfiles.getPlugin().getDescription();
+    public static void init(JavaPlugin plugin) {
+        PluginDescriptionFile pdf = plugin.getDescription();
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
-        LOG = new DebugLog(NAME, MultiverseProfiles.getPlugin().getDataFolder() + File.separator + "debug.log");
+        LOG = new DebugLog(NAME, plugin.getDataFolder() + File.separator + "debug.log");
     }
 
     /**
@@ -63,7 +64,16 @@ public class ProfilesDebug {
      * @param message Log message
      */
     public static void log(Level level, String message) {
-        LOG.log(level, getString(message, false));
+        ProfilesDebug.log(level, message, false);
+    }
+
+    public static void log(Level level, String message, boolean showVersion) {
+        if (LOG != null) {
+            LOG.log(level, getString(message, showVersion));
+        } else {
+            System.out.println("Debug log not initialized!");
+            System.out.println(level.toString() + getString(message, showVersion));
+        }
     }
 
     /**
@@ -82,7 +92,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void fine(String message, boolean showVersion) {
-        LOG.log(Level.FINE, getString(message, showVersion));
+        ProfilesDebug.log(Level.FINE, message, showVersion);
     }
 
     /**
@@ -101,7 +111,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void finer(String message, boolean showVersion) {
-        LOG.log(Level.FINER, getString(message, showVersion));
+        ProfilesDebug.log(Level.FINER, message, showVersion);
     }
 
     /**
@@ -120,7 +130,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void finest(String message, boolean showVersion) {
-        LOG.log(Level.FINEST, getString(message, showVersion));
+        ProfilesDebug.log(Level.FINEST, message, showVersion);
     }
 
     /**
@@ -139,7 +149,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
-        LOG.log(Level.INFO, getString(message, showVersion));
+        ProfilesDebug.log(Level.INFO, message, showVersion);
     }
 
     /**
@@ -158,7 +168,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void config(String message, boolean showVersion) {
-        LOG.log(Level.CONFIG, getString(message, showVersion));
+        ProfilesDebug.log(Level.CONFIG, message, showVersion);
     }
 
     /**
@@ -177,7 +187,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void all(String message, boolean showVersion) {
-        LOG.log(Level.ALL, getString(message, showVersion));
+        ProfilesDebug.log(Level.ALL, message, showVersion);
     }
 
     /**
@@ -196,7 +206,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void off(String message, boolean showVersion) {
-        LOG.log(Level.OFF, getString(message, showVersion));
+        ProfilesDebug.log(Level.OFF, message, showVersion);
     }
 
     /**
@@ -215,7 +225,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
-        LOG.log(Level.WARNING, getString(message, showVersion));
+        ProfilesDebug.log(Level.WARNING, message, showVersion);
     }
 
     /**
@@ -234,7 +244,7 @@ public class ProfilesDebug {
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {
-        LOG.log(Level.SEVERE, getString(message, showVersion));
+        ProfilesDebug.log(Level.SEVERE, message, showVersion);
     }
 
 }

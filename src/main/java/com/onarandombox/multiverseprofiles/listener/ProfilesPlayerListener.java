@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseprofiles.listener;
 
-import com.onarandombox.multiverseprofiles.MultiverseProfiles;
-import com.onarandombox.multiverseprofiles.data.PlayerProfile;
-import com.onarandombox.multiverseprofiles.data.Shares;
-import com.onarandombox.multiverseprofiles.data.WorldGroup;
-import com.onarandombox.multiverseprofiles.util.ProfilesLog;
+import com.onarandombox.multiverseprofiles.MultiverseProfilesPlugin;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
+import com.onarandombox.multiverseprofiles.world.Shares;
+import com.onarandombox.multiverseprofiles.world.WorldGroup;
+import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -18,6 +18,12 @@ import java.util.List;
  */
 public class ProfilesPlayerListener extends PlayerListener {
 
+    MultiverseProfilesPlugin plugin;
+    
+    public ProfilesPlayerListener(MultiverseProfilesPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     public void onPlayerLogin(PlayerLoginEvent event) {
     }
 
@@ -28,26 +34,26 @@ public class ProfilesPlayerListener extends PlayerListener {
 
         // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {
-            ProfilesLog.debug("PlayerChangedWorldEvent fired when player travelling in same world.");
+            ProfilesDebug.info("PlayerChangedWorldEvent fired when player travelling in same world.");
             return;
         }
         // Do nothing if dealing with non-managed worlds
-        if (MultiverseProfiles.getCore().getMVWorldManager().getMVWorld(toWorld) == null ||
-                MultiverseProfiles.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
-            ProfilesLog.debug("The from or to world is not managed by Multiverse!");
+        if (this.plugin.getCore().getMVWorldManager().getMVWorld(toWorld) == null ||
+                this.plugin.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
+            ProfilesDebug.info("The from or to world is not managed by Multiverse!");
             return;
         }
 
         Shares currentShares = new Shares();
-        List<WorldGroup> toWorldGroups = MultiverseProfiles.getWorldGroups().get(toWorld);
+        List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld);
         for (WorldGroup toWorldGroup : toWorldGroups) {
             if (toWorldGroup.getWorlds().contains(fromWorld)) {
                 currentShares.mergeShares(toWorldGroup.getShares());
             }
         }
 
-        PlayerProfile fromWorldProfile = MultiverseProfiles.getWorldProfile(fromWorld).getPlayerData(player);
-        PlayerProfile toWorldProfile = MultiverseProfiles.getWorldProfile(toWorld).getPlayerData(player);
+        PlayerProfile fromWorldProfile = this.plugin.getWorldProfile(fromWorld).getPlayerData(player);
+        PlayerProfile toWorldProfile = this.plugin.getWorldProfile(toWorld).getPlayerData(player);
 
         // persist current stats for previous world if not sharing
         // then load any saved data
@@ -79,5 +85,7 @@ public class ProfilesPlayerListener extends PlayerListener {
         if (!currentShares.isSharingEffects()) {
             // Where is the effects API??
         }
+        
+        this.plugin.getData().save(false);
     }
 }

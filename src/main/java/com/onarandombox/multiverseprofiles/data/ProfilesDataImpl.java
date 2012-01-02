@@ -1,9 +1,10 @@
 package com.onarandombox.multiverseprofiles.data;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseprofiles.MultiverseProfiles;
+import com.onarandombox.multiverseprofiles.MultiverseProfilesPlugin;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
-import org.bukkit.Bukkit;
+import com.onarandombox.multiverseprofiles.world.WorldProfile;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -39,22 +40,20 @@ public class ProfilesDataImpl implements ProfilesData {
             return this.getPath() + "." + suffix;
         }
     }
-
+    
     private FileConfiguration data;
     private int dataSaveTaskId = -1;
     private File dataFile = null;
 
-    /**
-     * Loads the data data into memory and sets defaults
-     *
-     * @throws java.io.IOException
-     */
-    public void load(MultiverseProfiles mvProfiles) throws IOException {
+    private MultiverseProfilesPlugin plugin;
+    
+    public ProfilesDataImpl(MultiverseProfilesPlugin plugin) throws IOException {
+        this.plugin = plugin;
         // Make the data folders
-        MultiverseProfiles.getPlugin().getDataFolder().mkdirs();
+        this.plugin.getDataFolder().mkdirs();
 
         // Check if the data file exists.  If not, create it.
-        this.dataFile = new File(MultiverseProfiles.getPlugin().getDataFolder(), MultiverseProfiles.getConfig().getLanguageFileName());
+        this.dataFile = new File(plugin.getDataFolder(), "data.yml");
         if (!this.dataFile.exists()) {
             this.dataFile.createNewFile();
         }
@@ -63,21 +62,21 @@ public class ProfilesDataImpl implements ProfilesData {
         this.data = YamlConfiguration.loadConfiguration(this.dataFile);
 
         // Load data into faster format
-        this.loadDataIntoMemory();
+        this.loadWorlds();
 
         // Start the data save timer
-        this.dataSaveTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+        /*this.dataSaveTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
                 MultiverseProfiles.getPlugin(), new Runnable() {
             public void run() {
                 MultiverseProfiles.getData().save(false);
             }
         }, MultiverseProfiles.getConfig().getDataSaveInterval(),
-                MultiverseProfiles.getConfig().getDataSaveInterval());
+                MultiverseProfiles.getConfig().getDataSaveInterval());*/
     }
 
     public void save(boolean isReload) {
         if (isReload) {
-            MultiverseProfiles.getPlugin().getServer().getScheduler().cancelTask(dataSaveTaskId);
+            this.plugin.getServer().getScheduler().cancelTask(dataSaveTaskId);
             this.dataSaveTaskId = -1;
         }
         try {
@@ -92,31 +91,27 @@ public class ProfilesDataImpl implements ProfilesData {
         return this.data;
     }
 
-    private void loadDataIntoMemory() {
-        this.loadWorlds();
-    }
-
     private void loadWorlds() {
         List<String> worldNames = this.getData().getStringList(Path.WORLDS.getPath());
         for (String worldName : worldNames) {
-            MultiverseWorld mvWorld = MultiverseProfiles.getCore().getMVWorldManager().getMVWorld(worldName);
+            MultiverseWorld mvWorld = this.plugin.getCore().getMVWorldManager().getMVWorld(worldName);
             if (mvWorld == null) {
                 ProfilesLog.warning("Did not load world data for non-Multiverse World: " + worldName);
                 continue;
             }
             WorldProfile worldProfile = (WorldProfile) this.getData().get(Path.WORLDS.appendPath(worldName));
             //this.loadPlayers(worldProfile);
-            MultiverseProfiles.addWorldProfile(worldProfile);
+            this.plugin.addWorldProfile(worldProfile);
         }
     }
 
     private void loadPlayers(WorldProfile worldProfile) {
         List<String> playerNames = this.getData().getStringList(
-                Path.WORLDS.appendPath(worldProfile.getMVWorld().getName()) + Path.PLAYERS.getPath()
+                Path.WORLDS.appendPath(worldProfile.getWorld().getName()) + Path.PLAYERS.getPath()
         );
         for (String playerName : playerNames) {
             PlayerProfile playerProfile = (PlayerProfile) this.getData().get(
-                    Path.WORLDS.appendPath(worldProfile.getMVWorld().getName()) + Path.PLAYERS.appendPath(playerName)
+                    Path.WORLDS.appendPath(worldProfile.getWorld().getName()) + Path.PLAYERS.appendPath(playerName)
             );
             worldProfile.addPlayerData(playerProfile);
         }

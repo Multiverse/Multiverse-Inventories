@@ -3,6 +3,7 @@ package com.onarandombox.multiverseprofiles.config;
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,18 +33,6 @@ public class ProfilesConfigImpl implements ProfilesConfig {
             this.path = path;
             this.def = def;
             this.comments = comments;
-        }
-
-        public final Boolean getBoolean() {
-            return MultiverseProfiles.getConfig().getConfig().getBoolean(path, (Boolean) def);
-        }
-
-        public final Integer getInt() {
-            return MultiverseProfiles.getConfig().getConfig().getInt(path, (Integer) def);
-        }
-
-        public final String getString() {
-            return MultiverseProfiles.getConfig().getConfig().getString(path, (String) def);
         }
 
         /**
@@ -82,17 +71,12 @@ public class ProfilesConfigImpl implements ProfilesConfig {
 
     private CommentedConfiguration config;
 
-    /**
-     * Loads the configuration data into memory and sets defaults
-     *
-     * @throws IOException
-     */
-    public void load() throws Exception {
+    public ProfilesConfigImpl(JavaPlugin plugin) throws Exception {
         // Make the data folders
-        MultiverseProfiles.getPlugin().getDataFolder().mkdirs();
+        plugin.getDataFolder().mkdirs();
 
         // Check if the config file exists.  If not, create it.
-        File configFile = new File(MultiverseProfiles.getPlugin().getDataFolder(), "config.yml");
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             configFile.createNewFile();
         }
@@ -106,8 +90,6 @@ public class ProfilesConfigImpl implements ProfilesConfig {
 
         // Saves the configuration from memory to file
         config.save();
-
-        //this.setDefaultShares();
     }
 
     /**
@@ -122,42 +104,39 @@ public class ProfilesConfigImpl implements ProfilesConfig {
         }
     }
 
+    private Boolean getBoolean(Path path) {
+        return this.getConfig().getBoolean(path.getPath(), (Boolean) path.getDefault());
+    }
+
+    private Integer getInt(Path path) {
+        return this.getConfig().getInt(path.getPath(), (Integer) path.getDefault());
+    }
+
+    private String getString(Path path) {
+        return this.getConfig().getString(path.getPath(), (String) path.getDefault());
+    }
+
     /*public void setDefaultShares() {
         MultiverseProfiles.setDefaultShares(this.getDefaultShares());
     }*/
 
-    @Override
     public FileConfiguration getConfig() {
         return this.config;
     }
 
-    @Override
     public boolean isDebugging() {
-        return Path.DEBUG_MODE.getBoolean();
+        return this.getBoolean(Path.DEBUG_MODE);
     }
 
-    @Override
     public long getDataSaveInterval() {
-        return MinecraftTools.convertSecondsToTicks(Path.DATA_SAVE_PERIOD.getInt());
+        return MinecraftTools.convertSecondsToTicks(this.getInt(Path.DATA_SAVE_PERIOD));
     }
 
-    @Override
     public String getLanguageFileName() {
-        return Path.LANGUAGE_FILE_NAME.getString();
+        return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 
-    @Override
     public void loadWorldGroups() {
 
     }
-
-    /*@Override
-    public Shares getDefaultShares() {
-        return new Shares(
-                Path.DEFAULT_SHARING_INV.getBoolean(),
-                Path.DEFAULT_SHARING_HEALTH.getBoolean(),
-                Path.DEFAULT_SHARING_HUNGER.getBoolean(),
-                Path.DEFAULT_SHARING_EXP.getBoolean(),
-                Path.DEFAULT_SHARING_EFFECTS.getBoolean());
-    }*/
 }

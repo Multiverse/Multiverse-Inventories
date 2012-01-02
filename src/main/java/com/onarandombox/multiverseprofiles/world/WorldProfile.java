@@ -1,10 +1,11 @@
-package com.onarandombox.multiverseprofiles.data;
+package com.onarandombox.multiverseprofiles.world;
 
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseprofiles.MultiverseProfiles;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.*;
@@ -15,22 +16,22 @@ import java.util.*;
 public class WorldProfile implements ConfigurationSerializable {
 
     private HashMap<OfflinePlayer, PlayerProfile> playerData = new HashMap<OfflinePlayer, PlayerProfile>();
-    private MultiverseWorld world;
+    private World world;
 
-    public WorldProfile(MultiverseWorld world) {
+    public WorldProfile(World world) {
         this.world = world;
     }
 
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
-        result.put("worldName", this.getMVWorld().getName());
+        result.put("worldName", this.getWorld().getName());
         result.put("playerData", this.getPlayerData().values());
 
         return result;
     }
 
     public static WorldProfile deserialize(Map<String, Object> args) {
-        WorldProfile worldProfile = new WorldProfile(MultiverseProfiles.getCore().getMVWorldManager().getMVWorld(args.get("worldName").toString()));
+        WorldProfile worldProfile = new WorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
         Object object = args.get("playerData");
         if (object instanceof Collection) {
             ProfilesDebug.info("playerData IS Collection");
@@ -42,25 +43,21 @@ public class WorldProfile implements ConfigurationSerializable {
                     if (playerProfile != null) {
                         worldProfile.addPlayerData(playerProfile);
                     } else {
-                        ProfilesLog.warning("Unable to load a player's data for world: " + worldProfile.getMVWorld().getName());
+                        ProfilesLog.warning("Unable to load a player's data for world: " + worldProfile.getWorld().getName());
                     }
                 }
             }
         }
-        ProfilesDebug.info("Deserialized WorldProfile for world: " + worldProfile.getMVWorld().getName());
+        ProfilesDebug.info("Deserialized WorldProfile for world: " + worldProfile.getWorld().getName());
         return worldProfile;
     }
 
-    public MultiverseWorld getMVWorld() {
+    public World getWorld() {
         return this.world;
     }
 
-    public void setMVWorld(MultiverseWorld world) {
+    public void setWorld(World world) {
         this.world = world;
-    }
-
-    public List<WorldGroup> getWorldGroups() {
-        return MultiverseProfiles.getWorldGroups().get(this.getMVWorld());
     }
 
     public HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
