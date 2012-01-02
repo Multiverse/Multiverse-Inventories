@@ -16,6 +16,10 @@ public enum MultiverseMessage {
     GENERIC_OF("of"),
     GENERIC_UNLOADED("UNLOADED"),
     GENERIC_PLUGIN_DISABLED("This plugin is Disabled!"),
+    GENERIC_ERROR("[Error]"),
+    GENERIC_SUCCESS("[Success]"),
+    GENERIC_INFO("[Info]"),
+    GENERIC_HELP("[Help]"),
 
     // Errors
     ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),

@@ -28,7 +28,7 @@ import java.util.logging.Level;
 /**
  * @author dumptruckman
  */
-public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageProviding {
+public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messaging {
 
     protected CommandHandler commandHandler;
     private final int requiresProtocol = 10;
@@ -42,7 +42,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageP
     private ProfilesLog log = null;
     private ProfilesDebug debug = null;
 
-    private MessageProvider messageProvider = new SimpleMessageProvider(this);
+    private Messager messager = new SimpleMessager(this);
 
     private HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
     private HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
@@ -79,7 +79,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageP
         }
 
         try {
-            this.getMessageProvider().setLocale(new Locale(this.getConf().getLocale()));
+            this.getMessager().setLocale(new Locale(this.getConf().getLocale()));
         } catch (IllegalArgumentException e) {
             ProfilesLog.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -142,7 +142,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageP
             try {
                 this.config = new ProfilesConfigImpl(this);
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
-                ProfilesLog.severe(this.getMessageProvider().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
+                ProfilesLog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
                 ProfilesLog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
@@ -157,7 +157,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageP
             try {
                 this.data = new ProfilesDataImpl(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
-                ProfilesLog.severe(this.getMessageProvider().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
+                ProfilesLog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
                 ProfilesLog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
@@ -169,18 +169,18 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, MessageP
     /**
      * {@inheritDoc}
      */
-    public MessageProvider getMessageProvider() {
-        return messageProvider;
+    public Messager getMessager() {
+        return messager;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setMessageProvider(MessageProvider provider) {
-        if (provider == null)
-            throw new IllegalArgumentException("The new provider can't be null!");
+    public void setMessager(Messager messager) {
+        if (messager == null)
+            throw new IllegalArgumentException("The new messager can't be null!");
 
-        messageProvider = provider;
+        this.messager = messager;
     }
     
     public int getRequiredProtocol() {
