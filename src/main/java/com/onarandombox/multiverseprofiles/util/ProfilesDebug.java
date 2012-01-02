@@ -1,7 +1,7 @@
-package com.onarandombox.multiverseinventories.util;
+package com.onarandombox.multiverseprofiles.util;
 
 import com.onarandombox.MultiverseCore.utils.DebugLog;
-import com.onarandombox.multiverseinventories.MVIManager;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.io.File;
@@ -10,7 +10,7 @@ import java.util.logging.Level;
 /**
  * @author dumptruckman, SwearWord
  */
-public class MVIDebug {
+public class ProfilesDebug {
     private static DebugLog LOG = null;
     private static String NAME = "";
     private static String VERSION = "";
@@ -19,16 +19,16 @@ public class MVIDebug {
      * Prepares the log for use.
      */
     public static void load() {
-        PluginDescriptionFile pdf = MVIManager.getPlugin().getDescription();
+        PluginDescriptionFile pdf = MultiverseProfiles.getPlugin().getDescription();
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
-        LOG = new DebugLog(NAME, MVIManager.getPlugin().getDataFolder() + File.separator + "debug.log");
+        LOG = new DebugLog(NAME, MultiverseProfiles.getPlugin().getDataFolder() + File.separator + "debug.log");
     }
 
     /**
      * Adds the plugin name and optionally the version number to the log message.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion Whether to show version in log message
      * @return Modified message
      */
@@ -49,6 +49,7 @@ public class MVIDebug {
 
     /**
      * Returns the Name and Version as a combined string
+     *
      * @return "$Name v$Version"
      */
     public static String getNameVersion() {
@@ -58,7 +59,7 @@ public class MVIDebug {
     /**
      * Custom log method
      *
-     * @param level Log level
+     * @param level   Log level
      * @param message Log message
      */
     public static void log(Level level, String message) {
@@ -77,7 +78,7 @@ public class MVIDebug {
     /**
      * Fine level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void fine(String message, boolean showVersion) {
@@ -96,7 +97,7 @@ public class MVIDebug {
     /**
      * Finer level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void finer(String message, boolean showVersion) {
@@ -115,7 +116,7 @@ public class MVIDebug {
     /**
      * Finest level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void finest(String message, boolean showVersion) {
@@ -134,7 +135,7 @@ public class MVIDebug {
     /**
      * Info level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
@@ -153,7 +154,7 @@ public class MVIDebug {
     /**
      * Config level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void config(String message, boolean showVersion) {
@@ -172,7 +173,7 @@ public class MVIDebug {
     /**
      * All level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void all(String message, boolean showVersion) {
@@ -191,7 +192,7 @@ public class MVIDebug {
     /**
      * Off level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void off(String message, boolean showVersion) {
@@ -210,7 +211,7 @@ public class MVIDebug {
     /**
      * Warning level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
@@ -229,7 +230,7 @@ public class MVIDebug {
     /**
      * Severe level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {

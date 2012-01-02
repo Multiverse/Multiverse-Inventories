@@ -1,14 +1,14 @@
 groups:
-  group1:
-    worlds:
-    - world1
-    - world2
-    shares:
-    - inventory
-  group2:
-    worlds:
-    - world2
-    - world3
-    shares:
-    - inventory
-    - health
+    group1:
+        worlds:
+        - world1
+        - world2
+        shares:
+        - inventory
+    group2:
+        worlds:
+        - world2
+        - world3
+        shares:
+        - inventory
+        - health

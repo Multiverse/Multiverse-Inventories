@@ -1,8 +1,7 @@
-package com.onarandombox.multiverseinventories.config;
+package com.onarandombox.multiverseprofiles.config;
 
-import com.onarandombox.multiverseinventories.MVIManager;
-import com.onarandombox.multiverseinventories.data.Shares;
-import com.onarandombox.multiverseinventories.util.MinecraftTools;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
+import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -11,7 +10,7 @@ import java.io.IOException;
 /**
  * @author dumptruckman
  */
-public class MVIConfigImpl implements MVIConfig {
+public class ProfilesConfigImpl implements ProfilesConfig {
 
     public enum Path {
         LANGUAGE_FILE_NAME("settings.language_file", "english.yml", "# This is the language file you wish to use."),
@@ -23,8 +22,7 @@ public class MVIConfigImpl implements MVIConfig {
         DEFAULT_SHARING_HEALTH("defaults.sharing.health", true, "# "),
         DEFAULT_SHARING_HUNGER("defaults.sharing.hunger", true, "# "),
         DEFAULT_SHARING_EXP("defaults.sharing.experience", true, "# "),
-        DEFAULT_SHARING_EFFECTS("defaults.sharing.effects", true, "# "),
-        ;
+        DEFAULT_SHARING_EFFECTS("defaults.sharing.effects", true, "# "),;
 
         private String path;
         private Object def;
@@ -37,19 +35,20 @@ public class MVIConfigImpl implements MVIConfig {
         }
 
         public final Boolean getBoolean() {
-            return MVIManager.getConfig().getConfig().getBoolean(path, (Boolean) def);
+            return MultiverseProfiles.getConfig().getConfig().getBoolean(path, (Boolean) def);
         }
 
         public final Integer getInt() {
-            return MVIManager.getConfig().getConfig().getInt(path, (Integer)def);
+            return MultiverseProfiles.getConfig().getConfig().getInt(path, (Integer) def);
         }
 
         public final String getString() {
-            return MVIManager.getConfig().getConfig().getString(path, (String)def);
+            return MultiverseProfiles.getConfig().getConfig().getString(path, (String) def);
         }
 
         /**
          * Retrieves the path for a config option
+         *
          * @return The path for a config option
          */
         private String getPath() {
@@ -58,6 +57,7 @@ public class MVIConfigImpl implements MVIConfig {
 
         /**
          * Retrieves the default value for a config path
+         *
          * @return The default value for a config path
          */
         private Object getDefault() {
@@ -66,6 +66,7 @@ public class MVIConfigImpl implements MVIConfig {
 
         /**
          * Retrieves the comment for a config path
+         *
          * @return The comments for a config path
          */
         private String[] getComments() {
@@ -83,14 +84,15 @@ public class MVIConfigImpl implements MVIConfig {
 
     /**
      * Loads the configuration data into memory and sets defaults
+     *
      * @throws IOException
      */
     public void load() throws Exception {
         // Make the data folders
-        MVIManager.getPlugin().getDataFolder().mkdirs();
+        MultiverseProfiles.getPlugin().getDataFolder().mkdirs();
 
         // Check if the config file exists.  If not, create it.
-        File configFile = new File(MVIManager.getPlugin().getDataFolder(), "config.yml");
+        File configFile = new File(MultiverseProfiles.getPlugin().getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             configFile.createNewFile();
         }
@@ -112,7 +114,7 @@ public class MVIConfigImpl implements MVIConfig {
      * Loads default settings for any missing config values
      */
     private void setDefaults() {
-        for (MVIConfigImpl.Path path : MVIConfigImpl.Path.values()) {
+        for (ProfilesConfigImpl.Path path : ProfilesConfigImpl.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
             if (config.getString(path.getPath()) == null) {
                 config.set(path.getPath(), path.getDefault());
@@ -121,7 +123,7 @@ public class MVIConfigImpl implements MVIConfig {
     }
 
     /*public void setDefaultShares() {
-        MVIManager.setDefaultShares(this.getDefaultShares());
+        MultiverseProfiles.setDefaultShares(this.getDefaultShares());
     }*/
 
     @Override
@@ -146,7 +148,7 @@ public class MVIConfigImpl implements MVIConfig {
 
     @Override
     public void loadWorldGroups() {
-        
+
     }
 
     /*@Override

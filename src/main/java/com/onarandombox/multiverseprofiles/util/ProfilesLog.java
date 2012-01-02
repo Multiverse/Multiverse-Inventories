@@ -1,7 +1,6 @@
-package com.onarandombox.multiverseinventories.util;
+package com.onarandombox.multiverseprofiles.util;
 
-import com.onarandombox.multiverseinventories.MVIManager;
-import com.onarandombox.multiverseinventories.config.MVIConfigImpl;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.logging.Level;
@@ -10,7 +9,7 @@ import java.util.logging.Logger;
 /**
  * @author dumptruckman, SwearWord
  */
-public class MVILog {
+public class ProfilesLog {
     private static Logger LOG = null;
     private static String NAME = "";
     private static String VERSION = "";
@@ -19,7 +18,7 @@ public class MVILog {
      * Prepares the log for use.
      */
     public static void load() {
-        PluginDescriptionFile pdf = MVIManager.getPlugin().getDescription();
+        PluginDescriptionFile pdf = MultiverseProfiles.getPlugin().getDescription();
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
         LOG = Logger.getLogger("Minecraft");
@@ -28,7 +27,7 @@ public class MVILog {
     /**
      * Adds the plugin name and optionally the version number to the log message.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion Whether to show version in log message
      * @return Modified message
      */
@@ -50,7 +49,7 @@ public class MVILog {
     /**
      * Custom log method
      *
-     * @param level Log level
+     * @param level   Log level
      * @param message Log message
      */
     public static void log(Level level, String message) {
@@ -59,6 +58,7 @@ public class MVILog {
 
     /**
      * Returns the Name and Version as a combined string
+     *
      * @return "$Name v$Version"
      */
     public static String getNameVersion() {
@@ -77,7 +77,7 @@ public class MVILog {
     /**
      * Info level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
@@ -90,7 +90,7 @@ public class MVILog {
      * @param message Log message
      */
     public static void debug(String message) {
-        if (MVIManager.getConfig().isDebugging()) {
+        if (MultiverseProfiles.getConfig().isDebugging()) {
             LOG.info(getString(message, true));
         }
     }
@@ -107,7 +107,7 @@ public class MVILog {
     /**
      * Warning level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
@@ -126,7 +126,7 @@ public class MVILog {
     /**
      * Severe level logging.
      *
-     * @param message Log message
+     * @param message     Log message
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {

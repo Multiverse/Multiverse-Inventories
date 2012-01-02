@@ -1,11 +1,11 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseprofiles.data;
 
-import com.onarandombox.multiverseinventories.MVIManager;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author dumptruckman
@@ -19,7 +19,7 @@ public class WorldGroup implements ConfigurationSerializable {
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
 
-        //result.put("world", this.getBlock().getWorld());
+        //result.put("world", this.getBlock().getMVWorld());
 
         return result;
     }
@@ -27,10 +27,6 @@ public class WorldGroup implements ConfigurationSerializable {
     public static WorldGroup deserialize(Map<String, Object> args) {
 
         return null;
-    }
-
-    public static List<WorldGroup> getGroupsForWorld(World world) {
-        return MVIManager.getWorldGroups().get(world);
     }
 
     public String getName() {

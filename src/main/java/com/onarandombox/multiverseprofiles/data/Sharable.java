@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseprofiles.data;
 
 /**
  * @author dumptruckman

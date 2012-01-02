@@ -1,6 +1,4 @@
-package com.onarandombox.multiverseinventories.data;
-
-import com.onarandombox.multiverseinventories.MVIManager;
+package com.onarandombox.multiverseprofiles.data;
 
 /**
  * @author dumptruckman
@@ -13,9 +11,8 @@ public class Shares {
     private boolean sharingExp = false;
     private boolean sharingEffects = false;
 
-    /*
+
     public Shares() {
-        this(MVIManager.getDefaultShares());
     }
 
     public Shares(Shares shares) {
@@ -30,7 +27,7 @@ public class Shares {
         this.sharingHunger = sharingHunger;
         this.sharingExp = sharingExp;
         this.sharingEffects = sharingEffects;
-    }*/
+    }
 
     public void mergeShares(Shares newShares) {
         this.setSharingInventory(newShares.isSharingInventory());

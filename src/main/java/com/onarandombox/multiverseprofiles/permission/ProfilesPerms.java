@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.permission;
+package com.onarandombox.multiverseprofiles.permission;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
@@ -9,13 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * @author dumptruckman
  */
-public enum MVIPerms {
-    EXAMPLE (new Permission("MultiverseInventories.example", PermissionDefault.OP)),
-    ;
+public enum ProfilesPerms {
+    EXAMPLE(new Permission("MultiverseProfilesPlugin.example", PermissionDefault.OP)),;
 
     private Permission perm;
 
-    MVIPerms(Permission perm) {
+    ProfilesPerms(Permission perm) {
         this.perm = perm;
     }
 
@@ -29,7 +28,7 @@ public enum MVIPerms {
 
     public static void load(JavaPlugin plugin) {
         PluginManager pm = plugin.getServer().getPluginManager();
-        for (MVIPerms perm : MVIPerms.values()) {
+        for (ProfilesPerms perm : ProfilesPerms.values()) {
             pm.addPermission(perm.getPerm());
         }
     }

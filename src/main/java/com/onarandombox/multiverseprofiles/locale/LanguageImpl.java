@@ -1,12 +1,11 @@
-package com.onarandombox.multiverseinventories.locale;
+package com.onarandombox.multiverseprofiles.locale;
 
-import com.onarandombox.multiverseinventories.MVIManager;
-import com.onarandombox.multiverseinventories.config.MVIConfigImpl;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,17 +15,16 @@ import java.util.List;
 /**
  * @author dumptruckman, SwearWord
  */
-public enum Language {
-    ERROR ("messages.generic.error"),
-    SUCCESS ("messages.generic.success"),
-    INFO ("messages.generic.info"),
+public enum LanguageImpl implements Language {
 
-    ;
+    ERROR("messages.generic.error"),
+    SUCCESS("messages.generic.success"),
+    INFO("messages.generic.info"),;
 
     private String path;
-    private static FileConfiguration language;
+    private static FileConfiguration language = null;
 
-    Language(String path) {
+    LanguageImpl(String path) {
         this.path = path;
     }
 
@@ -39,29 +37,67 @@ public enum Language {
         return path;
     }
 
+    public String getString(Object... args) {
+        return getString(this, args);
+    }
+
+    public void bad(CommandSender sender, Object... args) {
+        send(ChatColor.RED.toString() + LanguageImpl.ERROR.getString(), sender, args);
+    }
+
+    public void normal(CommandSender sender, Object... args) {
+        send("", sender, args);
+    }
+
+    private void send(String prefix, CommandSender sender, Object... args) {
+        List<String> messages = getStrings(this, args);
+        for (int i = 0; i < messages.size(); i++) {
+            if (i == 0) {
+                sender.sendMessage(prefix + " " + messages.get(i));
+            } else {
+                sender.sendMessage(messages.get(i));
+            }
+        }
+    }
+
+    public void good(CommandSender sender, Object... args) {
+        send(ChatColor.GREEN.toString() + LanguageImpl.SUCCESS.getString(), sender, args);
+    }
+
+    public void info(CommandSender sender, Object... args) {
+        send(ChatColor.YELLOW.toString() + LanguageImpl.INFO.getString(), sender, args);
+    }
+
     /**
      * Loads the language data into memory and sets defaults
      *
      * @throws java.io.IOException
      */
-    public static void load() throws IOException {
+    public static void load(JavaPlugin plugin, String languageFileName) throws IOException {
+        if (LanguageImpl.language == null) {
+            // Make the data folders
+            plugin.getDataFolder().mkdirs();
 
-        // Make the data folders
-        MVIManager.getPlugin().getDataFolder().mkdirs();
-
-        // Check if the language file exists.  If not, create it.
-        File languageFile = new File(MVIManager.getPlugin().getDataFolder(), MVIManager.getConfig().getLanguageFileName());
-        if (!languageFile.exists()) {
-            languageFile.createNewFile();
+            // Check if the language file exists.  If not, create it.
+            File languageFile = new File(plugin.getDataFolder(), languageFileName);
+            load(languageFile);
         }
-
-        // Load the language file into memory
-        language = YamlConfiguration.loadConfiguration(languageFile);
     }
 
-    public static String formatString(String string, Object...args) {
+    public static void load(File languageFile) throws IOException {
+        if (LanguageImpl.language == null) {
+            if (!languageFile.exists()) {
+                languageFile.createNewFile();
+            }
+
+            // Load the language file into memory
+            LanguageImpl.language = YamlConfiguration.loadConfiguration(languageFile);
+        }
+    }
+
+    public static String formatString(String string, Object... args) {
         // Replaces & with the Section character
-        string = string.replaceAll("&", Character.toString((char)167));
+        string = string.replaceAll("&", Character.toString((char) 167));
         // If there are arguments, %n notations in the message will be
         // replaced
         if (args != null) {
@@ -82,13 +118,13 @@ public enum Language {
      * @param args Optional arguments to replace %n variable notations
      * @return A List of formatted Strings
      */
-    public static List<String> getStrings(Language path, Object...args) {
+    public static List<String> getStrings(LanguageImpl path, Object... args) {
         // Gets the messages for the path submitted
         List<Object> list = language.getList(path.getPath());
 
         List<String> message = new ArrayList<String>();
         if (list == null) {
-            MVILog.warning("Missing language for: " + path.getPath());
+            ProfilesLog.warning("Missing language for: " + path.getPath());
             return message;
         }
         // Parse each item in list
@@ -105,45 +141,14 @@ public enum Language {
         return message;
     }
 
-    public static String getString(Language language, Object...args) {
-        List<Object> list = Language.language.getList(language.getPath());
+    public static String getString(LanguageImpl language, Object... args) {
+        List<Object> list = LanguageImpl.language.getList(language.getPath());
         if (list == null) {
-            MVILog.warning("Missing language for: " + language.getPath());
+            ProfilesLog.warning("Missing language for: " + language.getPath());
             return "";
         }
         if (list.isEmpty()) return "";
         return (formatString(list.get(0).toString(), args));
-    }
-
-    public String getString(Object...args) {
-        return getString(this, args);
-    }
-
-    public void bad(CommandSender sender, Object... args) {
-        send(ChatColor.RED.toString() + Language.ERROR.getString(), sender, args);
-    }
-
-    public void normal(CommandSender sender, Object... args) {
-        send("", sender, args);
-    }
-
-    private void send(String prefix, CommandSender sender, Object... args) {
-        List<String> messages = getStrings(this, args);
-        for (int i = 0; i < messages.size(); i++) {
-            if (i == 0) {
-                sender.sendMessage(prefix + " " + messages.get(i));
-            } else {
-                sender.sendMessage(messages.get(i));
-            }
-        }
-    }
-
-    public void good(CommandSender sender, Object... args) {
-        send(ChatColor.GREEN.toString() + Language.SUCCESS.getString(), sender, args);
-    }
-
-    public void info(CommandSender sender, Object... args) {
-        send(ChatColor.YELLOW.toString() + Language.INFO.getString(), sender, args);
     }
 
     /**
@@ -153,7 +158,7 @@ public enum Language {
      * @param message
      * @param args
      */
-    public static void sendMessage(CommandSender player, String message, Object...args) {
+    public static void sendMessage(CommandSender player, String message, Object... args) {
         List<String> messages = Font.splitString(formatString(message, args));
         sendMessages(player, messages);
     }

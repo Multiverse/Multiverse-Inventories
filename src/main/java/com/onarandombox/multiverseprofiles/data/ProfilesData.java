@@ -1,19 +1,20 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseprofiles.data;
 
-import org.bukkit.entity.Player;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 
 import java.io.IOException;
 
 /**
  * @author dumptruckman
  */
-public interface MVIData {
+public interface ProfilesData {
 
     /**
      * Loads the data data into memory and sets defaults
+     *
      * @throws java.io.IOException
      */
-    public void load() throws IOException;
+    public void load(MultiverseProfiles mvProfiles) throws IOException;
 
     public void save(boolean isReload);
 }
