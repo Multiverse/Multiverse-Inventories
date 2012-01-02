@@ -1,12 +1,10 @@
 package com.onarandombox.multiverseprofiles.config;
 
-import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author dumptruckman
@@ -14,7 +12,7 @@ import java.io.IOException;
 public class ProfilesConfigImpl implements ProfilesConfig {
 
     public enum Path {
-        LANGUAGE_FILE_NAME("settings.language_file", "english.yml", "# This is the language file you wish to use."),
+        LANGUAGE_FILE_NAME("settings.local", "en", "# This is the locale file you wish to use."),
         DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
         DATA_SAVE_PERIOD("settings.data.save_every", 120, "# This is often plugin data is written to the disk.", "# This setting indicates the maximum amount of inventory rollback possible in the event of a server crash."),
 
@@ -132,7 +130,7 @@ public class ProfilesConfigImpl implements ProfilesConfig {
         return MinecraftTools.convertSecondsToTicks(this.getInt(Path.DATA_SAVE_PERIOD));
     }
 
-    public String getLanguageFileName() {
+    public String getLocale() {
         return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 

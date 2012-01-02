@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseprofiles.util;
 
 import com.onarandombox.MultiverseCore.utils.DebugLog;
-import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 

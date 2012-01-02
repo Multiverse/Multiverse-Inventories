@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseprofiles.data;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseprofiles.MultiverseProfilesPlugin;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import com.onarandombox.multiverseprofiles.world.WorldProfile;
@@ -45,9 +45,9 @@ public class ProfilesDataImpl implements ProfilesData {
     private int dataSaveTaskId = -1;
     private File dataFile = null;
 
-    private MultiverseProfilesPlugin plugin;
+    private MultiverseProfiles plugin;
     
-    public ProfilesDataImpl(MultiverseProfilesPlugin plugin) throws IOException {
+    public ProfilesDataImpl(MultiverseProfiles plugin) throws IOException {
         this.plugin = plugin;
         // Make the data folders
         this.plugin.getDataFolder().mkdirs();

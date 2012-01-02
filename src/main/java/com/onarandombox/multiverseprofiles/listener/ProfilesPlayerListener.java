@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseprofiles.listener;
 
-import com.onarandombox.multiverseprofiles.MultiverseProfilesPlugin;
+import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.player.PlayerProfile;
+import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.world.Shares;
 import com.onarandombox.multiverseprofiles.world.WorldGroup;
-import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class ProfilesPlayerListener extends PlayerListener {
 
-    MultiverseProfilesPlugin plugin;
+    MultiverseProfiles plugin;
     
-    public ProfilesPlayerListener(MultiverseProfilesPlugin plugin) {
+    public ProfilesPlayerListener(MultiverseProfiles plugin) {
         this.plugin = plugin;
     }
 

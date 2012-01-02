@@ -13,7 +13,7 @@ public interface ProfilesConfig {
 
     public long getDataSaveInterval();
 
-    public String getLanguageFileName();
+    public String getLocale();
 
     public void loadWorldGroups();
 

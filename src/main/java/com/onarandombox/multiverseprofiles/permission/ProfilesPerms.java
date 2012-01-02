@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author dumptruckman
  */
 public enum ProfilesPerms {
-    EXAMPLE(new Permission("MultiverseProfilesPlugin.example", PermissionDefault.OP)),;
+    EXAMPLE(new Permission("MultiverseProfiles.example", PermissionDefault.OP)),;
 
     private Permission perm;
 

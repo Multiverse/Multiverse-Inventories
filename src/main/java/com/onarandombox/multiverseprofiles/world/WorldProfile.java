@@ -8,7 +8,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author dumptruckman
