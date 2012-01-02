@@ -139,6 +139,32 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
      * {@inheritDoc}
      */
     @Override
+    public List<String> getMessages(MultiverseMessage key) {
+        if (!isLocaleLoaded(locale)) {
+            return key.getDefault();
+        }
+        else
+            return messages.get(locale).get(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<String> getMessages(MultiverseMessage key, Locale locale) {
+        try {
+            maybeLoadLocale(locale);
+        } catch (LocalizationLoadingException e) {
+            e.printStackTrace();
+            return getMessages(key);
+        }
+        return messages.get(locale).get(key);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Locale getLocale() {
         return locale;
     }
