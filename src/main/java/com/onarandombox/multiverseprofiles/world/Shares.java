@@ -1,5 +1,7 @@
 package com.onarandombox.multiverseprofiles.world;
 
+import java.util.List;
+
 public interface Shares {
 
     public void mergeShares(Shares newShares);
@@ -23,4 +25,6 @@ public interface Shares {
     public Sharing isSharingEffects();
 
     public void setSharingEffects(Sharing sharingEffects);
+
+    public List<String> toStringList();
 }

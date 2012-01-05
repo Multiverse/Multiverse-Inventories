@@ -1,5 +1,8 @@
 package com.onarandombox.multiverseprofiles.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author dumptruckman
  */
@@ -85,5 +88,43 @@ public class SimpleShares implements Shares {
 
     public void setSharingEffects(Sharing sharingEffects) {
         this.sharingEffects = sharingEffects;
+    }
+    
+    public List<String> toStringList() {
+        List<String> list = new ArrayList<String>(5);
+        if (this.isSharingInventory() != Sharing.NOT_SET) {
+            list.add("inventory");
+        }
+        if (this.isSharingHealth() != Sharing.NOT_SET) {
+            list.add("health");
+        }
+        if (this.isSharingHunger() != Sharing.NOT_SET) {
+            list.add("hunger");
+        }
+        if (this.isSharingExp() != Sharing.NOT_SET) {
+            list.add("experience");
+        }
+        if (this.isSharingEffects() != Sharing.NOT_SET) {
+            list.add("effects");
+        }
+        return list;
+    }
+    
+    public static Shares parseShares(List<String> sharesList) {
+        Shares shares = new SimpleShares();
+        for (String shareString : sharesList) {
+            if (shareString.equals("inv") || shareString.equals("inventory")) {
+                shares.setSharingInventory(Sharing.TRUE);
+            } else if (shareString.equals("health") || shareString.equals("hp")) {
+                shares.setSharingHealth(Sharing.TRUE);
+            } else if (shareString.equals("hunger") || shareString.equals("food")) {
+                shares.setSharingHunger(Sharing.TRUE);
+            } else if (shareString.equals("exp") || shareString.equals("experience")) {
+                shares.setSharingExp(Sharing.TRUE);
+            } else if (shareString.equals("effects") || shareString.equals("fx")) {
+                shares.setSharingEffects(Sharing.TRUE);
+            }
+        }
+        return shares;
     }
 }

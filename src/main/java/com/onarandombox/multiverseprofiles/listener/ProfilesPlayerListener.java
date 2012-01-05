@@ -47,9 +47,9 @@ public class ProfilesPlayerListener extends PlayerListener {
         }
 
         Shares currentShares = new SimpleShares();
-        List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld);
+        List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld.getName());
         for (WorldGroup toWorldGroup : toWorldGroups) {
-            if (toWorldGroup.getWorlds().contains(fromWorld)) {
+            if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {
                 currentShares.mergeShares(toWorldGroup.getShares());
             }
         }

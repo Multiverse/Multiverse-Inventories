@@ -50,13 +50,12 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
 
     private Messager messager = new SimpleMessager(this);
 
-    private HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
-    private HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
+    private HashMap<String, WorldProfile> worldProfiles = new HashMap<String, WorldProfile>();
+    private HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
 
     static {
         ConfigurationSerialization.registerClass(SimplePlayerProfile.class);
         ConfigurationSerialization.registerClass(SimpleWorldProfile.class);
-        ConfigurationSerialization.registerClass(SimpleWorldGroup.class);
     }
     
     final public void onDisable() {
@@ -200,14 +199,14 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
     }
 
     public void addWorldProfile(WorldProfile worldProfile) {
-        this.worldProfiles.put(worldProfile.getWorld(), worldProfile);
+        this.worldProfiles.put(worldProfile.getWorld().getName(), worldProfile);
     }
 
-    public WorldProfile getWorldProfile(World world) {
-        return this.worldProfiles.get(world);
+    public WorldProfile getWorldProfile(String worldName) {
+        return this.worldProfiles.get(worldName);
     }
 
-    public HashMap<World, List<WorldGroup>> getWorldGroups() {
+    public HashMap<String, List<WorldGroup>> getWorldGroups() {
         return this.worldGroups;
     }
 
@@ -216,8 +215,8 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
     }
 
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
-        PlayerProfile fromWorldProfile = this.getWorldProfile(fromWorld).getPlayerData(player);
-        PlayerProfile toWorldProfile = this.getWorldProfile(toWorld).getPlayerData(player);
+        PlayerProfile fromWorldProfile = this.getWorldProfile(fromWorld.getName()).getPlayerData(player);
+        PlayerProfile toWorldProfile = this.getWorldProfile(fromWorld.getName()).getPlayerData(player);
 
         // persist current stats for previous world if not sharing
         // then load any saved data
