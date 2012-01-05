@@ -1,16 +1,16 @@
 package com.onarandombox.multiverseprofiles.data;
 
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
-import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
-import com.onarandombox.multiverseprofiles.world.WorldProfile;
+import com.onarandombox.multiverseprofiles.world.SimpleWorldProfile;
+import com.onarandombox.multiverseprofiles.world.WorldProfileI;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dumptruckman
@@ -94,26 +94,15 @@ public class ProfilesDataImpl implements ProfilesData {
     private void loadWorlds() {
         List<String> worldNames = this.getData().getStringList(Path.WORLDS.getPath());
         for (String worldName : worldNames) {
-            MultiverseWorld mvWorld = this.plugin.getCore().getMVWorldManager().getMVWorld(worldName);
-            if (mvWorld == null) {
-                ProfilesLog.warning("Did not load world data for non-Multiverse World: " + worldName);
-                continue;
+            Object obj = this.getData().get(Path.WORLDS.appendPath(worldName));
+            if (obj instanceof Map) {
+                ProfilesLog.info("deserializing world: " + worldName);
+                WorldProfileI worldProfile = SimpleWorldProfile.deserialize((Map) obj);
+                //this.loadPlayers(worldProfile);
+                this.plugin.addWorldProfile(worldProfile);
+            } else {
+                
             }
-            WorldProfile worldProfile = (WorldProfile) this.getData().get(Path.WORLDS.appendPath(worldName));
-            //this.loadPlayers(worldProfile);
-            this.plugin.addWorldProfile(worldProfile);
-        }
-    }
-
-    private void loadPlayers(WorldProfile worldProfile) {
-        List<String> playerNames = this.getData().getStringList(
-                Path.WORLDS.appendPath(worldProfile.getWorld().getName()) + Path.PLAYERS.getPath()
-        );
-        for (String playerName : playerNames) {
-            PlayerProfile playerProfile = (PlayerProfile) this.getData().get(
-                    Path.WORLDS.appendPath(worldProfile.getWorld().getName()) + Path.PLAYERS.appendPath(playerName)
-            );
-            worldProfile.addPlayerData(playerProfile);
         }
     }
 }

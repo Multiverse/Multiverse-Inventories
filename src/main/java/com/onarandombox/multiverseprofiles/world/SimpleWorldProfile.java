@@ -1,12 +1,11 @@
 package com.onarandombox.multiverseprofiles.world;
 
-import com.onarandombox.multiverseprofiles.player.PlayerProfile;
-import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
+import com.onarandombox.multiverseprofiles.player.PlayerProfileI;
+import com.onarandombox.multiverseprofiles.player.SimplePlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,12 +15,12 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class WorldProfile implements ConfigurationSerializable {
+public class SimpleWorldProfile implements WorldProfileI {
 
-    private HashMap<OfflinePlayer, PlayerProfile> playerData = new HashMap<OfflinePlayer, PlayerProfile>();
+    private HashMap<OfflinePlayer, PlayerProfileI> playerData = new HashMap<OfflinePlayer, PlayerProfileI>();
     private World world;
 
-    public WorldProfile(World world) {
+    public SimpleWorldProfile(World world) {
         this.world = world;
     }
 
@@ -33,16 +32,16 @@ public class WorldProfile implements ConfigurationSerializable {
         return result;
     }
 
-    public static WorldProfile deserialize(Map<String, Object> args) {
-        WorldProfile worldProfile = new WorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
+    public static WorldProfileI deserialize(Map<String, Object> args) {
+        WorldProfileI worldProfile = new SimpleWorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
         Object object = args.get("playerData");
         if (object instanceof Collection) {
-            ProfilesDebug.info("playerData IS Collection");
+            ProfilesLog.info("playerData IS Collection");
             Collection playerCollection = (Collection) object;
             for (Object collectionObject : playerCollection) {
-                if (collectionObject instanceof PlayerProfile) {
-                    ProfilesDebug.info("collectionObject IS PlayerProfile");
-                    PlayerProfile playerProfile = (PlayerProfile) collectionObject;
+                if (collectionObject instanceof Map) {
+                    ProfilesLog.info("collectionObject IS Map");
+                    PlayerProfileI playerProfile = SimplePlayerProfile.deserialize((Map) collectionObject);
                     if (playerProfile != null) {
                         worldProfile.addPlayerData(playerProfile);
                     } else {
@@ -51,7 +50,7 @@ public class WorldProfile implements ConfigurationSerializable {
                 }
             }
         }
-        ProfilesDebug.info("Deserialized WorldProfile for world: " + worldProfile.getWorld().getName());
+        ProfilesLog.info("Deserialized WorldProfile for world: " + worldProfile.getWorld().getName());
         return worldProfile;
     }
 
@@ -63,20 +62,20 @@ public class WorldProfile implements ConfigurationSerializable {
         this.world = world;
     }
 
-    public HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
+    public HashMap<OfflinePlayer, PlayerProfileI> getPlayerData() {
         return this.playerData;
     }
 
-    public PlayerProfile getPlayerData(OfflinePlayer player) {
-        PlayerProfile playerProfile = this.playerData.get(player);
+    public PlayerProfileI getPlayerData(OfflinePlayer player) {
+        PlayerProfileI playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
-            playerProfile = new PlayerProfile(player);
+            playerProfile = new SimplePlayerProfile(player);
             this.playerData.put(player, playerProfile);
         }
         return playerProfile;
     }
 
-    public void addPlayerData(PlayerProfile playerProfile) {
+    public void addPlayerData(PlayerProfileI playerProfile) {
         this.getPlayerData().put(playerProfile.getPlayer(), playerProfile);
     }
 }

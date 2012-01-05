@@ -1,10 +1,11 @@
 package com.onarandombox.multiverseprofiles.listener;
 
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
-import com.onarandombox.multiverseprofiles.player.PlayerProfile;
+import com.onarandombox.multiverseprofiles.player.PlayerProfileI;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
-import com.onarandombox.multiverseprofiles.world.Shares;
-import com.onarandombox.multiverseprofiles.world.WorldGroup;
+import com.onarandombox.multiverseprofiles.world.SharesI;
+import com.onarandombox.multiverseprofiles.world.SimpleShares;
+import com.onarandombox.multiverseprofiles.world.WorldGroupI;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -44,16 +45,16 @@ public class ProfilesPlayerListener extends PlayerListener {
             return;
         }
 
-        Shares currentShares = new Shares();
-        List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld);
-        for (WorldGroup toWorldGroup : toWorldGroups) {
+        SharesI currentShares = new SimpleShares();
+        List<WorldGroupI> toWorldGroups = this.plugin.getWorldGroups().get(toWorld);
+        for (WorldGroupI toWorldGroup : toWorldGroups) {
             if (toWorldGroup.getWorlds().contains(fromWorld)) {
                 currentShares.mergeShares(toWorldGroup.getShares());
             }
         }
 
-        PlayerProfile fromWorldProfile = this.plugin.getWorldProfile(fromWorld).getPlayerData(player);
-        PlayerProfile toWorldProfile = this.plugin.getWorldProfile(toWorld).getPlayerData(player);
+        PlayerProfileI fromWorldProfile = this.plugin.getWorldProfile(fromWorld).getPlayerData(player);
+        PlayerProfileI toWorldProfile = this.plugin.getWorldProfile(toWorld).getPlayerData(player);
 
         // persist current stats for previous world if not sharing
         // then load any saved data

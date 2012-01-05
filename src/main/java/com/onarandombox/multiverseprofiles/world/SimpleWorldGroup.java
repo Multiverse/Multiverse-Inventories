@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseprofiles.world;
 
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -10,11 +9,11 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class WorldGroup implements ConfigurationSerializable {
+public class SimpleWorldGroup implements WorldGroupI {
 
     private String name = "";
     private HashSet<World> worlds = new HashSet<World>();
-    private Shares shares = new Shares();
+    private SharesI shares = new SimpleShares();
 
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
@@ -24,7 +23,7 @@ public class WorldGroup implements ConfigurationSerializable {
         return result;
     }
 
-    public static WorldGroup deserialize(Map<String, Object> args) {
+    public static WorldGroupI deserialize(Map<String, Object> args) {
 
         return null;
     }
@@ -45,7 +44,7 @@ public class WorldGroup implements ConfigurationSerializable {
         return worlds;
     }
 
-    public Shares getShares() {
+    public SharesI getShares() {
         return shares;
     }
 }

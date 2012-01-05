@@ -7,12 +7,17 @@ import com.onarandombox.multiverseprofiles.config.ProfilesConfigImpl;
 import com.onarandombox.multiverseprofiles.data.ProfilesData;
 import com.onarandombox.multiverseprofiles.data.ProfilesDataImpl;
 import com.onarandombox.multiverseprofiles.listener.ProfilesPlayerListener;
-import com.onarandombox.multiverseprofiles.locale.*;
-import com.onarandombox.multiverseprofiles.player.PlayerProfile;
+import com.onarandombox.multiverseprofiles.locale.Messager;
+import com.onarandombox.multiverseprofiles.locale.Messaging;
+import com.onarandombox.multiverseprofiles.locale.MultiverseMessage;
+import com.onarandombox.multiverseprofiles.locale.SimpleMessager;
+import com.onarandombox.multiverseprofiles.player.SimplePlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
-import com.onarandombox.multiverseprofiles.world.WorldGroup;
-import com.onarandombox.multiverseprofiles.world.WorldProfile;
+import com.onarandombox.multiverseprofiles.world.SimpleWorldGroup;
+import com.onarandombox.multiverseprofiles.world.SimpleWorldProfile;
+import com.onarandombox.multiverseprofiles.world.WorldGroupI;
+import com.onarandombox.multiverseprofiles.world.WorldProfileI;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -46,13 +51,13 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
 
     private Messager messager = new SimpleMessager(this);
 
-    private HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
-    private HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
+    private HashMap<World, WorldProfileI> worldProfiles = new HashMap<World, WorldProfileI>();
+    private HashMap<World, List<WorldGroupI>> worldGroups = new HashMap<World, List<WorldGroupI>>();
 
     static {
-        ConfigurationSerialization.registerClass(PlayerProfile.class);
-        ConfigurationSerialization.registerClass(WorldProfile.class);
-        ConfigurationSerialization.registerClass(WorldGroup.class);
+        ConfigurationSerialization.registerClass(SimplePlayerProfile.class);
+        ConfigurationSerialization.registerClass(SimpleWorldProfile.class);
+        ConfigurationSerialization.registerClass(SimpleWorldGroup.class);
     }
     
     final public void onDisable() {
@@ -195,15 +200,15 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
         return this.requiresProtocol;
     }
 
-    public void addWorldProfile(WorldProfile worldProfile) {
+    public void addWorldProfile(WorldProfileI worldProfile) {
         this.worldProfiles.put(worldProfile.getWorld(), worldProfile);
     }
 
-    public WorldProfile getWorldProfile(World world) {
+    public WorldProfileI getWorldProfile(World world) {
         return this.worldProfiles.get(world);
     }
 
-    public HashMap<World, List<WorldGroup>> getWorldGroups() {
+    public HashMap<World, List<WorldGroupI>> getWorldGroups() {
         return this.worldGroups;
     }
 }

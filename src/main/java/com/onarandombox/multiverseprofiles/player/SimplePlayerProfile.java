@@ -3,7 +3,6 @@ package com.onarandombox.multiverseprofiles.player;
 import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -13,7 +12,7 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class PlayerProfile implements ConfigurationSerializable {
+public class SimplePlayerProfile implements PlayerProfileI {
 
     private ItemStack[] inventoryContents = new ItemStack[36];
     private ItemStack[] armorContents = new ItemStack[4];
@@ -26,7 +25,7 @@ public class PlayerProfile implements ConfigurationSerializable {
 
     private OfflinePlayer player;
 
-    public PlayerProfile(OfflinePlayer player) {
+    public SimplePlayerProfile(OfflinePlayer player) {
         this.player = player;
     }
 
@@ -62,12 +61,12 @@ public class PlayerProfile implements ConfigurationSerializable {
         return result;
     }
 
-    public static PlayerProfile deserialize(Map<String, Object> args) {
-        PlayerProfile playerProfile = null;
+    public static PlayerProfileI deserialize(Map<String, Object> args) {
+        PlayerProfileI playerProfile = null;
 
         Object object = args.get("player");
         if (object != null && object instanceof OfflinePlayer) {
-            playerProfile = new PlayerProfile((OfflinePlayer) object);
+            playerProfile = new SimplePlayerProfile((OfflinePlayer) object);
             try {
                 playerProfile.setHealth((Integer) args.get("health"));
                 playerProfile.setExp((Float) args.get("exp"));
