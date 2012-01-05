@@ -8,6 +8,7 @@ import com.onarandombox.multiverseprofiles.data.ProfilesData;
 import com.onarandombox.multiverseprofiles.data.ProfilesDataImpl;
 import com.onarandombox.multiverseprofiles.listener.ProfilesPlayerListener;
 import com.onarandombox.multiverseprofiles.locale.*;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import com.onarandombox.multiverseprofiles.world.WorldGroup;
@@ -15,6 +16,7 @@ import com.onarandombox.multiverseprofiles.world.WorldProfile;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,6 +49,12 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
     private HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
     private HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
 
+    static {
+        ConfigurationSerialization.registerClass(PlayerProfile.class);
+        ConfigurationSerialization.registerClass(WorldProfile.class);
+        ConfigurationSerialization.registerClass(WorldGroup.class);
+    }
+    
     final public void onDisable() {
         // Save the plugin data
         this.getData().save(true);
