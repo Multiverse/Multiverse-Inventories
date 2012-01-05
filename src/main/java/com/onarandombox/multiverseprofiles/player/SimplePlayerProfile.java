@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class SimplePlayerProfile implements PlayerProfileI {
+public class SimplePlayerProfile implements PlayerProfile {
 
     private ItemStack[] inventoryContents = new ItemStack[36];
     private ItemStack[] armorContents = new ItemStack[4];
@@ -61,8 +61,8 @@ public class SimplePlayerProfile implements PlayerProfileI {
         return result;
     }
 
-    public static PlayerProfileI deserialize(Map<String, Object> args) {
-        PlayerProfileI playerProfile = null;
+    public static PlayerProfile deserialize(Map<String, Object> args) {
+        PlayerProfile playerProfile = null;
 
         Object object = args.get("player");
         if (object != null && object instanceof OfflinePlayer) {

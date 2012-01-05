@@ -3,7 +3,7 @@ package com.onarandombox.multiverseprofiles.data;
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import com.onarandombox.multiverseprofiles.world.SimpleWorldProfile;
-import com.onarandombox.multiverseprofiles.world.WorldProfileI;
+import com.onarandombox.multiverseprofiles.world.WorldProfile;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class ProfilesDataImpl implements ProfilesData {
+public class SimpleProfilesData implements ProfilesData {
 
     public enum Path {
         WORLDS("worldData"),
@@ -47,7 +47,7 @@ public class ProfilesDataImpl implements ProfilesData {
 
     private MultiverseProfiles plugin;
     
-    public ProfilesDataImpl(MultiverseProfiles plugin) throws IOException {
+    public SimpleProfilesData(MultiverseProfiles plugin) throws IOException {
         this.plugin = plugin;
         // Make the data folders
         this.plugin.getDataFolder().mkdirs();
@@ -97,7 +97,7 @@ public class ProfilesDataImpl implements ProfilesData {
             Object obj = this.getData().get(Path.WORLDS.appendPath(worldName));
             if (obj instanceof Map) {
                 ProfilesLog.info("deserializing world: " + worldName);
-                WorldProfileI worldProfile = SimpleWorldProfile.deserialize((Map) obj);
+                WorldProfile worldProfile = SimpleWorldProfile.deserialize((Map) obj);
                 //this.loadPlayers(worldProfile);
                 this.plugin.addWorldProfile(worldProfile);
             } else {

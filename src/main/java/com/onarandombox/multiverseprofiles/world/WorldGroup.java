@@ -5,7 +5,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.HashSet;
 
-public interface WorldGroupI extends ConfigurationSerializable {
+public interface WorldGroup extends ConfigurationSerializable {
 
     public String getName();
 
@@ -15,5 +15,5 @@ public interface WorldGroupI extends ConfigurationSerializable {
 
     public HashSet<World> getWorlds();
 
-    public SharesI getShares();
+    public Shares getShares();
 }

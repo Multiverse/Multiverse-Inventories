@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseprofiles.world;
 
-import com.onarandombox.multiverseprofiles.player.PlayerProfileI;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.player.SimplePlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import org.bukkit.Bukkit;
@@ -15,9 +15,9 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class SimpleWorldProfile implements WorldProfileI {
+public class SimpleWorldProfile implements WorldProfile {
 
-    private HashMap<OfflinePlayer, PlayerProfileI> playerData = new HashMap<OfflinePlayer, PlayerProfileI>();
+    private HashMap<OfflinePlayer, PlayerProfile> playerData = new HashMap<OfflinePlayer, PlayerProfile>();
     private World world;
 
     public SimpleWorldProfile(World world) {
@@ -32,8 +32,8 @@ public class SimpleWorldProfile implements WorldProfileI {
         return result;
     }
 
-    public static WorldProfileI deserialize(Map<String, Object> args) {
-        WorldProfileI worldProfile = new SimpleWorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
+    public static WorldProfile deserialize(Map<String, Object> args) {
+        WorldProfile worldProfile = new SimpleWorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
         Object object = args.get("playerData");
         if (object instanceof Collection) {
             ProfilesLog.info("playerData IS Collection");
@@ -41,7 +41,7 @@ public class SimpleWorldProfile implements WorldProfileI {
             for (Object collectionObject : playerCollection) {
                 if (collectionObject instanceof Map) {
                     ProfilesLog.info("collectionObject IS Map");
-                    PlayerProfileI playerProfile = SimplePlayerProfile.deserialize((Map) collectionObject);
+                    PlayerProfile playerProfile = SimplePlayerProfile.deserialize((Map) collectionObject);
                     if (playerProfile != null) {
                         worldProfile.addPlayerData(playerProfile);
                     } else {
@@ -62,12 +62,12 @@ public class SimpleWorldProfile implements WorldProfileI {
         this.world = world;
     }
 
-    public HashMap<OfflinePlayer, PlayerProfileI> getPlayerData() {
+    public HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
         return this.playerData;
     }
 
-    public PlayerProfileI getPlayerData(OfflinePlayer player) {
-        PlayerProfileI playerProfile = this.playerData.get(player);
+    public PlayerProfile getPlayerData(OfflinePlayer player) {
+        PlayerProfile playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
             playerProfile = new SimplePlayerProfile(player);
             this.playerData.put(player, playerProfile);
@@ -75,7 +75,7 @@ public class SimpleWorldProfile implements WorldProfileI {
         return playerProfile;
     }
 
-    public void addPlayerData(PlayerProfileI playerProfile) {
+    public void addPlayerData(PlayerProfile playerProfile) {
         this.getPlayerData().put(playerProfile.getPlayer(), playerProfile);
     }
 }

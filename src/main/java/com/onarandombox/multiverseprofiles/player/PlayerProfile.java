@@ -4,7 +4,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
-public interface PlayerProfileI extends ConfigurationSerializable {
+public interface PlayerProfile extends ConfigurationSerializable {
 
     public OfflinePlayer getPlayer();
 

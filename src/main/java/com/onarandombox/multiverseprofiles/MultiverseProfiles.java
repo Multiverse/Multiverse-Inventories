@@ -3,9 +3,9 @@ package com.onarandombox.multiverseprofiles;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.multiverseprofiles.config.ProfilesConfig;
-import com.onarandombox.multiverseprofiles.config.ProfilesConfigImpl;
+import com.onarandombox.multiverseprofiles.config.SimpleProfilesConfig;
 import com.onarandombox.multiverseprofiles.data.ProfilesData;
-import com.onarandombox.multiverseprofiles.data.ProfilesDataImpl;
+import com.onarandombox.multiverseprofiles.data.SimpleProfilesData;
 import com.onarandombox.multiverseprofiles.listener.ProfilesPlayerListener;
 import com.onarandombox.multiverseprofiles.locale.Messager;
 import com.onarandombox.multiverseprofiles.locale.Messaging;
@@ -16,8 +16,8 @@ import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import com.onarandombox.multiverseprofiles.world.SimpleWorldGroup;
 import com.onarandombox.multiverseprofiles.world.SimpleWorldProfile;
-import com.onarandombox.multiverseprofiles.world.WorldGroupI;
-import com.onarandombox.multiverseprofiles.world.WorldProfileI;
+import com.onarandombox.multiverseprofiles.world.WorldGroup;
+import com.onarandombox.multiverseprofiles.world.WorldProfile;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -51,8 +51,8 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
 
     private Messager messager = new SimpleMessager(this);
 
-    private HashMap<World, WorldProfileI> worldProfiles = new HashMap<World, WorldProfileI>();
-    private HashMap<World, List<WorldGroupI>> worldGroups = new HashMap<World, List<WorldGroupI>>();
+    private HashMap<World, WorldProfile> worldProfiles = new HashMap<World, WorldProfile>();
+    private HashMap<World, List<WorldGroup>> worldGroups = new HashMap<World, List<WorldGroup>>();
 
     static {
         ConfigurationSerialization.registerClass(SimplePlayerProfile.class);
@@ -153,7 +153,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
         if (this.config == null) {
             // Loads the configuration
             try {
-                this.config = new ProfilesConfigImpl(this);
+                this.config = new SimpleProfilesConfig(this);
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
                 ProfilesLog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
                 ProfilesLog.severe(e.getMessage());
@@ -168,7 +168,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new ProfilesDataImpl(this);
+                this.data = new SimpleProfilesData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
                 ProfilesLog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
                 ProfilesLog.severe(e.getMessage());
@@ -200,15 +200,15 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
         return this.requiresProtocol;
     }
 
-    public void addWorldProfile(WorldProfileI worldProfile) {
+    public void addWorldProfile(WorldProfile worldProfile) {
         this.worldProfiles.put(worldProfile.getWorld(), worldProfile);
     }
 
-    public WorldProfileI getWorldProfile(World world) {
+    public WorldProfile getWorldProfile(World world) {
         return this.worldProfiles.get(world);
     }
 
-    public HashMap<World, List<WorldGroupI>> getWorldGroups() {
+    public HashMap<World, List<WorldGroup>> getWorldGroups() {
         return this.worldGroups;
     }
 }

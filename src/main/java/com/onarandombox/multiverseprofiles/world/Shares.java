@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseprofiles.world;
 
-public interface SharesI {
+public interface Shares {
 
-    public void mergeShares(SharesI newShares);
+    public void mergeShares(Shares newShares);
 
     public boolean isSharingInventory();
 

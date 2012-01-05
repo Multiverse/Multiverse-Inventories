@@ -3,7 +3,7 @@ package com.onarandombox.multiverseprofiles.world;
 /**
  * @author dumptruckman
  */
-public class SimpleShares implements SharesI {
+public class SimpleShares implements Shares {
 
     private boolean sharingInventory = false;
     private boolean sharingHealth = false;
@@ -15,7 +15,7 @@ public class SimpleShares implements SharesI {
     public SimpleShares() {
     }
 
-    public SimpleShares(SharesI shares) {
+    public SimpleShares(Shares shares) {
         this(shares.isSharingInventory(), shares.isSharingHealth(), shares.isSharingExp(),
                 shares.isSharingHunger(), shares.isSharingEffects());
     }
@@ -29,7 +29,7 @@ public class SimpleShares implements SharesI {
         this.sharingEffects = sharingEffects;
     }
 
-    public void mergeShares(SharesI newShares) {
+    public void mergeShares(Shares newShares) {
         this.setSharingInventory(newShares.isSharingInventory());
         this.setSharingHealth(newShares.isSharingHealth());
         this.setSharingHunger(newShares.isSharingHunger());

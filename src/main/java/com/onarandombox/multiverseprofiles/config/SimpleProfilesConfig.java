@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * @author dumptruckman
  */
-public class ProfilesConfigImpl implements ProfilesConfig {
+public class SimpleProfilesConfig implements ProfilesConfig {
 
     public enum Path {
         LANGUAGE_FILE_NAME("settings.local", "en", "# This is the locale file you wish to use."),
@@ -69,7 +69,7 @@ public class ProfilesConfigImpl implements ProfilesConfig {
 
     private CommentedConfiguration config;
 
-    public ProfilesConfigImpl(JavaPlugin plugin) throws Exception {
+    public SimpleProfilesConfig(JavaPlugin plugin) throws Exception {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -94,7 +94,7 @@ public class ProfilesConfigImpl implements ProfilesConfig {
      * Loads default settings for any missing config values
      */
     private void setDefaults() {
-        for (ProfilesConfigImpl.Path path : ProfilesConfigImpl.Path.values()) {
+        for (SimpleProfilesConfig.Path path : SimpleProfilesConfig.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
             if (config.getString(path.getPath()) == null) {
                 config.set(path.getPath(), path.getDefault());
