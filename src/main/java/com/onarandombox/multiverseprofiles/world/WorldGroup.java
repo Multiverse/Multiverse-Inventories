@@ -16,4 +16,8 @@ public interface WorldGroup extends ConfigurationSerializable {
     public HashSet<World> getWorlds();
 
     public Shares getShares();
+
+    public String getPermission();
+
+    public void setPermission(String permission);
 }

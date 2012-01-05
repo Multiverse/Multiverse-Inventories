@@ -12,6 +12,7 @@ import java.util.Map;
 public class SimpleWorldGroup implements WorldGroup {
 
     private String name = "";
+    private String permission = null;
     private HashSet<World> worlds = new HashSet<World>();
     private Shares shares = new SimpleShares();
 
@@ -46,5 +47,13 @@ public class SimpleWorldGroup implements WorldGroup {
 
     public Shares getShares() {
         return shares;
+    }
+
+    public String getPermission() {
+        return this.permission;
+    }
+
+    public void setPermission(String permission) {
+        this.permission = permission;
     }
 }

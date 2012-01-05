@@ -4,6 +4,7 @@ import com.onarandombox.multiverseprofiles.MultiverseProfiles;
 import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.world.Shares;
+import com.onarandombox.multiverseprofiles.world.Sharing;
 import com.onarandombox.multiverseprofiles.world.SimpleShares;
 import com.onarandombox.multiverseprofiles.world.WorldGroup;
 import org.bukkit.World;
@@ -52,41 +53,9 @@ public class ProfilesPlayerListener extends PlayerListener {
                 currentShares.mergeShares(toWorldGroup.getShares());
             }
         }
+        currentShares.mergeShares(this.plugin.getDefaultShares());
 
-        PlayerProfile fromWorldProfile = this.plugin.getWorldProfile(fromWorld).getPlayerData(player);
-        PlayerProfile toWorldProfile = this.plugin.getWorldProfile(toWorld).getPlayerData(player);
-
-        // persist current stats for previous world if not sharing
-        // then load any saved data
-        if (!currentShares.isSharingInventory()) {
-            fromWorldProfile.setInventoryContents(player.getInventory().getContents());
-            fromWorldProfile.setArmorContents(player.getInventory().getArmorContents());
-            player.getInventory().clear();
-            player.getInventory().setContents(toWorldProfile.getInventoryContents());
-            player.getInventory().setArmorContents(toWorldProfile.getArmorContents());
-        }
-        if (!currentShares.isSharingHealth()) {
-            fromWorldProfile.setHealth(player.getHealth());
-            player.setHealth(toWorldProfile.getHealth());
-        }
-        if (!currentShares.isSharingHunger()) {
-            fromWorldProfile.setFoodLevel(player.getFoodLevel());
-            fromWorldProfile.setExhaustion(player.getExhaustion());
-            fromWorldProfile.setSaturation(player.getSaturation());
-            player.setFoodLevel(toWorldProfile.getFoodLevel());
-            player.setExhaustion(toWorldProfile.getExhaustion());
-            player.setSaturation(toWorldProfile.getSaturation());
-        }
-        if (!currentShares.isSharingExp()) {
-            fromWorldProfile.setExp(player.getExp());
-            fromWorldProfile.setLevel(player.getLevel());
-            player.setExp(toWorldProfile.getExp());
-            player.setLevel(toWorldProfile.getLevel());
-        }
-        if (!currentShares.isSharingEffects()) {
-            // Where is the effects API??
-        }
-        
-        this.plugin.getData().save(false);
+        this.plugin.handleSharing(player, fromWorld, toWorld, currentShares);
     }
+
 }

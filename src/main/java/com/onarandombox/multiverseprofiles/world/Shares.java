@@ -4,23 +4,23 @@ public interface Shares {
 
     public void mergeShares(Shares newShares);
 
-    public boolean isSharingInventory();
+    public Sharing isSharingInventory();
 
-    public void setSharingInventory(boolean sharingInventory);
+    public void setSharingInventory(Sharing sharingInventory);
 
-    public boolean isSharingHealth();
+    public Sharing isSharingHealth();
 
-    public void setSharingHealth(boolean sharingHealth);
+    public void setSharingHealth(Sharing sharingHealth);
 
-    public boolean isSharingHunger();
+    public Sharing isSharingHunger();
 
-    public void setSharingHunger(boolean sharingHunger);
+    public void setSharingHunger(Sharing sharingHunger);
 
-    public boolean isSharingExp();
+    public Sharing isSharingExp();
 
-    public void setSharingExp(boolean sharingExp);
+    public void setSharingExp(Sharing sharingExp);
 
-    public boolean isSharingEffects();
+    public Sharing isSharingEffects();
 
-    public void setSharingEffects(boolean sharingEffects);
+    public void setSharingEffects(Sharing sharingEffects);
 }

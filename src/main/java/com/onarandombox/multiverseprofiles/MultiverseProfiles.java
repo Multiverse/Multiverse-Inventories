@@ -11,17 +11,16 @@ import com.onarandombox.multiverseprofiles.locale.Messager;
 import com.onarandombox.multiverseprofiles.locale.Messaging;
 import com.onarandombox.multiverseprofiles.locale.MultiverseMessage;
 import com.onarandombox.multiverseprofiles.locale.SimpleMessager;
+import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.player.SimplePlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
-import com.onarandombox.multiverseprofiles.world.SimpleWorldGroup;
-import com.onarandombox.multiverseprofiles.world.SimpleWorldProfile;
-import com.onarandombox.multiverseprofiles.world.WorldGroup;
-import com.onarandombox.multiverseprofiles.world.WorldProfile;
+import com.onarandombox.multiverseprofiles.world.*;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,17 +36,17 @@ import java.util.logging.Level;
  */
 public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messaging {
 
+    private final Shares defaultShares = new SimpleShares(
+            Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE);
+
     protected CommandHandler commandHandler;
     private final int requiresProtocol = 10;
     private MultiverseCore core = null;
 
     private final ProfilesPlayerListener playerListener = new ProfilesPlayerListener(this);
 
-    //private Strings language = null;
     private ProfilesConfig config = null;
     private ProfilesData data = null;
-    private ProfilesLog log = null;
-    private ProfilesDebug debug = null;
 
     private Messager messager = new SimpleMessager(this);
 
@@ -210,5 +209,47 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
 
     public HashMap<World, List<WorldGroup>> getWorldGroups() {
         return this.worldGroups;
+    }
+
+    public Shares getDefaultShares() {
+        return defaultShares;
+    }
+
+    public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
+        PlayerProfile fromWorldProfile = this.getWorldProfile(fromWorld).getPlayerData(player);
+        PlayerProfile toWorldProfile = this.getWorldProfile(toWorld).getPlayerData(player);
+
+        // persist current stats for previous world if not sharing
+        // then load any saved data
+        if (shares.isSharingInventory() != Sharing.TRUE) {
+            fromWorldProfile.setInventoryContents(player.getInventory().getContents());
+            fromWorldProfile.setArmorContents(player.getInventory().getArmorContents());
+            player.getInventory().clear();
+            player.getInventory().setContents(toWorldProfile.getInventoryContents());
+            player.getInventory().setArmorContents(toWorldProfile.getArmorContents());
+        }
+        if (shares.isSharingHealth() != Sharing.TRUE) {
+            fromWorldProfile.setHealth(player.getHealth());
+            player.setHealth(toWorldProfile.getHealth());
+        }
+        if (shares.isSharingHunger() != Sharing.TRUE) {
+            fromWorldProfile.setFoodLevel(player.getFoodLevel());
+            fromWorldProfile.setExhaustion(player.getExhaustion());
+            fromWorldProfile.setSaturation(player.getSaturation());
+            player.setFoodLevel(toWorldProfile.getFoodLevel());
+            player.setExhaustion(toWorldProfile.getExhaustion());
+            player.setSaturation(toWorldProfile.getSaturation());
+        }
+        if (shares.isSharingExp() != Sharing.TRUE) {
+            fromWorldProfile.setExp(player.getExp());
+            fromWorldProfile.setLevel(player.getLevel());
+            player.setExp(toWorldProfile.getExp());
+            player.setLevel(toWorldProfile.getLevel());
+        }
+        if (shares.isSharingEffects() != Sharing.TRUE) {
+            // Where is the effects API??
+        }
+
+        this.getData().save(false);
     }
 }

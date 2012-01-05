@@ -5,11 +5,11 @@ package com.onarandombox.multiverseprofiles.world;
  */
 public class SimpleShares implements Shares {
 
-    private boolean sharingInventory = false;
-    private boolean sharingHealth = false;
-    private boolean sharingHunger = false;
-    private boolean sharingExp = false;
-    private boolean sharingEffects = false;
+    private Sharing sharingInventory = Sharing.NOT_SET;
+    private Sharing sharingHealth = Sharing.NOT_SET;
+    private Sharing sharingHunger = Sharing.NOT_SET;
+    private Sharing sharingExp = Sharing.NOT_SET;
+    private Sharing sharingEffects = Sharing.NOT_SET;
 
 
     public SimpleShares() {
@@ -20,8 +20,8 @@ public class SimpleShares implements Shares {
                 shares.isSharingHunger(), shares.isSharingEffects());
     }
 
-    public SimpleShares(boolean sharingInventory, boolean sharingHealth, boolean sharingHunger,
-                        boolean sharingExp, boolean sharingEffects) {
+    public SimpleShares(Sharing sharingInventory, Sharing sharingHealth, Sharing sharingHunger,
+                        Sharing sharingExp, Sharing sharingEffects) {
         this.sharingInventory = sharingInventory;
         this.sharingHealth = sharingHealth;
         this.sharingHunger = sharingHunger;
@@ -30,50 +30,60 @@ public class SimpleShares implements Shares {
     }
 
     public void mergeShares(Shares newShares) {
-        this.setSharingInventory(newShares.isSharingInventory());
-        this.setSharingHealth(newShares.isSharingHealth());
-        this.setSharingHunger(newShares.isSharingHunger());
-        this.setSharingExp(newShares.isSharingExp());
-        this.setSharingEffects(newShares.isSharingEffects());
+        if (this.isSharingInventory() == Sharing.NOT_SET) {
+            this.setSharingInventory(newShares.isSharingInventory());
+        }
+        if (this.isSharingHealth() == Sharing.NOT_SET) {
+            this.setSharingHealth(newShares.isSharingHealth());
+        }
+        if (this.isSharingHunger() == Sharing.NOT_SET) {
+            this.setSharingHunger(newShares.isSharingHunger());
+        }
+        if (this.isSharingExp() == Sharing.NOT_SET) {
+            this.setSharingExp(newShares.isSharingExp());
+        }
+        if (this.isSharingEffects() == Sharing.NOT_SET) {
+            this.setSharingEffects(newShares.isSharingEffects());
+        }
     }
 
-    public boolean isSharingInventory() {
+    public Sharing isSharingInventory() {
         return sharingInventory;
     }
 
-    public void setSharingInventory(boolean sharingInventory) {
+    public void setSharingInventory(Sharing sharingInventory) {
         this.sharingInventory = sharingInventory;
     }
 
-    public boolean isSharingHealth() {
+    public Sharing isSharingHealth() {
         return sharingHealth;
     }
 
-    public void setSharingHealth(boolean sharingHealth) {
+    public void setSharingHealth(Sharing sharingHealth) {
         this.sharingHealth = sharingHealth;
     }
 
-    public boolean isSharingHunger() {
+    public Sharing isSharingHunger() {
         return sharingHunger;
     }
 
-    public void setSharingHunger(boolean sharingHunger) {
+    public void setSharingHunger(Sharing sharingHunger) {
         this.sharingHunger = sharingHunger;
     }
 
-    public boolean isSharingExp() {
+    public Sharing isSharingExp() {
         return sharingExp;
     }
 
-    public void setSharingExp(boolean sharingExp) {
+    public void setSharingExp(Sharing sharingExp) {
         this.sharingExp = sharingExp;
     }
 
-    public boolean isSharingEffects() {
+    public Sharing isSharingEffects() {
         return sharingEffects;
     }
 
-    public void setSharingEffects(boolean sharingEffects) {
+    public void setSharingEffects(Sharing sharingEffects) {
         this.sharingEffects = sharingEffects;
     }
 }
