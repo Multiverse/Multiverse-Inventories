@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.onarandombox.MultiverseInventories</groupId>
-    <artifactId>Multiverse-Inventories</artifactId>
+    <groupId>com.onarandombox.multiverseprofiles</groupId>
+    <artifactId>Multiverse-Profiles</artifactId>
     <version>I</version>
-    <name>Multiverse-Inventories</name>
+    <name>Multiverse-Profiles</name>
     <description>Multiverse Nether Inventories module</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
