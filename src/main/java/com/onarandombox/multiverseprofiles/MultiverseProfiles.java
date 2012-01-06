@@ -6,11 +6,13 @@ import com.onarandombox.multiverseprofiles.config.ProfilesConfig;
 import com.onarandombox.multiverseprofiles.config.SimpleProfilesConfig;
 import com.onarandombox.multiverseprofiles.data.ProfilesData;
 import com.onarandombox.multiverseprofiles.data.SimpleProfilesData;
+import com.onarandombox.multiverseprofiles.inventory.ItemWrapper;
 import com.onarandombox.multiverseprofiles.listener.ProfilesPlayerListener;
 import com.onarandombox.multiverseprofiles.locale.Messager;
 import com.onarandombox.multiverseprofiles.locale.Messaging;
 import com.onarandombox.multiverseprofiles.locale.MultiverseMessage;
 import com.onarandombox.multiverseprofiles.locale.SimpleMessager;
+import com.onarandombox.multiverseprofiles.permission.ProfilesPerms;
 import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.player.SimplePlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
@@ -40,7 +42,7 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
             Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE);
 
     protected CommandHandler commandHandler;
-    private final int requiresProtocol = 10;
+    private final int requiresProtocol = 9;
     private MultiverseCore core = null;
 
     private final ProfilesPlayerListener playerListener = new ProfilesPlayerListener(this);
@@ -55,19 +57,17 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
 
     static {
         ConfigurationSerialization.registerClass(SimplePlayerProfile.class);
-        ConfigurationSerialization.registerClass(SimpleWorldProfile.class);
+        ConfigurationSerialization.registerClass(ItemWrapper.class);
     }
     
     final public void onDisable() {
-        // Save the plugin data
-        this.getData().save(true);
-
         // Display disable message/version info
         ProfilesLog.info("disabled.", true);
     }
 
     final public void onEnable() {
         ProfilesLog.init(this);
+        ProfilesPerms.load(this);
 
         MultiverseCore core;
         core = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -89,6 +89,11 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
             return;
         }
 
+        ProfilesDebug.init(this);
+        
+        // Initialize config class
+        this.worldGroups = this.getConf().getWorldGroups();
+
         try {
             this.getMessager().setLocale(new Locale(this.getConf().getLocale()));
         } catch (IllegalArgumentException e) {
@@ -96,13 +101,11 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        
-        ProfilesDebug.init(this);
+
+        // Initialize data class
+        this.worldProfiles = this.getData().getWorldProfiles();
 
         this.getCore().incrementPluginCount();
-
-        // Grab the PluginManager
-        final PluginManager pm = this.getServer().getPluginManager();
 
         // Register Events
         this.registerEvents();
@@ -115,7 +118,6 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
         final PluginManager pm = getServer().getPluginManager();
         // Event registering goes here
         pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Normal, this);
-        //pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Event.Priority.Normal, this);
     }
 
     public void log(Level level, String msg) {
@@ -199,11 +201,16 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
     }
 
     public void addWorldProfile(WorldProfile worldProfile) {
-        this.worldProfiles.put(worldProfile.getWorld().getName(), worldProfile);
+        this.worldProfiles.put(worldProfile.getWorld(), worldProfile);
     }
 
     public WorldProfile getWorldProfile(String worldName) {
-        return this.worldProfiles.get(worldName);
+        WorldProfile worldProfile = this.worldProfiles.get(worldName);
+        if (worldProfile == null) {
+            worldProfile = new SimpleWorldProfile(worldName);
+            this.worldProfiles.put(worldName, worldProfile);
+        }
+        return worldProfile;
     }
 
     public HashMap<String, List<WorldGroup>> getWorldGroups() {
@@ -215,40 +222,52 @@ public class MultiverseProfiles extends JavaPlugin implements MVPlugin, Messagin
     }
 
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
-        PlayerProfile fromWorldProfile = this.getWorldProfile(fromWorld.getName()).getPlayerData(player);
-        PlayerProfile toWorldProfile = this.getWorldProfile(fromWorld.getName()).getPlayerData(player);
+        WorldProfile fromWorldProfile = this.getWorldProfile(fromWorld.getName());
+        PlayerProfile fromWorldPlayerProfile = fromWorldProfile.getPlayerData(player);
+        WorldProfile toWorldProfile = this.getWorldProfile(toWorld.getName());
+        PlayerProfile toWorldPlayerProfile = toWorldProfile.getPlayerData(player);
 
         // persist current stats for previous world if not sharing
         // then load any saved data
         if (shares.isSharingInventory() != Sharing.TRUE) {
-            fromWorldProfile.setInventoryContents(player.getInventory().getContents());
-            fromWorldProfile.setArmorContents(player.getInventory().getArmorContents());
+            fromWorldPlayerProfile.setInventoryContents(player.getInventory().getContents());
+            fromWorldPlayerProfile.setArmorContents(player.getInventory().getArmorContents());
             player.getInventory().clear();
-            player.getInventory().setContents(toWorldProfile.getInventoryContents());
-            player.getInventory().setArmorContents(toWorldProfile.getArmorContents());
+            player.getInventory().setContents(toWorldPlayerProfile.getInventoryContents());
+            player.getInventory().setArmorContents(toWorldPlayerProfile.getArmorContents());
         }
         if (shares.isSharingHealth() != Sharing.TRUE) {
-            fromWorldProfile.setHealth(player.getHealth());
-            player.setHealth(toWorldProfile.getHealth());
+            fromWorldPlayerProfile.setHealth(player.getHealth());
+            player.setHealth(toWorldPlayerProfile.getHealth());
         }
         if (shares.isSharingHunger() != Sharing.TRUE) {
-            fromWorldProfile.setFoodLevel(player.getFoodLevel());
-            fromWorldProfile.setExhaustion(player.getExhaustion());
-            fromWorldProfile.setSaturation(player.getSaturation());
-            player.setFoodLevel(toWorldProfile.getFoodLevel());
-            player.setExhaustion(toWorldProfile.getExhaustion());
-            player.setSaturation(toWorldProfile.getSaturation());
+            fromWorldPlayerProfile.setFoodLevel(player.getFoodLevel());
+            fromWorldPlayerProfile.setExhaustion(player.getExhaustion());
+            fromWorldPlayerProfile.setSaturation(player.getSaturation());
+            player.setFoodLevel(toWorldPlayerProfile.getFoodLevel());
+            player.setExhaustion(toWorldPlayerProfile.getExhaustion());
+            player.setSaturation(toWorldPlayerProfile.getSaturation());
         }
         if (shares.isSharingExp() != Sharing.TRUE) {
-            fromWorldProfile.setExp(player.getExp());
-            fromWorldProfile.setLevel(player.getLevel());
-            player.setExp(toWorldProfile.getExp());
-            player.setLevel(toWorldProfile.getLevel());
+            fromWorldPlayerProfile.setExp(player.getExp());
+            fromWorldPlayerProfile.setLevel(player.getLevel());
+            player.setExp(toWorldPlayerProfile.getExp());
+            player.setLevel(toWorldPlayerProfile.getLevel());
         }
         if (shares.isSharingEffects() != Sharing.TRUE) {
             // Where is the effects API??
         }
 
-        this.getData().save(false);
+        this.getData().getData().set(getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile), fromWorldPlayerProfile);
+        this.getData().getData().set(getPlayerDataString(toWorldProfile, toWorldPlayerProfile), toWorldPlayerProfile);
+        this.getData().save();
+    }
+    
+    private String getPlayerDataString(WorldProfile worldProfile, PlayerProfile playerProfile) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(worldProfile.getWorld());
+        stringBuilder.append(".playerData.");
+        stringBuilder.append(playerProfile.getPlayer().getName());
+        return stringBuilder.toString();
     }
 }

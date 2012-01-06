@@ -127,4 +127,20 @@ public class SimpleShares implements Shares {
         }
         return shares;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Inventory: ");
+        stringBuilder.append(this.isSharingInventory());
+        stringBuilder.append(" Health: ");
+        stringBuilder.append(this.isSharingHealth());
+        stringBuilder.append(" Exp: ");
+        stringBuilder.append(this.isSharingExp());
+        stringBuilder.append(" Hunger: ");
+        stringBuilder.append(this.isSharingHunger());
+        stringBuilder.append(" Effects: ");
+        stringBuilder.append(this.isSharingEffects());
+        return stringBuilder.toString();
+    }
 }

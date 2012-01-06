@@ -1,6 +1,10 @@
 package com.onarandombox.multiverseprofiles.config;
 
+import com.onarandombox.multiverseprofiles.world.WorldGroup;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author dumptruckman
@@ -15,7 +19,7 @@ public interface ProfilesConfig {
 
     public String getLocale();
 
-    public void loadWorldGroups();
+    public HashMap<String, List<WorldGroup>> getWorldGroups();
 
     //public Shares getDefaultShares();
 }

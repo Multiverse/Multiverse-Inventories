@@ -1,10 +1,8 @@
 package com.onarandombox.multiverseprofiles.listener;
 
 import com.onarandombox.multiverseprofiles.MultiverseProfiles;
-import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import com.onarandombox.multiverseprofiles.util.ProfilesDebug;
 import com.onarandombox.multiverseprofiles.world.Shares;
-import com.onarandombox.multiverseprofiles.world.Sharing;
 import com.onarandombox.multiverseprofiles.world.SimpleShares;
 import com.onarandombox.multiverseprofiles.world.WorldGroup;
 import org.bukkit.World;
@@ -48,9 +46,11 @@ public class ProfilesPlayerListener extends PlayerListener {
 
         Shares currentShares = new SimpleShares();
         List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld.getName());
-        for (WorldGroup toWorldGroup : toWorldGroups) {
-            if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {
-                currentShares.mergeShares(toWorldGroup.getShares());
+        if (toWorldGroups != null) {
+            for (WorldGroup toWorldGroup : toWorldGroups) {
+                if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {
+                    currentShares.mergeShares(toWorldGroup.getShares());
+                }
             }
         }
         currentShares.mergeShares(this.plugin.getDefaultShares());

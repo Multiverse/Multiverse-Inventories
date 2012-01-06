@@ -1,4 +1,4 @@
-name: Multiverse-Inventories
-main: com.onarandombox.multiverseinventories.MultiverseInventories
+name: Multiverse-Profiles
+main: com.onarandombox.multiverseprofiles.MultiverseProfiles
 version: b${build.number}
 author: dumptruckman

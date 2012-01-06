@@ -6,11 +6,9 @@ import com.onarandombox.multiverseprofiles.util.ProfilesLog;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author dumptruckman
@@ -18,48 +16,38 @@ import java.util.Map;
 public class SimpleWorldProfile implements WorldProfile {
 
     private HashMap<OfflinePlayer, PlayerProfile> playerData = new HashMap<OfflinePlayer, PlayerProfile>();
-    private World world;
+    private String worldName;
 
-    public SimpleWorldProfile(World world) {
-        this.world = world;
+    public SimpleWorldProfile(String worldName) {
+        this.worldName = worldName;
     }
 
-    public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-        result.put("worldName", this.getWorld().getName());
-        result.put("playerData", this.getPlayerData().values());
-
-        return result;
-    }
-
-    public static WorldProfile deserialize(Map<String, Object> args) {
-        WorldProfile worldProfile = new SimpleWorldProfile(Bukkit.getWorld(args.get("worldName").toString()));
-        Object object = args.get("playerData");
-        if (object instanceof Collection) {
-            ProfilesLog.info("playerData IS Collection");
-            Collection playerCollection = (Collection) object;
-            for (Object collectionObject : playerCollection) {
-                if (collectionObject instanceof Map) {
-                    ProfilesLog.info("collectionObject IS Map");
-                    PlayerProfile playerProfile = SimplePlayerProfile.deserialize((Map) collectionObject);
-                    if (playerProfile != null) {
-                        worldProfile.addPlayerData(playerProfile);
-                    } else {
-                        ProfilesLog.warning("Unable to load a player's data for world: " + worldProfile.getWorld().getName());
-                    }
+    public static WorldProfile deserialize(String worldName, ConfigurationSection section) {
+        WorldProfile worldProfile = new SimpleWorldProfile(worldName);
+        ConfigurationSection playerData = section.getConfigurationSection("playerData");
+        for (String playerName : playerData.getKeys(false)) {
+            if (playerData.get(playerName) instanceof PlayerProfile) {
+                PlayerProfile playerProfile = (PlayerProfile)playerData.get(playerName);
+                if (playerProfile != null) {
+                    worldProfile.addPlayerData(playerProfile);
+                } else {
+                    ProfilesLog.warning("Unable to load a player's data for world: " + worldProfile.getWorld());
                 }
             }
         }
-        ProfilesLog.info("Deserialized WorldProfile for world: " + worldProfile.getWorld().getName());
         return worldProfile;
     }
 
-    public World getWorld() {
-        return this.world;
+    public World getBukkitWorld() {
+        return Bukkit.getWorld(this.getWorld());
+    }
+    
+    public String getWorld() {
+        return this.worldName;
     }
 
-    public void setWorld(World world) {
-        this.world = world;
+    public void setWorld(String worldName) {
+        this.worldName = this.worldName;
     }
 
     public HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {

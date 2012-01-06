@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseprofiles.world;
 
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.HashSet;
 

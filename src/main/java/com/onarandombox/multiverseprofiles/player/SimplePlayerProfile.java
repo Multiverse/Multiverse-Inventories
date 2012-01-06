@@ -1,11 +1,14 @@
 package com.onarandombox.multiverseprofiles.player;
 
+import com.onarandombox.multiverseprofiles.inventory.ItemWrapper;
 import com.onarandombox.multiverseprofiles.util.MinecraftTools;
 import com.onarandombox.multiverseprofiles.util.ProfilesLog;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,31 +35,29 @@ public class SimplePlayerProfile implements PlayerProfile {
     public Map<String, Object> serialize() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
 
-        result.put("player", this.getPlayer());
+        result.put("player", this.getPlayer().getName());
         result.put("health", this.getHealth());
         result.put("exp", this.getExp());
         result.put("level", this.getLevel());
         result.put("foodLevel", this.getFoodLevel());
         result.put("exhaustion", this.getExhaustion());
         result.put("saturation", this.getSaturation());
-
-        Map<Integer, ItemStack> inventoryMap = new HashMap<Integer, ItemStack>(36);
-        for (int i = 0; i < 36; i++) {
-            if (this.getInventoryContents()[i] == null) {
-                this.getInventoryContents()[i] = new ItemStack(0);
+        
+        ConfigurationSection inventory = new MemoryConfiguration();
+        for (Integer i = 0; i < 36; i++) {
+            if (this.getInventoryContents()[i] != null && this.getInventoryContents()[i].getTypeId() != 0) {
+                inventory.set(i.toString(), new ItemWrapper(this.getInventoryContents()[i]));
             }
-            inventoryMap.put(i, this.getInventoryContents()[i]);
         }
-        result.put("inventoryContents", inventoryMap);
+        result.put("inventoryContents", inventory);
 
-        Map<Integer, ItemStack> armorMap = new HashMap<Integer, ItemStack>(4);
-        for (int i = 0; i < 4; i++) {
-            if (this.getArmorContents()[i] == null) {
-                this.getArmorContents()[i] = new ItemStack(0);
+        ConfigurationSection armor = new MemoryConfiguration();
+        for (Integer i = 0; i < 4; i++) {
+            if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
+                armor.set(i.toString(), new ItemWrapper(this.getArmorContents()[i]));
             }
-            armorMap.put(i, this.getArmorContents()[i]);
         }
-        result.put("armorContents", armorMap);
+        result.put("armorContents", armor);
 
         return result;
     }
@@ -65,28 +66,34 @@ public class SimplePlayerProfile implements PlayerProfile {
         PlayerProfile playerProfile = null;
 
         Object object = args.get("player");
-        if (object != null && object instanceof OfflinePlayer) {
-            playerProfile = new SimplePlayerProfile((OfflinePlayer) object);
+        if (object != null && object instanceof String) {
+            playerProfile = new SimplePlayerProfile(Bukkit.getOfflinePlayer(object.toString()));
             try {
                 playerProfile.setHealth((Integer) args.get("health"));
-                playerProfile.setExp((Float) args.get("exp"));
+                try {
+                    playerProfile.setExp(Float.valueOf(args.get("exp").toString()));
+                } catch (NumberFormatException ignore) {}
                 playerProfile.setLevel((Integer) args.get("level"));
                 playerProfile.setFoodLevel((Integer) args.get("foodLevel"));
-                playerProfile.setExhaustion((Float) args.get("exhaustion"));
-                playerProfile.setSaturation((Float) args.get("saturation"));
+                try {
+                    playerProfile.setExhaustion(Float.valueOf(args.get("exhaustion").toString()));
+                } catch (NumberFormatException ignore) {}
+                try {
+                    playerProfile.setSaturation(Float.valueOf(args.get("saturation").toString()));
+                } catch (NumberFormatException ignore) {}
 
                 object = args.get("inventoryContents");
                 ItemStack[] inventoryContents = MinecraftTools.fillWithAir(new ItemStack[36]);
                 if (object != null && object instanceof Map) {
                     Map itemsMap = (Map) object;
-                    for (Object obj : itemsMap.keySet()) {
-                        if (obj instanceof Integer) {
-                            int index = (Integer) obj;
-                            Object itemObject = itemsMap.get(obj);
-                            if (itemObject instanceof ItemStack) {
-                                inventoryContents[index] = (ItemStack) itemObject;
+                    for (Object itemSlot : itemsMap.keySet()) {
+                        try {
+                            int index = Integer.valueOf(itemSlot.toString());
+                            Object itemObject = itemsMap.get(itemSlot);
+                            if (itemObject instanceof Map) {
+                                inventoryContents[index] = ItemWrapper.deserialize((Map)itemObject).getItem();
                             }
-                        }
+                        } catch (NumberFormatException ignore) {}
                     }
                 }
                 playerProfile.setInventoryContents(inventoryContents);
@@ -99,8 +106,8 @@ public class SimplePlayerProfile implements PlayerProfile {
                         if (obj instanceof Integer) {
                             int index = (Integer) obj;
                             Object itemObject = itemsMap.get(obj);
-                            if (itemObject instanceof ItemStack) {
-                                armorContents[index] = (ItemStack) itemObject;
+                            if (itemObject instanceof ItemWrapper) {
+                                armorContents[index] = ((ItemWrapper) itemObject).getItem();
                             }
                         }
                     }

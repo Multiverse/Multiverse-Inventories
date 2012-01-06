@@ -3,15 +3,16 @@ package com.onarandombox.multiverseprofiles.world;
 import com.onarandombox.multiverseprofiles.player.PlayerProfile;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.HashMap;
 
-public interface WorldProfile extends ConfigurationSerializable {
+public interface WorldProfile {
 
-    public World getWorld();
+    public World getBukkitWorld();
 
-    public void setWorld(World world);
+    public String getWorld();
+
+    public void setWorld(String worldName);
 
     public HashMap<OfflinePlayer, PlayerProfile> getPlayerData();
 
