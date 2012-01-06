@@ -24,7 +24,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     private Integer level = 0;
     private Integer foodLevel = 20;
     private Float exhaustion = 0F;
-    private Float saturation = 0F;
+    private Float saturation = 5F;
 
     private OfflinePlayer player;
 
