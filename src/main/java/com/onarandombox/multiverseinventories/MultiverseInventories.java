@@ -91,8 +91,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         MIDebug.init(this);
 
-        // Initialize config class
+        // Get world groups from config
         this.worldGroups = this.getConf().getWorldGroups();
+        // Set debug mode from config
+        MILog.setDebugMode(this.getConf().isDebugging());
 
         try {
             this.getMessager().setLocale(new Locale(this.getConf().getLocale()));
@@ -121,7 +123,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     public void log(Level level, String msg) {
-        MILog.log(level, msg);
+        MILog.log(level, msg, false);
         MIDebug.log(level, msg);
     }
 
