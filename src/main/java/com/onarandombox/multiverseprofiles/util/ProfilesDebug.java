@@ -22,6 +22,7 @@ public class ProfilesDebug {
         PluginDescriptionFile pdf = plugin.getDescription();
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
+        plugin.getDataFolder().mkdirs();
         LOG = new DebugLog(NAME, plugin.getDataFolder() + File.separator + "debug.log");
     }
 
