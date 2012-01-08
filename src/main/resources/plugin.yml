@@ -1,4 +1,5 @@
-name: Multiverse-Profiles
-main: com.onarandombox.multiverseprofiles.MultiverseProfiles
-version: b${build.number}
+name: Multiverse-Inventories
+main: com.onarandombox.multiverseinventories.Multiverse-Inventories
+version: maven-version-number
 author: dumptruckman
+depend: ['Multiverse-Core']
