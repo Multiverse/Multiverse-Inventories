@@ -85,12 +85,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         MIDebug.init(this);
 
         // Get world groups from config
-        this.worldGroups = this.getConf().getWorldGroups();
+        this.worldGroups = this.getMIConfig().getWorldGroups();
         // Set debug mode from config
-        MILog.setDebugMode(this.getConf().isDebugging());
+        MILog.setDebugMode(this.getMIConfig().isDebugging());
 
         try {
-            this.getMessager().setLocale(new Locale(this.getConf().getLocale()));
+            this.getMessager().setLocale(new Locale(this.getMIConfig().getLocale()));
         } catch (IllegalArgumentException e) {
             MILog.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -144,7 +144,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return MILog.getString(string + "\n", false);
     }
 
-    public MIConfig getConf() {
+    public MIConfig getMIConfig() {
         if (this.config == null) {
             // Loads the configuration
             try {
