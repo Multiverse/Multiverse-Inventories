@@ -60,7 +60,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     final public void onEnable() {
         MILog.init(this);
-        MIPerms.load(this);
+        MIPerms.register(this);
 
         MultiverseCore core;
         core = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");

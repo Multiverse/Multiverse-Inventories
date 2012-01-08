@@ -26,7 +26,7 @@ public enum MIPerms {
         return sender.hasPermission(perm);
     }
 
-    public static void load(JavaPlugin plugin) {
+    public static void register(JavaPlugin plugin) {
         PluginManager pm = plugin.getServer().getPluginManager();
         for (MIPerms perm : MIPerms.values()) {
             pm.addPermission(perm.getPerm());
