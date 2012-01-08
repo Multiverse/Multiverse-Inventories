@@ -57,8 +57,8 @@ public class MILog {
      * @param level   Log level
      * @param message Log message
      */
-    public static void log(Level level, String message) {
-        LOG.log(level, getString(message, false));
+    public static void log(Level level, String message, boolean showVersion) {
+        LOG.log(level, getString(message, showVersion));
     }
 
     /**
@@ -98,7 +98,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
-        MILog.log(Level.INFO, getString(message, showVersion));
+        MILog.log(Level.INFO, message, showVersion);
     }
 
     /**
@@ -128,7 +128,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
-        LOG.warning(getString(message, showVersion));
+        MILog.log(Level.WARNING, message, showVersion);
     }
 
     /**
@@ -147,7 +147,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {
-        LOG.severe(getString(message, showVersion));
+        MILog.log(Level.SEVERE, message, showVersion);
     }
 
 }
