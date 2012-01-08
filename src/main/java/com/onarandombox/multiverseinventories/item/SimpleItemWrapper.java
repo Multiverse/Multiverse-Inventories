@@ -1,0 +1,107 @@
+package com.onarandombox.multiverseinventories.item;
+
+import com.onarandombox.multiverseinventories.data.DataStrings;
+import com.onarandombox.multiverseinventories.util.MILog;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class SimpleItemWrapper implements ItemWrapper {
+
+    private ItemStack item;
+
+    public SimpleItemWrapper(ItemStack item) {
+        this.item = item;
+    }
+
+    public SimpleItemWrapper(String itemString) {
+        int type = 0;
+        short damage = 0;
+        int amount = 1;
+        String enchantsString = null;
+
+        String[] itemData = itemString.split(DataStrings.GENERAL_DELIMITER);
+
+        for (String dataString : itemData) {
+            String[] dataValue = DataStrings.splitValue(dataString);
+            try {
+                if (dataValue[0].equals(DataStrings.ITEM_TYPE_ID)) {
+                    type = Integer.valueOf(dataValue[1]);
+                } else if (dataValue[0].equals(DataStrings.ITEM_DURABILITY)) {
+                    damage = Short.valueOf(dataValue[1]);
+                } else if (dataValue[0].equals(DataStrings.ITEM_AMOUNT)) {
+                    amount = Integer.valueOf(dataValue[1]);
+                } else if (dataValue[0].equals(DataStrings.ITEM_ENCHANTS)) {
+                    enchantsString = dataValue[1];
+                }
+            } catch (Exception e) {
+                MILog.debug("Could not parse item string: " + itemString);
+                MILog.debug(e.getMessage());
+            }
+        }
+        this.item = new ItemStack(type, amount, damage);
+        if (enchantsString != null) {
+            this.getItem().addUnsafeEnchantments(this.parseEnchants(enchantsString));
+        }
+    }
+
+    private Map<Enchantment, Integer> parseEnchants(String enchantsString) {
+        String[] enchantData = enchantsString.split(DataStrings.SECONDARY_DELIMITER);
+        Map<Enchantment, Integer> enchantsMap = new LinkedHashMap<Enchantment, Integer>(enchantData.length);
+
+        for (String dataValue : enchantData) {
+            String[] enchantValues = DataStrings.splitValue(dataValue);
+            try {
+                Enchantment enchantment = Enchantment.getByName(enchantValues[0]);
+                enchantsMap.put(enchantment, Integer.valueOf(enchantValues[1]));
+            } catch (Exception ignore) {
+            }
+        }
+        return enchantsMap;
+    }
+
+    @Override
+    public ItemStack getItem() {
+        return this.item;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+
+        result.append(DataStrings.createEntry(DataStrings.ITEM_TYPE_ID, this.getItem().getTypeId()));
+
+        if (this.getItem().getDurability() != 0) {
+            result.append(DataStrings.GENERAL_DELIMITER);
+            result.append(DataStrings.createEntry(DataStrings.ITEM_DURABILITY, this.getItem().getDurability()));
+        }
+
+        if (this.getItem().getAmount() != 1) {
+            result.append(DataStrings.GENERAL_DELIMITER);
+            result.append(DataStrings.createEntry(DataStrings.ITEM_AMOUNT, this.getItem().getAmount()));
+        }
+
+        Map<Enchantment, Integer> enchants = getItem().getEnchantments();
+        if (enchants.size() > 0) {
+            result.append(DataStrings.GENERAL_DELIMITER);
+            result.append(DataStrings.ITEM_ENCHANTS);
+            result.append(DataStrings.VALUE_DELIMITER);
+
+            boolean first = true;
+            for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+                if (first) {
+                    first = false;
+                } else {
+                    result.append(DataStrings.SECONDARY_DELIMITER);
+                }
+                result.append(entry.getKey().getName());
+                result.append(DataStrings.VALUE_DELIMITER);
+                result.append(entry.getValue());
+            }
+        }
+
+        return result.toString();
+    }
+}

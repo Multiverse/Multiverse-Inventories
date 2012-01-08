@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author dumptruckman, SwearWord
+ * @author dumptruckman
  */
 public class MILog {
     private static Logger LOG = Logger.getLogger("Minecraft");

@@ -13,15 +13,13 @@ import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.permission.MIPerms;
 import com.onarandombox.multiverseinventories.player.PlayerProfile;
-import com.onarandombox.multiverseinventories.player.SimplePlayerProfile;
-import com.onarandombox.multiverseinventories.util.ItemWrapper;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.world.*;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -54,11 +52,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private HashMap<String, WorldProfile> worldProfiles = new HashMap<String, WorldProfile>();
     private HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
-
-    static {
-        ConfigurationSerialization.registerClass(SimplePlayerProfile.class);
-        ConfigurationSerialization.registerClass(ItemWrapper.class);
-    }
 
     final public void onDisable() {
         // Display disable message/version info
@@ -260,8 +253,19 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             // Where is the effects API??
         }
 
-        this.getData().getData().set(getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile), fromWorldPlayerProfile);
-        this.getData().getData().set(getPlayerDataString(toWorldProfile, toWorldPlayerProfile), toWorldPlayerProfile);
+        String playerDataPath = getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile);
+        ConfigurationSection section = this.getData().getData().getConfigurationSection(playerDataPath);
+        if (section == null) {
+            section = this.getData().getData().createSection(playerDataPath);
+        }
+        fromWorldPlayerProfile.serialize(section);
+
+        playerDataPath = getPlayerDataString(toWorldProfile, toWorldPlayerProfile);
+        section = this.getData().getData().getConfigurationSection(playerDataPath);
+        if (section == null) {
+            section = this.getData().getData().createSection(playerDataPath);
+        }
+        toWorldPlayerProfile.serialize(section);
         this.getData().save();
     }
 

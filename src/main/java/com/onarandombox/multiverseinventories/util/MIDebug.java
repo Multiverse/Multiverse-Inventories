@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.logging.Level;
 
 /**
- * @author dumptruckman, SwearWord
+ * @author dumptruckman
  */
 public class MIDebug {
     private static DebugLog LOG = null;

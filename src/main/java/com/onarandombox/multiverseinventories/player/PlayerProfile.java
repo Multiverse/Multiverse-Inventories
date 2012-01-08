@@ -1,10 +1,12 @@
 package com.onarandombox.multiverseinventories.player;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-public interface PlayerProfile extends ConfigurationSerializable {
+public interface PlayerProfile {
+
+    public void serialize(ConfigurationSection playerData);
 
     public OfflinePlayer getPlayer();
 

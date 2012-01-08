@@ -1,16 +1,14 @@
 package com.onarandombox.multiverseinventories.player;
 
-import com.onarandombox.multiverseinventories.util.ItemWrapper;
+import com.onarandombox.multiverseinventories.data.DataStrings;
+import com.onarandombox.multiverseinventories.item.ItemWrapper;
+import com.onarandombox.multiverseinventories.item.SimpleItemWrapper;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * @author dumptruckman
@@ -32,99 +30,119 @@ public class SimplePlayerProfile implements PlayerProfile {
         this.player = player;
     }
 
-    public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+    public SimplePlayerProfile(String playerName, ConfigurationSection playerSection) {
+        this(Bukkit.getOfflinePlayer(playerName));
 
-        result.put("player", this.getPlayer().getName());
-        result.put("health", this.getHealth());
-        result.put("exp", this.getExp());
-        result.put("level", this.getLevel());
-        result.put("foodLevel", this.getFoodLevel());
-        result.put("exhaustion", this.getExhaustion());
-        result.put("saturation", this.getSaturation());
-
-        ConfigurationSection inventory = new MemoryConfiguration();
-        for (Integer i = 0; i < 36; i++) {
-            if (this.getInventoryContents()[i] != null && this.getInventoryContents()[i].getTypeId() != 0) {
-                inventory.set(i.toString(), new ItemWrapper(this.getInventoryContents()[i]));
-            }
-        }
-        result.put("inventoryContents", inventory);
-
-        ConfigurationSection armor = new MemoryConfiguration();
-        for (Integer i = 0; i < 4; i++) {
-            if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
-                armor.set(i.toString(), new ItemWrapper(this.getArmorContents()[i]));
-            }
-        }
-        result.put("armorContents", armor);
-
-        return result;
+        this.parsePlayerStats(playerSection.getString("stats").split(DataStrings.GENERAL_DELIMITER));
+        this.parsePlayerInventory(playerSection.getString("inventoryContents").split(DataStrings.ITEM_DELIMITER));
+        this.parsePlayerArmor(playerSection.getString("armorContents").split(DataStrings.ITEM_DELIMITER));
     }
 
-    public static PlayerProfile deserialize(Map<String, Object> args) {
-        PlayerProfile playerProfile = null;
-
-        Object object = args.get("player");
-        if (object != null && object instanceof String) {
-            playerProfile = new SimplePlayerProfile(Bukkit.getOfflinePlayer(object.toString()));
+    private void parsePlayerStats(String[] statsArray) {
+        for (String stat : statsArray) {
             try {
-                playerProfile.setHealth((Integer) args.get("health"));
-                try {
-                    playerProfile.setExp(Float.valueOf(args.get("exp").toString()));
-                } catch (NumberFormatException ignore) {
+                String[] statValues = DataStrings.splitValue(stat);
+                if (statValues[0].equals(DataStrings.PLAYER_HEALTH)) {
+                    this.setHealth(Integer.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_EXPERIENCE)) {
+                    this.setExp(Float.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_LEVEL)) {
+                    this.setLevel(Integer.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_FOOD_LEVEL)) {
+                    this.setFoodLevel(Integer.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_EXHAUSTION)) {
+                    this.setExhaustion(Float.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_SATURATION)) {
+                    this.setSaturation(Float.valueOf(statValues[1]));
                 }
-                playerProfile.setLevel((Integer) args.get("level"));
-                playerProfile.setFoodLevel((Integer) args.get("foodLevel"));
-                try {
-                    playerProfile.setExhaustion(Float.valueOf(args.get("exhaustion").toString()));
-                } catch (NumberFormatException ignore) {
+            } catch (Exception e) {
+                if (!stat.isEmpty()) {
+                    MILog.debug("Could not parse stat: '" + stat + "'");
+                    MILog.debug(e.getMessage());
                 }
-                try {
-                    playerProfile.setSaturation(Float.valueOf(args.get("saturation").toString()));
-                } catch (NumberFormatException ignore) {
-                }
-
-                object = args.get("inventoryContents");
-                ItemStack[] inventoryContents = MinecraftTools.fillWithAir(new ItemStack[36]);
-                if (object != null && object instanceof Map) {
-                    Map itemsMap = (Map) object;
-                    for (Object itemSlot : itemsMap.keySet()) {
-                        try {
-                            int index = Integer.valueOf(itemSlot.toString());
-                            Object itemObject = itemsMap.get(itemSlot);
-                            if (itemObject instanceof Map) {
-                                inventoryContents[index] = ItemWrapper.deserialize((Map) itemObject).getItem();
-                            }
-                        } catch (NumberFormatException ignore) {
-                        }
-                    }
-                }
-                playerProfile.setInventoryContents(inventoryContents);
-
-                object = args.get("armorContents");
-                ItemStack[] armorContents = MinecraftTools.fillWithAir(new ItemStack[4]);
-                if (object != null && object instanceof Map) {
-                    Map itemsMap = (Map) object;
-                    for (Object obj : itemsMap.keySet()) {
-                        if (obj instanceof Integer) {
-                            int index = (Integer) obj;
-                            Object itemObject = itemsMap.get(obj);
-                            if (itemObject instanceof ItemWrapper) {
-                                armorContents[index] = ((ItemWrapper) itemObject).getItem();
-                            }
-                        }
-                    }
-                }
-                playerProfile.setArmorContents(armorContents);
-            } catch (ClassCastException e) {
-                MILog.severe("Could not load data for player: " + playerProfile.getPlayer().getName());
-                MILog.severe("Data was not formatted correctly!");
-                return null;
             }
         }
+    }
 
-        return playerProfile;
+    private void parsePlayerInventory(String[] inventoryArray) {
+        ItemStack[] inventoryContents = MinecraftTools.fillWithAir(new ItemStack[36]);
+        for (String itemString : inventoryArray) {
+            String[] itemValues = DataStrings.splitValue(itemString);
+            try {
+                MILog.debug("Unwrapping item from string: " + itemString);
+                ItemWrapper itemWrapper = new SimpleItemWrapper(itemValues[1]);
+                MILog.debug("Unwrapped item: " + itemWrapper.getItem().toString());
+                inventoryContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
+            } catch (Exception e) {
+                if (!itemString.isEmpty()) {
+                    MILog.debug("Could not parse item string: " + itemString);
+                    MILog.debug(e.getMessage());
+                }
+            }
+        }
+        this.setInventoryContents(inventoryContents);
+    }
+
+    private void parsePlayerArmor(String[] armorArray) {
+        ItemStack[] armorContents = MinecraftTools.fillWithAir(new ItemStack[4]);
+        for (String itemString : armorArray) {
+            String[] itemValues = DataStrings.splitValue(itemString);
+            try {
+                armorContents[Integer.valueOf(itemValues[0])] = new SimpleItemWrapper(itemValues[1]).getItem();
+            } catch (Exception e) {
+                if (!itemString.isEmpty()) {
+                    MILog.debug("Could not parse armor string: " + itemString);
+                    MILog.debug(e.getMessage());
+                }
+            }
+        }
+        this.setArmorContents(armorContents);
+    }
+
+    public void serialize(ConfigurationSection playerData) {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_HEALTH, this.getHealth()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_EXPERIENCE, this.getExp()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_LEVEL, this.getLevel()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_FOOD_LEVEL, this.getFoodLevel()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_EXHAUSTION, this.getExhaustion()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_SATURATION, this.getSaturation()));
+
+        playerData.set("stats", builder.toString());
+
+        builder = new StringBuilder();
+        boolean first = true;
+        for (Integer i = 0; i < 36; i++) {
+            if (this.getInventoryContents()[i] != null && this.getInventoryContents()[i].getTypeId() != 0) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(DataStrings.ITEM_DELIMITER);
+                }
+                builder.append(DataStrings.createEntry(i, new SimpleItemWrapper(this.getInventoryContents()[i]).toString()));
+            }
+        }
+        playerData.set("inventoryContents", builder.toString());
+
+        builder = new StringBuilder();
+        first = true;
+        for (Integer i = 0; i < 4; i++) {
+            if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(DataStrings.ITEM_DELIMITER);
+                }
+                builder.append(DataStrings.createEntry(i, new SimpleItemWrapper(this.getArmorContents()[i]).toString()));
+            }
+        }
+        playerData.set("armorContents", builder.toString());
     }
 
     public OfflinePlayer getPlayer() {

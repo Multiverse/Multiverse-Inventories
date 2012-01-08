@@ -26,13 +26,11 @@ public class SimpleWorldProfile implements WorldProfile {
         WorldProfile worldProfile = new SimpleWorldProfile(worldName);
         ConfigurationSection playerData = section.getConfigurationSection("playerData");
         for (String playerName : playerData.getKeys(false)) {
-            if (playerData.get(playerName) instanceof PlayerProfile) {
-                PlayerProfile playerProfile = (PlayerProfile) playerData.get(playerName);
-                if (playerProfile != null) {
-                    worldProfile.addPlayerData(playerProfile);
-                } else {
-                    MILog.warning("Unable to load a player's data for world: " + worldProfile.getWorld());
-                }
+            ConfigurationSection playerSection = playerData.getConfigurationSection(playerName);
+            if (playerSection != null) {
+                worldProfile.addPlayerData(new SimplePlayerProfile(playerName, playerSection));
+            } else {
+                MILog.warning("Player data invalid for world: " + worldName + " and player: " + playerName);
             }
         }
         return worldProfile;
