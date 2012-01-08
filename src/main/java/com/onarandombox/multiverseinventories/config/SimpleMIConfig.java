@@ -148,6 +148,7 @@ public class SimpleMIConfig implements MIConfig {
         HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
         if (!this.getConfig().contains("groups")) {
             MILog.info("No world groups have been configured!");
+            MILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
             return worldGroups;
         }
         ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
