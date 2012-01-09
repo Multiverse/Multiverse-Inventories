@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.world;
+package com.onarandombox.multiverseinventories.share;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.permission.MIPerms;
-import com.onarandombox.multiverseinventories.world.WorldGroup;
-import com.onarandombox.multiverseinventories.world.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 

@@ -1,5 +1,6 @@
-package com.onarandombox.multiverseinventories.world;
+package com.onarandombox.multiverseinventories.group;
 
+import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.World;
 
 import java.util.HashSet;

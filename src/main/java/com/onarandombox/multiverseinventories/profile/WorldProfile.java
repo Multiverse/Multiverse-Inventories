@@ -1,6 +1,6 @@
-package com.onarandombox.multiverseinventories.world;
+package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.player.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 

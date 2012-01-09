@@ -1,6 +1,6 @@
-package com.onarandombox.multiverseinventories;
+package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.world.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.WorldProfile;
 
 import java.util.List;
 

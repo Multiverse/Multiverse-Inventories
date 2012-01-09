@@ -1,7 +1,5 @@
-package com.onarandombox.multiverseinventories.world;
+package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.player.PlayerProfile;
-import com.onarandombox.multiverseinventories.player.SimplePlayerProfile;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.Bukkit;

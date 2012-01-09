@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.MIDebug;
-import com.onarandombox.multiverseinventories.world.Shares;
-import com.onarandombox.multiverseinventories.world.SimpleShares;
-import com.onarandombox.multiverseinventories.world.WorldGroup;
+import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.share.SimpleShares;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;

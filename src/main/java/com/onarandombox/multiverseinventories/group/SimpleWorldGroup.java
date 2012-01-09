@@ -1,7 +1,9 @@
-package com.onarandombox.multiverseinventories.world;
+package com.onarandombox.multiverseinventories.group;
 
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.share.SimpleShares;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;

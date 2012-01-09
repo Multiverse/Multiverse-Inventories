@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories.data;
 
+import com.onarandombox.multiverseinventories.profile.SimpleWorldProfile;
+import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
-import com.onarandombox.multiverseinventories.world.SimpleWorldProfile;
-import com.onarandombox.multiverseinventories.world.WorldProfile;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;

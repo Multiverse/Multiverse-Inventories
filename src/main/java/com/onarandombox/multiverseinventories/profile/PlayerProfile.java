@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.player;
+package com.onarandombox.multiverseinventories.profile;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;

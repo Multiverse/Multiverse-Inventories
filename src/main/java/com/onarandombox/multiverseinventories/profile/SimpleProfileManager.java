@@ -1,7 +1,4 @@
-package com.onarandombox.multiverseinventories;
-
-import com.onarandombox.multiverseinventories.world.SimpleWorldProfile;
-import com.onarandombox.multiverseinventories.world.WorldProfile;
+package com.onarandombox.multiverseinventories.profile;
 
 import java.util.HashMap;
 import java.util.List;

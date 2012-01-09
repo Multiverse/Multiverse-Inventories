@@ -1,7 +1,6 @@
-package com.onarandombox.multiverseinventories;
+package com.onarandombox.multiverseinventories.group;
 
 import com.onarandombox.multiverseinventories.util.MILog;
-import com.onarandombox.multiverseinventories.world.WorldGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;

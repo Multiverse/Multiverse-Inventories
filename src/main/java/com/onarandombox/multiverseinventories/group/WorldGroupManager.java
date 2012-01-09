@@ -1,6 +1,6 @@
-package com.onarandombox.multiverseinventories;
+package com.onarandombox.multiverseinventories.group;
 
-import com.onarandombox.multiverseinventories.world.WorldGroup;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 
 import java.util.List;
 
