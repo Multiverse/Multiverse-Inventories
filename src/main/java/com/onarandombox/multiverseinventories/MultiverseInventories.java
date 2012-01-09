@@ -50,6 +50,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private Messager messager = new SimpleMessager(this);
 
+    private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
+    private ProfileManager profileManager = new SimpleProfileManager();
+
     private HashMap<String, WorldProfile> worldProfiles = new HashMap<String, WorldProfile>();
     private HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
 
@@ -86,6 +89,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Get world groups from config
         this.worldGroups = this.getMIConfig().getWorldGroups();
+        // this.getGroupManager().setWorldGroups(this.getMIConfig().getWorldGroups());
+
         // Set debug mode from config
         MILog.setDebugMode(this.getMIConfig().isDebugging());
 
@@ -193,6 +198,14 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     public int getRequiredProtocol() {
         return this.requiresProtocol;
+    }
+
+    public WorldGroupManager getGroupManager() {
+        return this.worldGroupManager;
+    }
+
+    public ProfileManager getProfileManager() {
+        return this.profileManager;
     }
 
     public void addWorldProfile(WorldProfile worldProfile) {

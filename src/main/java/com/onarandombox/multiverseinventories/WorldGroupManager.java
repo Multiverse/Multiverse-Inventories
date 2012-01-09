@@ -1,0 +1,15 @@
+package com.onarandombox.multiverseinventories;
+
+import com.onarandombox.multiverseinventories.world.WorldGroup;
+
+import java.util.List;
+
+/**
+ * @author dumptruckman, SwearWord
+ */
+public interface WorldGroupManager {
+
+    public WorldGroup getGroup(String groupName);
+
+    public void setWorldGroups(List<WorldGroup> worldGroups);
+}
