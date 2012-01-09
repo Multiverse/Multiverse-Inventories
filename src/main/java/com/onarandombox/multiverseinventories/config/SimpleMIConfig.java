@@ -1,8 +1,7 @@
 package com.onarandombox.multiverseinventories.config;
 
+import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
-import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import com.onarandombox.multiverseinventories.util.ProfileDeserializationException;
 import com.onarandombox.multiverseinventories.world.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.world.WorldGroup;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,8 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author dumptruckman
@@ -21,17 +20,7 @@ public class SimpleMIConfig implements MIConfig {
 
     public enum Path {
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
-        DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
-        DATA_SAVE_PERIOD("settings.data.save_every", 120, "# This is often plugin data is written to the disk.", "# This setting indicates the maximum amount of inventory rollback possible in the event of a server crash."),
-
-        /*
-        DEFAULT_SHARING_INV("defaults.sharing.inventory", true, "# "),
-        DEFAULT_SHARING_ARMOR("defaults.sharing.armor", true, "# "),
-        DEFAULT_SHARING_HEALTH("defaults.sharing.health", true, "# "),
-        DEFAULT_SHARING_HUNGER("defaults.sharing.hunger", true, "# "),
-        DEFAULT_SHARING_EXP("defaults.sharing.experience", true, "# "),
-        DEFAULT_SHARING_EFFECTS("defaults.sharing.effects", true, "# "),
-        */;
+        DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),;
 
         private String path;
         private Object def;
@@ -124,10 +113,6 @@ public class SimpleMIConfig implements MIConfig {
         return this.getConfig().getString(path.getPath(), (String) path.getDefault());
     }
 
-    /*public void setDefaultShares() {
-        MultiverseInventories.setDefaultShares(this.getDefaultShares());
-    }*/
-
     public FileConfiguration getConfig() {
         return this.config;
     }
@@ -136,41 +121,28 @@ public class SimpleMIConfig implements MIConfig {
         return this.getBoolean(Path.DEBUG_MODE);
     }
 
-    public long getDataSaveInterval() {
-        return MinecraftTools.convertSecondsToTicks(this.getInt(Path.DATA_SAVE_PERIOD));
-    }
-
     public String getLocale() {
         return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 
-    public HashMap<String, List<WorldGroup>> getWorldGroups() {
-        HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
+    public List<WorldGroup> getWorldGroups() {
         if (!this.getConfig().contains("groups")) {
-            MILog.info("No world groups have been configured!");
-            MILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
-            return worldGroups;
+            return null;
         }
         ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
-        for (String groupName : groupsSection.getKeys(false)) {
+        Set<String> groupNames = groupsSection.getKeys(false);
+        List<WorldGroup> worldGroups = new ArrayList<WorldGroup>(groupNames.size());
+        for (String groupName : groupNames) {
             WorldGroup worldGroup;
             try {
-                worldGroup = SimpleWorldGroup.deserialize(groupName,
+                worldGroup = new SimpleWorldGroup(groupName,
                         groupsSection.getConfigurationSection(groupName));
-            } catch (ProfileDeserializationException e) {
+            } catch (DeserializationException e) {
                 MILog.warning("Unable to load world group: " + groupName);
                 MILog.warning("Reason: " + e.getMessage());
                 continue;
             }
-
-            for (String worldName : worldGroup.getWorlds()) {
-                List<WorldGroup> worldGroupsForWorld = worldGroups.get(worldName);
-                if (worldGroupsForWorld == null) {
-                    worldGroupsForWorld = new ArrayList<WorldGroup>();
-                    worldGroups.put(worldName, worldGroupsForWorld);
-                }
-                worldGroupsForWorld.add(worldGroup);
-            }
+            worldGroups.add(worldGroup);
         }
         return worldGroups;
     }

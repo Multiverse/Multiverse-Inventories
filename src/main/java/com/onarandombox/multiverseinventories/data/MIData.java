@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.data;
 import com.onarandombox.multiverseinventories.world.WorldProfile;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author dumptruckman
@@ -14,5 +14,5 @@ public interface MIData {
 
     public FileConfiguration getData();
 
-    public HashMap<String, WorldProfile> getWorldProfiles();
+    public List<WorldProfile> getWorldProfiles();
 }

@@ -1,7 +1,9 @@
 package com.onarandombox.multiverseinventories;
 
+import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.world.WorldGroup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
 
     @Override
     public WorldGroup getGroup(String groupName) {
-        return this.groupNames.get(groupName);
+        return this.groupNames.get(groupName.toLowerCase());
     }
 
     @Override
@@ -23,7 +25,31 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         return this.worldGroups.get(worldName);
     }
 
-    public void setWorldGroups(List<WorldGroup> worldGroups) {
+    protected HashMap<String, List<WorldGroup>> getWorldGroups() {
+        return this.worldGroups;
+    }
 
+    protected HashMap<String, WorldGroup> getGroupNames() {
+        return this.groupNames;
+    }
+
+    public void setWorldGroups(List<WorldGroup> worldGroups) {
+        if (worldGroups == null) {
+            MILog.info("No world groups have been configured!");
+            MILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
+            return;
+        }
+
+        for (WorldGroup worldGroup : worldGroups) {
+            this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+            for (String worldName : worldGroup.getWorlds()) {
+                List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
+                if (worldGroupsForWorld == null) {
+                    worldGroupsForWorld = new ArrayList<WorldGroup>();
+                    this.getWorldGroups().put(worldName, worldGroupsForWorld);
+                }
+                worldGroupsForWorld.add(worldGroup);
+            }
+        }
     }
 }

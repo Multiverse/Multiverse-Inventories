@@ -45,7 +45,7 @@ public class MIPlayerListener extends PlayerListener {
         }
 
         Shares currentShares = new SimpleShares();
-        List<WorldGroup> toWorldGroups = this.plugin.getWorldGroups().get(toWorld.getName());
+        List<WorldGroup> toWorldGroups = this.plugin.getGroupManager().getWorldGroups(toWorld.getName());
         if (toWorldGroups != null) {
             for (WorldGroup toWorldGroup : toWorldGroups) {
                 if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {

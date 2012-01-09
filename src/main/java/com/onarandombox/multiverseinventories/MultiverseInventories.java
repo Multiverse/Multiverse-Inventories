@@ -16,7 +16,10 @@ import com.onarandombox.multiverseinventories.permission.MIPerms;
 import com.onarandombox.multiverseinventories.player.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.util.MILog;
-import com.onarandombox.multiverseinventories.world.*;
+import com.onarandombox.multiverseinventories.world.Shares;
+import com.onarandombox.multiverseinventories.world.Sharing;
+import com.onarandombox.multiverseinventories.world.SimpleShares;
+import com.onarandombox.multiverseinventories.world.WorldProfile;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,8 +30,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -53,9 +54,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
     private ProfileManager profileManager = new SimpleProfileManager();
-
-    private HashMap<String, WorldProfile> worldProfiles = new HashMap<String, WorldProfile>();
-    private HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
 
     final public void onDisable() {
         // Display disable message/version info
@@ -89,8 +87,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         MIDebug.init(this);
 
         // Get world groups from config
-        this.worldGroups = this.getMIConfig().getWorldGroups();
-        // this.getGroupManager().setWorldGroups(this.getMIConfig().getWorldGroups());
+        this.getGroupManager().setWorldGroups(this.getMIConfig().getWorldGroups());
 
         // Set debug mode from config
         MILog.setDebugMode(this.getMIConfig().isDebugging());
@@ -104,7 +101,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         }
 
         // Initialize data class
-        this.worldProfiles = this.getData().getWorldProfiles();
+        this.getProfileManager().setWorldProfiles(this.getData().getWorldProfiles());
 
         this.getCore().incrementPluginCount();
 
@@ -220,31 +217,14 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return this.profileManager;
     }
 
-    public void addWorldProfile(WorldProfile worldProfile) {
-        this.worldProfiles.put(worldProfile.getWorld(), worldProfile);
-    }
-
-    public WorldProfile getWorldProfile(String worldName) {
-        WorldProfile worldProfile = this.worldProfiles.get(worldName);
-        if (worldProfile == null) {
-            worldProfile = new SimpleWorldProfile(worldName);
-            this.worldProfiles.put(worldName, worldProfile);
-        }
-        return worldProfile;
-    }
-
-    public HashMap<String, List<WorldGroup>> getWorldGroups() {
-        return this.worldGroups;
-    }
-
     public Shares getDefaultShares() {
         return defaultShares;
     }
 
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
-        WorldProfile fromWorldProfile = this.getWorldProfile(fromWorld.getName());
+        WorldProfile fromWorldProfile = this.getProfileManager().getWorldProfile(fromWorld.getName());
         PlayerProfile fromWorldPlayerProfile = fromWorldProfile.getPlayerData(player);
-        WorldProfile toWorldProfile = this.getWorldProfile(toWorld.getName());
+        WorldProfile toWorldProfile = this.getProfileManager().getWorldProfile(toWorld.getName());
         PlayerProfile toWorldPlayerProfile = toWorldProfile.getPlayerData(player);
 
         // persist current stats for previous world if not sharing

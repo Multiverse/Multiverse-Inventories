@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.world;
 
+import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
-import com.onarandombox.multiverseinventories.util.ProfileDeserializationException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,32 +19,18 @@ public class SimpleWorldGroup implements WorldGroup {
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
 
-    /*
-    public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-
-        result.put("permission", this.getPermission());
-        result.put("worlds", this.getWorlds());
-        result.put("shares", this.getShares().toStringList());
-
-        return result;
-    }
-    */
-
-    // @TODO Change to non-static constructor
-    public static WorldGroup deserialize(String name, ConfigurationSection data) throws ProfileDeserializationException {
+    public SimpleWorldGroup(String name, ConfigurationSection data) throws DeserializationException {
         if (!data.contains("worlds")) {
-            throw new ProfileDeserializationException("No worlds specified for world group: " + name);
+            throw new DeserializationException("No worlds specified for world group: " + name);
         }
         List<String> worldList = data.getStringList("worlds");
         if (worldList == null) {
-            throw new ProfileDeserializationException("Worlds incorrectly formatted for group: " + name);
+            throw new DeserializationException("Worlds incorrectly formatted for group: " + name);
         }
-        WorldGroup worldGroup = new SimpleWorldGroup();
         for (String worldName : worldList) {
             World world = Bukkit.getWorld(worldName);
             if (world != null) {
-                worldGroup.addWorld(world);
+                this.addWorld(world);
             } else {
                 MILog.warning("");
             }
@@ -52,7 +38,7 @@ public class SimpleWorldGroup implements WorldGroup {
         if (data.contains("shares")) {
             List<String> sharesList = data.getStringList("shares");
             if (sharesList != null) {
-                worldGroup.setShares(SimpleShares.parseShares(sharesList));
+                this.setShares(SimpleShares.parseShares(sharesList));
             } else {
                 MILog.warning("Shares formatted incorrectly for group: " + name);
             }
@@ -60,12 +46,11 @@ public class SimpleWorldGroup implements WorldGroup {
         if (data.contains("permission")) {
             String permission = data.getString("permission");
             if (permission != null) {
-                worldGroup.setPermission(permission);
+                this.setPermission(permission);
             } else {
                 MILog.warning("Permission formatted incorrectly for group: " + name);
             }
         }
-        return worldGroup;
     }
 
     @Override

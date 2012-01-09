@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.world;
 
 import com.onarandombox.multiverseinventories.player.PlayerProfile;
 import com.onarandombox.multiverseinventories.player.SimplePlayerProfile;
+import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -22,18 +23,20 @@ public class SimpleWorldProfile implements WorldProfile {
         this.worldName = worldName;
     }
 
-    public static WorldProfile deserialize(String worldName, ConfigurationSection section) {
-        WorldProfile worldProfile = new SimpleWorldProfile(worldName);
+    public SimpleWorldProfile(String worldName, ConfigurationSection section) throws DeserializationException {
+        this(worldName);
         ConfigurationSection playerData = section.getConfigurationSection("playerData");
+        if (playerData == null) {
+            throw new DeserializationException("Missing playerData for world: " + worldName);
+        }
         for (String playerName : playerData.getKeys(false)) {
             ConfigurationSection playerSection = playerData.getConfigurationSection(playerName);
             if (playerSection != null) {
-                worldProfile.addPlayerData(new SimplePlayerProfile(playerName, playerSection));
+                this.addPlayerData(new SimplePlayerProfile(playerName, playerSection));
             } else {
                 MILog.warning("Player data invalid for world: " + worldName + " and player: " + playerName);
             }
         }
-        return worldProfile;
     }
 
     public World getBukkitWorld() {

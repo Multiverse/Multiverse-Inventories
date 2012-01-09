@@ -27,6 +27,8 @@ public class SimpleProfileManager implements ProfileManager {
     }
 
     public void setWorldProfiles(List<WorldProfile> worldProfiles) {
-
+        for (WorldProfile worldProfile : worldProfiles) {
+            this.addWorldProfile(worldProfile);
+        }
     }
 }

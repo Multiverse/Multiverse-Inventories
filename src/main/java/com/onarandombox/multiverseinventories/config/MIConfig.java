@@ -3,7 +3,6 @@ package com.onarandombox.multiverseinventories.config;
 import com.onarandombox.multiverseinventories.world.WorldGroup;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,11 +14,7 @@ public interface MIConfig {
 
     public boolean isDebugging();
 
-    public long getDataSaveInterval();
-
     public String getLocale();
 
-    public HashMap<String, List<WorldGroup>> getWorldGroups();
-
-    //public Shares getDefaultShares();
+    public List<WorldGroup> getWorldGroups();
 }
