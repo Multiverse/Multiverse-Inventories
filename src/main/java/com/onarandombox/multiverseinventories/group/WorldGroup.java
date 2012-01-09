@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.group;
 
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashSet;
 
@@ -24,4 +25,6 @@ public interface WorldGroup {
     public String getPermission();
 
     public void setPermission(String permission);
+
+    public void serialize(ConfigurationSection groupData);
 }

@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.group;
 
+import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.share.Shares;
@@ -20,6 +21,10 @@ public class SimpleWorldGroup implements WorldGroup {
     private String permission = null;
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
+    
+    public SimpleWorldGroup(String name) {
+        this.name = name;
+    }
 
     public SimpleWorldGroup(String name, ConfigurationSection data) throws DeserializationException {
         if (!data.contains("worlds")) {
@@ -52,6 +57,17 @@ public class SimpleWorldGroup implements WorldGroup {
             } else {
                 MILog.warning("Permission formatted incorrectly for group: " + name);
             }
+        }
+    }
+
+    public void serialize(ConfigurationSection groupData) {
+        groupData.set("worlds", Lists.newArrayList(this.getWorlds()));
+        List<String> sharesList = this.getShares().toStringList();
+        if (!sharesList.isEmpty()) {
+            groupData.set("shares", sharesList);
+        }
+        if (this.getPermission() != null) {
+            groupData.set("permission", this.getPermission());
         }
     }
 

@@ -2,13 +2,16 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
 import com.onarandombox.multiverseinventories.data.MIData;
 import com.onarandombox.multiverseinventories.data.SimpleMIData;
+import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.listener.MIPlayerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
@@ -35,6 +38,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -115,6 +119,26 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Register Commands
         this.registerCommands();
+        
+        // Create initial World Group for first run
+        if (this.getMIConfig().isFirstRun()) {
+            Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
+            if (!mvWorlds.isEmpty()) {
+                WorldGroup worldGroup = new SimpleWorldGroup("default");
+                worldGroup.setShares(new SimpleShares(Sharing.TRUE, Sharing.TRUE,
+                        Sharing.TRUE, Sharing.TRUE, Sharing.TRUE));
+                for (MultiverseWorld mvWorld : mvWorlds) {
+                    worldGroup.addWorld(mvWorld.getName());
+                }
+                this.getMIConfig().updateWorldGroup(worldGroup);
+                this.getMIConfig().setFirstRun(false);
+                this.getMIConfig().save();
+                MILog.info("Created a default group for you containing all of your MV Worlds!");
+            } else {
+                MILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
+                MILog.info("Will attempt again at next start up.");
+            }
+        }
 
         // Display enable message/version info
         MILog.info("enabled.", true);

@@ -10,11 +10,19 @@ import java.util.List;
  */
 public interface MIConfig {
 
-    public FileConfiguration getConfig();
+    public CommentedConfiguration getConfig();
 
     public boolean isDebugging();
 
     public String getLocale();
 
     public List<WorldGroup> getWorldGroups();
+    
+    public void updateWorldGroup(WorldGroup worldGroup);
+
+    public boolean isFirstRun();
+
+    public void setFirstRun(boolean firstRun);
+
+    public void save();
 }

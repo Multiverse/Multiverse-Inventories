@@ -20,7 +20,9 @@ public class SimpleMIConfig implements MIConfig {
 
     public enum Path {
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
-        DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),;
+        DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
+        FIRST_RUN("first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
+        GROUPS("groups", null, "#This is where you configure your world groups"),;
 
         private String path;
         private Object def;
@@ -113,18 +115,22 @@ public class SimpleMIConfig implements MIConfig {
         return this.getConfig().getString(path.getPath(), (String) path.getDefault());
     }
 
-    public FileConfiguration getConfig() {
+    @Override
+    public CommentedConfiguration getConfig() {
         return this.config;
     }
 
+    @Override
     public boolean isDebugging() {
         return this.getBoolean(Path.DEBUG_MODE);
     }
 
+    @Override
     public String getLocale() {
         return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 
+    @Override
     public List<WorldGroup> getWorldGroups() {
         if (!this.getConfig().contains("groups")) {
             return null;
@@ -145,5 +151,29 @@ public class SimpleMIConfig implements MIConfig {
             worldGroups.add(worldGroup);
         }
         return worldGroups;
+    }
+
+    @Override
+    public boolean isFirstRun() {
+        return this.getBoolean(Path.FIRST_RUN);
+    }
+
+    @Override
+    public void setFirstRun(boolean firstRun) {
+        this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
+    }
+
+    @Override
+    public void updateWorldGroup(WorldGroup worldGroup) {
+        ConfigurationSection groupSection = this.getConfig().getConfigurationSection("groups." + worldGroup.getName());
+        if (groupSection == null) {
+            groupSection = this.getConfig().createSection("groups." + worldGroup.getName());
+        }
+        worldGroup.serialize(groupSection);
+    }
+
+    @Override
+    public void save() {
+        this.getConfig().save();
     }
 }

@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -91,7 +92,7 @@ public class SimpleShares implements Shares {
     }
 
     public List<String> toStringList() {
-        List<String> list = new ArrayList<String>(5);
+        List<String> list = new LinkedList<String>();
         if (this.isSharingInventory() != Sharing.NOT_SET) {
             list.add("inventory");
         }
