@@ -15,7 +15,6 @@ public class SimpleMessager extends SimpleMessageProvider implements Messager, M
 
     private void send(MultiverseMessage message, String prefix, CommandSender sender, Object... args) {
         List<String> messages = this.getMessages(message, args);
-        MILog.debug("Got messages: " + messages);
         if (!messages.isEmpty()) {
             messages.set(0, prefix + " " + messages.get(0));
             sendMessages(sender, messages);

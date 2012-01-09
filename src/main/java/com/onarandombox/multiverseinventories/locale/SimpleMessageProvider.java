@@ -57,7 +57,6 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
     }
 
     public String format(String string, Object... args) {
-        MILog.debug("Formatting string: " + string);
         // Replaces & with the Section character
         string = string.replaceAll("&", Character.toString((char) 167));
         // If there are arguments, %n notations in the message will be
@@ -67,7 +66,6 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
                 string = string.replace("%" + (j + 1), args[j].toString());
             }
         }
-        MILog.debug("Result: " + string);
         return string;
     }
 
@@ -172,7 +170,6 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
             messages = format(key.getDefault(), args);
         } else
             messages = format(this.messages.get(locale).get(key), args);
-        System.out.println("got messages from provider: " + messages);
         return messages;
     }
 
