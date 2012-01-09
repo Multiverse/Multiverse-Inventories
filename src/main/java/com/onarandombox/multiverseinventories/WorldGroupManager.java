@@ -14,4 +14,6 @@ public interface WorldGroupManager {
     public List<WorldGroup> getWorldGroups(String worldName);
 
     public void setWorldGroups(List<WorldGroup> worldGroups);
+
+    public void addWorldGroup(WorldGroup worldGroup);
 }

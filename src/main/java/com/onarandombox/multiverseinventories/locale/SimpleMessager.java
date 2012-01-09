@@ -1,12 +1,13 @@
 package com.onarandombox.multiverseinventories.locale;
 
+import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 
-public class SimpleMessager extends SimpleMessageProvider implements Messager {
+public class SimpleMessager extends SimpleMessageProvider implements Messager, MessageProvider {
 
     public SimpleMessager(JavaPlugin plugin) {
         super(plugin);
@@ -14,6 +15,7 @@ public class SimpleMessager extends SimpleMessageProvider implements Messager {
 
     private void send(MultiverseMessage message, String prefix, CommandSender sender, Object... args) {
         List<String> messages = this.getMessages(message, args);
+        MILog.debug("Got messages: " + messages);
         if (!messages.isEmpty()) {
             messages.set(0, prefix + " " + messages.get(0));
             sendMessages(sender, messages);
@@ -24,7 +26,7 @@ public class SimpleMessager extends SimpleMessageProvider implements Messager {
      * {@inheritDoc}
      */
     public void bad(MultiverseMessage message, CommandSender sender, Object... args) {
-        send(message, ChatColor.RED.toString() + this.getMessages(MultiverseMessage.GENERIC_ERROR), sender, args);
+        send(message, ChatColor.RED.toString() + this.getMessage(MultiverseMessage.GENERIC_ERROR), sender, args);
     }
 
     /**
@@ -38,21 +40,21 @@ public class SimpleMessager extends SimpleMessageProvider implements Messager {
      * {@inheritDoc}
      */
     public void good(MultiverseMessage message, CommandSender sender, Object... args) {
-        send(message, ChatColor.GREEN.toString() + this.getMessages(MultiverseMessage.GENERIC_SUCCESS), sender, args);
+        send(message, ChatColor.GREEN.toString() + this.getMessage(MultiverseMessage.GENERIC_SUCCESS), sender, args);
     }
 
     /**
      * {@inheritDoc}
      */
     public void info(MultiverseMessage message, CommandSender sender, Object... args) {
-        send(message, ChatColor.YELLOW.toString() + this.getMessages(MultiverseMessage.GENERIC_INFO), sender, args);
+        send(message, ChatColor.YELLOW.toString() + this.getMessage(MultiverseMessage.GENERIC_INFO), sender, args);
     }
 
     /**
      * {@inheritDoc}
      */
     public void help(MultiverseMessage message, CommandSender sender, Object... args) {
-        send(message, ChatColor.GRAY.toString() + this.getMessages(MultiverseMessage.GENERIC_HELP), sender, args);
+        send(message, ChatColor.GRAY.toString() + this.getMessage(MultiverseMessage.GENERIC_HELP), sender, args);
     }
 
     /**

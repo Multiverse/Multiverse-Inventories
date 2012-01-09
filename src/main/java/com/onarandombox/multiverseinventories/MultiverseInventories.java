@@ -122,6 +122,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private void registerCommands() {
+        this.commandHandler = this.getCore().getCommandHandler();
         this.getCommandHandler().registerCommand(new InfoCommand(this));
     }
 

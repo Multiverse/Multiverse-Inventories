@@ -65,6 +65,7 @@ public class InfoCommand extends InventoriesCommand {
     private void worldInfo(CommandSender sender, WorldProfile worldProfile) {
         StringBuilder groupsString = new StringBuilder();
         List<WorldGroup> worldGroups = this.getPlugin().getGroupManager().getWorldGroups(worldProfile.getWorld());
+
         boolean first = true;
         for (WorldGroup worldGroup : worldGroups) {
             if (first) {

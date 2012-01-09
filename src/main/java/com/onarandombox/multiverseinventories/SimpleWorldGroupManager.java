@@ -22,7 +22,12 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
 
     @Override
     public List<WorldGroup> getWorldGroups(String worldName) {
-        return this.worldGroups.get(worldName);
+        List<WorldGroup> worldGroups = this.getWorldGroups().get(worldName);
+        if (worldGroups == null) {
+            worldGroups = new ArrayList<WorldGroup>();
+            this.getWorldGroups().put(worldName, worldGroups);
+        }
+        return worldGroups;
     }
 
     protected HashMap<String, List<WorldGroup>> getWorldGroups() {
@@ -33,6 +38,18 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         return this.groupNames;
     }
 
+    public void addWorldGroup(WorldGroup worldGroup) {
+        this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+        for (String worldName : worldGroup.getWorlds()) {
+            List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
+            if (worldGroupsForWorld == null) {
+                worldGroupsForWorld = new ArrayList<WorldGroup>();
+                this.getWorldGroups().put(worldName, worldGroupsForWorld);
+            }
+            worldGroupsForWorld.add(worldGroup);
+        }
+    }
+
     public void setWorldGroups(List<WorldGroup> worldGroups) {
         if (worldGroups == null) {
             MILog.info("No world groups have been configured!");
@@ -41,15 +58,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         }
 
         for (WorldGroup worldGroup : worldGroups) {
-            this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
-            for (String worldName : worldGroup.getWorlds()) {
-                List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
-                if (worldGroupsForWorld == null) {
-                    worldGroupsForWorld = new ArrayList<WorldGroup>();
-                    this.getWorldGroups().put(worldName, worldGroupsForWorld);
-                }
-                worldGroupsForWorld.add(worldGroup);
-            }
+            this.addWorldGroup(worldGroup);
         }
     }
 }

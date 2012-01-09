@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.locale;
 
+import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,17 +48,27 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
     }
 
     public List<String> format(List<String> strings, Object... args) {
-        for (String string : strings) {
-            format(string, args);
+        for (int i = 0; i < strings.size(); i++) {
+            //for (String string : strings) {
+            //string = format(string, args);
+            strings.set(i, format(strings.get(i), args));
         }
         return strings;
     }
 
     public String format(String string, Object... args) {
+        MILog.debug("Formatting string: " + string);
         // Replaces & with the Section character
         string = string.replaceAll("&", Character.toString((char) 167));
-
-        return String.format(string, args);
+        // If there are arguments, %n notations in the message will be
+        // replaced
+        if (args != null) {
+            for (int j = 0; j < args.length; j++) {
+                string = string.replace("%" + (j + 1), args[j].toString());
+            }
+        }
+        MILog.debug("Result: " + string);
+        return string;
     }
 
     /**
@@ -156,10 +167,13 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
      */
     @Override
     public List<String> getMessages(MultiverseMessage key, Object... args) {
+        List<String> messages;
         if (!isLocaleLoaded(locale)) {
-            return format(key.getDefault(), args);
+            messages = format(key.getDefault(), args);
         } else
-            return format(messages.get(locale).get(key), args);
+            messages = format(this.messages.get(locale).get(key), args);
+        System.out.println("got messages from provider: " + messages);
+        return messages;
     }
 
     /**
