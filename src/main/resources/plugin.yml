@@ -3,3 +3,14 @@ main: com.onarandombox.multiverseinventories.MultiverseInventories
 version: maven-version-number
 author: dumptruckman
 depend: ['Multiverse-Core']
+
+commands:
+  mvi:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mviinfo:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvii:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>

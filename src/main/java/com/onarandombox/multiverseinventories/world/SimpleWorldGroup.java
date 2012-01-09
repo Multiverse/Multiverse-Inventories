@@ -31,6 +31,7 @@ public class SimpleWorldGroup implements WorldGroup {
     }
     */
 
+    // @TODO Change to non-static constructor
     public static WorldGroup deserialize(String name, ConfigurationSection data) throws ProfileDeserializationException {
         if (!data.contains("worlds")) {
             throw new ProfileDeserializationException("No worlds specified for world group: " + name);
@@ -67,10 +68,12 @@ public class SimpleWorldGroup implements WorldGroup {
         return worldGroup;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -79,26 +82,32 @@ public class SimpleWorldGroup implements WorldGroup {
         this.worlds.add(worldName);
     }
 
+    @Override
     public void addWorld(World world) {
         this.worlds.add(world.getName());
     }
 
+    @Override
     public HashSet<String> getWorlds() {
         return this.worlds;
     }
 
+    @Override
     public void setShares(Shares shares) {
         this.shares = shares;
     }
 
+    @Override
     public Shares getShares() {
         return this.shares;
     }
 
+    @Override
     public String getPermission() {
         return this.permission;
     }
 
+    @Override
     public void setPermission(String permission) {
         this.permission = permission;
     }

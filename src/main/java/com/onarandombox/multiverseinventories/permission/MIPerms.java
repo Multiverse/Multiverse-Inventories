@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author dumptruckman
  */
 public enum MIPerms {
-    EXAMPLE(new Permission("MultiverseInventories.example", PermissionDefault.OP)),;
+    COMMAND_INFO(new Permission("multiverse.inventories.info", "Displays information about a world or group.", PermissionDefault.OP)),;
 
     private Permission perm;
 
@@ -18,7 +18,7 @@ public enum MIPerms {
         this.perm = perm;
     }
 
-    private Permission getPerm() {
+    public Permission getPerm() {
         return perm;
     }
 

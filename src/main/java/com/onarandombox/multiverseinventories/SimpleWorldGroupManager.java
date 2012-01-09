@@ -18,6 +18,11 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         return this.groupNames.get(groupName);
     }
 
+    @Override
+    public List<WorldGroup> getWorldGroups(String worldName) {
+        return this.worldGroups.get(worldName);
+    }
+
     public void setWorldGroups(List<WorldGroup> worldGroups) {
 
     }

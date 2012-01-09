@@ -24,13 +24,13 @@ public enum MultiverseMessage {
     // Errors
     ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),
     ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
+    ERROR_NO_GROUP("There is no group with the name: %s"),
+    ERROR_NO_WORLD_PROFILE("There is no world profile for the world: %s"),
 
     //// Commands
-    // List Command
-    LIST_NAME("World Listing"),
-    LIST_DESC("Displays a listing of all worlds that you can enter."),
-    LIST_TITLE("Multiverse World List"),
-    LIST_NO_MATCH("No worlds matched your filter:");
+    // Info Command
+    INFO_WORLD("Info for world: %s", "Groups: %s"),
+    INFO_GROUP("Info for group: %s", "Worlds: %s", "Shares: %s");
 
     private final List<String> def;
 

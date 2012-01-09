@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
+import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
 import com.onarandombox.multiverseinventories.data.MIData;
@@ -110,6 +111,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Register Events
         this.registerEvents();
 
+        // Register Commands
+        this.registerCommands();
+
         // Display enable message/version info
         MILog.info("enabled.", true);
     }
@@ -118,6 +122,14 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         final PluginManager pm = getServer().getPluginManager();
         // Event registering goes here
         pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Normal, this);
+    }
+
+    private void registerCommands() {
+        this.getCommandHandler().registerCommand(new InfoCommand(this));
+    }
+
+    private CommandHandler getCommandHandler() {
+        return this.commandHandler;
     }
 
     public void log(Level level, String msg) {
