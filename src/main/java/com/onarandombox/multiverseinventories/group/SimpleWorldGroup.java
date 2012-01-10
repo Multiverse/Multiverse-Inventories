@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.group;
 
 import com.google.common.collect.Lists;
+import com.onarandombox.multiverseinventories.group.blacklist.ItemBlacklist;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.share.Shares;
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class SimpleWorldGroup implements WorldGroup {
     private String name = "";
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
+    private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
     
     public SimpleWorldGroup(String name) {
         this.name = name;
@@ -49,6 +52,9 @@ public class SimpleWorldGroup implements WorldGroup {
                 MILog.warning("Shares formatted incorrectly for group: " + name);
             }
         }
+        if (data.contains("blacklist")) {
+            
+        }
     }
 
     public void serialize(ConfigurationSection groupData) {
@@ -56,6 +62,9 @@ public class SimpleWorldGroup implements WorldGroup {
         List<String> sharesList = this.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             groupData.set("shares", sharesList);
+        }
+        if (!this.getItemBlacklist().isEmpty()) {
+
         }
     }
 
@@ -69,6 +78,7 @@ public class SimpleWorldGroup implements WorldGroup {
         this.name = name;
     }
 
+    @Override
     public void addWorld(String worldName) {
         this.worlds.add(worldName);
     }
@@ -91,5 +101,15 @@ public class SimpleWorldGroup implements WorldGroup {
     @Override
     public Shares getShares() {
         return this.shares;
+    }
+
+    protected HashMap<String, ItemBlacklist> getItemBlacklist() {
+        return this.itemBlacklist;
+    }
+
+    @Override
+    public ItemBlacklist getItemBlacklist(String worldName) {
+
+        return null;
     }
 }

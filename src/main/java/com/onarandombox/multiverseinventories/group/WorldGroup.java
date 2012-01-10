@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.group;
 
+import com.onarandombox.multiverseinventories.group.blacklist.ItemBlacklist;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -23,4 +24,6 @@ public interface WorldGroup {
     public Shares getShares();
 
     public void serialize(ConfigurationSection groupData);
+
+    public ItemBlacklist getItemBlacklist(String worldName);
 }
