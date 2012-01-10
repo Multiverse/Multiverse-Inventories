@@ -2,29 +2,70 @@ package com.onarandombox.multiverseinventories.share;
 
 import java.util.List;
 
+/**
+ * Interface for getting what is shared in a world profile.
+ */
 public interface Shares {
 
-    public void mergeShares(Shares newShares);
+    /**
+     * Merges what is shared with another share.  Only the {@link Sharing#NOT_SET} items should be merged.
+     *
+     * @param newShares The set of shares to merge into this set of shares.
+     */
+    void mergeShares(Shares newShares);
 
-    public Sharing isSharingInventory();
+    /**
+     * @return The {@link Sharing} result
+     */
+    Sharing getSharingInventory();
 
-    public void setSharingInventory(Sharing sharingInventory);
+    /**
+     * @param sharingInventory Whether to share inventory or not.
+     */
+    void setSharingInventory(Sharing sharingInventory);
 
-    public Sharing isSharingHealth();
+    /**
+     * @return The {@link Sharing} result
+     */
+    Sharing getSharingHealth();
 
-    public void setSharingHealth(Sharing sharingHealth);
+    /**
+     * @param sharingHealth Whether to share health or not.
+     */
+    void setSharingHealth(Sharing sharingHealth);
 
-    public Sharing isSharingHunger();
+    /**
+     * @return The {@link Sharing} result
+     */
+    Sharing getSharingHunger();
 
-    public void setSharingHunger(Sharing sharingHunger);
+    /**
+     * @param sharingHunger Whether to share hunger or not.
+     */
+    void setSharingHunger(Sharing sharingHunger);
 
-    public Sharing isSharingExp();
+    /**
+     * @return The {@link Sharing} result
+     */
+    Sharing getSharingExp();
 
-    public void setSharingExp(Sharing sharingExp);
+    /**
+     * @param sharingExp Whether to share exp or not.
+     */
+    void setSharingExp(Sharing sharingExp);
 
-    public Sharing isSharingEffects();
+    /**
+     * @return The {@link Sharing} result
+     */
+    Sharing getSharingEffects();
 
-    public void setSharingEffects(Sharing sharingEffects);
+    /**
+     * @param sharingEffects Whether to share effects or not.
+     */
+    void setSharingEffects(Sharing sharingEffects);
 
-    public List<String> toStringList();
+    /**
+     * @return These shares as a string list.
+     */
+    List<String> toStringList();
 }

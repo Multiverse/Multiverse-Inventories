@@ -7,18 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @author dumptruckman, SwearWord
+ * Implementation of WorldGroupManager.
  */
 public class SimpleWorldGroupManager implements WorldGroupManager {
 
-    private HashMap<String, List<WorldGroup>> worldGroups = new HashMap<String, List<WorldGroup>>();
-    private HashMap<String, WorldGroup> groupNames = new HashMap<String, WorldGroup>();
+    private HashMap<String, List<WorldGroup>> worldGroupsMap = new HashMap<String, List<WorldGroup>>();
+    private HashMap<String, WorldGroup> groupNamesMap = new HashMap<String, WorldGroup>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public WorldGroup getGroup(String groupName) {
-        return this.groupNames.get(groupName.toLowerCase());
+        return this.groupNamesMap.get(groupName.toLowerCase());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<WorldGroup> getWorldGroups(String worldName) {
         List<WorldGroup> worldGroups = this.getWorldGroups().get(worldName);
@@ -29,14 +35,28 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         return worldGroups;
     }
 
+    /**
+     * Retrieves all of the World Groups mapped to each world.
+     *
+     * @return Map of World -> World Groups
+     */
     protected HashMap<String, List<WorldGroup>> getWorldGroups() {
-        return this.worldGroups;
+        return this.worldGroupsMap;
     }
 
+    /**
+     * Retrieves all of the World Groups mapped to their names.
+     *
+     * @return Map of Group Name -> World Group
+     */
     protected HashMap<String, WorldGroup> getGroupNames() {
-        return this.groupNames;
+        return this.groupNamesMap;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addWorldGroup(WorldGroup worldGroup) {
         this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
         for (String worldName : worldGroup.getWorlds()) {
@@ -49,6 +69,10 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setWorldGroups(List<WorldGroup> worldGroups) {
         if (worldGroups == null) {
             MILog.info("No world groups have been configured!");

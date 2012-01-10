@@ -3,9 +3,14 @@ package com.onarandombox.multiverseinventories.item;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @author dumptruckman
+ * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in FileConfiguration format.
  */
 public interface ItemWrapper {
 
-    public ItemStack getItem();
+    /**
+     * Retrieves the ItemStack that this class is wrapping.
+     *
+     * @return The ItemStack this class is wrapping.
+     */
+    ItemStack getItem();
 }

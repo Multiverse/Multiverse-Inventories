@@ -6,13 +6,26 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.List;
 
 /**
- * @author dumptruckman
+ * Interface for interacting with the data of this plugin.
  */
 public interface MIData {
 
-    public void save();
+    /**
+     * Convenience method for saving the underlying FileConfiguration object.
+     */
+    void save();
 
-    public FileConfiguration getData();
+    /**
+     * Retrieves the underlying FileConfiguration object for direct manipulation of the data.
+     *
+     * @return the underlying FileConfiguration object.
+     */
+    FileConfiguration getData();
 
-    public List<WorldProfile> getWorldProfiles();
+    /**
+     * Retrieves a list of the World Profiles from the data file.
+     *
+     * @return The list of World Profiles from the data.
+     */
+    List<WorldProfile> getWorldProfiles();
 }

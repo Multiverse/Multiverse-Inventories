@@ -5,7 +5,6 @@ import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -14,15 +13,30 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author dumptruckman
+ * Implementation of MIConfig.
  */
 public class SimpleMIConfig implements MIConfig {
 
+    /**
+     * Enum for easily keeping track of config paths, defaults and comments.
+     */
     public enum Path {
+        /**
+         * Locale name config path, default and comments.
+         */
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
+        /**
+         * Debug Mode config path, default and comments.
+         */
         DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
+        /**
+         * First Run flag config path, default and comments.
+         */
         FIRST_RUN("first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
-        GROUPS("groups", null, "#This is where you configure your world groups"),;
+        /**
+         * Groups section path and comments.  No simple default for this.
+         */
+        GROUPS("groups", null, "#This is where you configure your world groups");
 
         private String path;
         private Object def;
@@ -35,36 +49,36 @@ public class SimpleMIConfig implements MIConfig {
         }
 
         /**
-         * Retrieves the path for a config option
+         * Retrieves the path for a config option.
          *
-         * @return The path for a config option
+         * @return The path for a config option.
          */
         private String getPath() {
-            return path;
+            return this.path;
         }
 
         /**
-         * Retrieves the default value for a config path
+         * Retrieves the default value for a config path.
          *
-         * @return The default value for a config path
+         * @return The default value for a config path.
          */
         private Object getDefault() {
-            return def;
+            return this.def;
         }
 
         /**
-         * Retrieves the comment for a config path
+         * Retrieves the comment for a config path.
          *
-         * @return The comments for a config path
+         * @return The comments for a config path.
          */
         private String[] getComments() {
-            if (comments != null) {
-                return comments;
+            if (this.comments != null) {
+                return this.comments;
             }
 
-            String[] comments = new String[1];
-            comments[0] = "";
-            return comments;
+            String[] emptyComments = new String[1];
+            emptyComments[0] = "";
+            return emptyComments;
         }
     }
 
@@ -92,7 +106,7 @@ public class SimpleMIConfig implements MIConfig {
     }
 
     /**
-     * Loads default settings for any missing config values
+     * Loads default settings for any missing config values.
      */
     private void setDefaults() {
         for (SimpleMIConfig.Path path : SimpleMIConfig.Path.values()) {
@@ -115,21 +129,33 @@ public class SimpleMIConfig implements MIConfig {
         return this.getConfig().getString(path.getPath(), (String) path.getDefault());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CommentedConfiguration getConfig() {
         return this.config;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isDebugging() {
         return this.getBoolean(Path.DEBUG_MODE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getLocale() {
         return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<WorldGroup> getWorldGroups() {
         if (!this.getConfig().contains("groups")) {
@@ -153,16 +179,25 @@ public class SimpleMIConfig implements MIConfig {
         return worldGroups;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isFirstRun() {
         return this.getBoolean(Path.FIRST_RUN);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFirstRun(boolean firstRun) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void updateWorldGroup(WorldGroup worldGroup) {
         ConfigurationSection groupSection = this.getConfig().getConfigurationSection("groups." + worldGroup.getName());
@@ -172,6 +207,9 @@ public class SimpleMIConfig implements MIConfig {
         worldGroup.serialize(groupSection);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void save() {
         this.getConfig().save();

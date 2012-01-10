@@ -3,31 +3,28 @@ package com.onarandombox.multiverseinventories.listener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.permission.MIPerms;
-import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
+import com.onarandombox.multiverseinventories.util.MIDebug;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.List;
 
 /**
- * @author dumptruckman
+ * PlayerListener for MultiverseInventories.
  */
 public class MIPlayerListener extends PlayerListener {
 
-    MultiverseInventories plugin;
+    private MultiverseInventories plugin;
 
     public MIPlayerListener(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 
-    public void onPlayerLogin(PlayerLoginEvent event) {
-    }
-
+    @Override
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
@@ -39,8 +36,8 @@ public class MIPlayerListener extends PlayerListener {
             return;
         }
         // Do nothing if dealing with non-managed worlds
-        if (this.plugin.getCore().getMVWorldManager().getMVWorld(toWorld) == null ||
-                this.plugin.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
+        if (this.plugin.getCore().getMVWorldManager().getMVWorld(toWorld) == null
+                || this.plugin.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
             MIDebug.info("The from or to world is not managed by Multiverse!");
             return;
         }

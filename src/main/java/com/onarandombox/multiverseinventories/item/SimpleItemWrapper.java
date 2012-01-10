@@ -8,6 +8,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Simple implementation of ItemWrapper.
+ */
 public class SimpleItemWrapper implements ItemWrapper {
 
     private ItemStack item;
@@ -25,7 +28,7 @@ public class SimpleItemWrapper implements ItemWrapper {
         String[] itemData = itemString.split(DataStrings.GENERAL_DELIMITER);
 
         for (String dataString : itemData) {
-            String[] dataValue = DataStrings.splitValue(dataString);
+            String[] dataValue = DataStrings.splitEntry(dataString);
             try {
                 if (dataValue[0].equals(DataStrings.ITEM_TYPE_ID)) {
                     type = Integer.valueOf(dataValue[1]);
@@ -52,7 +55,7 @@ public class SimpleItemWrapper implements ItemWrapper {
         Map<Enchantment, Integer> enchantsMap = new LinkedHashMap<Enchantment, Integer>(enchantData.length);
 
         for (String dataValue : enchantData) {
-            String[] enchantValues = DataStrings.splitValue(dataValue);
+            String[] enchantValues = DataStrings.splitEntry(dataValue);
             try {
                 Enchantment enchantment = Enchantment.getByName(enchantValues[0]);
                 enchantsMap.put(enchantment, Integer.valueOf(enchantValues[1]));
@@ -62,11 +65,17 @@ public class SimpleItemWrapper implements ItemWrapper {
         return enchantsMap;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ItemStack getItem() {
         return this.item;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

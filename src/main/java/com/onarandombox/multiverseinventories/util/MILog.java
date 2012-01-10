@@ -7,17 +7,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author dumptruckman
+ * Static plugin logger.
  */
 public class MILog {
+
+    // BEGIN CHECKSTYLE-SUPPRESSION: Name
     private static Logger LOG = Logger.getLogger("Minecraft");
     private static String NAME = "Multiverse-Profiles";
     private static String VERSION = "v.???";
+    private static boolean DEBUG_MODE = false;
+    // END CHECKSTYLE-SUPPRESSION: Name
 
-    private static boolean debugMode = false;
+    private MILog() { }
 
     /**
      * Prepares the log for use.
+     *
+     * @param plugin The plugin.
      */
     public static void init(JavaPlugin plugin) {
         PluginDescriptionFile pdf = plugin.getDescription();
@@ -25,8 +31,11 @@ public class MILog {
         VERSION = pdf.getVersion();
     }
 
+    /**
+     * @param debugMode True to use debug mode.
+     */
     public static void setDebugMode(boolean debugMode) {
-        MILog.debugMode = debugMode;
+        MILog.DEBUG_MODE = debugMode;
     }
 
     /**
@@ -39,7 +48,8 @@ public class MILog {
     public static String getString(String message, boolean showVersion) {
         String string = "[" + NAME;
         if (showVersion) string += " " + VERSION;
-        return string += "] " + message;
+        string = string + "] " + message;
+        return string;
     }
 
     /**
@@ -52,17 +62,18 @@ public class MILog {
     }
 
     /**
-     * Custom log method
+     * Custom log method.
      *
      * @param level   Log level
      * @param message Log message
+     * @param showVersion True adds version into message
      */
     public static void log(Level level, String message, boolean showVersion) {
         LOG.log(level, getString(message, showVersion));
     }
 
     /**
-     * Returns the Name and Version as a combined string
+     * Returns the Name and Version as a combined string.
      *
      * @return "$Name v$Version"
      */
@@ -76,7 +87,7 @@ public class MILog {
      * @param message Log message
      */
     public static void debug(String message) {
-        if (MILog.debugMode == true) {
+        if (MILog.DEBUG_MODE) {
             info(message, false);
             MIDebug.info(message, false);
         }

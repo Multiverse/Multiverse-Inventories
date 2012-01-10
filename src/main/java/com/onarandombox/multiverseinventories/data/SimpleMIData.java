@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author dumptruckman
+ * Implementation of MIData.
  */
 public class SimpleMIData implements MIData {
 
@@ -37,6 +37,10 @@ public class SimpleMIData implements MIData {
         this.data = YamlConfiguration.loadConfiguration(this.dataFile);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void save() {
         try {
             this.getData().save(this.dataFile);
@@ -46,10 +50,18 @@ public class SimpleMIData implements MIData {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public FileConfiguration getData() {
         return this.data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<WorldProfile> getWorldProfiles() {
         List<WorldProfile> worldProfiles = new ArrayList<WorldProfile>();
         Set<String> worldNames = this.getData().getKeys(false);

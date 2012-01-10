@@ -10,7 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.HashMap;
 
 /**
- * @author dumptruckman
+ * Simple implementation of WorldProfile.
  */
 public class SimpleWorldProfile implements WorldProfile {
 
@@ -23,12 +23,12 @@ public class SimpleWorldProfile implements WorldProfile {
 
     public SimpleWorldProfile(String worldName, ConfigurationSection section) throws DeserializationException {
         this(worldName);
-        ConfigurationSection playerData = section.getConfigurationSection("playerData");
-        if (playerData == null) {
+        ConfigurationSection data = section.getConfigurationSection("playerData");
+        if (data == null) {
             throw new DeserializationException("Missing playerData for world: " + worldName);
         }
-        for (String playerName : playerData.getKeys(false)) {
-            ConfigurationSection playerSection = playerData.getConfigurationSection(playerName);
+        for (String playerName : data.getKeys(false)) {
+            ConfigurationSection playerSection = data.getConfigurationSection(playerName);
             if (playerSection != null) {
                 this.addPlayerData(new SimplePlayerProfile(playerName, playerSection));
             } else {
@@ -37,22 +37,41 @@ public class SimpleWorldProfile implements WorldProfile {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public World getBukkitWorld() {
         return Bukkit.getWorld(this.getWorld());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getWorld() {
         return this.worldName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setWorld(String worldName) {
         this.worldName = this.worldName;
     }
 
-    public HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
+    /**
+     * @return The map of bukkit players to their player profiles for this world profile.
+     */
+    protected HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
         return this.playerData;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PlayerProfile getPlayerData(OfflinePlayer player) {
         PlayerProfile playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
@@ -62,6 +81,10 @@ public class SimpleWorldProfile implements WorldProfile {
         return playerProfile;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addPlayerData(PlayerProfile playerProfile) {
         this.getPlayerData().put(playerProfile.getPlayer(), playerProfile);
     }

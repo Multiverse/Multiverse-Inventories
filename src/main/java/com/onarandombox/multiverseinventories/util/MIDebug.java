@@ -8,15 +8,22 @@ import java.io.File;
 import java.util.logging.Level;
 
 /**
- * @author dumptruckman
+ * Static plugin debug logger.
  */
 public class MIDebug {
+
+    // BEGIN CHECKSTYLE-SUPPRESSION: Name
     private static DebugLog LOG = null;
     private static String NAME = "Multiverse-Profiles";
     private static String VERSION = "v.???";
+    // END CHECKSTYLE-SUPPRESSION: Name
+
+    private MIDebug() { }
 
     /**
      * Prepares the log for use.
+     *
+     * @param plugin The plugin.
      */
     public static void init(JavaPlugin plugin) {
         PluginDescriptionFile pdf = plugin.getDescription();
@@ -36,7 +43,8 @@ public class MIDebug {
     public static String getString(String message, boolean showVersion) {
         String string = "[" + NAME;
         if (showVersion) string += " " + VERSION;
-        return string += "] " + message;
+        string = string + "] " + message;
+        return string;
     }
 
     /**
@@ -49,7 +57,7 @@ public class MIDebug {
     }
 
     /**
-     * Returns the Name and Version as a combined string
+     * Returns the Name and Version as a combined string.
      *
      * @return "$Name v$Version"
      */
@@ -58,7 +66,7 @@ public class MIDebug {
     }
 
     /**
-     * Custom log method
+     * Custom log method.
      *
      * @param level   Log level
      * @param message Log message
@@ -67,6 +75,13 @@ public class MIDebug {
         MIDebug.log(level, message, false);
     }
 
+    /**
+     * Custom log method.
+     *
+     * @param level   Log level
+     * @param message Log message
+     * @param showVersion True adds version into message
+     */
     public static void log(Level level, String message, boolean showVersion) {
         if (LOG != null) {
             LOG.log(level, getString(message, showVersion));

@@ -23,11 +23,11 @@ import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.SimpleProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.util.MIDebug;
-import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.Sharing;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
+import com.onarandombox.multiverseinventories.util.MIDebug;
+import com.onarandombox.multiverseinventories.util.MILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -43,7 +43,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 
 /**
- * @author dumptruckman
+ * Multiverse-Inventories plugin main class.
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
@@ -52,7 +52,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final Shares bypassShares = new SimpleShares(
             Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE);
 
-    protected CommandHandler commandHandler;
+    private CommandHandler commandHandler;
     private final int requiresProtocol = 9;
     private MultiverseCore core = null;
 
@@ -66,24 +66,32 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
     private ProfileManager profileManager = new SimpleProfileManager();
 
-    final public void onDisable() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void onDisable() {
         // Display disable message/version info
         MILog.info("disabled.", true);
     }
 
-    final public void onEnable() {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void onEnable() {
         MILog.init(this);
         MIPerms.register(this);
 
-        MultiverseCore core;
-        core = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
+        MultiverseCore mvCore;
+        mvCore = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
         // Test if the Core was found, if not we'll disable this plugin.
-        if (core == null) {
+        if (mvCore == null) {
             MILog.info("Multiverse-Core not found, will keep looking.");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        this.setCore(core);
+        this.setCore(mvCore);
 
         if (this.getCore().getProtocolVersion() < this.getRequiredProtocol()) {
             MILog.severe("Your Multiverse-Core is OUT OF DATE");
@@ -121,7 +129,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Register Commands
         this.registerCommands();
-        
+
         // Create initial World Group for first run
         if (this.getMIConfig().isFirstRun()) {
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
@@ -166,23 +174,43 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return this.commandHandler;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void log(Level level, String msg) {
         MILog.log(level, msg, false);
         MIDebug.log(level, msg);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public MultiverseCore getCore() {
         return this.core;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setCore(MultiverseCore core) {
         this.core = core;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getProtocolVersion() {
         return 1;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String dumpVersionInfo(String buffer) {
         buffer += this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: " + this.getDescription().getVersion());
         buffer += this.logAndAddToPasteBinBuffer("Bukkit Version: " + this.getServer().getVersion());
@@ -195,6 +223,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return MILog.getString(string + "\n", false);
     }
 
+    /**
+     * @return the MIConfig object which contains settings for this plugin.
+     */
     public MIConfig getMIConfig() {
         if (this.config == null) {
             // Loads the configuration
@@ -210,6 +241,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return this.config;
     }
 
+    /**
+     * @return the MIData object which contains data for this plugin.
+     */
     public MIData getData() {
         if (this.data == null) {
             // Loads the data
@@ -228,6 +262,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * {@inheritDoc}
      */
+    @Override
     public Messager getMessager() {
         return messager;
     }
@@ -235,6 +270,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setMessager(Messager messager) {
         if (messager == null)
             throw new IllegalArgumentException("The new messager can't be null!");
@@ -242,26 +278,51 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.messager = messager;
     }
 
+    /**
+     * @return The required protocol version of core.
+     */
     public int getRequiredProtocol() {
         return this.requiresProtocol;
     }
 
+    /**
+     * @return The World Group manager for this plugin.
+     */
     public WorldGroupManager getGroupManager() {
         return this.worldGroupManager;
     }
 
+    /**
+     * @return The Profile manager for this plugin.
+     */
     public ProfileManager getProfileManager() {
         return this.profileManager;
     }
 
+    /**
+     * @return A set of default shares (all false)
+     */
     public Shares getDefaultShares() {
         return this.defaultShares;
     }
-    
+
+    /**
+     * @return A set of bypass shares (all true)
+     */
     public Shares getBypassShares() {
         return this.bypassShares;
     }
 
+    /**
+     * Handles the sharing for a player going from world fromWorld to world toWorld with the specified shares object.
+     * This will handle all the switching/saving of inventories/health/exp/hunger/effects.
+     * This method assumes all other checks have been made and WILL process the transfer.
+     *
+     * @param player Player who will be handled.
+     * @param fromWorld The world they are coming from.
+     * @param toWorld The world they are going to.
+     * @param shares The set of shares to affect the transfer.
+     */
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
         WorldProfile fromWorldProfile = this.getProfileManager().getWorldProfile(fromWorld.getName());
         PlayerProfile fromWorldPlayerProfile = fromWorldProfile.getPlayerData(player);
@@ -270,18 +331,18 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // persist current stats for previous world if not sharing
         // then load any saved data
-        if (shares.isSharingInventory() != Sharing.TRUE) {
+        if (!shares.getSharingInventory().isTrue()) {
             fromWorldPlayerProfile.setInventoryContents(player.getInventory().getContents());
             fromWorldPlayerProfile.setArmorContents(player.getInventory().getArmorContents());
             player.getInventory().clear();
             player.getInventory().setContents(toWorldPlayerProfile.getInventoryContents());
             player.getInventory().setArmorContents(toWorldPlayerProfile.getArmorContents());
         }
-        if (shares.isSharingHealth() != Sharing.TRUE) {
+        if (!shares.getSharingHealth().isTrue()) {
             fromWorldPlayerProfile.setHealth(player.getHealth());
             player.setHealth(toWorldPlayerProfile.getHealth());
         }
-        if (shares.isSharingHunger() != Sharing.TRUE) {
+        if (!shares.getSharingHunger().isTrue()) {
             fromWorldPlayerProfile.setFoodLevel(player.getFoodLevel());
             fromWorldPlayerProfile.setExhaustion(player.getExhaustion());
             fromWorldPlayerProfile.setSaturation(player.getSaturation());
@@ -289,7 +350,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setExhaustion(toWorldPlayerProfile.getExhaustion());
             player.setSaturation(toWorldPlayerProfile.getSaturation());
         }
-        if (shares.isSharingExp() != Sharing.TRUE) {
+        if (!shares.getSharingExp().isTrue()) {
             fromWorldPlayerProfile.setExp(player.getExp());
             fromWorldPlayerProfile.setLevel(player.getLevel());
             fromWorldPlayerProfile.setTotalExperience(player.getTotalExperience());
@@ -297,9 +358,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setLevel(toWorldPlayerProfile.getLevel());
             player.setTotalExperience(toWorldPlayerProfile.getTotalExperience());
         }
-        if (shares.isSharingEffects() != Sharing.TRUE) {
+        /*
+        if (!shares.getSharingEffects().isTrue()) {
             // Where is the effects API??
         }
+        */
 
         String playerDataPath = getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile);
         ConfigurationSection section = this.getData().getData().getConfigurationSection(playerDataPath);

@@ -1,22 +1,40 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 
-import java.util.HashMap;
-
+/**
+ * Interface for a World Profile which contains all the player profiles for a world.
+ */
 public interface WorldProfile {
 
-    public World getBukkitWorld();
+    /**
+     * @return The world associated with this profile.
+     */
+    World getBukkitWorld();
 
-    public String getWorld();
+    /**
+     * @return The name of the world associated with this profile.
+     */
+    String getWorld();
 
-    public void setWorld(String worldName);
+    /**
+     * Sets the world this profile is associated with.
+     *
+     * @param worldName Name of world to associate this profile with.
+     */
+    void setWorld(String worldName);
 
-    public HashMap<OfflinePlayer, PlayerProfile> getPlayerData();
+    /**
+     * @param player Player to get data for.
+     * @return The Player profile for the associated player.
+     */
+    PlayerProfile getPlayerData(OfflinePlayer player);
 
-    public PlayerProfile getPlayerData(OfflinePlayer player);
-
-    public void addPlayerData(PlayerProfile playerProfile);
+    /**
+     * Adds a player profile to this world profile.
+     *
+     * @param playerProfile Player profile to add.
+     */
+    void addPlayerData(PlayerProfile playerProfile);
 }

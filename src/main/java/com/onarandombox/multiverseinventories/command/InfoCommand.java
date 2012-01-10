@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author dumptruckman, SwearWord
+ * The /mvi info Command.
  */
 public class InfoCommand extends InventoriesCommand {
 

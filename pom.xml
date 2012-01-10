@@ -97,6 +97,41 @@ and adjust the build number accordingly -->
                     </replacements>
                 </configuration>
             </plugin>
+            <!-- Maven Source Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <parallel>methods</parallel>
+                    <threadCount>10</threadCount>
+                    <excludes>
+                        <exclude>**/TestCommandSender.java</exclude>
+                        <exclude>**/TestInstanceCreator.java</exclude>
+                    </excludes>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.surefire</groupId>
+                        <artifactId>surefire-junit47</artifactId>
+                        <version>2.11</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <enableRulesSummary>true</enableRulesSummary>
+                    <configLocation>${project.basedir}/config/mv_checks.xml</configLocation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>

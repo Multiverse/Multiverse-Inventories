@@ -8,6 +8,7 @@ import java.util.List;
  * An enum containing all messages/strings used by Multiverse.
  */
 public enum MultiverseMessage {
+    // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
     TEST_STRING("a test-string from the enum"),
 
     // Generic Strings
@@ -31,6 +32,7 @@ public enum MultiverseMessage {
     // Info Command
     INFO_WORLD("Info for world: %1", "Groups: %2"),
     INFO_GROUP("Info for group: %1", "Worlds: %2", "Shares: %3");
+    // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
     private final List<String> def;
 

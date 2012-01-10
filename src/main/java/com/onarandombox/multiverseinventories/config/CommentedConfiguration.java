@@ -2,11 +2,21 @@ package com.onarandombox.multiverseinventories.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 
 /**
- * @author dumptruckman
+ * A Configuration wrapper class that allows for comments to be applied to the config paths.
  */
 public class CommentedConfiguration extends YamlConfiguration {
 
@@ -19,10 +29,21 @@ public class CommentedConfiguration extends YamlConfiguration {
         this.file = file;
     }
 
+    /**
+     * Loads this Configuration object into memory.
+     *
+     * @throws Exception If anything goes wrong while loading this Configuration object into memory.
+     */
     public void load() throws Exception {
         this.load(file);
     }
 
+    /**
+     * Saves the file as per normal for YamlConfiguration and then parses the file and inserts
+     * comments where necessary.
+     *
+     * @return True if succesful.
+     */
     public boolean save() {
 
         boolean saved = true;
@@ -195,11 +216,12 @@ public class CommentedConfiguration extends YamlConfiguration {
      * @return Contents of file.  String will be empty in case of any errors.
      */
     private String convertFileToString(File file) {
+        final int bufferSize = 1024;
         if (file != null && file.exists() && file.canRead() && !file.isDirectory()) {
             Writer writer = new StringWriter();
             InputStream is = null;
 
-            char[] buffer = new char[1024];
+            char[] buffer = new char[bufferSize];
             try {
                 is = new FileInputStream(file);
                 Reader reader = new BufferedReader(

@@ -1,17 +1,29 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.profile.WorldProfile;
-
 import java.util.List;
 
 /**
- * @author dumptruckman, SwearWord
+ * Manager class for manipulating the profiles of this plugin that are contained in memory.
  */
 public interface ProfileManager {
 
-    public void addWorldProfile(WorldProfile worldProfile);
+    /**
+     * Adds a world profile to memory.
+     *
+     * @param worldProfile Profile to add.
+     */
+    void addWorldProfile(WorldProfile worldProfile);
 
-    public WorldProfile getWorldProfile(String worldName);
+    /**
+     * @param worldName Name of world to get profile for.
+     * @return the WorldProfile for specified world.
+     */
+    WorldProfile getWorldProfile(String worldName);
 
-    public void setWorldProfiles(List<WorldProfile> worldProfiles);
+    /**
+     * Replaces all of the profiles in memory.  Usually only when loading from config.
+     *
+     * @param worldProfiles List of profiles to manage.
+     */
+    void setWorldProfiles(List<WorldProfile> worldProfiles);
 }

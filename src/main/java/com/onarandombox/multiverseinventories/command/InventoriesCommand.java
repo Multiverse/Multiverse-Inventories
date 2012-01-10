@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
- * @author dumptruckman, SwearWord
+ * A base command class to easily retrieve the plugin associated.
  */
 public abstract class InventoriesCommand extends Command {
 
@@ -18,6 +18,11 @@ public abstract class InventoriesCommand extends Command {
         this.plugin = plugin;
     }
 
+    /**
+     * Returns the instance of MultiverseInventories passed to this command.
+     *
+     * @return Instance of MultiverseInventories
+     */
     protected MultiverseInventories getPlugin() {
         return this.plugin;
     }

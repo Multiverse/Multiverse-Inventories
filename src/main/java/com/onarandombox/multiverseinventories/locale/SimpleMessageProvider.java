@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.locale;
 
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.Font;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,9 +14,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+/**
+ * Implementation of MessageProvider.
+ */
 public class SimpleMessageProvider implements LazyLocaleMessageProvider {
 
-    public final static String LOCALIZATION_FOLDER_NAME = "localization";
+    /**
+     * Name of localization folder.
+     */
+    public static final String LOCALIZATION_FOLDER_NAME = "localization";
 
     private final HashMap<Locale, HashMap<MultiverseMessage, List<String>>> messages;
     private final JavaPlugin plugin;
@@ -34,6 +40,12 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
         }
     }
 
+    /**
+     * Tries to load the locale.
+     *
+     * @param locale Locale to try to load.
+     * @throws LocalizationLoadingException if the Locale could not be loaded.
+     */
     public void maybeLoadLocale(Locale locale) throws LocalizationLoadingException {
         if (!isLocaleLoaded(locale)) {
             try {
@@ -47,6 +59,13 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
                     + locale.toString(), locale);
     }
 
+    /**
+     * Formats a list of strings by passing each through {@link #format(String, Object...)}.
+     *
+     * @param strings List of strings to format.
+     * @param args Arguments to pass in via %n.
+     * @return List of formatted strings.
+     */
     public List<String> format(List<String> strings, Object... args) {
         for (int i = 0; i < strings.size(); i++) {
             //for (String string : strings) {
@@ -56,9 +75,17 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
         return strings;
     }
 
+    /**
+     * Formats a string by replacing ampersand with the Section symbol and %n with the corresponding args
+     * object where n = argument index + 1.
+     *
+     * @param string String to format.
+     * @param args Arguments to pass in via %n.
+     * @return The formatted string.
+     */
     public String format(String string, Object... args) {
         // Replaces & with the Section character
-        string = string.replaceAll("&", Character.toString((char) 167));
+        string = string.replaceAll("&", Character.toString(Font.SECTION_SYMBOL));
         // If there are arguments, %n notations in the message will be
         // replaced
         if (args != null) {
@@ -165,12 +192,12 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
      */
     @Override
     public List<String> getMessages(MultiverseMessage key, Object... args) {
-        List<String> messages;
+        List<String> result;
         if (!isLocaleLoaded(locale)) {
-            messages = format(key.getDefault(), args);
+            result = format(key.getDefault(), args);
         } else
-            messages = format(this.messages.get(locale).get(key), args);
-        return messages;
+            result = format(this.messages.get(locale).get(key), args);
+        return result;
     }
 
     /**

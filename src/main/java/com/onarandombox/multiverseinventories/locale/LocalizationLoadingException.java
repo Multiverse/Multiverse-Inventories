@@ -29,15 +29,17 @@ public class LocalizationLoadingException extends IOException {
     }
 
     /**
-     * @return The locale we were trying to load.
+     * Retrieves the locale that was attempting to be loaded.
+     *
+     * @return The locale that was attempting to be loaded.
      */
     public Locale getLocale() {
         return locale;
     }
 
+    @Override
     public String getMessage() {
         return super.getMessage() + " (While trying to load localization for locale " + getLocale() + ")";
     }
-
 }
 

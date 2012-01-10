@@ -4,45 +4,119 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * Interface for a PlayerProfile which controls all the world specific data for a player.
+ */
 public interface PlayerProfile {
 
-    public void serialize(ConfigurationSection playerData);
+    /**
+     * Adds the data of this class to the given ConfigurationSection.
+     *
+     * @param playerData The ConfigurationSection to add this Profile to.
+     */
+    void serialize(ConfigurationSection playerData);
 
-    public OfflinePlayer getPlayer();
+    /**
+     * @return the Player associated with this profile.
+     */
+    OfflinePlayer getPlayer();
 
-    public ItemStack[] getInventoryContents();
+    /**
+     * @return the Contents of the Profile's inventory.
+     */
+    ItemStack[] getInventoryContents();
 
-    public void setInventoryContents(ItemStack[] inventoryContents);
+    /**
+     * Sets the inventory contents for this Profile.
+     * @param inventoryContents Inventory contents for this profile.
+     */
+    void setInventoryContents(ItemStack[] inventoryContents);
 
-    public ItemStack[] getArmorContents();
+    /**
+     * @return the Contents of the Profile's armor.
+     */
+    ItemStack[] getArmorContents();
 
-    public void setArmorContents(ItemStack[] armorContents);
+    /**
+     * Sets the armor contents for this Profile.
+     * @param armorContents Armor contents for this profile.
+     */
+    void setArmorContents(ItemStack[] armorContents);
 
-    public Integer getHealth();
+    /**
+     * @return The health of this Profile.
+     */
+    Integer getHealth();
 
-    public void setHealth(Integer health);
+    /**
+     * Sets the health for this Profile.
+     * @param health New health for Profile.
+     */
+    void setHealth(Integer health);
 
-    public Float getExp();
+    /**
+     * @return The exp of this Profile.
+     */
+    Float getExp();
 
-    public void setExp(Float exp);
+    /**
+     * Sets the exp for this Profile.
+     * @param exp New exp for Profile.
+     */
+    void setExp(Float exp);
 
-    public Integer getTotalExperience();
+    /**
+     * @return The total exp of this Profile.
+     */
+    Integer getTotalExperience();
 
-    public void setTotalExperience(Integer totalExperience);
+    /**
+     * Sets the total exp for this Profile.
+     * @param totalExperience exp New total exp for Profile.
+     */
+    void setTotalExperience(Integer totalExperience);
 
-    public Integer getLevel();
+    /**
+     * @return The level of this Profile.
+     */
+    Integer getLevel();
 
-    public void setLevel(Integer level);
+    /**
+     * Sets the level for this Profile.
+     * @param level New level for Profile.
+     */
+    void setLevel(Integer level);
 
-    public Integer getFoodLevel();
+    /**
+     * @return The food level of this Profile.
+     */
+    Integer getFoodLevel();
 
-    public void setFoodLevel(Integer foodLevel);
+    /**
+     * Sets the food level for this Profile.
+     * @param foodLevel New food level for Profile.
+     */
+    void setFoodLevel(Integer foodLevel);
 
-    public Float getExhaustion();
+    /**
+     * @return The exhaustion of this Profile.
+     */
+    Float getExhaustion();
 
-    public void setExhaustion(Float exhaustion);
+    /**
+     * Sets the exhaustion for this Profile.
+     * @param exhaustion New exhaustion for Profile.
+     */
+    void setExhaustion(Float exhaustion);
 
-    public Float getSaturation();
+    /**
+     * @return The saturation of this Profile.
+     */
+    Float getSaturation();
 
-    public void setSaturation(Float saturation);
+    /**
+     * Sets the saturation for this Profile.
+     * @param saturation New saturation for Profile.
+     */
+    void setSaturation(Float saturation);
 }

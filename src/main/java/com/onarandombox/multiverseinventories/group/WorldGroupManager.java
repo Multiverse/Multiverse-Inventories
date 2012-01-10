@@ -1,19 +1,39 @@
 package com.onarandombox.multiverseinventories.group;
 
-import com.onarandombox.multiverseinventories.group.WorldGroup;
-
 import java.util.List;
 
 /**
- * @author dumptruckman, SwearWord
+ * Manager class for manipulating the groups of this plugin that are contained in memory.
  */
 public interface WorldGroupManager {
 
-    public WorldGroup getGroup(String groupName);
+    /**
+     * Retrieves the WorldGroup associated with the given name.  Casing is ignored.
+     *
+     * @param groupName Name of WorldGroup to retrieve.
+     * @return The world group by the name given or null if one doesn't exist by that name.
+     */
+    WorldGroup getGroup(String groupName);
 
-    public List<WorldGroup> getWorldGroups(String worldName);
+    /**
+     * Retrieves all of the World Groups associated with the given world.  Casing is ignored.
+     *
+     * @param worldName Name of the world to get groups for.
+     * @return List of World Groups associated with the world or null if none.
+     */
+    List<WorldGroup> getWorldGroups(String worldName);
 
-    public void setWorldGroups(List<WorldGroup> worldGroups);
+    /**
+     * Sets up the World Groups in memory.
+     *
+     * @param worldGroups List of World Groups to store in memory.
+     */
+    void setWorldGroups(List<WorldGroup> worldGroups);
 
-    public void addWorldGroup(WorldGroup worldGroup);
+    /**
+     * Adds a World Group to the collection in memory.
+     *
+     * @param worldGroup World group to add.
+     */
+    void addWorldGroup(WorldGroup worldGroup);
 }

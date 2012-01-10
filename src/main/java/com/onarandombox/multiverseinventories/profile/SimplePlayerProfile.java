@@ -15,8 +15,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public class SimplePlayerProfile implements PlayerProfile {
 
-    private ItemStack[] inventoryContents = new ItemStack[36];
-    private ItemStack[] armorContents = new ItemStack[4];
+    private static final int INVENTORY_SIZE = 36;
+    private static final int ARMOR_SIZE = 4;
+    private ItemStack[] inventoryContents = new ItemStack[INVENTORY_SIZE];
+    private ItemStack[] armorContents = new ItemStack[ARMOR_SIZE];
+
+    // BEGIN CHECKSTYLE-SUPPRESSION: MagicNumberCheck
     private Integer health = 20;
     private Float exp = 0F;
     private Integer totalExperience = 0;
@@ -24,6 +28,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     private Integer foodLevel = 20;
     private Float exhaustion = 0F;
     private Float saturation = 5F;
+    // END CHECKSTYLE-SUPPRESSION: MagicNumberCheck
 
     private OfflinePlayer player;
 
@@ -42,7 +47,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     private void parsePlayerStats(String[] statsArray) {
         for (String stat : statsArray) {
             try {
-                String[] statValues = DataStrings.splitValue(stat);
+                String[] statValues = DataStrings.splitEntry(stat);
                 if (statValues[0].equals(DataStrings.PLAYER_HEALTH)) {
                     this.setHealth(Integer.valueOf(statValues[1]));
                 } else if (statValues[0].equals(DataStrings.PLAYER_EXPERIENCE)) {
@@ -68,14 +73,14 @@ public class SimplePlayerProfile implements PlayerProfile {
     }
 
     private void parsePlayerInventory(String[] inventoryArray) {
-        ItemStack[] inventoryContents = MinecraftTools.fillWithAir(new ItemStack[36]);
+        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[INVENTORY_SIZE]);
         for (String itemString : inventoryArray) {
-            String[] itemValues = DataStrings.splitValue(itemString);
+            String[] itemValues = DataStrings.splitEntry(itemString);
             try {
                 MILog.debug("Unwrapping item from string: " + itemString);
                 ItemWrapper itemWrapper = new SimpleItemWrapper(itemValues[1]);
                 MILog.debug("Unwrapped item: " + itemWrapper.getItem().toString());
-                inventoryContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
+                invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
                     MILog.debug("Could not parse item string: " + itemString);
@@ -83,15 +88,15 @@ public class SimplePlayerProfile implements PlayerProfile {
                 }
             }
         }
-        this.setInventoryContents(inventoryContents);
+        this.setInventoryContents(invContents);
     }
 
     private void parsePlayerArmor(String[] armorArray) {
-        ItemStack[] armorContents = MinecraftTools.fillWithAir(new ItemStack[4]);
+        ItemStack[] armContents = MinecraftTools.fillWithAir(new ItemStack[ARMOR_SIZE]);
         for (String itemString : armorArray) {
-            String[] itemValues = DataStrings.splitValue(itemString);
+            String[] itemValues = DataStrings.splitEntry(itemString);
             try {
-                armorContents[Integer.valueOf(itemValues[0])] = new SimpleItemWrapper(itemValues[1]).getItem();
+                armContents[Integer.valueOf(itemValues[0])] = new SimpleItemWrapper(itemValues[1]).getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
                     MILog.debug("Could not parse armor string: " + itemString);
@@ -99,9 +104,13 @@ public class SimplePlayerProfile implements PlayerProfile {
                 }
             }
         }
-        this.setArmorContents(armorContents);
+        this.setArmorContents(armContents);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void serialize(ConfigurationSection playerData) {
         StringBuilder builder = new StringBuilder();
 
@@ -123,7 +132,7 @@ public class SimplePlayerProfile implements PlayerProfile {
 
         builder = new StringBuilder();
         boolean first = true;
-        for (Integer i = 0; i < 36; i++) {
+        for (Integer i = 0; i < INVENTORY_SIZE; i++) {
             if (this.getInventoryContents()[i] != null && this.getInventoryContents()[i].getTypeId() != 0) {
                 if (first) {
                     first = false;
@@ -137,7 +146,7 @@ public class SimplePlayerProfile implements PlayerProfile {
 
         builder = new StringBuilder();
         first = true;
-        for (Integer i = 0; i < 4; i++) {
+        for (Integer i = 0; i < ARMOR_SIZE; i++) {
             if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
                 if (first) {
                     first = false;
@@ -150,78 +159,154 @@ public class SimplePlayerProfile implements PlayerProfile {
         playerData.set("armorContents", builder.toString());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public OfflinePlayer getPlayer() {
         return this.player;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ItemStack[] getInventoryContents() {
         return this.inventoryContents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setInventoryContents(ItemStack[] inventoryContents) {
         this.inventoryContents = inventoryContents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ItemStack[] getArmorContents() {
         return this.armorContents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setArmorContents(ItemStack[] armorContents) {
         this.armorContents = armorContents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getHealth() {
         return this.health;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setHealth(Integer health) {
         this.health = health;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Float getExp() {
         return this.exp;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setExp(Float exp) {
         this.exp = exp;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getTotalExperience() {
         return this.totalExperience;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setTotalExperience(Integer totalExperience) {
         this.totalExperience = totalExperience;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getLevel() {
         return this.level;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setLevel(Integer level) {
         this.level = level;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getFoodLevel() {
         return this.foodLevel;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setFoodLevel(Integer foodLevel) {
         this.foodLevel = foodLevel;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Float getExhaustion() {
         return this.exhaustion;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setExhaustion(Float exhaustion) {
         this.exhaustion = exhaustion;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Float getSaturation() {
         return this.saturation;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setSaturation(Float saturation) {
         this.saturation = saturation;
     }

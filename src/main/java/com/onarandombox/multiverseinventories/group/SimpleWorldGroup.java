@@ -2,10 +2,10 @@ package com.onarandombox.multiverseinventories.group;
 
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.group.blacklist.ItemBlacklist;
-import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
+import com.onarandombox.multiverseinventories.util.DeserializationException;
+import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * @author dumptruckman
+ * Implementation of WorldGroup.
  */
 public class SimpleWorldGroup implements WorldGroup {
 
@@ -23,7 +23,7 @@ public class SimpleWorldGroup implements WorldGroup {
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
     private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
-    
+
     public SimpleWorldGroup(String name) {
         this.name = name;
     }
@@ -47,69 +47,102 @@ public class SimpleWorldGroup implements WorldGroup {
         if (data.contains("shares")) {
             List<String> sharesList = data.getStringList("shares");
             if (sharesList != null) {
-                this.setShares(SimpleShares.parseShares(sharesList));
+                this.setShares(new SimpleShares(sharesList));
             } else {
                 MILog.warning("Shares formatted incorrectly for group: " + name);
             }
         }
+        /*
         if (data.contains("blacklist")) {
-            
+
         }
+        */
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void serialize(ConfigurationSection groupData) {
         groupData.set("worlds", Lists.newArrayList(this.getWorlds()));
         List<String> sharesList = this.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             groupData.set("shares", sharesList);
         }
+        /*
         if (!this.getItemBlacklist().isEmpty()) {
 
         }
+        */
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getName() {
         return this.name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addWorld(String worldName) {
         this.worlds.add(worldName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addWorld(World world) {
         this.worlds.add(world.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public HashSet<String> getWorlds() {
         return this.worlds;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setShares(Shares shares) {
         this.shares = shares;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Shares getShares() {
         return this.shares;
     }
 
+    /*
     protected HashMap<String, ItemBlacklist> getItemBlacklist() {
         return this.itemBlacklist;
     }
+    */
 
+    /*
     @Override
     public ItemBlacklist getItemBlacklist(String worldName) {
 
         return null;
     }
+    */
 }
