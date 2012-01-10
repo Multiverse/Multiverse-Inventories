@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
+import com.onarandombox.multiverseinventories.permission.MIPerms;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
@@ -44,16 +45,28 @@ public class MIPlayerListener extends PlayerListener {
             return;
         }
 
+        boolean hasBypass = MIPerms.BYPASS_WORLD.hasBypass(player, toWorld.getName());
+        if (hasBypass) {
+            return;
+        }
         Shares currentShares = new SimpleShares();
         List<WorldGroup> toWorldGroups = this.plugin.getGroupManager().getWorldGroups(toWorld.getName());
         if (toWorldGroups != null) {
             for (WorldGroup toWorldGroup : toWorldGroups) {
                 if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {
-                    currentShares.mergeShares(toWorldGroup.getShares());
+                    if (MIPerms.BYPASS_GROUP.hasBypass(player, toWorldGroup.getName())) {
+                        hasBypass = true;
+                    } else {
+                        currentShares.mergeShares(toWorldGroup.getShares());
+                    }
                 }
             }
         }
-        currentShares.mergeShares(this.plugin.getDefaultShares());
+        if (hasBypass) {
+            currentShares.mergeShares(this.plugin.getBypassShares());
+        } else {
+            currentShares.mergeShares(this.plugin.getDefaultShares());
+        }
 
         this.plugin.handleSharing(player, fromWorld, toWorld, currentShares);
     }

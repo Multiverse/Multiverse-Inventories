@@ -49,6 +49,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private final Shares defaultShares = new SimpleShares(
             Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE);
+    private final Shares bypassShares = new SimpleShares(
+            Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE);
 
     protected CommandHandler commandHandler;
     private final int requiresProtocol = 9;
@@ -253,7 +255,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     public Shares getDefaultShares() {
-        return defaultShares;
+        return this.defaultShares;
+    }
+    
+    public Shares getBypassShares() {
+        return this.bypassShares;
     }
 
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
