@@ -19,6 +19,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     private ItemStack[] armorContents = new ItemStack[4];
     private Integer health = 20;
     private Float exp = 0F;
+    private Integer totalExperience = 0;
     private Integer level = 0;
     private Integer foodLevel = 20;
     private Float exhaustion = 0F;
@@ -46,6 +47,8 @@ public class SimplePlayerProfile implements PlayerProfile {
                     this.setHealth(Integer.valueOf(statValues[1]));
                 } else if (statValues[0].equals(DataStrings.PLAYER_EXPERIENCE)) {
                     this.setExp(Float.valueOf(statValues[1]));
+                } else if (statValues[0].equals(DataStrings.PLAYER_TOTAL_EXPERIENCE)) {
+                    this.setTotalExperience(Integer.valueOf(statValues[1]));
                 } else if (statValues[0].equals(DataStrings.PLAYER_LEVEL)) {
                     this.setLevel(Integer.valueOf(statValues[1]));
                 } else if (statValues[0].equals(DataStrings.PLAYER_FOOD_LEVEL)) {
@@ -105,6 +108,8 @@ public class SimplePlayerProfile implements PlayerProfile {
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_HEALTH, this.getHealth()));
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_EXPERIENCE, this.getExp()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.PLAYER_TOTAL_EXPERIENCE, this.getTotalExperience()));
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_LEVEL, this.getLevel()));
         builder.append(DataStrings.GENERAL_DELIMITER);
@@ -179,6 +184,14 @@ public class SimplePlayerProfile implements PlayerProfile {
 
     public void setExp(Float exp) {
         this.exp = exp;
+    }
+
+    public Integer getTotalExperience() {
+        return this.totalExperience;
+    }
+
+    public void setTotalExperience(Integer totalExperience) {
+        this.totalExperience = totalExperience;
     }
 
     public Integer getLevel() {

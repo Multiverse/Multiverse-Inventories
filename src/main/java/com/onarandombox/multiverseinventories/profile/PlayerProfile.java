@@ -26,6 +26,10 @@ public interface PlayerProfile {
 
     public void setExp(Float exp);
 
+    public Integer getTotalExperience();
+
+    public void setTotalExperience(Integer totalExperience);
+
     public Integer getLevel();
 
     public void setLevel(Integer level);

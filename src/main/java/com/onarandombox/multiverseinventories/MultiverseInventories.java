@@ -286,8 +286,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (shares.isSharingExp() != Sharing.TRUE) {
             fromWorldPlayerProfile.setExp(player.getExp());
             fromWorldPlayerProfile.setLevel(player.getLevel());
+            fromWorldPlayerProfile.setTotalExperience(player.getTotalExperience());
             player.setExp(toWorldPlayerProfile.getExp());
             player.setLevel(toWorldPlayerProfile.getLevel());
+            player.setTotalExperience(toWorldPlayerProfile.getTotalExperience());
         }
         if (shares.isSharingEffects() != Sharing.TRUE) {
             // Where is the effects API??

@@ -16,6 +16,7 @@ public class DataStrings {
     public static final String ITEM_ENCHANTS = "e";
     public static final String PLAYER_HEALTH = "hp";
     public static final String PLAYER_EXPERIENCE = "xp";
+    public static final String PLAYER_TOTAL_EXPERIENCE = "txp";
     public static final String PLAYER_LEVEL = "el";
     public static final String PLAYER_FOOD_LEVEL = "fl";
     public static final String PLAYER_EXHAUSTION = "ex";
