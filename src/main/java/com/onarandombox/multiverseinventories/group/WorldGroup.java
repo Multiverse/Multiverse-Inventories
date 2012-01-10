@@ -22,9 +22,5 @@ public interface WorldGroup {
 
     public Shares getShares();
 
-    public String getPermission();
-
-    public void setPermission(String permission);
-
     public void serialize(ConfigurationSection groupData);
 }

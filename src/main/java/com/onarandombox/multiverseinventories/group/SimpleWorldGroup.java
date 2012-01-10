@@ -18,7 +18,6 @@ import java.util.List;
 public class SimpleWorldGroup implements WorldGroup {
 
     private String name = "";
-    private String permission = null;
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
     
@@ -50,14 +49,6 @@ public class SimpleWorldGroup implements WorldGroup {
                 MILog.warning("Shares formatted incorrectly for group: " + name);
             }
         }
-        if (data.contains("permission")) {
-            String permission = data.getString("permission");
-            if (permission != null) {
-                this.setPermission(permission);
-            } else {
-                MILog.warning("Permission formatted incorrectly for group: " + name);
-            }
-        }
     }
 
     public void serialize(ConfigurationSection groupData) {
@@ -65,9 +56,6 @@ public class SimpleWorldGroup implements WorldGroup {
         List<String> sharesList = this.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             groupData.set("shares", sharesList);
-        }
-        if (this.getPermission() != null) {
-            groupData.set("permission", this.getPermission());
         }
     }
 
@@ -103,15 +91,5 @@ public class SimpleWorldGroup implements WorldGroup {
     @Override
     public Shares getShares() {
         return this.shares;
-    }
-
-    @Override
-    public String getPermission() {
-        return this.permission;
-    }
-
-    @Override
-    public void setPermission(String permission) {
-        this.permission = permission;
     }
 }
