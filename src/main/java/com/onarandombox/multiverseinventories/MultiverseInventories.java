@@ -31,6 +31,8 @@ import com.onarandombox.multiverseinventories.util.MILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -38,6 +40,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.logging.Level;
@@ -87,7 +91,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         mvCore = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
         // Test if the Core was found, if not we'll disable this plugin.
         if (mvCore == null) {
-            MILog.info("Multiverse-Core not found, will keep looking.");
+            MILog.severe("Multiverse-Core not found, disabling...");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -168,6 +172,20 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 c.addKey("mvi");
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+        if (!this.isEnabled()) {
+            sender.sendMessage("This plugin is Disabled!");
+            return true;
+        }
+        ArrayList<String> allArgs = new ArrayList<String>(Arrays.asList(args));
+        allArgs.add(0, command.getName());
+        return this.getCommandHandler().locateAndRunCommand(sender, allArgs);
     }
 
     private CommandHandler getCommandHandler() {
@@ -318,10 +336,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * This will handle all the switching/saving of inventories/health/exp/hunger/effects.
      * This method assumes all other checks have been made and WILL process the transfer.
      *
-     * @param player Player who will be handled.
+     * @param player    Player who will be handled.
      * @param fromWorld The world they are coming from.
-     * @param toWorld The world they are going to.
-     * @param shares The set of shares to affect the transfer.
+     * @param toWorld   The world they are going to.
+     * @param shares    The set of shares to affect the transfer.
      */
     public void handleSharing(Player player, World fromWorld, World toWorld, Shares shares) {
         WorldProfile fromWorldProfile = this.getProfileManager().getWorldProfile(fromWorld.getName());
