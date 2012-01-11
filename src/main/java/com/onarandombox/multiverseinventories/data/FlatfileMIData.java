@@ -79,7 +79,7 @@ public class FlatfileMIData implements MIData {
      */
     @Override
     public boolean updatePlayerData(WorldProfile worldProfile, PlayerProfile playerProfile) {
-        String playerDataPath = getPlayerDataString(worldProfile, playerProfile);
+        String playerDataPath = getPlayerDataString(playerProfile);
         File worldFile = this.getWorldFile(worldProfile.getWorld());
         FileConfiguration worldData = this.getWorldConfig(worldFile);
         ConfigurationSection section = worldData.getConfigurationSection(playerDataPath);
@@ -98,10 +98,9 @@ public class FlatfileMIData implements MIData {
         return true;
     }
 
-    private String getPlayerDataString(WorldProfile worldProfile, PlayerProfile playerProfile) {
+    private String getPlayerDataString(PlayerProfile playerProfile) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(worldProfile.getWorld());
-        stringBuilder.append(".playerData.");
+        stringBuilder.append("playerData.");
         stringBuilder.append(playerProfile.getPlayer().getName());
         return stringBuilder.toString();
     }
