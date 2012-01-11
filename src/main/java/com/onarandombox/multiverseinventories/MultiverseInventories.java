@@ -8,7 +8,7 @@ import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
 import com.onarandombox.multiverseinventories.data.MIData;
-import com.onarandombox.multiverseinventories.data.SimpleMIData;
+import com.onarandombox.multiverseinventories.data.FlatfileMIData;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
@@ -245,7 +245,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new SimpleMIData(this);
+                this.data = new FlatfileMIData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
                 MILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
                 MILog.severe(e.getMessage());
@@ -362,28 +362,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             // Where is the effects API??
         }
         */
-
-        String playerDataPath = getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile);
-        ConfigurationSection section = this.getData().getData().getConfigurationSection(playerDataPath);
-        if (section == null) {
-            section = this.getData().getData().createSection(playerDataPath);
-        }
-        fromWorldPlayerProfile.serialize(section);
-
-        playerDataPath = getPlayerDataString(toWorldProfile, toWorldPlayerProfile);
-        section = this.getData().getData().getConfigurationSection(playerDataPath);
-        if (section == null) {
-            section = this.getData().getData().createSection(playerDataPath);
-        }
-        toWorldPlayerProfile.serialize(section);
-        this.getData().save();
-    }
-
-    private String getPlayerDataString(WorldProfile worldProfile, PlayerProfile playerProfile) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(worldProfile.getWorld());
-        stringBuilder.append(".playerData.");
-        stringBuilder.append(playerProfile.getPlayer().getName());
-        return stringBuilder.toString();
+        
+        this.getData().updatePlayerData(fromWorldProfile, fromWorldPlayerProfile);
+        this.getData().updatePlayerData(toWorldProfile, toWorldPlayerProfile);
     }
 }
