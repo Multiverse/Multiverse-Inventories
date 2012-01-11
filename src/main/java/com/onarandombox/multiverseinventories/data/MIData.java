@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.data;
 
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -11,16 +12,13 @@ import java.util.List;
 public interface MIData {
 
     /**
-     * Convenience method for saving the underlying FileConfiguration object.
-     */
-    void save();
-
-    /**
-     * Retrieves the underlying FileConfiguration object for direct manipulation of the data.
+     * Updates the persisted data for a player profile for a specific world profile.
      *
-     * @return the underlying FileConfiguration object.
+     * @param worldProfile The profile for the world the player's data is associated with.
+     * @param playerProfile The profile for the player that is being updated.
+     * @return True if successfully updated.
      */
-    FileConfiguration getData();
+    boolean updatePlayerData(WorldProfile worldProfile, PlayerProfile playerProfile);
 
     /**
      * Retrieves a list of the World Profiles from the data file.
