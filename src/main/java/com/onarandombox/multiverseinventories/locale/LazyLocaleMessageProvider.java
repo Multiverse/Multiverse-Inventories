@@ -20,7 +20,7 @@ public interface LazyLocaleMessageProvider extends MessageProvider {
      * @throws NoSuchLocalizationException  When no localization was found for the desired locale.
      */
     void loadLocale(Locale locale) throws NoSuchLocalizationException, // SUPPRESS CHECKSTYLE: Redundant
-            LocalizationLoadingException;
+            LocalizationLoadingException; // SUPPRESS CHECKSTYLE: Redundant
 
     /**
      * Retrieves all loaded localizations.

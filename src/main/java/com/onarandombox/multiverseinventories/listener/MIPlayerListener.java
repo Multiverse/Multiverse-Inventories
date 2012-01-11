@@ -61,9 +61,12 @@ public class MIPlayerListener extends PlayerListener {
         }
         if (hasBypass) {
             currentShares.mergeShares(this.plugin.getBypassShares());
-        } else {
+        }
+        /*
+        else {
             currentShares.mergeShares(this.plugin.getDefaultShares());
         }
+        */
 
         this.plugin.handleSharing(player, fromWorld, toWorld, currentShares);
     }

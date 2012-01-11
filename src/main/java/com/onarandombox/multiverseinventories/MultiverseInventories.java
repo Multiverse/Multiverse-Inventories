@@ -24,7 +24,6 @@ import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.SimpleProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
-import com.onarandombox.multiverseinventories.share.Sharing;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.util.MILog;
@@ -47,10 +46,8 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
-    private final Shares defaultShares = new SimpleShares(
-            Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE);
-    private final Shares bypassShares = new SimpleShares(
-            Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE);
+    //private final Shares defaultShares = new SimpleShares(false, false, false, false, false);
+    private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
 
     private CommandHandler commandHandler;
     private final int requiresProtocol = 9;
@@ -135,8 +132,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
             if (!mvWorlds.isEmpty()) {
                 WorldGroup worldGroup = new SimpleWorldGroup("default");
-                worldGroup.setShares(new SimpleShares(Sharing.TRUE, Sharing.TRUE,
-                        Sharing.TRUE, Sharing.TRUE, Sharing.TRUE));
+                worldGroup.setShares(new SimpleShares(true, true,
+                        true, true, true));
                 for (MultiverseWorld mvWorld : mvWorlds) {
                     worldGroup.addWorld(mvWorld.getName());
                 }
@@ -302,9 +299,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * @return A set of default shares (all false)
      */
+    /*
     public Shares getDefaultShares() {
         return this.defaultShares;
     }
+    */
 
     /**
      * @return A set of bypass shares (all true)
@@ -331,18 +330,18 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // persist current stats for previous world if not sharing
         // then load any saved data
-        if (!shares.getSharingInventory().isTrue()) {
+        if (!shares.isSharingInventory()) {
             fromWorldPlayerProfile.setInventoryContents(player.getInventory().getContents());
             fromWorldPlayerProfile.setArmorContents(player.getInventory().getArmorContents());
             player.getInventory().clear();
             player.getInventory().setContents(toWorldPlayerProfile.getInventoryContents());
             player.getInventory().setArmorContents(toWorldPlayerProfile.getArmorContents());
         }
-        if (!shares.getSharingHealth().isTrue()) {
+        if (!shares.isSharingHealth()) {
             fromWorldPlayerProfile.setHealth(player.getHealth());
             player.setHealth(toWorldPlayerProfile.getHealth());
         }
-        if (!shares.getSharingHunger().isTrue()) {
+        if (!shares.isSharingHunger()) {
             fromWorldPlayerProfile.setFoodLevel(player.getFoodLevel());
             fromWorldPlayerProfile.setExhaustion(player.getExhaustion());
             fromWorldPlayerProfile.setSaturation(player.getSaturation());
@@ -350,7 +349,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setExhaustion(toWorldPlayerProfile.getExhaustion());
             player.setSaturation(toWorldPlayerProfile.getSaturation());
         }
-        if (!shares.getSharingExp().isTrue()) {
+        if (!shares.isSharingExp()) {
             fromWorldPlayerProfile.setExp(player.getExp());
             fromWorldPlayerProfile.setLevel(player.getLevel());
             fromWorldPlayerProfile.setTotalExperience(player.getTotalExperience());
@@ -359,7 +358,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setTotalExperience(toWorldPlayerProfile.getTotalExperience());
         }
         /*
-        if (!shares.getSharingEffects().isTrue()) {
+        if (!shares.isSharingEffects()) {
             // Where is the effects API??
         }
         */
