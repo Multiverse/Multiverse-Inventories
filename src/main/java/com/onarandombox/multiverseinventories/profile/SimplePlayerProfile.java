@@ -5,6 +5,7 @@ import com.onarandombox.multiverseinventories.item.ItemWrapper;
 import com.onarandombox.multiverseinventories.item.SimpleItemWrapper;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
+import com.onarandombox.multiverseinventories.util.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,20 +16,15 @@ import org.bukkit.inventory.ItemStack;
  */
 public class SimplePlayerProfile implements PlayerProfile {
 
-    private static final int INVENTORY_SIZE = 36;
-    private static final int ARMOR_SIZE = 4;
-    private ItemStack[] inventoryContents = new ItemStack[INVENTORY_SIZE];
-    private ItemStack[] armorContents = new ItemStack[ARMOR_SIZE];
-
-    // BEGIN CHECKSTYLE-SUPPRESSION: MagicNumberCheck
-    private Integer health = 20;
-    private Float exp = 0F;
-    private Integer totalExperience = 0;
-    private Integer level = 0;
-    private Integer foodLevel = 20;
-    private Float exhaustion = 0F;
-    private Float saturation = 5F;
-    // END CHECKSTYLE-SUPPRESSION: MagicNumberCheck
+    private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
+    private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
+    private Integer health = PlayerStats.HEALTH;
+    private Float exp = PlayerStats.EXPERIENCE;
+    private Integer totalExperience = PlayerStats.TOTAL_EXPERIENCE;
+    private Integer level = PlayerStats.LEVEL;
+    private Integer foodLevel = PlayerStats.FOOD_LEVEL;
+    private Float exhaustion = PlayerStats.EXHAUSTION;
+    private Float saturation = PlayerStats.SATURATION;
 
     private OfflinePlayer player;
 
@@ -73,7 +69,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     }
 
     private void parsePlayerInventory(String[] inventoryArray) {
-        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[INVENTORY_SIZE]);
+        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]);
         for (String itemString : inventoryArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
@@ -92,7 +88,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     }
 
     private void parsePlayerArmor(String[] armorArray) {
-        ItemStack[] armContents = MinecraftTools.fillWithAir(new ItemStack[ARMOR_SIZE]);
+        ItemStack[] armContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
         for (String itemString : armorArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
@@ -132,7 +128,7 @@ public class SimplePlayerProfile implements PlayerProfile {
 
         builder = new StringBuilder();
         boolean first = true;
-        for (Integer i = 0; i < INVENTORY_SIZE; i++) {
+        for (Integer i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
             if (this.getInventoryContents()[i] != null && this.getInventoryContents()[i].getTypeId() != 0) {
                 if (first) {
                     first = false;
@@ -146,7 +142,7 @@ public class SimplePlayerProfile implements PlayerProfile {
 
         builder = new StringBuilder();
         first = true;
-        for (Integer i = 0; i < ARMOR_SIZE; i++) {
+        for (Integer i = 0; i < PlayerStats.ARMOR_SIZE; i++) {
             if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
                 if (first) {
                     first = false;
