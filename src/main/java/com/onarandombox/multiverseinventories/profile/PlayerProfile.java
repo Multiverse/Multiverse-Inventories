@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -14,7 +13,7 @@ public interface PlayerProfile {
     /**
      * @return A map containing all the player data to be saved to disk.
      */
-    public Map<String, Object> serialize();
+    Map<String, Object> serialize();
 
     /**
      * @return the Player associated with this profile.

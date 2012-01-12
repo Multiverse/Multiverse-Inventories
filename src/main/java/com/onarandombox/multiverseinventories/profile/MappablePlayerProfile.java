@@ -47,6 +47,9 @@ public class MappablePlayerProfile implements PlayerProfile {
         }
     }
 
+    /**
+     * @param statsArray Parses these values to fill out this Profile.
+     */
     protected void parsePlayerStats(String[] statsArray) {
         for (String stat : statsArray) {
             try {
@@ -75,6 +78,9 @@ public class MappablePlayerProfile implements PlayerProfile {
         }
     }
 
+    /**
+     * @param inventoryArray these values to fill out this Profile.
+     */
     protected void parsePlayerInventory(String[] inventoryArray) {
         ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]);
         for (String itemString : inventoryArray) {
@@ -94,6 +100,9 @@ public class MappablePlayerProfile implements PlayerProfile {
         this.setInventoryContents(invContents);
     }
 
+    /**
+     * @param armorArray Parses these values to fill out this Profile.
+     */
     protected void parsePlayerArmor(String[] armorArray) {
         ItemStack[] armContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
         for (String itemString : armorArray) {

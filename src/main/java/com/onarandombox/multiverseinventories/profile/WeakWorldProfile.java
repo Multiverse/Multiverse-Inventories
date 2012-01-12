@@ -52,7 +52,7 @@ public class WeakWorldProfile implements WorldProfile {
     protected Map<OfflinePlayer, PlayerProfile> getPlayerData() {
         return this.playerData;
     }
-    
+
     private MIData getData() {
         return this.data;
     }
