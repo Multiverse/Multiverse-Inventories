@@ -4,17 +4,17 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 /**
  * Interface for a PlayerProfile which controls all the world specific data for a player.
  */
 public interface PlayerProfile {
 
     /**
-     * Adds the data of this class to the given ConfigurationSection.
-     *
-     * @param playerData The ConfigurationSection to add this Profile to.
+     * @return A map containing all the player data to be saved to disk.
      */
-    void serialize(ConfigurationSection playerData);
+    public Map<String, Object> serialize();
 
     /**
      * @return the Player associated with this profile.

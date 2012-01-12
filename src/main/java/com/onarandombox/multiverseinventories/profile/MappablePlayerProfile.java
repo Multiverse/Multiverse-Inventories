@@ -8,13 +8,15 @@ import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import com.onarandombox.multiverseinventories.util.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author dumptruckman
  */
-public class SimplePlayerProfile implements PlayerProfile {
+public class MappablePlayerProfile implements PlayerProfile {
 
     private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
     private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
@@ -28,24 +30,24 @@ public class SimplePlayerProfile implements PlayerProfile {
 
     private OfflinePlayer player;
 
-    public SimplePlayerProfile(OfflinePlayer player) {
+    public MappablePlayerProfile(OfflinePlayer player) {
         this.player = player;
     }
 
-    public SimplePlayerProfile(String playerName, ConfigurationSection playerSection) {
+    public MappablePlayerProfile(String playerName, Map<String, Object> playerData) {
         this(Bukkit.getOfflinePlayer(playerName));
-        if (playerSection.contains("stats")) {
-            this.parsePlayerStats(playerSection.getString("stats").split(DataStrings.GENERAL_DELIMITER));
+        if (playerData.containsKey("stats")) {
+            this.parsePlayerStats(playerData.get("stats").toString().split(DataStrings.GENERAL_DELIMITER));
         }
-        if (playerSection.contains("inventoryContents")) {
-            this.parsePlayerInventory(playerSection.getString("inventoryContents").split(DataStrings.ITEM_DELIMITER));
+        if (playerData.containsKey("inventoryContents")) {
+            this.parsePlayerInventory(playerData.get("inventoryContents").toString().split(DataStrings.ITEM_DELIMITER));
         }
-        if (playerSection.contains("armorContents")) {
-            this.parsePlayerArmor(playerSection.getString("armorContents").split(DataStrings.ITEM_DELIMITER));
+        if (playerData.containsKey("armorContents")) {
+            this.parsePlayerArmor(playerData.get("armorContents").toString().split(DataStrings.ITEM_DELIMITER));
         }
     }
 
-    private void parsePlayerStats(String[] statsArray) {
+    protected void parsePlayerStats(String[] statsArray) {
         for (String stat : statsArray) {
             try {
                 String[] statValues = DataStrings.splitEntry(stat);
@@ -73,7 +75,7 @@ public class SimplePlayerProfile implements PlayerProfile {
         }
     }
 
-    private void parsePlayerInventory(String[] inventoryArray) {
+    protected void parsePlayerInventory(String[] inventoryArray) {
         ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]);
         for (String itemString : inventoryArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
@@ -92,7 +94,7 @@ public class SimplePlayerProfile implements PlayerProfile {
         this.setInventoryContents(invContents);
     }
 
-    private void parsePlayerArmor(String[] armorArray) {
+    protected void parsePlayerArmor(String[] armorArray) {
         ItemStack[] armContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
         for (String itemString : armorArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
@@ -112,7 +114,8 @@ public class SimplePlayerProfile implements PlayerProfile {
      * {@inheritDoc}
      */
     @Override
-    public void serialize(ConfigurationSection playerData) {
+    public Map<String, Object> serialize() {
+        Map<String, Object> playerData = new LinkedHashMap<String, Object>();
         StringBuilder builder = new StringBuilder();
 
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_HEALTH, this.getHealth()));
@@ -129,7 +132,7 @@ public class SimplePlayerProfile implements PlayerProfile {
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_SATURATION, this.getSaturation()));
 
-        playerData.set("stats", builder.toString());
+        playerData.put("stats", builder.toString());
 
         builder = new StringBuilder();
         boolean first = true;
@@ -143,7 +146,7 @@ public class SimplePlayerProfile implements PlayerProfile {
                 builder.append(DataStrings.createEntry(i, new SimpleItemWrapper(this.getInventoryContents()[i]).toString()));
             }
         }
-        playerData.set("inventoryContents", builder.toString());
+        playerData.put("inventoryContents", builder.toString());
 
         builder = new StringBuilder();
         first = true;
@@ -157,7 +160,8 @@ public class SimplePlayerProfile implements PlayerProfile {
                 builder.append(DataStrings.createEntry(i, new SimpleItemWrapper(this.getArmorContents()[i]).toString()));
             }
         }
-        playerData.set("armorContents", builder.toString());
+        playerData.put("armorContents", builder.toString());
+        return playerData;
     }
 
     /**

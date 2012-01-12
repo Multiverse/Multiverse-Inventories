@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.SimplePlayerProfile;
+import com.onarandombox.multiverseinventories.profile.MappablePlayerProfile;
 import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -86,8 +86,7 @@ public class FlatfileMIData implements MIData {
     public boolean updatePlayerData(String worldName, PlayerProfile playerProfile) {
         File playerFile = this.getPlayerFile(worldName, playerProfile.getPlayer().getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        ConfigurationSection section = playerData.getConfigurationSection("");
-        playerProfile.serialize(section);
+        playerData.createSection("playerData", playerProfile.serialize());
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
@@ -106,11 +105,11 @@ public class FlatfileMIData implements MIData {
     public PlayerProfile getPlayerData(String worldName, String playerName) {
         File playerFile = this.getPlayerFile(worldName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        ConfigurationSection section = playerData.getConfigurationSection("");
+        ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
-            section = playerData.createSection("");
+            section = playerData.createSection("playerData");
         }
-        return new SimplePlayerProfile(playerName, section);
+        return new MappablePlayerProfile(playerName,  section.getValues(true));
     }
 
     /**
