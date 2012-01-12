@@ -21,7 +21,7 @@ import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.permission.MIPerms;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
-import com.onarandombox.multiverseinventories.profile.SimpleProfileManager;
+import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
@@ -64,7 +64,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private Messager messager = new SimpleMessager(this);
 
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
-    private ProfileManager profileManager = new SimpleProfileManager();
+    private ProfileManager profileManager = new WeakProfileManager(this);
 
     /**
      * {@inheritDoc}
@@ -120,7 +120,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         }
 
         // Initialize data class
-        this.getProfileManager().setWorldProfiles(this.getData().getWorldProfiles());
+        //this.getProfileManager().setWorldProfiles(this.getData().getWorldProfiles());
 
         this.getCore().incrementPluginCount();
 

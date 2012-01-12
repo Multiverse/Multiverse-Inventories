@@ -107,16 +107,8 @@ public class FlatfileMIData implements MIData {
         File playerFile = this.getPlayerFile(worldName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("");
-        PlayerProfile playerProfile = new SimplePlayerProfile(playerName, section);
-        try {
-            playerData.save(playerFile);
-        } catch (IOException e) {
-            MILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
-                    + " for world: " + worldName);
-            MILog.severe(e.getMessage());
-            return false;
-        }
-        return true;
+
+        return new SimplePlayerProfile(playerName, section);
     }
 
     /**
@@ -140,7 +132,7 @@ public class FlatfileMIData implements MIData {
             ConfigurationSection worldProfileSection = this.getConfigHandle(worldFile);
             if (worldProfileSection != null) {
                 try {
-                    WorldProfile worldProfile = new SimpleWorldProfile(worldName, worldProfileSection);
+                    WorldProfile worldProfile = new WeakWorldProfile(worldName, worldProfileSection);
                     worldProfiles.add(worldProfile);
                 } catch (DeserializationException e) {
                     MILog.warning("Unable to load world data for world: " + worldName);

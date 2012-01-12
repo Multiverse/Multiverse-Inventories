@@ -1,40 +1,25 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.data.MIData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Simple implementation of WorldProfile.
  */
-public class SimpleWorldProfile implements WorldProfile {
+public class WeakWorldProfile implements WorldProfile {
 
-    private HashMap<OfflinePlayer, PlayerProfile> playerData = new HashMap<OfflinePlayer, PlayerProfile>();
+    private Map<OfflinePlayer, PlayerProfile> playerData = new WeakHashMap<OfflinePlayer, PlayerProfile>();
     private String worldName;
+    private MIData data;
 
-    public SimpleWorldProfile(String worldName) {
+    public WeakWorldProfile(MIData data, String worldName) {
+        this.data = data;
         this.worldName = worldName;
-    }
-
-    public SimpleWorldProfile(String worldName, ConfigurationSection section) throws DeserializationException {
-        this(worldName);
-        ConfigurationSection data = section.getConfigurationSection("playerData");
-        if (data == null) {
-            throw new DeserializationException("Missing playerData for world: " + worldName);
-        }
-        for (String playerName : data.getKeys(false)) {
-            ConfigurationSection playerSection = data.getConfigurationSection(playerName);
-            if (playerSection != null) {
-                this.addPlayerData(new SimplePlayerProfile(playerName, playerSection));
-            } else {
-                MILog.warning("Player data invalid for world: " + worldName + " and player: " + playerName);
-            }
-        }
     }
 
     /**
@@ -64,8 +49,12 @@ public class SimpleWorldProfile implements WorldProfile {
     /**
      * @return The map of bukkit players to their player profiles for this world profile.
      */
-    protected HashMap<OfflinePlayer, PlayerProfile> getPlayerData() {
+    protected Map<OfflinePlayer, PlayerProfile> getPlayerData() {
         return this.playerData;
+    }
+    
+    private MIData getData() {
+        return this.data;
     }
 
     /**
@@ -75,7 +64,7 @@ public class SimpleWorldProfile implements WorldProfile {
     public PlayerProfile getPlayerData(OfflinePlayer player) {
         PlayerProfile playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
-            playerProfile = new SimplePlayerProfile(player);
+            playerProfile = this.getData().getPlayerData(this.getWorld(), player.getName());
             this.playerData.put(player, playerProfile);
         }
         return playerProfile;

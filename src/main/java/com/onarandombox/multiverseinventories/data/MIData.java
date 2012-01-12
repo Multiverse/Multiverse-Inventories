@@ -22,5 +22,14 @@ public interface MIData {
      * @return The list of World Profiles from the data.
      */
     //List<WorldProfile> getWorldProfiles();
+
+    /**
+     * Retrieves a PlayerProfile from the data source.
+     *
+     * @param worldName World to retrieve from.
+     * @param playerName Player to retrieve for.
+     * @return The profile as returned from data.  If no data was found, a new PlayerProfile will be
+     * created.
+     */
     PlayerProfile getPlayerData(String worldName, String playerName);
 }
