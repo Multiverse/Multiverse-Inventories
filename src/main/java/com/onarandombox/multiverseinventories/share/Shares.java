@@ -8,61 +8,61 @@ import java.util.List;
 public interface Shares {
 
     /**
-     * Merges what is shared with another share.  Only the {@link Sharing#NOT_SET} items should be merged.
+     * Merges what is shared with another share.  Only the false items should be merged.
      *
      * @param newShares The set of shares to merge into this set of shares.
      */
     void mergeShares(Shares newShares);
 
     /**
-     * @return The {@link Sharing} result
+     * @return True if sharing.
      */
-    Sharing getSharingInventory();
+    boolean isSharingInventory();
 
     /**
      * @param sharingInventory Whether to share inventory or not.
      */
-    void setSharingInventory(Sharing sharingInventory);
+    void setSharingInventory(boolean sharingInventory);
 
     /**
-     * @return The {@link Sharing} result
+     * @return True if sharing.
      */
-    Sharing getSharingHealth();
+    boolean isSharingHealth();
 
     /**
      * @param sharingHealth Whether to share health or not.
      */
-    void setSharingHealth(Sharing sharingHealth);
+    void setSharingHealth(boolean sharingHealth);
 
     /**
-     * @return The {@link Sharing} result
+     * @return True if sharing.
      */
-    Sharing getSharingHunger();
+    boolean isSharingHunger();
 
     /**
      * @param sharingHunger Whether to share hunger or not.
      */
-    void setSharingHunger(Sharing sharingHunger);
+    void setSharingHunger(boolean sharingHunger);
 
     /**
-     * @return The {@link Sharing} result
+     * @return True if sharing.
      */
-    Sharing getSharingExp();
+    boolean isSharingExp();
 
     /**
      * @param sharingExp Whether to share exp or not.
      */
-    void setSharingExp(Sharing sharingExp);
+    void setSharingExp(boolean sharingExp);
 
     /**
-     * @return The {@link Sharing} result
+     * @return True if sharing.
      */
-    Sharing getSharingEffects();
+    boolean isSharingEffects();
 
     /**
      * @param sharingEffects Whether to share effects or not.
      */
-    void setSharingEffects(Sharing sharingEffects);
+    void setSharingEffects(boolean sharingEffects);
 
     /**
      * @return These shares as a string list.

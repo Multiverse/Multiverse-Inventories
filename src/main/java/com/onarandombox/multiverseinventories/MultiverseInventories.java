@@ -8,7 +8,7 @@ import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
 import com.onarandombox.multiverseinventories.data.MIData;
-import com.onarandombox.multiverseinventories.data.SimpleMIData;
+import com.onarandombox.multiverseinventories.data.FlatfileMIData;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
@@ -24,7 +24,6 @@ import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.SimpleProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
-import com.onarandombox.multiverseinventories.share.Sharing;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.util.MILog;
@@ -51,10 +50,8 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
-    private final Shares defaultShares = new SimpleShares(
-            Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE, Sharing.FALSE);
-    private final Shares bypassShares = new SimpleShares(
-            Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE, Sharing.TRUE);
+    //private final Shares defaultShares = new SimpleShares(false, false, false, false, false);
+    private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
 
     private CommandHandler commandHandler;
     private final int requiresProtocol = 9;
@@ -139,8 +136,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
             if (!mvWorlds.isEmpty()) {
                 WorldGroup worldGroup = new SimpleWorldGroup("default");
-                worldGroup.setShares(new SimpleShares(Sharing.TRUE, Sharing.TRUE,
-                        Sharing.TRUE, Sharing.TRUE, Sharing.TRUE));
+                worldGroup.setShares(new SimpleShares(true, true,
+                        true, true, true));
                 for (MultiverseWorld mvWorld : mvWorlds) {
                     worldGroup.addWorld(mvWorld.getName());
                 }
@@ -266,7 +263,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new SimpleMIData(this);
+                this.data = new FlatfileMIData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
                 MILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
                 MILog.severe(e.getMessage());
@@ -320,9 +317,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * @return A set of default shares (all false)
      */
+    /*
     public Shares getDefaultShares() {
         return this.defaultShares;
     }
+    */
 
     /**
      * @return A set of bypass shares (all true)
@@ -349,18 +348,18 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // persist current stats for previous world if not sharing
         // then load any saved data
-        if (!shares.getSharingInventory().isTrue()) {
+        if (!shares.isSharingInventory()) {
             fromWorldPlayerProfile.setInventoryContents(player.getInventory().getContents());
             fromWorldPlayerProfile.setArmorContents(player.getInventory().getArmorContents());
             player.getInventory().clear();
             player.getInventory().setContents(toWorldPlayerProfile.getInventoryContents());
             player.getInventory().setArmorContents(toWorldPlayerProfile.getArmorContents());
         }
-        if (!shares.getSharingHealth().isTrue()) {
+        if (!shares.isSharingHealth()) {
             fromWorldPlayerProfile.setHealth(player.getHealth());
             player.setHealth(toWorldPlayerProfile.getHealth());
         }
-        if (!shares.getSharingHunger().isTrue()) {
+        if (!shares.isSharingHunger()) {
             fromWorldPlayerProfile.setFoodLevel(player.getFoodLevel());
             fromWorldPlayerProfile.setExhaustion(player.getExhaustion());
             fromWorldPlayerProfile.setSaturation(player.getSaturation());
@@ -368,7 +367,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setExhaustion(toWorldPlayerProfile.getExhaustion());
             player.setSaturation(toWorldPlayerProfile.getSaturation());
         }
-        if (!shares.getSharingExp().isTrue()) {
+        if (!shares.isSharingExp()) {
             fromWorldPlayerProfile.setExp(player.getExp());
             fromWorldPlayerProfile.setLevel(player.getLevel());
             fromWorldPlayerProfile.setTotalExperience(player.getTotalExperience());
@@ -377,32 +376,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setTotalExperience(toWorldPlayerProfile.getTotalExperience());
         }
         /*
-        if (!shares.getSharingEffects().isTrue()) {
+        if (!shares.isSharingEffects()) {
             // Where is the effects API??
         }
         */
-
-        String playerDataPath = getPlayerDataString(fromWorldProfile, fromWorldPlayerProfile);
-        ConfigurationSection section = this.getData().getData().getConfigurationSection(playerDataPath);
-        if (section == null) {
-            section = this.getData().getData().createSection(playerDataPath);
-        }
-        fromWorldPlayerProfile.serialize(section);
-
-        playerDataPath = getPlayerDataString(toWorldProfile, toWorldPlayerProfile);
-        section = this.getData().getData().getConfigurationSection(playerDataPath);
-        if (section == null) {
-            section = this.getData().getData().createSection(playerDataPath);
-        }
-        toWorldPlayerProfile.serialize(section);
-        this.getData().save();
-    }
-
-    private String getPlayerDataString(WorldProfile worldProfile, PlayerProfile playerProfile) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(worldProfile.getWorld());
-        stringBuilder.append(".playerData.");
-        stringBuilder.append(playerProfile.getPlayer().getName());
-        return stringBuilder.toString();
+        
+        this.getData().updatePlayerData(fromWorldProfile, fromWorldPlayerProfile);
+        this.getData().updatePlayerData(toWorldProfile, toWorldPlayerProfile);
     }
 }

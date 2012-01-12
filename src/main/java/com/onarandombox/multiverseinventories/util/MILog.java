@@ -89,8 +89,8 @@ public class MILog {
     public static void debug(String message) {
         if (MILog.DEBUG_MODE) {
             info(message, false);
-            MIDebug.info(message, false);
         }
+        MIDebug.info(message, false);
     }
 
     /**
