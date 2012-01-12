@@ -154,7 +154,28 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
+
+        <!-- Start of MultiInv Dependency -->
+        <dependency>
+            <groupId>uk.co.tggl.pluckerpluck</groupId>
+            <artifactId>MultiInv</artifactId>
+            <version>3.0.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of MultiInv Dependency -->
+
+        <!-- Start of WorldInventories Dependency -->
+        <dependency>
+            <groupId>me.drayshak</groupId>
+            <artifactId>WorldInventories</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of WorldInventories Dependency -->
     </dependencies>
+
     <distributionManagement>
         <repository>
             <id>OnARandomBox</id>
