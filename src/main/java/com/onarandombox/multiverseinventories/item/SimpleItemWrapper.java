@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.item;
 
 import com.onarandombox.multiverseinventories.data.DataStrings;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,8 +40,8 @@ public class SimpleItemWrapper implements ItemWrapper {
                     enchantsString = dataValue[1];
                 }
             } catch (Exception e) {
-                MILog.debug("Could not parse item string: " + itemString);
-                MILog.debug(e.getMessage());
+                MVILog.debug("Could not parse item string: " + itemString);
+                MVILog.debug(e.getMessage());
             }
         }
         this.item = new ItemStack(type, amount, damage);

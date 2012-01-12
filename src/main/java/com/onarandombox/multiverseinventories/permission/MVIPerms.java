@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * @author dumptruckman
  */
-public enum MIPerms {
+public enum MVIPerms {
     /**
      * Permission for /mvi info.
      */
@@ -27,11 +27,11 @@ public enum MIPerms {
     private Permission perm = null;
     private String permNode = "";
 
-    MIPerms(Permission perm) {
+    MVIPerms(Permission perm) {
         this.perm = perm;
     }
 
-    MIPerms(String permNode) {
+    MVIPerms(String permNode) {
         this.permNode = permNode;
     }
 
@@ -87,7 +87,7 @@ public enum MIPerms {
      */
     public static void register(JavaPlugin plugin) {
         PluginManager pm = plugin.getServer().getPluginManager();
-        for (MIPerms perm : MIPerms.values()) {
+        for (MVIPerms perm : MVIPerms.values()) {
             if (perm.getPerm() != null) {
                 pm.addPermission(perm.getPerm());
             }

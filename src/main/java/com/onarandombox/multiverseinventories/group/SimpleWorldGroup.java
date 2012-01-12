@@ -5,7 +5,7 @@ import com.onarandombox.multiverseinventories.group.blacklist.ItemBlacklist;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -41,7 +41,7 @@ public class SimpleWorldGroup implements WorldGroup {
             if (world != null) {
                 this.addWorld(world);
             } else {
-                MILog.warning("");
+                MVILog.warning("");
             }
         }
         if (data.contains("shares")) {
@@ -49,7 +49,7 @@ public class SimpleWorldGroup implements WorldGroup {
             if (sharesList != null) {
                 this.setShares(new SimpleShares(sharesList));
             } else {
-                MILog.warning("Shares formatted incorrectly for group: " + name);
+                MVILog.warning("Shares formatted incorrectly for group: " + name);
             }
         }
         /*

@@ -10,11 +10,11 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 /**
  * Server Listener for Multiverse Inventories for hooking/unhooking plugins for importing.
  */
-public class MIServerListener extends ServerListener {
+public class MVIServerListener extends ServerListener {
 
     private MultiverseInventories plugin;
 
-    public MIServerListener(MultiverseInventories plugin) {
+    public MVIServerListener(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

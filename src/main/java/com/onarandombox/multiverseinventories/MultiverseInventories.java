@@ -5,30 +5,30 @@ import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
-import com.onarandombox.multiverseinventories.config.MIConfig;
-import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
-import com.onarandombox.multiverseinventories.data.FlatfileMIData;
-import com.onarandombox.multiverseinventories.data.MIData;
+import com.onarandombox.multiverseinventories.config.MVIConfig;
+import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
+import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
+import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
-import com.onarandombox.multiverseinventories.listener.MIPlayerListener;
-import com.onarandombox.multiverseinventories.listener.MIServerListener;
+import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
+import com.onarandombox.multiverseinventories.listener.MVIServerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
-import com.onarandombox.multiverseinventories.permission.MIPerms;
+import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
-import com.onarandombox.multiverseinventories.util.MIDebug;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVIDebug;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -60,11 +60,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final int requiresProtocol = 9;
     private MultiverseCore core = null;
 
-    private final MIPlayerListener playerListener = new MIPlayerListener(this);
-    private final MIServerListener serverListener = new MIServerListener(this);
+    private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
+    private final MVIServerListener serverListener = new MVIServerListener(this);
 
-    private MIConfig config = null;
-    private MIData data = null;
+    private MVIConfig config = null;
+    private MVIData data = null;
 
     private Messager messager = new SimpleMessager(this);
 
@@ -79,7 +79,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     @Override
     public final void onDisable() {
         // Display disable message/version info
-        MILog.info("disabled.", true);
+        MVILog.info("disabled.", true);
     }
 
     /**
@@ -87,41 +87,41 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public final void onEnable() {
-        MILog.init(this);
-        MIPerms.register(this);
+        MVILog.init(this);
+        MVIPerms.register(this);
 
         MultiverseCore mvCore;
         mvCore = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
         // Test if the Core was found, if not we'll disable this plugin.
         if (mvCore == null) {
-            MILog.severe("Multiverse-Core not found, disabling...");
+            MVILog.severe("Multiverse-Core not found, disabling...");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
         this.setCore(mvCore);
 
         if (this.getCore().getProtocolVersion() < this.getRequiredProtocol()) {
-            MILog.severe("Your Multiverse-Core is OUT OF DATE");
-            MILog.severe("This version of Profiles requires Protocol Level: " + this.getRequiredProtocol());
-            MILog.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
-            MILog.severe("Grab an updated copy at: ");
-            MILog.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");
+            MVILog.severe("Your Multiverse-Core is OUT OF DATE");
+            MVILog.severe("This version of Profiles requires Protocol Level: " + this.getRequiredProtocol());
+            MVILog.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
+            MVILog.severe("Grab an updated copy at: ");
+            MVILog.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        MIDebug.init(this);
+        MVIDebug.init(this);
 
         // Get world groups from config
         this.getGroupManager().setWorldGroups(this.getMIConfig().getWorldGroups());
 
         // Set debug mode from config
-        MILog.setDebugMode(this.getMIConfig().isDebugging());
+        MVILog.setDebugMode(this.getMIConfig().isDebugging());
 
         try {
             this.getMessager().setLocale(new Locale(this.getMIConfig().getLocale()));
         } catch (IllegalArgumentException e) {
-            MILog.severe(e.getMessage());
+            MVILog.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -153,15 +153,15 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 this.getMIConfig().updateWorldGroup(worldGroup);
                 this.getMIConfig().setFirstRun(false);
                 this.getMIConfig().save();
-                MILog.info("Created a default group for you containing all of your MV Worlds!");
+                MVILog.info("Created a default group for you containing all of your MV Worlds!");
             } else {
-                MILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
-                MILog.info("Will attempt again at next start up.");
+                MVILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
+                MVILog.info("Will attempt again at next start up.");
             }
         }
 
         // Display enable message/version info
-        MILog.info("enabled.", true);
+        MVILog.info("enabled.", true);
     }
 
     private void registerEvents() {
@@ -224,8 +224,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public void log(Level level, String msg) {
-        MILog.log(level, msg, false);
-        MIDebug.log(level, msg);
+        MVILog.log(level, msg, false);
+        MVIDebug.log(level, msg);
     }
 
     /**
@@ -264,21 +264,21 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private String logAndAddToPasteBinBuffer(String string) {
-        MILog.info(string);
-        return MILog.getString(string + "\n", false);
+        MVILog.info(string);
+        return MVILog.getString(string + "\n", false);
     }
 
     /**
-     * @return the MIConfig object which contains settings for this plugin.
+     * @return the MVIConfig object which contains settings for this plugin.
      */
-    public MIConfig getMIConfig() {
+    public MVIConfig getMIConfig() {
         if (this.config == null) {
             // Loads the configuration
             try {
-                this.config = new SimpleMIConfig(this);
+                this.config = new SimpleMVIConfig(this);
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
-                MILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
-                MILog.severe(e.getMessage());
+                MVILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
+                MVILog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
             }
@@ -287,16 +287,16 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return the MIData object which contains data for this plugin.
+     * @return the MVIData object which contains data for this plugin.
      */
-    public MIData getData() {
+    public MVIData getData() {
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new FlatfileMIData(this);
+                this.data = new FlatfileMVIData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
-                MILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
-                MILog.severe(e.getMessage());
+                MVILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
+                MVILog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
             }

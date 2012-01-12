@@ -5,7 +5,7 @@ import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 /**
  * Interface for interacting with the data of this plugin.
  */
-public interface MIData {
+public interface MVIData {
 
     /**
      * Updates the persisted data for a player profile for a specific world profile.

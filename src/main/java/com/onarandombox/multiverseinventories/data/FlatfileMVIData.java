@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.MappablePlayerProfile;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,14 +12,14 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Implementation of MIData.
+ * Implementation of MVIData.
  */
-public class FlatfileMIData implements MIData {
+public class FlatfileMVIData implements MVIData {
 
     private static final String YML = ".yml";
     private File dataFolder = null;
 
-    public FlatfileMIData(JavaPlugin plugin) throws IOException {
+    public FlatfileMVIData(JavaPlugin plugin) throws IOException {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -50,9 +50,9 @@ public class FlatfileMIData implements MIData {
             try {
                 playerFile.createNewFile();
             } catch (IOException e) {
-                MILog.severe("Could not create necessary player file: " + playerName + YML);
-                MILog.severe("Your data may not be saved!");
-                MILog.severe(e.getMessage());
+                MVILog.severe("Could not create necessary player file: " + playerName + YML);
+                MVILog.severe("Your data may not be saved!");
+                MVILog.severe(e.getMessage());
             }
 
         }
@@ -90,9 +90,9 @@ public class FlatfileMIData implements MIData {
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
-            MILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+            MVILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
                     + " for world: " + worldName);
-            MILog.severe(e.getMessage());
+            MVILog.severe(e.getMessage());
             return false;
         }
         return true;
@@ -121,7 +121,7 @@ public class FlatfileMIData implements MIData {
         List<WorldProfile> worldProfiles = new ArrayList<WorldProfile>();
         File[] worldFiles = this.getWorldFolders();
         if (worldFiles.length < 1) {
-            MILog.info("No world data to load");
+            MVILog.info("No world data to load");
             return worldProfiles;
         }
         for (File worldFile : worldFiles) {
@@ -136,12 +136,12 @@ public class FlatfileMIData implements MIData {
                     WorldProfile worldProfile = new WeakWorldProfile(worldName, worldProfileSection);
                     worldProfiles.add(worldProfile);
                 } catch (DeserializationException e) {
-                    MILog.warning("Unable to load world data for world: " + worldName);
-                    MILog.warning("Reason: " + e.getMessage());
+                    MVILog.warning("Unable to load world data for world: " + worldName);
+                    MVILog.warning("Reason: " + e.getMessage());
                     continue;
                 }
             } else {
-                MILog.warning("Problem loading world data!");
+                MVILog.warning("Problem loading world data!");
             }
         }
         return worldProfiles;

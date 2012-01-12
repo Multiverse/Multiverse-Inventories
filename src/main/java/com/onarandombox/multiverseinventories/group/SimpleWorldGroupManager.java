@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.group;
 
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,8 +75,8 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
     @Override
     public void setWorldGroups(List<WorldGroup> worldGroups) {
         if (worldGroups == null) {
-            MILog.info("No world groups have been configured!");
-            MILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
+            MVILog.info("No world groups have been configured!");
+            MVILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
             return;
         }
 

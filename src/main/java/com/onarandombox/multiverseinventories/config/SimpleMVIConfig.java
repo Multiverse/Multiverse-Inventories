@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.config;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Implementation of MIConfig.
+ * Implementation of MVIConfig.
  */
-public class SimpleMIConfig implements MIConfig {
+public class SimpleMVIConfig implements MVIConfig {
 
     /**
      * Enum for easily keeping track of config paths, defaults and comments.
@@ -84,7 +84,7 @@ public class SimpleMIConfig implements MIConfig {
 
     private CommentedConfiguration config;
 
-    public SimpleMIConfig(JavaPlugin plugin) throws Exception {
+    public SimpleMVIConfig(JavaPlugin plugin) throws Exception {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -109,7 +109,7 @@ public class SimpleMIConfig implements MIConfig {
      * Loads default settings for any missing config values.
      */
     private void setDefaults() {
-        for (SimpleMIConfig.Path path : SimpleMIConfig.Path.values()) {
+        for (SimpleMVIConfig.Path path : SimpleMVIConfig.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
             if (config.getString(path.getPath()) == null) {
                 config.set(path.getPath(), path.getDefault());
@@ -170,8 +170,8 @@ public class SimpleMIConfig implements MIConfig {
                 worldGroup = new SimpleWorldGroup(groupName,
                         groupsSection.getConfigurationSection(groupName));
             } catch (DeserializationException e) {
-                MILog.warning("Unable to load world group: " + groupName);
-                MILog.warning("Reason: " + e.getMessage());
+                MVILog.warning("Unable to load world group: " + groupName);
+                MVILog.warning("Reason: " + e.getMessage());
                 continue;
             }
             worldGroups.add(worldGroup);

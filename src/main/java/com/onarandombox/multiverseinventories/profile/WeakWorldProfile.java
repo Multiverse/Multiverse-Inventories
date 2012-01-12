@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.data.MIData;
+import com.onarandombox.multiverseinventories.data.MVIData;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -15,9 +15,9 @@ public class WeakWorldProfile implements WorldProfile {
 
     private Map<OfflinePlayer, PlayerProfile> playerData = new WeakHashMap<OfflinePlayer, PlayerProfile>();
     private String worldName;
-    private MIData data;
+    private MVIData data;
 
-    public WeakWorldProfile(MIData data, String worldName) {
+    public WeakWorldProfile(MVIData data, String worldName) {
         this.data = data;
         this.worldName = worldName;
     }
@@ -53,7 +53,7 @@ public class WeakWorldProfile implements WorldProfile {
         return this.playerData;
     }
 
-    private MIData getData() {
+    private MVIData getData() {
         return this.data;
     }
 

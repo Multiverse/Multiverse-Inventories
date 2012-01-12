@@ -10,7 +10,7 @@ import java.util.logging.Level;
 /**
  * Static plugin debug logger.
  */
-public class MIDebug {
+public class MVIDebug {
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Name
     private static DebugLog LOG = null;
@@ -18,7 +18,7 @@ public class MIDebug {
     private static String VERSION = "v.???";
     // END CHECKSTYLE-SUPPRESSION: Name
 
-    private MIDebug() { }
+    private MVIDebug() { }
 
     /**
      * Prepares the log for use.
@@ -72,7 +72,7 @@ public class MIDebug {
      * @param message Log message
      */
     public static void log(Level level, String message) {
-        MIDebug.log(level, message, false);
+        MVIDebug.log(level, message, false);
     }
 
     /**
@@ -107,7 +107,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void fine(String message, boolean showVersion) {
-        MIDebug.log(Level.FINE, message, showVersion);
+        MVIDebug.log(Level.FINE, message, showVersion);
     }
 
     /**
@@ -126,7 +126,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void finer(String message, boolean showVersion) {
-        MIDebug.log(Level.FINER, message, showVersion);
+        MVIDebug.log(Level.FINER, message, showVersion);
     }
 
     /**
@@ -145,7 +145,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void finest(String message, boolean showVersion) {
-        MIDebug.log(Level.FINEST, message, showVersion);
+        MVIDebug.log(Level.FINEST, message, showVersion);
     }
 
     /**
@@ -164,7 +164,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
-        MIDebug.log(Level.INFO, message, showVersion);
+        MVIDebug.log(Level.INFO, message, showVersion);
     }
 
     /**
@@ -183,7 +183,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void config(String message, boolean showVersion) {
-        MIDebug.log(Level.CONFIG, message, showVersion);
+        MVIDebug.log(Level.CONFIG, message, showVersion);
     }
 
     /**
@@ -202,7 +202,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void all(String message, boolean showVersion) {
-        MIDebug.log(Level.ALL, message, showVersion);
+        MVIDebug.log(Level.ALL, message, showVersion);
     }
 
     /**
@@ -221,7 +221,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void off(String message, boolean showVersion) {
-        MIDebug.log(Level.OFF, message, showVersion);
+        MVIDebug.log(Level.OFF, message, showVersion);
     }
 
     /**
@@ -240,7 +240,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
-        MIDebug.log(Level.WARNING, message, showVersion);
+        MVIDebug.log(Level.WARNING, message, showVersion);
     }
 
     /**
@@ -259,7 +259,7 @@ public class MIDebug {
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {
-        MIDebug.log(Level.SEVERE, message, showVersion);
+        MVIDebug.log(Level.SEVERE, message, showVersion);
     }
 
 }

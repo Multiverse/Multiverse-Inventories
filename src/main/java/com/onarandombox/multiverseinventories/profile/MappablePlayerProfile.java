@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.profile;
 import com.onarandombox.multiverseinventories.data.DataStrings;
 import com.onarandombox.multiverseinventories.item.ItemWrapper;
 import com.onarandombox.multiverseinventories.item.SimpleItemWrapper;
-import com.onarandombox.multiverseinventories.util.MILog;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import com.onarandombox.multiverseinventories.util.PlayerStats;
 import org.bukkit.Bukkit;
@@ -71,8 +71,8 @@ public class MappablePlayerProfile implements PlayerProfile {
                 }
             } catch (Exception e) {
                 if (!stat.isEmpty()) {
-                    MILog.debug("Could not parse stat: '" + stat + "'");
-                    MILog.debug(e.getMessage());
+                    MVILog.debug("Could not parse stat: '" + stat + "'");
+                    MVILog.debug(e.getMessage());
                 }
             }
         }
@@ -86,14 +86,14 @@ public class MappablePlayerProfile implements PlayerProfile {
         for (String itemString : inventoryArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
-                MILog.debug("Unwrapping item from string: " + itemString);
+                MVILog.debug("Unwrapping item from string: " + itemString);
                 ItemWrapper itemWrapper = new SimpleItemWrapper(itemValues[1]);
-                MILog.debug("Unwrapped item: " + itemWrapper.getItem().toString());
+                MVILog.debug("Unwrapped item: " + itemWrapper.getItem().toString());
                 invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
-                    MILog.debug("Could not parse item string: " + itemString);
-                    MILog.debug(e.getMessage());
+                    MVILog.debug("Could not parse item string: " + itemString);
+                    MVILog.debug(e.getMessage());
                 }
             }
         }
@@ -111,8 +111,8 @@ public class MappablePlayerProfile implements PlayerProfile {
                 armContents[Integer.valueOf(itemValues[0])] = new SimpleItemWrapper(itemValues[1]).getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
-                    MILog.debug("Could not parse armor string: " + itemString);
-                    MILog.debug(e.getMessage());
+                    MVILog.debug("Could not parse armor string: " + itemString);
+                    MVILog.debug(e.getMessage());
                 }
             }
         }

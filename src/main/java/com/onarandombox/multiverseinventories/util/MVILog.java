@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 /**
  * Static plugin logger.
  */
-public class MILog {
+public class MVILog {
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Name
     private static Logger LOG = Logger.getLogger("Minecraft");
@@ -18,7 +18,7 @@ public class MILog {
     private static boolean DEBUG_MODE = false;
     // END CHECKSTYLE-SUPPRESSION: Name
 
-    private MILog() { }
+    private MVILog() { }
 
     /**
      * Prepares the log for use.
@@ -35,7 +35,7 @@ public class MILog {
      * @param debugMode True to use debug mode.
      */
     public static void setDebugMode(boolean debugMode) {
-        MILog.DEBUG_MODE = debugMode;
+        MVILog.DEBUG_MODE = debugMode;
     }
 
     /**
@@ -87,10 +87,10 @@ public class MILog {
      * @param message Log message
      */
     public static void debug(String message) {
-        if (MILog.DEBUG_MODE) {
+        if (MVILog.DEBUG_MODE) {
             info(message, false);
         }
-        MIDebug.info(message, false);
+        MVIDebug.info(message, false);
     }
 
     /**
@@ -109,7 +109,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void info(String message, boolean showVersion) {
-        MILog.log(Level.INFO, message, showVersion);
+        MVILog.log(Level.INFO, message, showVersion);
     }
 
     /**
@@ -139,7 +139,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void warning(String message, boolean showVersion) {
-        MILog.log(Level.WARNING, message, showVersion);
+        MVILog.log(Level.WARNING, message, showVersion);
     }
 
     /**
@@ -158,7 +158,7 @@ public class MILog {
      * @param showVersion True adds version into message
      */
     public static void severe(String message, boolean showVersion) {
-        MILog.log(Level.SEVERE, message, showVersion);
+        MVILog.log(Level.SEVERE, message, showVersion);
     }
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Interface for interacting with the config of this plugin.
  */
-public interface MIConfig {
+public interface MVIConfig {
 
     /**
      * Retrieves the underlying FileConfiguration object for direct modification.
