@@ -14,10 +14,12 @@ import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.listener.MIPlayerListener;
+import com.onarandombox.multiverseinventories.listener.MIServerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.locale.SimpleMessager;
+import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.permission.MIPerms;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
@@ -28,14 +30,17 @@ import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MIDebug;
 import com.onarandombox.multiverseinventories.util.MILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
+import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +54,6 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
-    //private final Shares defaultShares = new SimpleShares(false, false, false, false, false);
     private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
 
     private CommandHandler commandHandler;
@@ -57,6 +61,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private MultiverseCore core = null;
 
     private final MIPlayerListener playerListener = new MIPlayerListener(this);
+    private final MIServerListener serverListener = new MIServerListener(this);
 
     private MIConfig config = null;
     private MIData data = null;
@@ -65,6 +70,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
     private ProfileManager profileManager = new WeakProfileManager(this);
+    
+    private ImportManager importManager = new ImportManager(this);
 
     /**
      * {@inheritDoc}
@@ -130,6 +137,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Register Commands
         this.registerCommands();
 
+        // Hook plugins that can be imported from
+        this.hookImportables();
+
         // Create initial World Group for first run
         if (this.getMIConfig().isFirstRun()) {
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
@@ -155,9 +165,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private void registerEvents() {
-        final PluginManager pm = getServer().getPluginManager();
+        final PluginManager pm = Bukkit.getPluginManager();
         // Event registering goes here
         pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Event.Priority.Normal, this);
+        pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Event.Priority.Normal, this);
     }
 
     private void registerCommands() {
@@ -168,6 +180,25 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 c.addKey("mvi");
             }
         }
+    }
+
+    private void hookImportables() {
+        final PluginManager pm = Bukkit.getPluginManager();
+        Plugin plugin = pm.getPlugin("MultiInv");
+        if (plugin != null) {
+            this.getImportManager().hookMultiInv((MultiInv) plugin);
+        }
+        plugin = pm.getPlugin("WorldInventories");
+        if (plugin != null) {
+            this.getImportManager().hookWorldInventories((WorldInventories) plugin);
+        }
+    }
+
+    /**
+     * @return A class used for managing importing data from other similar plugins.
+     */
+    public ImportManager getImportManager() {
+        return this.importManager;
     }
 
     /**

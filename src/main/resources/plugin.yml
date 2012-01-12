@@ -3,6 +3,7 @@ main: com.onarandombox.multiverseinventories.MultiverseInventories
 version: maven-version-number
 author: dumptruckman
 depend: ['Multiverse-Core']
+softdepend: [MultiInv, WorldInventories]
 
 commands:
   mvi:
