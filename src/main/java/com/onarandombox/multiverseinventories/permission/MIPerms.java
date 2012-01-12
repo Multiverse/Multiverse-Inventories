@@ -18,11 +18,11 @@ public enum MIPerms {
     /**
      * Permission prefix for bypassing groups.
      */
-    BYPASS_GROUP("mvi.bypass.group."),
+    BYPASS_GROUP("mvinv.bypass.group."),
     /**
      * Permission prefix for bypassing worlds.
      */
-    BYPASS_WORLD("mvi.bypass.world.");
+    BYPASS_WORLD("mvinv.bypass.world.");
 
     private Permission perm = null;
     private String permNode = "";
