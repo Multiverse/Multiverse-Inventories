@@ -34,10 +34,15 @@ public class SimplePlayerProfile implements PlayerProfile {
 
     public SimplePlayerProfile(String playerName, ConfigurationSection playerSection) {
         this(Bukkit.getOfflinePlayer(playerName));
-
-        this.parsePlayerStats(playerSection.getString("stats").split(DataStrings.GENERAL_DELIMITER));
-        this.parsePlayerInventory(playerSection.getString("inventoryContents").split(DataStrings.ITEM_DELIMITER));
-        this.parsePlayerArmor(playerSection.getString("armorContents").split(DataStrings.ITEM_DELIMITER));
+        if (playerSection.contains("stats")) {
+            this.parsePlayerStats(playerSection.getString("stats").split(DataStrings.GENERAL_DELIMITER));
+        }
+        if (playerSection.contains("inventoryContents")) {
+            this.parsePlayerInventory(playerSection.getString("inventoryContents").split(DataStrings.ITEM_DELIMITER));
+        }
+        if (playerSection.contains("armorContents")) {
+            this.parsePlayerArmor(playerSection.getString("armorContents").split(DataStrings.ITEM_DELIMITER));
+        }
     }
 
     private void parsePlayerStats(String[] statsArray) {

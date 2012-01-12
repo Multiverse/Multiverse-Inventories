@@ -107,7 +107,9 @@ public class FlatfileMIData implements MIData {
         File playerFile = this.getPlayerFile(worldName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("");
-
+        if (section == null) {
+            section = playerData.createSection("");
+        }
         return new SimplePlayerProfile(playerName, section);
     }
 
