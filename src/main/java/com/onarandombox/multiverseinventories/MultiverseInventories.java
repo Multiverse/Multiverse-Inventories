@@ -7,8 +7,8 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMIConfig;
-import com.onarandombox.multiverseinventories.data.MIData;
 import com.onarandombox.multiverseinventories.data.FlatfileMIData;
+import com.onarandombox.multiverseinventories.data.MIData;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
@@ -32,7 +32,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
@@ -380,8 +379,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             // Where is the effects API??
         }
         */
-        
-        this.getData().updatePlayerData(fromWorldProfile, fromWorldPlayerProfile);
-        this.getData().updatePlayerData(toWorldProfile, toWorldPlayerProfile);
+
+        this.getData().updatePlayerData(fromWorld.getName(), fromWorldPlayerProfile);
+        this.getData().updatePlayerData(toWorld.getName(), toWorldPlayerProfile);
     }
 }

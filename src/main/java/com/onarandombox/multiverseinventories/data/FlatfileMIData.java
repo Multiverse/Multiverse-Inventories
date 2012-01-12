@@ -1,10 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.SimpleWorldProfile;
-import com.onarandombox.multiverseinventories.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MIDebug;
+import com.onarandombox.multiverseinventories.profile.SimplePlayerProfile;
 import com.onarandombox.multiverseinventories.util.MILog;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,10 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of MIData.
@@ -38,34 +32,44 @@ public class FlatfileMIData implements MIData {
         }
     }
 
-    private FileConfiguration getWorldConfig(File worldFile) {
-        return YamlConfiguration.loadConfiguration(worldFile);
+    private FileConfiguration getConfigHandle(File file) {
+        return YamlConfiguration.loadConfiguration(file);
     }
 
-    private File getWorldFile(String worldName) {
-        File worldFile = new File(this.dataFolder, worldName + YML);
-        if (worldFile.exists()) {
-            try {
-                worldFile.createNewFile();
-            } catch (IOException e) {
-                MILog.severe("Could not create necessary world file: " + worldName + YML);
-                MILog.severe("You data may not save!");
-                MILog.severe(e.getMessage());
-            }
+    private File getWorldFolder(String worldName) {
+        File worldFile = new File(this.dataFolder, worldName);
+        if (!worldFile.exists()) {
+            worldFile.mkdirs();
         }
         return worldFile;
     }
 
-    private String getWorldName(File worldFile) {
-        if (worldFile.getName().endsWith(YML)) {
-            String fileName = worldFile.getName();
+    private File getPlayerFile(String worldName, String playerName) {
+        File playerFile = new File(this.getWorldFolder(worldName), playerName + YML);
+        if (!playerFile.exists()) {
+            try {
+                playerFile.createNewFile();
+            } catch (IOException e) {
+                MILog.severe("Could not create necessary player file: " + playerName + YML);
+                MILog.severe("Your data may not be saved!");
+                MILog.severe(e.getMessage());
+            }
+
+        }
+        return playerFile;
+    }
+
+    private String getPlayerName(File playerFile) {
+        if (playerFile.getName().endsWith(YML)) {
+            String fileName = playerFile.getName();
             return fileName.substring(0, fileName.length() - YML.length());
         } else {
             return null;
         }
     }
 
-    private File[] getWorldFiles() {
+    /*
+    private File[] getWorldFolders() {
         return this.dataFolder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -73,45 +77,56 @@ public class FlatfileMIData implements MIData {
             }
         });
     }
+    */
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean updatePlayerData(WorldProfile worldProfile, PlayerProfile playerProfile) {
-        String playerDataPath = getPlayerDataString(playerProfile);
-        File worldFile = this.getWorldFile(worldProfile.getWorld());
-        FileConfiguration worldData = this.getWorldConfig(worldFile);
-        ConfigurationSection section = worldData.getConfigurationSection(playerDataPath);
-        if (section == null) {
-            section = worldData.createSection(playerDataPath);
-        }
+    public boolean updatePlayerData(String worldName, PlayerProfile playerProfile) {
+        File playerFile = this.getPlayerFile(worldName, playerProfile.getPlayer().getName());
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        ConfigurationSection section = playerData.getConfigurationSection("");
         playerProfile.serialize(section);
         try {
-            worldData.save(worldFile);
+            playerData.save(playerFile);
         } catch (IOException e) {
             MILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
-                    + " for world: " + worldProfile.getWorld());
+                    + " for world: " + worldName);
             MILog.severe(e.getMessage());
             return false;
         }
         return true;
     }
 
-    private String getPlayerDataString(PlayerProfile playerProfile) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("playerData.");
-        stringBuilder.append(playerProfile.getPlayer().getName());
-        return stringBuilder.toString();
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PlayerProfile getPlayerData(String worldName, String playerName) {
+        File playerFile = this.getPlayerFile(worldName, playerName);
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        ConfigurationSection section = playerData.getConfigurationSection("");
+        PlayerProfile playerProfile = new SimplePlayerProfile(playerName, section);
+        try {
+            playerData.save(playerFile);
+        } catch (IOException e) {
+            MILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+                    + " for world: " + worldName);
+            MILog.severe(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
+    //@Override
+    /*
     public List<WorldProfile> getWorldProfiles() {
         List<WorldProfile> worldProfiles = new ArrayList<WorldProfile>();
-        File[] worldFiles = this.getWorldFiles();
+        File[] worldFiles = this.getWorldFolders();
         if (worldFiles.length < 1) {
             MILog.info("No world data to load");
             return worldProfiles;
@@ -122,7 +137,7 @@ public class FlatfileMIData implements MIData {
                 // non-yaml file detected
                 continue;
             }
-            ConfigurationSection worldProfileSection = this.getWorldConfig(worldFile);
+            ConfigurationSection worldProfileSection = this.getConfigHandle(worldFile);
             if (worldProfileSection != null) {
                 try {
                     WorldProfile worldProfile = new SimpleWorldProfile(worldName, worldProfileSection);
@@ -138,4 +153,5 @@ public class FlatfileMIData implements MIData {
         }
         return worldProfiles;
     }
+    */
 }
