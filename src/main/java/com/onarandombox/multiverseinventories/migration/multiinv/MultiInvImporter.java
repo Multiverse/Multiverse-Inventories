@@ -34,7 +34,6 @@ public class MultiInvImporter {
     }
 
     public void importData() throws MigrationException {
-        HashMap<Player, MIPlayer> miPlayerMap = this.getPlayerMap();
         HashMap<String, String> miGroupMap = this.getGroupMap();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             for (Map.Entry<String, String> entry : miGroupMap.entrySet()) {
@@ -60,41 +59,6 @@ public class MultiInvImporter {
                 this.plugin.getData().updatePlayerData(worldName, playerProfile);
             }
         }
-    }
-
-    private HashMap<Player, MIPlayer> getPlayerMap() throws MigrationException {
-        Field field;
-        try {
-            field = this.miPlugin.getClass().getDeclaredField("playerListener");
-        } catch(NoSuchFieldException ignore) {
-            throw new MigrationException("The running version of MultiInv is " +
-                    "incompatible with the import feature.");
-        }
-        field.setAccessible(true);
-        MIPlayerListener miPlayerListener = null;
-        try {
-            miPlayerListener = (MIPlayerListener) field.get(new MIPlayerListener());
-        } catch (IllegalAccessException iae) {
-            iae.printStackTrace();
-        } catch (ClassCastException cce) {
-            cce.printStackTrace();
-        }
-        try {
-            field = miPlayerListener.getClass().getDeclaredField("players");
-        } catch(NoSuchFieldException ignore) {
-            throw new MigrationException("The running version of MultiInv is " +
-                    "incompatible with the import feature.");
-        }
-        field.setAccessible(true);
-        HashMap<Player, MIPlayer> miPlayerMap = null;
-        try {
-            miPlayerMap = (HashMap<Player, MIPlayer>) field.get(null);
-        } catch (IllegalAccessException iae) {
-            iae.printStackTrace();
-        } catch (ClassCastException cce) {
-            cce.printStackTrace();
-        }
-        return miPlayerMap;
     }
 
     private HashMap<String, String> getGroupMap() throws MigrationException {
