@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
 
+/**
+ * Handles the importing of data from WorldInventories.
+ */
 public class WorldInventoriesImporter {
 
     private WorldInventories wiPlugin;
@@ -34,6 +37,11 @@ public class WorldInventoriesImporter {
         return this.wiPlugin;
     }
 
+    /**
+     * Imports the data from WorldInventories into MultiverseInventories.
+     *
+     * @throws MigrationException If there was any MAJOR issues importing the data.
+     */
     public void importData() throws MigrationException {
         List<Group> wiGroups = this.getWIPlugin().getGroups();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {

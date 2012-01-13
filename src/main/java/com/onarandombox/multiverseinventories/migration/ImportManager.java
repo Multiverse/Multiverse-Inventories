@@ -6,12 +6,15 @@ import com.onarandombox.multiverseinventories.migration.worldinventories.WorldIn
 import me.drayshak.WorldInventories.WorldInventories;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
+/**
+ * Manages the import heplers for other similar plugins.
+ */
 public class ImportManager {
 
     private MultiInvImporter multiInvImporter = null;
     private WorldInventoriesImporter worldInventoriesImporter = null;
-    MultiverseInventories plugin;
-    
+    private MultiverseInventories plugin;
+
     public ImportManager(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
