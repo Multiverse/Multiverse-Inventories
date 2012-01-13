@@ -158,17 +158,22 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public List<WorldGroup> getWorldGroups() {
-        if (!this.getConfig().contains("groups")) {
+        ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
+        if (groupsSection == null) {
             return null;
         }
-        ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
         Set<String> groupNames = groupsSection.getKeys(false);
         List<WorldGroup> worldGroups = new ArrayList<WorldGroup>(groupNames.size());
         for (String groupName : groupNames) {
             WorldGroup worldGroup;
             try {
-                worldGroup = new SimpleWorldGroup(groupName,
-                        groupsSection.getConfigurationSection(groupName));
+                ConfigurationSection groupSection =
+                        this.getConfig().getConfigurationSection("groups." + groupName);
+                if (groupSection == null) {
+                    MVILog.warning("Group: '" + groupName + "' is not formatted correctly!");
+                    continue;
+                }
+                worldGroup = new SimpleWorldGroup(groupName, groupSection);
             } catch (DeserializationException e) {
                 MVILog.warning("Unable to load world group: " + groupName);
                 MVILog.warning("Reason: " + e.getMessage());
