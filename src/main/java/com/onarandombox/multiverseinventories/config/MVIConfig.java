@@ -63,4 +63,9 @@ public interface MVIConfig {
      * Convenience method for saving the config to disk.
      */
     void save();
+
+    /**
+     * @return True if using bypass permissions.
+     */
+    boolean isUsingBypassPerms();
 }

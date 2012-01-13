@@ -378,6 +378,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         WorldProfile toWorldProfile = this.getProfileManager().getWorldProfile(toWorld.getName());
         PlayerProfile toWorldPlayerProfile = toWorldProfile.getPlayerData(player);
 
+        MVILog.debug(player.getName() + " switching from " + fromWorld.getName() + " to "
+                + toWorld.getName() + " with shares: " + shares.toString());
         // persist current stats for previous world if not sharing
         // then load any saved data
         if (!shares.isSharingInventory()) {

@@ -6,6 +6,7 @@ import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -38,12 +39,12 @@ public class MVIPlayerListener extends PlayerListener {
         // Do nothing if dealing with non-managed worlds
         if (this.plugin.getCore().getMVWorldManager().getMVWorld(toWorld) == null
                 || this.plugin.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
-            MVIDebug.info("The from or to world is not managed by Multiverse!");
+            MVILog.debug("The from or to world is not managed by Multiverse!");
             return;
         }
 
         boolean hasBypass = MVIPerms.BYPASS_WORLD.hasBypass(player, toWorld.getName());
-        if (hasBypass) {
+        if (hasBypass && this.plugin.getMIConfig().isUsingBypassPerms()) {
             return;
         }
         Shares currentShares = new SimpleShares();
@@ -59,7 +60,7 @@ public class MVIPlayerListener extends PlayerListener {
                 }
             }
         }
-        if (hasBypass) {
+        if (hasBypass && this.plugin.getMIConfig().isUsingBypassPerms()) {
             currentShares.mergeShares(this.plugin.getBypassShares());
         }
         /*

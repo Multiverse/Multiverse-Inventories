@@ -34,6 +34,12 @@ public class SimpleMVIConfig implements MVIConfig {
          */
         FIRST_RUN("first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
         /**
+         * First Run flag config path, default and comments.
+         */
+        BYPASS_PERM("settings.use_bypass_permissions", true,
+                "# If this is true it will allow people with sufficient permissions",
+                "# to bypass world groups and/or worlds set here in config."),
+        /**
          * Groups section path and comments.  No simple default for this.
          */
         GROUPS("groups", null, "# This is where you configure your world groups",
@@ -240,5 +246,13 @@ public class SimpleMVIConfig implements MVIConfig {
     @Override
     public void save() {
         this.getConfig().save();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUsingBypassPerms() {
+        return this.getBoolean(Path.BYPASS_PERM);
     }
 }
