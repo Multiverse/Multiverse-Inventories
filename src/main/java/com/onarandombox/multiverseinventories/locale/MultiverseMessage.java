@@ -28,6 +28,7 @@ public enum MultiverseMessage {
     ERROR_NO_GROUP("There is no group with the name: %1"),
     ERROR_NO_WORLD_PROFILE("There is no world profile for the world: %1"),
     ERROR_PLUGIN_NOT_ENABLED("%1 is not enabled so you may not import data from it!"),
+    ERROR_UNSUPPORTED_IMPORT("Sorry, '%1' is not supported for importing."),
 
     //// Commands
     // Info Command

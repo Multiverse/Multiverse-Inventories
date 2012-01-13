@@ -34,6 +34,10 @@ public class ImportCommand extends InventoriesCommand {
             importer = this.getPlugin().getImportManager().getMultiInvImporter();
         } else if (args.get(0).equalsIgnoreCase("WorldInventories")) {
             importer = this.getPlugin().getImportManager().getWorldInventoriesImporter();
+        } else {
+            this.getPlugin().getMessager().bad(MultiverseMessage.ERROR_PLUGIN_NOT_ENABLED,
+                    sender, args.get(0));
+            return;
         }
         if (importer == null) {
             this.getPlugin().getMessager().bad(MultiverseMessage.ERROR_PLUGIN_NOT_ENABLED,
