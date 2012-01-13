@@ -20,19 +20,23 @@ public class MVIServerListener extends ServerListener {
 
     @Override
     public void onPluginEnable(PluginEnableEvent event) {
-        if (event.getPlugin() instanceof MultiInv) {
-            this.plugin.getImportManager().hookMultiInv((MultiInv) event.getPlugin());
-        } else if (event.getPlugin() instanceof WorldInventories) {
-            this.plugin.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
-        }
+        try {
+            if (event.getPlugin() instanceof MultiInv) {
+                this.plugin.getImportManager().hookMultiInv((MultiInv) event.getPlugin());
+            } else if (event.getPlugin() instanceof WorldInventories) {
+                this.plugin.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
+            }
+        } catch (NoClassDefFoundError ignore) {}
     }
 
     @Override
     public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin() instanceof MultiInv) {
-            this.plugin.getImportManager().unHookMultiInv();
-        } else if (event.getPlugin() instanceof WorldInventories) {
-            this.plugin.getImportManager().unHookWorldInventories();
-        }
+        try {
+            if (event.getPlugin() instanceof MultiInv) {
+                this.plugin.getImportManager().unHookMultiInv();
+            } else if (event.getPlugin() instanceof WorldInventories) {
+                this.plugin.getImportManager().unHookWorldInventories();
+            }
+        } catch (NoClassDefFoundError ignore) {}
     }
 }
