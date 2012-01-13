@@ -27,6 +27,7 @@ public enum MultiverseMessage {
     ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
     ERROR_NO_GROUP("There is no group with the name: %1"),
     ERROR_NO_WORLD_PROFILE("There is no world profile for the world: %1"),
+    ERROR_PLUGIN_NOT_ENABLED("%1 is not enabled so you may not import data from it!"),
 
     //// Commands
     // Info Command

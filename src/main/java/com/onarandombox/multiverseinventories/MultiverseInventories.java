@@ -4,6 +4,7 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
@@ -175,9 +176,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private void registerCommands() {
         this.commandHandler = this.getCore().getCommandHandler();
         this.getCommandHandler().registerCommand(new InfoCommand(this));
+        this.getCommandHandler().registerCommand(new ImportCommand(this));
         for (com.pneumaticraft.commandhandler.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
-                c.addKey("mvi");
+                c.addKey("mvinv");
             }
         }
     }

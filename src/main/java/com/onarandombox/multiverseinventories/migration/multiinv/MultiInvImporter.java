@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -8,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 import uk.co.tggl.pluckerpluck.multiinv.MIYamlFiles;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
@@ -18,7 +20,7 @@ import java.util.Map;
 /**
  * A class to help with importing data from MultiInv.
  */
-public class MultiInvImporter {
+public class MultiInvImporter implements DataImporter {
 
     private MultiInv miPlugin;
     private MultiverseInventories plugin;
@@ -36,10 +38,19 @@ public class MultiInvImporter {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Plugin getPlugin() {
+        return this.getMIPlugin();
+    }
+
+    /**
      * Imports the data from MultiInv.
      *
      * @throws MigrationException If there was any MAJOR issue loading the data.
      */
+    @Override
     public void importData() throws MigrationException {
         HashMap<String, String> miGroupMap = this.getGroupMap();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {

@@ -6,12 +6,18 @@ depend: ['Multiverse-Core']
 softdepend: [MultiInv, WorldInventories]
 
 commands:
-  mvi:
+  mvinv:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
-  mviinfo:
+  mvinvinfo:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
-  mvii:
+  mvinvi:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvim:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvimport:
     description: Generic Multiverse-Inventories Command
     usage: /<command>

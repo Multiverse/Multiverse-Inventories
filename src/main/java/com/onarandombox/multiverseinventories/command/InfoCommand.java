@@ -19,11 +19,11 @@ public class InfoCommand extends InventoriesCommand {
     public InfoCommand(MultiverseInventories plugin) {
         super(plugin);
         this.setName("World or Group Information");
-        this.setCommandUsage("/mvi info " + ChatColor.GREEN + "{WORLD|WORLDGROUP}");
+        this.setCommandUsage("/mvinv info " + ChatColor.GREEN + "{WORLD|WORLDGROUP}");
         this.setArgRange(1, 1);
-        this.addKey("mvi info");
-        this.addKey("mvii");
-        this.addKey("mviinfo");
+        this.addKey("mvinv info");
+        this.addKey("mvinvi");
+        this.addKey("mvinvinfo");
         this.setPermission(MVIPerms.COMMAND_INFO.getPerm());
     }
 

@@ -14,7 +14,11 @@ public enum MVIPerms {
     /**
      * Permission for /mvi info.
      */
-    COMMAND_INFO(new Permission("multiverse.inventories.info", "Displays information about a world or group.", PermissionDefault.OP)),
+    COMMAND_INFO(new Permission("mvinv.info", "Displays information about a world or group.", PermissionDefault.OP)),
+    /**
+     * Permission for /mvi info.
+     */
+    COMMAND_IMPORT(new Permission("mvinv.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
      * Permission prefix for bypassing groups.
      */

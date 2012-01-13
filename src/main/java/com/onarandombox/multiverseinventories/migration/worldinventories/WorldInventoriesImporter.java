@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -10,6 +11,7 @@ import me.drayshak.WorldInventories.WIPlayerStats;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +22,7 @@ import java.util.List;
 /**
  * Handles the importing of data from WorldInventories.
  */
-public class WorldInventoriesImporter {
+public class WorldInventoriesImporter implements DataImporter {
 
     private WorldInventories wiPlugin;
     private MultiverseInventories plugin;
@@ -38,10 +40,19 @@ public class WorldInventoriesImporter {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Plugin getPlugin() {
+        return this.getWIPlugin();
+    }
+
+    /**
      * Imports the data from WorldInventories into MultiverseInventories.
      *
      * @throws MigrationException If there was any MAJOR issues importing the data.
      */
+    @Override
     public void importData() throws MigrationException {
         List<Group> wiGroups = this.getWIPlugin().getGroups();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
