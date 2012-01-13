@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.migration;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.migration.multiinv.MultiInvImporter;
 import com.onarandombox.multiverseinventories.migration.worldinventories.WorldInventoriesImporter;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import me.drayshak.WorldInventories.WorldInventories;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
@@ -26,7 +27,7 @@ public class ImportManager {
      */
     public void hookMultiInv(MultiInv plugin) {
         this.multiInvImporter = new MultiInvImporter(this.plugin, plugin);
-        //this.getMultiInvImporter().getMIPlugin().
+        MVILog.info("Hooked MultiInv for importing!");
     }
 
     /**
@@ -36,6 +37,7 @@ public class ImportManager {
      */
     public void hookWorldInventories(WorldInventories plugin) {
         this.worldInventoriesImporter = new WorldInventoriesImporter(this.plugin, plugin);
+        MVILog.info("Hooked WorldInventories for importing!");
     }
 
     /**

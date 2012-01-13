@@ -26,7 +26,7 @@ public class MVIServerListener extends ServerListener {
             } else if (event.getPlugin() instanceof WorldInventories) {
                 this.plugin.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
             }
-        } catch (NoClassDefFoundError ignore) {}
+        } catch (NoClassDefFoundError ignore) { }
     }
 
     @Override
@@ -37,6 +37,6 @@ public class MVIServerListener extends ServerListener {
             } else if (event.getPlugin() instanceof WorldInventories) {
                 this.plugin.getImportManager().unHookWorldInventories();
             }
-        } catch (NoClassDefFoundError ignore) {}
+        } catch (NoClassDefFoundError ignore) { }
     }
 }

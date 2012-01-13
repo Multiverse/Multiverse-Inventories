@@ -70,7 +70,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
     private ProfileManager profileManager = new WeakProfileManager(this);
-    
+
     private ImportManager importManager = new ImportManager(this);
 
     /**

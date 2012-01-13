@@ -1,14 +1,15 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
-import org.bukkit.GameMode;
+import com.onarandombox.multiverseinventories.util.PlayerStats;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
-import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventory;
-import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventoryOld;
 
 import java.io.File;
 
+/**
+ * A replacement for MultiInv's MIPlayerFile class so that it may accept an OfflinePlayer instead of Player.
+ */
 public class MIPlayerFileLoader {
 
     private YamlConfiguration playerFile;
@@ -22,64 +23,91 @@ public class MIPlayerFileLoader {
         playerFile = new YamlConfiguration();
     }
 
-    public boolean load(){
-        if (file.exists()){
-            try{
+    /**
+     * Loads the player file into memory.
+     *
+     * @return True if there was a file to load and it loaded successfully.
+     */
+    public boolean load() {
+        if (file.exists()) {
+            try {
                 playerFile.load(file);
                 return true;
-            }catch (Exception ignore){ }
+            } catch (Exception ignore) { }
         }
         return false;
     }
 
-    // Load particular inventory for specified player from specified group
-    public MIInventoryInterface getInventory(String inventoryName){
+    /**
+     * Load particular inventory for specified player from specified group.
+     *
+     * @param inventoryName The gamemode for the inventory to load.
+     * @return An interface for retrieve the inventory/armor contents.
+     */
+    public MIInventoryInterface getInventory(String inventoryName) {
         // Get stored string from configuration file
         MIInventoryInterface inventory;
         String inventoryString = playerFile.getString(inventoryName, null);
         // Check for old inventory save
-        if (inventoryString == null || inventoryString.contains(";-;")){
+        if (inventoryString == null || inventoryString.contains(";-;")) {
             inventory = new MIInventoryOldWrapper(inventoryString);
-        }else{
+        } else {
             inventory = new MIInventoryWrapper(inventoryString);
         }
         return inventory;
     }
 
-    public int getHealth(){
-        int health = playerFile.getInt("health", 20);
-        if (health <= 0 || health > 20) {
-            health = 20;
+    /**
+     * @return The player's health.
+     */
+    public int getHealth() {
+        int health = playerFile.getInt("health", PlayerStats.HEALTH);
+        if (health <= 0 || health > PlayerStats.HEALTH) {
+            health = PlayerStats.HEALTH;
         }
         return health;
     }
 
-    public int getHunger(){
-        int hunger = playerFile.getInt("hunger", 20);
-        if (hunger <= 0 || hunger > 20) {
-            hunger = 20;
+    /**
+     * @return The player's hunger.
+     */
+    public int getHunger() {
+        int hunger = playerFile.getInt("hunger", PlayerStats.FOOD_LEVEL);
+        if (hunger <= 0 || hunger > PlayerStats.FOOD_LEVEL) {
+            hunger = PlayerStats.FOOD_LEVEL;
         }
         return hunger;
     }
 
-    public float getSaturation(){
+    /**
+     * @return The player's saturation.
+     */
+    public float getSaturation() {
         double saturationDouble = playerFile.getDouble("saturation", 0);
-        float saturation = (float)saturationDouble;
+        float saturation = (float) saturationDouble;
         return saturation;
     }
 
-
-    public int getTotalExperience(){
+    /**
+     * @return The player's total exp.
+     */
+    public int getTotalExperience() {
         return playerFile.getInt("experience", 0);
     }
 
-    public int getLevel(){
+    /**
+     * @return The player's level.
+     */
+    public int getLevel() {
         return playerFile.getInt("level", 0);
     }
 
-    public float getExperience(){
+    /**
+     * @return The player's exp.
+     */
+    public float getExperience() {
         double expDouble = playerFile.getDouble("exp", 0);
-        float exp = (float)expDouble;
+        float exp = (float) expDouble;
         return exp;
     }
 }

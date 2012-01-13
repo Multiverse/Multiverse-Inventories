@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
+import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.inventory.ItemStack;
 import uk.co.tggl.pluckerpluck.multiinv.inventory.MIItemStack;
 
@@ -13,9 +14,11 @@ public class MIInventoryConverter {
      * @return Standard ItemStacks.
      */
     public static ItemStack[] convertMIItems(MIItemStack[] oldContents) {
-        ItemStack[] newContents = new ItemStack[oldContents.length];
+        ItemStack[] newContents = MinecraftTools.fillWithAir(new ItemStack[oldContents.length]);
         for (int i = 0; i < oldContents.length; i++) {
-            newContents[i] = oldContents[i].getItemStack();
+            if (oldContents[i].getItemStack() != null) {
+                newContents[i] = oldContents[i].getItemStack();
+            }
         }
         return newContents;
     }
