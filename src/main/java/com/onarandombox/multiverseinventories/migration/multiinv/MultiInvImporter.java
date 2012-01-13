@@ -3,14 +3,12 @@ package com.onarandombox.multiverseinventories.migration.multiinv;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import uk.co.tggl.pluckerpluck.multiinv.MIYamlFiles;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
-import uk.co.tggl.pluckerpluck.multiinv.listener.MIPlayerListener;
-import uk.co.tggl.pluckerpluck.multiinv.player.MIPlayer;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -36,11 +34,12 @@ public class MultiInvImporter {
     public void importData() throws MigrationException {
         HashMap<String, String> miGroupMap = this.getGroupMap();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
+            MVILog.info("Processing MultiInv data for player: " + player.getName());
             for (Map.Entry<String, String> entry : miGroupMap.entrySet()) {
                 String worldName = entry.getKey();
                 String groupName = entry.getValue();
                 MIPlayerFileLoader playerFileLoader =
-                        new MIPlayerFileLoader(this.miPlugin, player, groupName);
+                        new MIPlayerFileLoader(this.getMIPlugin(), player, groupName);
                 if (!playerFileLoader.load()) {
                     continue;
                 }
@@ -59,13 +58,16 @@ public class MultiInvImporter {
                 this.plugin.getData().updatePlayerData(worldName, playerProfile);
             }
         }
+
+        MVILog.info("Import from MultiInv finished.  Disabling MultiInv.");
+        Bukkit.getPluginManager().disablePlugin(this.getMIPlugin());
     }
 
     private HashMap<String, String> getGroupMap() throws MigrationException {
         Field field;
         try {
             field = MIYamlFiles.class.getDeclaredField("groups");
-        } catch(NoSuchFieldException ignore) {
+        } catch (NoSuchFieldException ignore) {
             throw new MigrationException("The running version of MultiInv is " +
                     "incompatible with the import feature.");
         }
