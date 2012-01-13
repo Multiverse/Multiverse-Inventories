@@ -54,7 +54,13 @@ public class WorldInventoriesImporter implements DataImporter {
      */
     @Override
     public void importData() throws MigrationException {
-        List<Group> wiGroups = this.getWIPlugin().getGroups();
+        List<Group> wiGroups;
+        try {
+            wiGroups = this.getWIPlugin().getGroups();
+        } catch (Exception e) {
+            throw new MigrationException("Unable to import from this version of WorldInventories!")
+                    .setCauseException(e);
+        }
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             MVILog.info("Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
