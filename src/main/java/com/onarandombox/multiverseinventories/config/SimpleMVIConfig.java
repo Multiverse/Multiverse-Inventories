@@ -36,7 +36,29 @@ public class SimpleMVIConfig implements MVIConfig {
         /**
          * Groups section path and comments.  No simple default for this.
          */
-        GROUPS("groups", null, "#This is where you configure your world groups");
+        GROUPS("groups", null, "# This is where you configure your world groups",
+                "# example below: ",
+                "# groups:",
+                "#   survival_group_1:",
+                "#     worlds:",
+                "#     - world",
+                "#     - world_nether",
+                "#     - world_the_end",
+                "#     shares:",
+                "#     - inventory",
+                "#     - health",
+                "#     - experience",
+                "#     - hunger",
+                "#   survival_group_2:",
+                "#     worlds:",
+                "#     - world2",
+                "#     - world2_nether",
+                "#     - world2_the_end",
+                "#     shares:",
+                "#     - inventory",
+                "#     - health",
+                "#     - experience",
+                "#     - hunger");
 
         private String path;
         private Object def;
