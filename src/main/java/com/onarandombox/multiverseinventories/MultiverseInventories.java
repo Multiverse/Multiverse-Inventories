@@ -26,6 +26,7 @@ import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
@@ -378,18 +379,18 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 + toWorld.getName() + " with shares: " + shares.toString());
         // persist current stats for previous world if not sharing
         // then load any saved data
-        if (!shares.isSharingInventory()) {
+        if (!shares.isSharing(Sharable.INVENTORY)) {
             fromWorldPlayerProfile.setInventoryContents(player.getInventory().getContents());
             fromWorldPlayerProfile.setArmorContents(player.getInventory().getArmorContents());
             player.getInventory().clear();
             player.getInventory().setContents(toWorldPlayerProfile.getInventoryContents());
             player.getInventory().setArmorContents(toWorldPlayerProfile.getArmorContents());
         }
-        if (!shares.isSharingHealth()) {
+        if (!shares.isSharing(Sharable.HEALTH)) {
             fromWorldPlayerProfile.setHealth(player.getHealth());
             player.setHealth(toWorldPlayerProfile.getHealth());
         }
-        if (!shares.isSharingHunger()) {
+        if (!shares.isSharing(Sharable.HUNGER)) {
             fromWorldPlayerProfile.setFoodLevel(player.getFoodLevel());
             fromWorldPlayerProfile.setExhaustion(player.getExhaustion());
             fromWorldPlayerProfile.setSaturation(player.getSaturation());
@@ -397,7 +398,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setExhaustion(toWorldPlayerProfile.getExhaustion());
             player.setSaturation(toWorldPlayerProfile.getSaturation());
         }
-        if (!shares.isSharingExp()) {
+        if (!shares.isSharing(Sharable.EXPERIENCE)) {
             fromWorldPlayerProfile.setExp(player.getExp());
             fromWorldPlayerProfile.setLevel(player.getLevel());
             fromWorldPlayerProfile.setTotalExperience(player.getTotalExperience());
@@ -406,7 +407,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             player.setTotalExperience(toWorldPlayerProfile.getTotalExperience());
         }
         /*
-        if (!shares.isSharingEffects()) {
+        if (!shares.isSharing(Sharable.EFFECTS)) {
             // Where is the effects API??
         }
         */

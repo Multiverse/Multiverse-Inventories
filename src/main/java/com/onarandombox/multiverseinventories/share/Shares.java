@@ -15,54 +15,16 @@ public interface Shares {
     void mergeShares(Shares newShares);
 
     /**
-     * @return True if sharing.
+     * @param sharable The Sharable you want to check for.
+     * @return True if it is sharing the sharable.
      */
-    boolean isSharingInventory();
+    boolean isSharing(Sharable sharable);
 
     /**
-     * @param sharingInventory Whether to share inventory or not.
+     * @param sharable The Sharable you wish to set sharing for.
+     * @param sharing Whether to share or not.
      */
-    void setSharingInventory(boolean sharingInventory);
-
-    /**
-     * @return True if sharing.
-     */
-    boolean isSharingHealth();
-
-    /**
-     * @param sharingHealth Whether to share health or not.
-     */
-    void setSharingHealth(boolean sharingHealth);
-
-    /**
-     * @return True if sharing.
-     */
-    boolean isSharingHunger();
-
-    /**
-     * @param sharingHunger Whether to share hunger or not.
-     */
-    void setSharingHunger(boolean sharingHunger);
-
-    /**
-     * @return True if sharing.
-     */
-    boolean isSharingExp();
-
-    /**
-     * @param sharingExp Whether to share exp or not.
-     */
-    void setSharingExp(boolean sharingExp);
-
-    /**
-     * @return True if sharing.
-     */
-    boolean isSharingEffects();
-
-    /**
-     * @param sharingEffects Whether to share effects or not.
-     */
-    void setSharingEffects(boolean sharingEffects);
+    void setSharing(Sharable sharable, boolean sharing);
 
     /**
      * @return These shares as a string list.

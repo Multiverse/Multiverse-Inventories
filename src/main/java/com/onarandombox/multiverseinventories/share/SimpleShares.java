@@ -18,11 +18,6 @@ public class SimpleShares implements Shares {
     public SimpleShares() {
     }
 
-    public SimpleShares(Shares shares) {
-        this(shares.isSharingInventory(), shares.isSharingHealth(), shares.isSharingExp(),
-                shares.isSharingHunger(), shares.isSharingEffects());
-    }
-
     public SimpleShares(boolean sharingInventory, boolean sharingHealth, boolean sharingHunger,
                         boolean sharingExp, boolean sharingEffects) {
         this.sharingInventory = sharingInventory;
@@ -32,25 +27,26 @@ public class SimpleShares implements Shares {
         this.sharingEffects = sharingEffects;
     }
 
-    //@TODO add "all"
     public SimpleShares(List sharesList) {
         for (Object shareStringObj : sharesList) {
             if (shareStringObj.toString().equals("inv") || shareStringObj.toString().equals("inventory")) {
-                this.setSharingInventory(true);
+                this.setSharing(Sharable.INVENTORY, true);
             } else if (shareStringObj.toString().equals("health") || shareStringObj.toString().equals("hp")) {
-                this.setSharingHealth(true);
+                this.setSharing(Sharable.HEALTH, true);
             } else if (shareStringObj.toString().equals("hunger") || shareStringObj.toString().equals("food")) {
-                this.setSharingHunger(true);
+                this.setSharing(Sharable.HUNGER, true);
             } else if (shareStringObj.toString().equals("exp") || shareStringObj.toString().equals("experience")) {
-                this.setSharingExp(true);
+                this.setSharing(Sharable.EXPERIENCE, true);
             } else if (shareStringObj.toString().equals("effects") || shareStringObj.toString().equals("fx")) {
-                this.setSharingEffects(true);
-            } else if (shareStringObj.toString().equals("everything") || shareStringObj.toString().equals("all")) {
-                this.setSharingInventory(true);
-                this.setSharingHealth(true);
-                this.setSharingHunger(true);
-                this.setSharingExp(true);
-                this.setSharingEffects(true);
+                this.setSharing(Sharable.EFFECTS, true);
+            } else if (shareStringObj.toString().equals("everything")
+                    || shareStringObj.toString().equals("all")
+                    || shareStringObj.toString().equals("*")) {
+                this.setSharing(Sharable.INVENTORY, true);
+                this.setSharing(Sharable.HEALTH, true);
+                this.setSharing(Sharable.HUNGER, true);
+                this.setSharing(Sharable.EXPERIENCE, true);
+                this.setSharing(Sharable.EFFECTS, true);
             }
         }
     }
@@ -60,20 +56,20 @@ public class SimpleShares implements Shares {
      */
     @Override
     public void mergeShares(Shares newShares) {
-        if (!this.isSharingInventory()) {
-            this.setSharingInventory(newShares.isSharingInventory());
+        if (!this.isSharing(Sharable.INVENTORY)) {
+            this.setSharing(Sharable.INVENTORY, newShares.isSharing(Sharable.INVENTORY));
         }
-        if (!this.isSharingHealth()) {
-            this.setSharingHealth(newShares.isSharingHealth());
+        if (!this.isSharing(Sharable.HEALTH)) {
+            this.setSharing(Sharable.HEALTH, newShares.isSharing(Sharable.HEALTH));
         }
-        if (!this.isSharingHunger()) {
-            this.setSharingHunger(newShares.isSharingHunger());
+        if (!this.isSharing(Sharable.HUNGER)) {
+            this.setSharing(Sharable.HUNGER, newShares.isSharing(Sharable.HUNGER));
         }
-        if (!this.isSharingExp()) {
-            this.setSharingExp(newShares.isSharingExp());
+        if (!this.isSharing(Sharable.EXPERIENCE)) {
+            this.setSharing(Sharable.EXPERIENCE, newShares.isSharing(Sharable.EXPERIENCE));
         }
-        if (!this.isSharingEffects()) {
-            this.setSharingEffects(newShares.isSharingEffects());
+        if (!this.isSharing(Sharable.EFFECTS)) {
+            this.setSharing(Sharable.EFFECTS, newShares.isSharing(Sharable.EFFECTS));
         }
     }
 
@@ -81,80 +77,43 @@ public class SimpleShares implements Shares {
      * {@inheritDoc}
      */
     @Override
-    public boolean isSharingInventory() {
-        return sharingInventory;
+    public boolean isSharing(Sharable sharable) {
+        switch (sharable) {
+            case INVENTORY:
+                return this.sharingInventory;
+            case HEALTH:
+                return this.sharingHealth;
+            case EXPERIENCE:
+                return this.sharingExp;
+            case HUNGER:
+                return this.sharingHunger;
+            case EFFECTS:
+                return this.sharingEffects;
+            default:
+                return false;
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setSharingInventory(boolean sharingInventory) {
-        this.sharingInventory = sharingInventory;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSharingHealth() {
-        return sharingHealth;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSharingHealth(boolean sharingHealth) {
-        this.sharingHealth = sharingHealth;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSharingHunger() {
-        return sharingHunger;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSharingHunger(boolean sharingHunger) {
-        this.sharingHunger = sharingHunger;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSharingExp() {
-        return sharingExp;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSharingExp(boolean sharingExp) {
-        this.sharingExp = sharingExp;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSharingEffects() {
-        return sharingEffects;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setSharingEffects(boolean sharingEffects) {
-        this.sharingEffects = sharingEffects;
+    public void setSharing(Sharable sharable, boolean sharing) {
+        switch (sharable) {
+            case INVENTORY:
+                this.sharingInventory = sharing;
+                break;
+            case HEALTH:
+                this.sharingHealth = sharing;
+            case EXPERIENCE:
+                this.sharingExp = sharing;
+            case HUNGER:
+                this.sharingHunger = sharing;
+            case EFFECTS:
+                this.sharingEffects = sharing;
+            default:
+                break;
+        }
     }
 
     /**
@@ -163,24 +122,25 @@ public class SimpleShares implements Shares {
     @Override
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
-        if (this.isSharingInventory() && this.isSharingHealth() && this.isSharingHunger()
-                && this.isSharingExp()/* && this.isSharingEffects()*/) {
+        if (this.isSharing(Sharable.INVENTORY) && this.isSharing(Sharable.HEALTH)
+                && this.isSharing(Sharable.HUNGER) && this.isSharing(Sharable.EXPERIENCE)
+                /* && this.isSharing(Sharable.EFFECTS)*/) {
             list.add("all");
         } else {
-            if (this.isSharingInventory()) {
+            if (this.isSharing(Sharable.INVENTORY)) {
                 list.add("inventory");
             }
-            if (this.isSharingHealth()) {
+            if (this.isSharing(Sharable.HEALTH)) {
                 list.add("health");
             }
-            if (this.isSharingHunger()) {
+            if (this.isSharing(Sharable.HUNGER)) {
                 list.add("hunger");
             }
-            if (this.isSharingExp()) {
+            if (this.isSharing(Sharable.EXPERIENCE)) {
                 list.add("experience");
             }
             /*
-            if (this.isSharingEffects()) {
+            if (this.isSharing(Sharable.EFFECTS)) {
                 list.add("effects");
             }
             */
@@ -192,16 +152,16 @@ public class SimpleShares implements Shares {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Inventory: ");
-        stringBuilder.append(this.isSharingInventory());
+        stringBuilder.append(this.isSharing(Sharable.INVENTORY));
         stringBuilder.append(" Health: ");
-        stringBuilder.append(this.isSharingHealth());
+        stringBuilder.append(this.isSharing(Sharable.HEALTH));
         stringBuilder.append(" Exp: ");
-        stringBuilder.append(this.isSharingExp());
+        stringBuilder.append(this.isSharing(Sharable.EXPERIENCE));
         stringBuilder.append(" Hunger: ");
-        stringBuilder.append(this.isSharingHunger());
+        stringBuilder.append(this.isSharing(Sharable.HUNGER));
         /*
         stringBuilder.append(" Effects: ");
-        stringBuilder.append(this.isSharingEffects());
+        stringBuilder.append(this.isSharing(Sharable.EFFECTS));
         */
         return stringBuilder.toString();
     }
