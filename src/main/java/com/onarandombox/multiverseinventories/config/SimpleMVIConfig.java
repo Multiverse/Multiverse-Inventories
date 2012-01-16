@@ -51,20 +51,19 @@ public class SimpleMVIConfig implements MVIConfig {
                 "#     - world_nether",
                 "#     - world_the_end",
                 "#     shares:",
-                "#     - inventory",
-                "#     - health",
-                "#     - experience",
-                "#     - hunger",
+                "#     - all",
                 "#   survival_group_2:",
                 "#     worlds:",
                 "#     - world2",
                 "#     - world2_nether",
                 "#     - world2_the_end",
                 "#     shares:",
-                "#     - inventory",
-                "#     - health",
-                "#     - experience",
-                "#     - hunger");
+                "#     - all"/*,
+                "#   survival_share_exp:",
+                "#     worlds: ",
+                "#     - all_survival",
+                "#     shares:",
+                "#     - experience"*/);
 
         private String path;
         private Object def;

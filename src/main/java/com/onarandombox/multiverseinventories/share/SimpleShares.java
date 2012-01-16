@@ -45,6 +45,12 @@ public class SimpleShares implements Shares {
                 this.setSharingExp(true);
             } else if (shareStringObj.toString().equals("effects") || shareStringObj.toString().equals("fx")) {
                 this.setSharingEffects(true);
+            } else if (shareStringObj.toString().equals("everything") || shareStringObj.toString().equals("all")) {
+                this.setSharingInventory(true);
+                this.setSharingHealth(true);
+                this.setSharingHunger(true);
+                this.setSharingExp(true);
+                this.setSharingEffects(true);
             }
         }
     }
@@ -157,20 +163,27 @@ public class SimpleShares implements Shares {
     @Override
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
-        if (this.isSharingInventory()) {
-            list.add("inventory");
-        }
-        if (this.isSharingHealth()) {
-            list.add("health");
-        }
-        if (this.isSharingHunger()) {
-            list.add("hunger");
-        }
-        if (this.isSharingExp()) {
-            list.add("experience");
-        }
-        if (this.isSharingEffects()) {
-            list.add("effects");
+        if (this.isSharingInventory() && this.isSharingHealth() && this.isSharingHunger()
+                && this.isSharingExp()/* && this.isSharingEffects()*/) {
+            list.add("all");
+        } else {
+            if (this.isSharingInventory()) {
+                list.add("inventory");
+            }
+            if (this.isSharingHealth()) {
+                list.add("health");
+            }
+            if (this.isSharingHunger()) {
+                list.add("hunger");
+            }
+            if (this.isSharingExp()) {
+                list.add("experience");
+            }
+            /*
+            if (this.isSharingEffects()) {
+                list.add("effects");
+            }
+            */
         }
         return list;
     }
@@ -186,8 +199,10 @@ public class SimpleShares implements Shares {
         stringBuilder.append(this.isSharingExp());
         stringBuilder.append(" Hunger: ");
         stringBuilder.append(this.isSharingHunger());
+        /*
         stringBuilder.append(" Effects: ");
         stringBuilder.append(this.isSharingEffects());
+        */
         return stringBuilder.toString();
     }
 }
