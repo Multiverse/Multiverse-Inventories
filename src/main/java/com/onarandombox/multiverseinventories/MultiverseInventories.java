@@ -55,24 +55,20 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
-    private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
-
-    private CommandHandler commandHandler;
     private final int requiresProtocol = 9;
-    private MultiverseCore core = null;
-
+    private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
     private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
     private final MVIServerListener serverListener = new MVIServerListener(this);
 
-    private MVIConfig config = null;
-    private MVIData data = null;
-
     private Messager messager = new SimpleMessager(this);
-
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
     private ProfileManager profileManager = new WeakProfileManager(this);
-
     private ImportManager importManager = new ImportManager(this);
+
+    private CommandHandler commandHandler = null;
+    private MultiverseCore core = null;
+    private MVIConfig config = null;
+    private MVIData data = null;
 
     /**
      * {@inheritDoc}
