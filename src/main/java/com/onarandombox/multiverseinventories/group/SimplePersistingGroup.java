@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.group;
 import com.onarandombox.multiverseinventories.share.Sharable;
 
 /**
- * Simple implementation of PersistingGroup
+ * Simple implementation of PersistingGroup.
  */
 public class SimplePersistingGroup implements PersistingGroup {
 
@@ -14,7 +14,7 @@ public class SimplePersistingGroup implements PersistingGroup {
         this.sharable = sharable;
         this.group = group;
     }
-    
+
     /**
      * {@inheritDoc}
      */
