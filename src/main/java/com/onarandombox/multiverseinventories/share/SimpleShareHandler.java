@@ -1,9 +1,10 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.group.PersistingGroup;
-import com.onarandombox.multiverseinventories.group.SimplePersistingGroup;
+import com.onarandombox.multiverseinventories.profile.PersistingProfile;
+import com.onarandombox.multiverseinventories.profile.SimplePersistingProfile;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
+import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -11,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -18,8 +20,8 @@ import java.util.List;
  */
 public class SimpleShareHandler implements ShareHandler {
 
-    private List<PersistingGroup> fromGroups;
-    private List<PersistingGroup> toGroups;
+    private List<PersistingProfile> fromProfiles;
+    private List<PersistingProfile> toProfiles;
     private Player player;
     private World fromWorld;
     private World toWorld;
@@ -27,8 +29,8 @@ public class SimpleShareHandler implements ShareHandler {
 
     public SimpleShareHandler(MultiverseInventories plugin, Player player,
                               World fromWorld, World toWorld) {
-        this.fromGroups = new ArrayList<PersistingGroup>();
-        this.toGroups = new ArrayList<PersistingGroup>();
+        this.fromProfiles = new ArrayList<PersistingProfile>();
+        this.toProfiles = new ArrayList<PersistingProfile>();
         this.player = player;
         this.fromWorld = fromWorld;
         this.toWorld = toWorld;
@@ -39,32 +41,32 @@ public class SimpleShareHandler implements ShareHandler {
      * {@inheritDoc}
      */
     @Override
-    public void addFromGroup(Sharable sharable, WorldGroup group) {
-        this.getFromGroups().add(new SimplePersistingGroup(sharable, group));
+    public void addFromProfile(String dataName, Shares shares, PlayerProfile profile) {
+        this.getFromProfiles().add(new SimplePersistingProfile(dataName, shares, profile));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addToGroup(Sharable sharable, WorldGroup group) {
-        this.getToGroups().add(new SimplePersistingGroup(sharable, group));
+    public void addToProfile(String dataName, Shares shares, PlayerProfile profile) {
+        this.getToProfiles().add(new SimplePersistingProfile(dataName, shares, profile));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<PersistingGroup> getFromGroups() {
-        return this.fromGroups;
+    public List<PersistingProfile> getFromProfiles() {
+        return this.fromProfiles;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<PersistingGroup> getToGroups() {
-        return this.toGroups;
+    public List<PersistingProfile> getToProfiles() {
+        return this.toProfiles;
     }
 
     /**
@@ -143,4 +145,75 @@ public class SimpleShareHandler implements ShareHandler {
         this.plugin.getData().updatePlayerData(this.getFromWorld().getName(), fromWorldPlayerProfile);
         this.plugin.getData().updatePlayerData(this.getToWorld().getName(), toWorldPlayerProfile);
     }
+
+    public void handleSharing() {
+        boolean usingBypass = this.plugin.getSettings().isUsingBypassPerms();
+
+        if (usingBypass && MVIPerms.BYPASS_WORLD.hasBypass(this.getPlayer(),
+                this.getToWorld().getName())) {
+            return;
+        }
+
+        List<WorldGroup> fromWorldGroups = this.plugin.getGroupManager()
+                .getWorldGroups(this.getFromWorld().getName());
+        for (WorldGroup fromWorldGroup : fromWorldGroups) {
+            PlayerProfile profile = fromWorldGroup.getPlayerData(player);
+            if (!fromWorldGroup.containsWorld(this.getToWorld().getName())) {
+                this.addFromProfile(fromWorldGroup.getName(),
+                        new SimpleShares(Sharable.ALL), profile);
+            } else {
+                if (!fromWorldGroup.getShares().isSharing(Sharable.ALL)) {
+                    EnumSet<Sharable> sharing =
+                            EnumSet.complementOf(fromWorldGroup.getShares().getSharables());
+                    sharing.remove(Sharable.ALL);
+                    this.addFromProfile(fromWorldGroup.getName(), new SimpleShares(sharing), profile);
+                }
+            }
+        }
+        WorldProfile fromWorldProfile = this.plugin.getProfileManager()
+                .getWorldProfile(this.getFromWorld().getName());
+        this.addFromProfile(this.getFromWorld().getName(), new SimpleShares(Sharable.ALL),
+                fromWorldProfile.getPlayerData(this.getPlayer()));
+
+        List<WorldGroup> toWorldGroups = this.plugin.getGroupManager()
+                .getWorldGroups(this.getToWorld().getName());
+        if (!toWorldGroups.isEmpty()) {
+            for (WorldGroup toWorldGroup : toWorldGroups) {
+                if (!usingBypass || !MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
+                        toWorldGroup.getName())) {
+                    PlayerProfile profile = toWorldGroup.getPlayerData(player);
+                    if (!toWorldGroup.containsWorld(this.getFromWorld().getName())) {
+                        this.addToProfile(toWorldGroup.getName(),
+                                new SimpleShares(Sharable.ALL), profile);
+                    } else {
+                        if (!toWorldGroup.getShares().isSharing(Sharable.ALL)) {
+                            EnumSet<Sharable> shares =
+                                    EnumSet.complementOf(toWorldGroup.getShares().getSharables());
+                            shares.remove(Sharable.ALL);
+                            this.addToProfile(toWorldGroup.getName(),
+                                    new SimpleShares(shares), profile);
+                        }
+                    }
+                }
+            }
+        } else {
+            WorldProfile toWorldProfile = this.plugin.getProfileManager()
+                    .getWorldProfile(this.getToWorld().getName());
+            this.addToProfile(this.getToWorld().getName(), new SimpleShares(Sharable.ALL),
+                    toWorldProfile.getPlayerData(this.getPlayer()));
+        }
+
+        this.completeSharing();
+    }
+
+    private void completeSharing() {
+        if (this.getToProfiles().isEmpty()) {
+            MVILog.debug("No toProfiles, nothing to process.");
+            return;
+        }
+        for (PersistingProfile persistingProfile : this.getFromProfiles()) {
+            //TODO FINISH
+        }
+    }
+
 }

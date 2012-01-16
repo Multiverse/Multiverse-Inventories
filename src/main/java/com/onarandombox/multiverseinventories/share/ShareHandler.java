@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
-import com.onarandombox.multiverseinventories.group.PersistingGroup;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
+import com.onarandombox.multiverseinventories.profile.PersistingProfile;
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -13,26 +13,28 @@ import java.util.List;
 public interface ShareHandler {
 
     /**
-     * @param sharable What from this group needs to be saved.
-     * @param group A group the player came from that will need inventories saved to.
+     * @param dataName The name of the world/group the player's data is associated with.
+     * @param shares What from this group needs to be saved.
+     * @param profile The player profile that will need data saved to.
      */
-    void addFromGroup(Sharable sharable, WorldGroup group);
+    void addFromProfile(String dataName, Shares shares, PlayerProfile profile);
 
     /**
-     * @param sharable What from this group needs to be loaded.
-     * @param group A group the player is going to that will need effects loaded from.
+     * @param dataName The name of the world/group the player's data is associated with.
+     * @param shares What from this group needs to be loaded.
+     * @param profile The player profile that will need data loaded from.
      */
-    void addToGroup(Sharable sharable, WorldGroup group);
+    void addToProfile(String dataName, Shares shares, PlayerProfile profile);
 
     /**
      * @return The groups the player is coming from.
      */
-    List<PersistingGroup> getFromGroups();
+    List<PersistingProfile> getFromProfiles();
 
     /**
      * @return The groups the player is going to.
      */
-    List<PersistingGroup> getToGroups();
+    List<PersistingProfile> getToProfiles();
 
     /**
      * @return The world travelling from.

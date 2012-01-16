@@ -11,7 +11,18 @@ public class SimpleShares implements Shares {
 
     private EnumSet<Sharable> sharing = EnumSet.noneOf(Sharable.class);
 
-    public SimpleShares() {
+    public SimpleShares(Sharable...sharables) {
+        for (Sharable sharable : sharables) {
+            this.sharing.add(sharable);
+        }
+    }
+
+    public SimpleShares(EnumSet<Sharable> sharables) {
+        this.sharing = sharables;
+    }
+
+    public SimpleShares(Shares shares) {
+        this.sharing = shares.getSharables();
     }
 
     public SimpleShares(boolean sharingInventory, boolean sharingHealth, boolean sharingHunger,
@@ -63,7 +74,18 @@ public class SimpleShares implements Shares {
      */
     @Override
     public boolean isSharing(Sharable sharable) {
-        return this.getSharables().contains(sharable);
+        boolean isSharing = this.getSharables().contains(sharable);
+        if (sharable.equals(Sharable.ALL) && !isSharing) {
+            EnumSet<Sharable> shareSet = EnumSet.allOf(Sharable.class);
+            shareSet.remove(Sharable.ALL);
+            for (Sharable share : shareSet) {
+                if (!this.getSharables().contains(share)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return isSharing;
     }
 
     /**

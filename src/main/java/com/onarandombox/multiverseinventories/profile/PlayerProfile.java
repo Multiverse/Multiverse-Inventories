@@ -16,6 +16,11 @@ public interface PlayerProfile {
     Map<String, Object> serialize();
 
     /**
+     * @return The type of profile.
+     */
+    ProfileType getType();
+
+    /**
      * @return the Player associated with this profile.
      */
     OfflinePlayer getPlayer();

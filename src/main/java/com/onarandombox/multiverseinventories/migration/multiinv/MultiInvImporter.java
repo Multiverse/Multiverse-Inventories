@@ -4,7 +4,6 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -99,7 +98,7 @@ public class MultiInvImporter implements DataImporter {
         playerProfile.setLevel(playerFileLoader.getLevel());
         playerProfile.setTotalExperience(playerFileLoader.getTotalExperience());
         playerProfile.setFoodLevel(playerFileLoader.getHunger());
-        this.plugin.getData().updatePlayerData(ProfileType.WORLD, worldName, playerProfile);
+        this.plugin.getData().updatePlayerData(worldName, playerProfile);
     }
 
     private HashMap<String, String> getGroupMap() throws MigrationException {

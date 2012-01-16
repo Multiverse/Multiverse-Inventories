@@ -29,13 +29,15 @@ public class SimplePlayerProfile implements PlayerProfile {
     private Float saturation = PlayerStats.SATURATION;
 
     private OfflinePlayer player;
+    private ProfileType type;
 
-    public SimplePlayerProfile(OfflinePlayer player) {
+    public SimplePlayerProfile(ProfileType type, OfflinePlayer player) {
+        this.type = type;
         this.player = player;
     }
 
-    public SimplePlayerProfile(String playerName, Map<String, Object> playerData) {
-        this(Bukkit.getOfflinePlayer(playerName));
+    public SimplePlayerProfile(ProfileType type, String playerName, Map<String, Object> playerData) {
+        this(type, Bukkit.getOfflinePlayer(playerName));
         if (playerData.containsKey("stats")) {
             this.parsePlayerStats(playerData.get("stats").toString().split(DataStrings.GENERAL_DELIMITER));
         }
@@ -171,6 +173,14 @@ public class SimplePlayerProfile implements PlayerProfile {
         }
         playerData.put("armorContents", builder.toString());
         return playerData;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProfileType getType() {
+        return this.type;
     }
 
     /**

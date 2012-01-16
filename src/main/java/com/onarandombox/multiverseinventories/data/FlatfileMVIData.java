@@ -103,8 +103,9 @@ public class FlatfileMVIData implements MVIData {
      * {@inheritDoc}
      */
     @Override
-    public boolean updatePlayerData(ProfileType type, String dataName, PlayerProfile playerProfile) {
-        File playerFile = this.getPlayerFile(type, dataName, playerProfile.getPlayer().getName());
+    public boolean updatePlayerData(String dataName, PlayerProfile playerProfile) {
+        File playerFile = this.getPlayerFile(playerProfile.getType(),
+                dataName, playerProfile.getPlayer().getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", playerProfile.serialize());
         try {
@@ -129,42 +130,6 @@ public class FlatfileMVIData implements MVIData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new SimplePlayerProfile(playerName,  section.getValues(true));
+        return new SimplePlayerProfile(type, playerName,  section.getValues(true));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    //@Override
-    /*
-    public List<WorldProfile> getWorldProfiles() {
-        List<WorldProfile> worldProfiles = new ArrayList<WorldProfile>();
-        File[] worldFiles = this.getWorldFolders();
-        if (worldFiles.length < 1) {
-            MVILog.info("No world data to load");
-            return worldProfiles;
-        }
-        for (File worldFile : worldFiles) {
-            String worldName = this.getWorldName(worldFile);
-            if (worldName == null) {
-                // non-yaml file detected
-                continue;
-            }
-            ConfigurationSection worldProfileSection = this.getConfigHandle(worldFile);
-            if (worldProfileSection != null) {
-                try {
-                    WorldProfile worldProfile = new SimpleWorldProfile(worldName, worldProfileSection);
-                    worldProfiles.add(worldProfile);
-                } catch (DeserializationException e) {
-                    MVILog.warning("Unable to load world data for world: " + worldName);
-                    MVILog.warning("Reason: " + e.getMessage());
-                    continue;
-                }
-            } else {
-                MVILog.warning("Problem loading world data!");
-            }
-        }
-        return worldProfiles;
-    }
-    */
 }
