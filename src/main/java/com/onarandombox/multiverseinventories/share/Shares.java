@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -13,6 +14,11 @@ public interface Shares {
      * @param newShares The set of shares to merge into this set of shares.
      */
     void mergeShares(Shares newShares);
+
+    /**
+     * @return An EnumSet of all Sharables.
+     */
+    EnumSet<Sharable> getSharables();
 
     /**
      * @param sharable The Sharable you want to check for.

@@ -57,7 +57,7 @@ public class FlatfileMVIData implements MVIData {
                 folder = new File(this.worldFolder, folderName);
                 break;
         }
-        
+
         if (!folder.exists()) {
             folder.mkdirs();
         }
