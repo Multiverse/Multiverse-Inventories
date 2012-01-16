@@ -3,7 +3,9 @@ package com.onarandombox.multiverseinventories.listener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.permission.MVIPerms;
+import com.onarandombox.multiverseinventories.share.ShareHandler;
 import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -47,6 +49,7 @@ public class MVIPlayerListener extends PlayerListener {
         if (hasBypass && this.plugin.getSettings().isUsingBypassPerms()) {
             return;
         }
+        ShareHandler shareHandler = new SimpleShareHandler(this.plugin, player, fromWorld, toWorld);
         Shares currentShares = new SimpleShares();
         List<WorldGroup> toWorldGroups = this.plugin.getGroupManager().getWorldGroups(toWorld.getName());
         if (toWorldGroups != null) {
@@ -69,7 +72,7 @@ public class MVIPlayerListener extends PlayerListener {
         }
         */
 
-        this.plugin.handleSharing(player, fromWorld, toWorld, currentShares);
+        shareHandler.handleShares(currentShares);
     }
 
 }

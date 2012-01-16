@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.group.PersistingGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -31,4 +33,27 @@ public interface ShareHandler {
      * @return The groups the player is going to.
      */
     List<PersistingGroup> getToGroups();
+
+    /**
+     * @return The world travelling from.
+     */
+    World getFromWorld();
+
+    /**
+     * @return The world travelling to.
+     */
+    World getToWorld();
+
+    /**
+     * @return The player involved in this sharing transaction.
+     */
+    Player getPlayer();
+
+    /**
+     * Finalizes the transfer from one world to another.  This handles the switching
+     * inventories/stats for a player and persisting the changes.
+     *
+     * @param shares The shares involved in the transaction.
+     */
+    void handleShares(Shares shares);
 }
