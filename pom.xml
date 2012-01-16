@@ -13,6 +13,11 @@
 
     <repositories>
         <repository>
+            <id>bukkit</id>
+            <url>http://repo.bukkit.org/</url>
+        </repository>
+
+        <repository>
             <id>OnARandomBox</id>
             <url>http://repo.onarandombox.com/content/groups/public/</url>
         </repository>
@@ -139,7 +144,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.0.0-R1-SNAPSHOT</version>
+            <version>1.1-R1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
