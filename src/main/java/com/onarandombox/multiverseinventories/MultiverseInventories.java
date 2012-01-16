@@ -110,13 +110,13 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         MVIDebug.init(this);
 
         // Get world groups from config
-        this.getGroupManager().setWorldGroups(this.getMVIConfig().getWorldGroups());
+        this.getGroupManager().setWorldGroups(this.getSettings().getWorldGroups());
 
         // Set debug mode from config
-        MVILog.setDebugMode(this.getMVIConfig().isDebugging());
+        MVILog.setDebugMode(this.getSettings().isDebugging());
 
         try {
-            this.getMessager().setLocale(new Locale(this.getMVIConfig().getLocale()));
+            this.getMessager().setLocale(new Locale(this.getSettings().getLocale()));
         } catch (IllegalArgumentException e) {
             MVILog.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -138,7 +138,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.hookImportables();
 
         // Create initial World Group for first run
-        if (this.getMVIConfig().isFirstRun()) {
+        if (this.getSettings().isFirstRun()) {
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
             if (!mvWorlds.isEmpty()) {
                 WorldGroup worldGroup = new SimpleWorldGroup("default");
@@ -147,9 +147,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 for (MultiverseWorld mvWorld : mvWorlds) {
                     worldGroup.addWorld(mvWorld.getName());
                 }
-                this.getMVIConfig().updateWorldGroup(worldGroup);
-                this.getMVIConfig().setFirstRun(false);
-                this.getMVIConfig().save();
+                this.getSettings().updateWorldGroup(worldGroup);
+                this.getSettings().setFirstRun(false);
+                this.getSettings().save();
                 MVILog.info("Created a default group for you containing all of your MV Worlds!");
             } else {
                 MVILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
@@ -269,7 +269,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * @return the MVIConfig object which contains settings for this plugin.
      */
-    public MVIConfig getMVIConfig() {
+    public MVIConfig getSettings() {
         if (this.config == null) {
             // Loads the configuration
             try {

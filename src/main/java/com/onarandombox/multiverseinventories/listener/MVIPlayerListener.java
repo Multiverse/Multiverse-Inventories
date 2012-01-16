@@ -44,7 +44,7 @@ public class MVIPlayerListener extends PlayerListener {
         }
 
         boolean hasBypass = MVIPerms.BYPASS_WORLD.hasBypass(player, toWorld.getName());
-        if (hasBypass && this.plugin.getMVIConfig().isUsingBypassPerms()) {
+        if (hasBypass && this.plugin.getSettings().isUsingBypassPerms()) {
             return;
         }
         Shares currentShares = new SimpleShares();
@@ -60,7 +60,7 @@ public class MVIPlayerListener extends PlayerListener {
                 }
             }
         }
-        if (hasBypass && this.plugin.getMVIConfig().isUsingBypassPerms()) {
+        if (hasBypass && this.plugin.getSettings().isUsingBypassPerms()) {
             currentShares.mergeShares(this.plugin.getBypassShares());
         }
         /*
