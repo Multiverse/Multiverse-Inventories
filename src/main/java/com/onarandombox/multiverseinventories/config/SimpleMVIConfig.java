@@ -201,7 +201,7 @@ public class SimpleMVIConfig implements MVIConfig {
                     MVILog.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
                 }
-                worldGroup = new SimpleWorldGroup(groupName, groupSection);
+                worldGroup = new SimpleWorldGroup(groupName, groupSection.getValues(true));
             } catch (DeserializationException e) {
                 MVILog.warning("Unable to load world group: " + groupName);
                 MVILog.warning("Reason: " + e.getMessage());
@@ -233,11 +233,7 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public void updateWorldGroup(WorldGroup worldGroup) {
-        ConfigurationSection groupSection = this.getConfig().getConfigurationSection("groups." + worldGroup.getName());
-        if (groupSection == null) {
-            groupSection = this.getConfig().createSection("groups." + worldGroup.getName());
-        }
-        worldGroup.serialize(groupSection);
+        this.getConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
     }
 
     /**

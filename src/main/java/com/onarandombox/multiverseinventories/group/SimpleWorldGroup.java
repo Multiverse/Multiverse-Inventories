@@ -8,11 +8,12 @@ import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of WorldGroup.
@@ -28,26 +29,26 @@ public class SimpleWorldGroup implements WorldGroup {
         this.name = name;
     }
 
-    public SimpleWorldGroup(String name, ConfigurationSection data) throws DeserializationException {
-        if (!data.contains("worlds")) {
+    public SimpleWorldGroup(String name, Map<String, Object> data) throws DeserializationException {
+        if (!data.containsKey("worlds")) {
             throw new DeserializationException("No worlds specified for world group: " + name);
         }
-        List<String> worldList = data.getStringList("worlds");
-        if (worldList == null) {
-            throw new DeserializationException("Worlds incorrectly formatted for group: " + name);
+        Object worldListObj = data.get("worlds");
+        if (!(worldListObj instanceof List)) {
+            throw new DeserializationException("World list formatted incorrectly for world group: " + name);
         }
-        for (String worldName : worldList) {
-            World world = Bukkit.getWorld(worldName);
+        for (Object worldNameObj : (List) worldListObj) {
+            World world = Bukkit.getWorld(worldNameObj.toString());
             if (world != null) {
                 this.addWorld(world);
             } else {
                 MVILog.warning("");
             }
         }
-        if (data.contains("shares")) {
-            List<String> sharesList = data.getStringList("shares");
-            if (sharesList != null) {
-                this.setShares(new SimpleShares(sharesList));
+        if (data.containsKey("shares")) {
+            Object sharesListObj = data.get("shares");
+            if (sharesListObj instanceof List) {
+                this.setShares(new SimpleShares((List) sharesListObj));
             } else {
                 MVILog.warning("Shares formatted incorrectly for group: " + name);
             }
@@ -63,17 +64,19 @@ public class SimpleWorldGroup implements WorldGroup {
      * {@inheritDoc}
      */
     @Override
-    public void serialize(ConfigurationSection groupData) {
-        groupData.set("worlds", Lists.newArrayList(this.getWorlds()));
+    public Map<String, Object> serialize() {
+        Map<String, Object> results = new LinkedHashMap<String, Object>();
+        results.put("worlds", Lists.newArrayList(this.getWorlds()));
         List<String> sharesList = this.getShares().toStringList();
         if (!sharesList.isEmpty()) {
-            groupData.set("shares", sharesList);
+            results.put("shares", sharesList);
         }
         /*
         if (!this.getItemBlacklist().isEmpty()) {
 
         }
         */
+        return results;
     }
 
     /**

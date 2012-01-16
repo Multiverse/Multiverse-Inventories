@@ -32,17 +32,18 @@ public class SimpleShares implements Shares {
         this.sharingEffects = sharingEffects;
     }
 
-    public SimpleShares(List<String> sharesList) {
-        for (String shareString : sharesList) {
-            if (shareString.equals("inv") || shareString.equals("inventory")) {
+    //@TODO add "all"
+    public SimpleShares(List sharesList) {
+        for (Object shareStringObj : sharesList) {
+            if (shareStringObj.toString().equals("inv") || shareStringObj.toString().equals("inventory")) {
                 this.setSharingInventory(true);
-            } else if (shareString.equals("health") || shareString.equals("hp")) {
+            } else if (shareStringObj.toString().equals("health") || shareStringObj.toString().equals("hp")) {
                 this.setSharingHealth(true);
-            } else if (shareString.equals("hunger") || shareString.equals("food")) {
+            } else if (shareStringObj.toString().equals("hunger") || shareStringObj.toString().equals("food")) {
                 this.setSharingHunger(true);
-            } else if (shareString.equals("exp") || shareString.equals("experience")) {
+            } else if (shareStringObj.toString().equals("exp") || shareStringObj.toString().equals("experience")) {
                 this.setSharingExp(true);
-            } else if (shareString.equals("effects") || shareString.equals("fx")) {
+            } else if (shareStringObj.toString().equals("effects") || shareStringObj.toString().equals("fx")) {
                 this.setSharingEffects(true);
             }
         }
