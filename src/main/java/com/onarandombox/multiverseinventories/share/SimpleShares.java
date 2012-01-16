@@ -125,7 +125,7 @@ public class SimpleShares implements Shares {
         if (this.isSharing(Sharable.INVENTORY) && this.isSharing(Sharable.HEALTH)
                 && this.isSharing(Sharable.HUNGER) && this.isSharing(Sharable.EXPERIENCE)
                 /* && this.isSharing(Sharable.EFFECTS)*/) {
-            list.add("all");
+            list.add("*");
         } else {
             if (this.isSharing(Sharable.INVENTORY)) {
                 list.add("inventory");
