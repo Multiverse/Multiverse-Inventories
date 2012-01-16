@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.SimplePlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,17 +18,24 @@ import java.io.IOException;
 public class FlatfileMVIData implements MVIData {
 
     private static final String YML = ".yml";
-    private File dataFolder = null;
+    private File worldFolder = null;
+    private File groupFolder = null;
 
     public FlatfileMVIData(JavaPlugin plugin) throws IOException {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
         // Check if the data file exists.  If not, create it.
-        this.dataFolder = new File(plugin.getDataFolder(), "worlds");
-        if (!this.dataFolder.exists()) {
-            if (!this.dataFolder.mkdirs()) {
-                throw new IOException("Could not create data folder!");
+        this.worldFolder = new File(plugin.getDataFolder(), "worlds");
+        if (!this.worldFolder.exists()) {
+            if (!this.worldFolder.mkdirs()) {
+                throw new IOException("Could not create world folder!");
+            }
+        }
+        this.groupFolder = new File(plugin.getDataFolder(), "worlds");
+        if (!this.groupFolder.exists()) {
+            if (!this.groupFolder.mkdirs()) {
+                throw new IOException("Could not create group folder!");
             }
         }
     }
@@ -36,16 +44,28 @@ public class FlatfileMVIData implements MVIData {
         return YamlConfiguration.loadConfiguration(file);
     }
 
-    private File getWorldFolder(String worldName) {
-        File worldFile = new File(this.dataFolder, worldName);
-        if (!worldFile.exists()) {
-            worldFile.mkdirs();
+    private File getFolder(ProfileType type, String folderName) {
+        File folder;
+        switch (type) {
+            case GROUP:
+                folder = new File(this.groupFolder, folderName);
+                break;
+            case WORLD:
+                folder = new File(this.worldFolder, folderName);
+                break;
+            default:
+                folder = new File(this.worldFolder, folderName);
+                break;
         }
-        return worldFile;
+        
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        return folder;
     }
 
-    private File getPlayerFile(String worldName, String playerName) {
-        File playerFile = new File(this.getWorldFolder(worldName), playerName + YML);
+    private File getPlayerFile(ProfileType type, String dataName, String playerName) {
+        File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
@@ -70,7 +90,7 @@ public class FlatfileMVIData implements MVIData {
 
     /*
     private File[] getWorldFolders() {
-        return this.dataFolder.listFiles(new FilenameFilter() {
+        return this.worldFolder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(YML);
@@ -83,15 +103,15 @@ public class FlatfileMVIData implements MVIData {
      * {@inheritDoc}
      */
     @Override
-    public boolean updatePlayerData(String worldName, PlayerProfile playerProfile) {
-        File playerFile = this.getPlayerFile(worldName, playerProfile.getPlayer().getName());
+    public boolean updatePlayerData(ProfileType type, String dataName, PlayerProfile playerProfile) {
+        File playerFile = this.getPlayerFile(type, dataName, playerProfile.getPlayer().getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", playerProfile.serialize());
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
             MVILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
-                    + " for world: " + worldName);
+                    + " for world: " + dataName);
             MVILog.severe(e.getMessage());
             return false;
         }
@@ -102,8 +122,8 @@ public class FlatfileMVIData implements MVIData {
      * {@inheritDoc}
      */
     @Override
-    public PlayerProfile getPlayerData(String worldName, String playerName) {
-        File playerFile = this.getPlayerFile(worldName, playerName);
+    public PlayerProfile getPlayerData(ProfileType type, String dataName, String playerName) {
+        File playerFile = this.getPlayerFile(type, dataName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
@@ -133,7 +153,7 @@ public class FlatfileMVIData implements MVIData {
             ConfigurationSection worldProfileSection = this.getConfigHandle(worldFile);
             if (worldProfileSection != null) {
                 try {
-                    WorldProfile worldProfile = new WeakWorldProfile(worldName, worldProfileSection);
+                    WorldProfile worldProfile = new SimpleWorldProfile(worldName, worldProfileSection);
                     worldProfiles.add(worldProfile);
                 } catch (DeserializationException e) {
                     MVILog.warning("Unable to load world data for world: " + worldName);

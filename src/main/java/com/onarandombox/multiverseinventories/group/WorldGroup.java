@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.group;
 
+import com.onarandombox.multiverseinventories.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.World;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  * Contains all the information related to a World Group as defined in the plugin's config.yml
  * including the worlds making up the group and the things those worlds share.
  */
-public interface WorldGroup {
+public interface WorldGroup extends ProfileContainer {
 
     /**
      * Get the name of this World Group.

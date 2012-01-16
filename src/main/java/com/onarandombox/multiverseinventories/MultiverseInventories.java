@@ -22,11 +22,8 @@ import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.permission.MVIPerms;
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
-import com.onarandombox.multiverseinventories.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
@@ -34,10 +31,8 @@ import com.onarandombox.multiverseinventories.util.MVILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -142,7 +137,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (this.getSettings().isFirstRun()) {
             Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
             if (!mvWorlds.isEmpty()) {
-                WorldGroup worldGroup = new SimpleWorldGroup("default");
+                WorldGroup worldGroup = new SimpleWorldGroup(this.getData(), "default");
                 worldGroup.setShares(new SimpleShares(true, true,
                         true, true, true));
                 for (MultiverseWorld mvWorld : mvWorlds) {

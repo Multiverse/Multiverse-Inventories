@@ -1,11 +1,11 @@
 package com.onarandombox.multiverseinventories.config;
 
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,8 +110,10 @@ public class SimpleMVIConfig implements MVIConfig {
     }
 
     private CommentedConfiguration config;
+    private MultiverseInventories plugin;
 
-    public SimpleMVIConfig(JavaPlugin plugin) throws Exception {
+    public SimpleMVIConfig(MultiverseInventories plugin) throws Exception {
+        this.plugin = plugin;
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -200,7 +202,8 @@ public class SimpleMVIConfig implements MVIConfig {
                     MVILog.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
                 }
-                worldGroup = new SimpleWorldGroup(groupName, groupSection.getValues(true));
+                worldGroup = new SimpleWorldGroup(this.plugin.getData(),
+                        groupName, groupSection.getValues(true));
             } catch (DeserializationException e) {
                 MVILog.warning("Unable to load world group: " + groupName);
                 MVILog.warning("Reason: " + e.getMessage());

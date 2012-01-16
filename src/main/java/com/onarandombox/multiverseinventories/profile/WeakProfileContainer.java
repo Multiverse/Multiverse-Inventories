@@ -1,49 +1,23 @@
 package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.data.MVIData;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Simple implementation of WorldProfile.
+ * Implementation of ProfileContainer using WeakHashMaps to keep memory usage to a minimum.
  */
-public class WeakWorldProfile implements WorldProfile {
+public abstract class WeakProfileContainer implements ProfileContainer {
 
     private Map<OfflinePlayer, PlayerProfile> playerData = new WeakHashMap<OfflinePlayer, PlayerProfile>();
-    private String worldName;
     private MVIData data;
+    private ProfileType type;
 
-    public WeakWorldProfile(MVIData data, String worldName) {
+    public WeakProfileContainer(MVIData data, ProfileType type) {
         this.data = data;
-        this.worldName = worldName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public World getBukkitWorld() {
-        return Bukkit.getWorld(this.getWorld());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getWorld() {
-        return this.worldName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setWorld(String worldName) {
-        this.worldName = this.worldName;
+        this.type = type;
     }
 
     /**
@@ -53,7 +27,10 @@ public class WeakWorldProfile implements WorldProfile {
         return this.playerData;
     }
 
-    private MVIData getData() {
+    /**
+     * @return The data class for MultiverseInventories.
+     */
+    protected MVIData getData() {
         return this.data;
     }
 
@@ -64,7 +41,8 @@ public class WeakWorldProfile implements WorldProfile {
     public PlayerProfile getPlayerData(OfflinePlayer player) {
         PlayerProfile playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
-            playerProfile = this.getData().getPlayerData(this.getWorld(), player.getName());
+            playerProfile = this.getData().getPlayerData(this.type,
+                    this.getDataName(), player.getName());
             this.playerData.put(player, playerProfile);
         }
         return playerProfile;

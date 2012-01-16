@@ -1,7 +1,9 @@
 package com.onarandombox.multiverseinventories.group;
 
 import com.google.common.collect.Lists;
-import com.onarandombox.multiverseinventories.group.blacklist.ItemBlacklist;
+import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
+import com.onarandombox.multiverseinventories.profile.WeakProfileContainer;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
@@ -9,7 +11,6 @@ import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,22 +19,24 @@ import java.util.Map;
 /**
  * Implementation of WorldGroup.
  */
-public class SimpleWorldGroup implements WorldGroup {
+public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup {
 
     private String name = "";
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
-    private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
+    //private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
 
-    public SimpleWorldGroup(String name) {
+    public SimpleWorldGroup(MVIData data, String name) {
+        super(data, ProfileType.GROUP);
         this.name = name;
     }
 
-    public SimpleWorldGroup(String name, Map<String, Object> data) throws DeserializationException {
-        if (!data.containsKey("worlds")) {
+    public SimpleWorldGroup(MVIData data, String name, Map<String, Object> dataMap) throws DeserializationException {
+        this(data, name);
+        if (!dataMap.containsKey("worlds")) {
             throw new DeserializationException("No worlds specified for world group: " + name);
         }
-        Object worldListObj = data.get("worlds");
+        Object worldListObj = dataMap.get("worlds");
         if (!(worldListObj instanceof List)) {
             throw new DeserializationException("World list formatted incorrectly for world group: " + name);
         }
@@ -45,8 +48,8 @@ public class SimpleWorldGroup implements WorldGroup {
                 MVILog.warning("");
             }
         }
-        if (data.containsKey("shares")) {
-            Object sharesListObj = data.get("shares");
+        if (dataMap.containsKey("shares")) {
+            Object sharesListObj = dataMap.get("shares");
             if (sharesListObj instanceof List) {
                 this.setShares(new SimpleShares((List) sharesListObj));
             } else {
@@ -141,6 +144,14 @@ public class SimpleWorldGroup implements WorldGroup {
     @Override
     public boolean containsWorld(String worldName) {
         return this.getWorlds().contains(worldName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDataName() {
+        return this.getName();
     }
 
     /*

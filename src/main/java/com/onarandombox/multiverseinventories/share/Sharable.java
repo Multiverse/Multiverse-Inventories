@@ -5,5 +5,24 @@ package com.onarandombox.multiverseinventories.share;
  */
 public enum Sharable {
 
-    INVENTORY, HEALTH, EXPERIENCE, HUNGER, EFFECTS;
+    /**
+     * Sharing Inventory.
+     */
+    INVENTORY,
+    /**
+     * Sharing Health.
+     */
+    HEALTH,
+    /**
+     * Sharing Experience.
+     */
+    EXPERIENCE,
+    /**
+     * Sharing Hunger.
+     */
+    HUNGER,
+    /**
+     * Sharing Effects.
+     */
+    EFFECTS;
 }

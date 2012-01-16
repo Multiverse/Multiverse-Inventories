@@ -4,6 +4,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
@@ -83,7 +84,7 @@ public class WorldInventoriesImporter implements DataImporter {
                     playerProfile.setLevel(wiStats.getLevel());
                     playerProfile.setExhaustion(wiStats.getExhaustion());
                     playerProfile.setFoodLevel(wiStats.getFoodLevel());
-                    this.plugin.getData().updatePlayerData(worldName, playerProfile);
+                    this.plugin.getData().updatePlayerData(ProfileType.WORLD, worldName, playerProfile);
                 }
             }
         }

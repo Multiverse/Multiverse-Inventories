@@ -1,20 +1,13 @@
 package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
-import com.onarandombox.multiverseinventories.share.ShareHandler;
-import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
-import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerListener;
-
-import java.util.List;
 
 /**
  * PlayerListener for MultiverseInventories.
@@ -45,34 +38,7 @@ public class MVIPlayerListener extends PlayerListener {
             return;
         }
 
-        boolean hasBypass = MVIPerms.BYPASS_WORLD.hasBypass(player, toWorld.getName());
-        if (hasBypass && this.plugin.getSettings().isUsingBypassPerms()) {
-            return;
-        }
-        ShareHandler shareHandler = new SimpleShareHandler(this.plugin, player, fromWorld, toWorld);
-        Shares currentShares = new SimpleShares();
-        List<WorldGroup> toWorldGroups = this.plugin.getGroupManager().getWorldGroups(toWorld.getName());
-        if (toWorldGroups != null) {
-            for (WorldGroup toWorldGroup : toWorldGroups) {
-                if (toWorldGroup.containsWorld(fromWorld.getName())) {
-                    if (MVIPerms.BYPASS_GROUP.hasBypass(player, toWorldGroup.getName())) {
-                        hasBypass = true;
-                    } else {
-                        currentShares.mergeShares(toWorldGroup.getShares());
-                    }
-                }
-            }
-        }
-        if (hasBypass && this.plugin.getSettings().isUsingBypassPerms()) {
-            currentShares.mergeShares(this.plugin.getBypassShares());
-        }
-        /*
-        else {
-            currentShares.mergeShares(this.plugin.getDefaultShares());
-        }
-        */
-
-        shareHandler.handleShares(currentShares);
+        new SimpleShareHandler(this.plugin, player, fromWorld, toWorld).handleSharing();
     }
 
 }
