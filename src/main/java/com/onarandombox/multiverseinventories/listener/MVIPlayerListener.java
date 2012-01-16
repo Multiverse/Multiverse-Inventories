@@ -51,7 +51,7 @@ public class MVIPlayerListener extends PlayerListener {
         List<WorldGroup> toWorldGroups = this.plugin.getGroupManager().getWorldGroups(toWorld.getName());
         if (toWorldGroups != null) {
             for (WorldGroup toWorldGroup : toWorldGroups) {
-                if (toWorldGroup.getWorlds().contains(fromWorld.getName())) {
+                if (toWorldGroup.containsWorld(fromWorld.getName())) {
                     if (MVIPerms.BYPASS_GROUP.hasBypass(player, toWorldGroup.getName())) {
                         hasBypass = true;
                     } else {

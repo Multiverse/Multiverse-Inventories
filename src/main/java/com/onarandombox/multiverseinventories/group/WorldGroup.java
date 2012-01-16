@@ -66,5 +66,11 @@ public interface WorldGroup {
      */
     Map<String, Object> serialize();
 
+    /**
+     * @param worldName Name of world to check for.
+     * @return True if specified world is part of this group.
+     */
+    boolean containsWorld(String worldName);
+
     //ItemBlacklist getItemBlacklist(String worldName);
 }

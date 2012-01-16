@@ -100,7 +100,7 @@ public class SimpleWorldGroup implements WorldGroup {
      */
     @Override
     public void addWorld(String worldName) {
-        this.worlds.add(worldName);
+        this.getWorlds().add(worldName);
     }
 
     /**
@@ -108,7 +108,7 @@ public class SimpleWorldGroup implements WorldGroup {
      */
     @Override
     public void addWorld(World world) {
-        this.worlds.add(world.getName());
+        this.getWorlds().add(world.getName());
     }
 
     /**
@@ -133,6 +133,14 @@ public class SimpleWorldGroup implements WorldGroup {
     @Override
     public Shares getShares() {
         return this.shares;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean containsWorld(String worldName) {
+        return this.getWorlds().contains(worldName);
     }
 
     /*
