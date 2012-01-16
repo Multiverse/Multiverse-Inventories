@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.MappablePlayerProfile;
+import com.onarandombox.multiverseinventories.profile.SimplePlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -109,7 +109,7 @@ public class FlatfileMVIData implements MVIData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new MappablePlayerProfile(playerName,  section.getValues(true));
+        return new SimplePlayerProfile(playerName,  section.getValues(true));
     }
 
     /**

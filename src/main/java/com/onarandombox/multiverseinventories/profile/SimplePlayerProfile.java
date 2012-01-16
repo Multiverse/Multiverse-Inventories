@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * @author dumptruckman
  */
-public class MappablePlayerProfile implements PlayerProfile {
+public class SimplePlayerProfile implements PlayerProfile {
 
     private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
     private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
@@ -30,11 +30,11 @@ public class MappablePlayerProfile implements PlayerProfile {
 
     private OfflinePlayer player;
 
-    public MappablePlayerProfile(OfflinePlayer player) {
+    public SimplePlayerProfile(OfflinePlayer player) {
         this.player = player;
     }
 
-    public MappablePlayerProfile(String playerName, Map<String, Object> playerData) {
+    public SimplePlayerProfile(String playerName, Map<String, Object> playerData) {
         this(Bukkit.getOfflinePlayer(playerName));
         if (playerData.containsKey("stats")) {
             this.parsePlayerStats(playerData.get("stats").toString().split(DataStrings.GENERAL_DELIMITER));
