@@ -43,4 +43,14 @@ public interface WorldGroupManager {
      * @param worldGroup World group to remove.
      */
     void removeWorldGroup(WorldGroup worldGroup);
+
+    /**
+     * Creates a default world group including all of the loaded MV worlds sharing everything.
+     */
+    void createDefaultGroup();
+
+    /**
+     * @return The default world group or null if non-existent.
+     */
+    WorldGroup getDefaultGroup();
 }

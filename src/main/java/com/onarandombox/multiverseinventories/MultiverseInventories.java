@@ -57,7 +57,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final MVIServerListener serverListener = new MVIServerListener(this);
 
     private Messager messager = new SimpleMessager(this);
-    private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager();
+    private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager(this);
     private ProfileManager profileManager = new WeakProfileManager(this);
     private ImportManager importManager = new ImportManager(this);
 
@@ -135,22 +135,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Create initial World Group for first run
         if (this.getSettings().isFirstRun()) {
-            Collection<MultiverseWorld> mvWorlds = this.getCore().getMVWorldManager().getMVWorlds();
-            if (!mvWorlds.isEmpty()) {
-                WorldGroup worldGroup = new SimpleWorldGroup(this.getData(), "default");
-                worldGroup.setShares(new SimpleShares(true, true,
-                        true, true, true));
-                for (MultiverseWorld mvWorld : mvWorlds) {
-                    worldGroup.addWorld(mvWorld.getName());
-                }
-                this.getSettings().updateWorldGroup(worldGroup);
-                this.getSettings().setFirstRun(false);
-                this.getSettings().save();
-                MVILog.info("Created a default group for you containing all of your MV Worlds!");
-            } else {
-                MVILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
-                MVILog.info("Will attempt again at next start up.");
-            }
+            this.getGroupManager().createDefaultGroup();
         }
 
         // Display enable message/version info

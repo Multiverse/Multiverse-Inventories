@@ -1,8 +1,12 @@
 package com.onarandombox.multiverseinventories.group;
 
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +17,11 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
 
     private HashMap<String, List<WorldGroup>> worldGroupsMap = new HashMap<String, List<WorldGroup>>();
     private HashMap<String, WorldGroup> groupNamesMap = new HashMap<String, WorldGroup>();
+    private MultiverseInventories plugin;
+    
+    public SimpleWorldGroupManager(MultiverseInventories plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * {@inheritDoc}
@@ -81,6 +90,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
                 worldGroupsForWorld.remove(worldGroup);
             }
         }
+        this.plugin.getSettings().removeWorldGroup(worldGroup);
     }
 
     /**
@@ -97,5 +107,36 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         for (WorldGroup worldGroup : worldGroups) {
             this.addWorldGroup(worldGroup);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createDefaultGroup() {
+        Collection<MultiverseWorld> mvWorlds = this.plugin.getCore().getMVWorldManager().getMVWorlds();
+        if (!mvWorlds.isEmpty()) {
+            WorldGroup worldGroup = new SimpleWorldGroup(this.plugin.getData(), "default");
+            worldGroup.setShares(new SimpleShares(true, true,
+                    true, true, true));
+            for (MultiverseWorld mvWorld : mvWorlds) {
+                worldGroup.addWorld(mvWorld.getName());
+            }
+            this.plugin.getSettings().updateWorldGroup(worldGroup);
+            this.plugin.getSettings().setFirstRun(false);
+            this.plugin.getSettings().save();
+            MVILog.info("Created a default group for you containing all of your MV Worlds!");
+        } else {
+            MVILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
+            MVILog.info("Will attempt again at next start up.");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public WorldGroup getDefaultGroup() {
+        return this.getGroupNames().get("default");
     }
 }
