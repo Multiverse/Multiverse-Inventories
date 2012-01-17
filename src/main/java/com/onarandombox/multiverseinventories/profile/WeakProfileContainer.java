@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Map;
@@ -34,7 +35,24 @@ public abstract class WeakProfileContainer implements ProfileContainer {
     protected MVIData getData() {
         return this.getPlugin().getData();
     }
-    
+
+    /**
+     * @return The GroupManager for MultiverseInventories.
+     */
+    protected WorldGroupManager getGroupManager() {
+        return this.getPlugin().getGroupManager();
+    }
+
+    /**
+     * @return The ProfileManager for MultiverseInventories.
+     */
+    protected ProfileManager getProfileManager() {
+        return this.getPlugin().getProfileManager();
+    }
+
+    /**
+     * @return The instance of MultiverseInventories.
+     */
     protected MultiverseInventories getPlugin() {
         return this.plugin;
     }

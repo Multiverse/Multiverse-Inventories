@@ -31,8 +31,8 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
         this.name = name;
     }
 
-    public SimpleWorldGroup(MultiverseInventories plugin, String name, Map<String, Object> dataMap)
-            throws DeserializationException {
+    public SimpleWorldGroup(MultiverseInventories plugin, String name,
+                            Map<String, Object> dataMap) throws DeserializationException {
         this(plugin, name);
         if (!dataMap.containsKey("worlds")) {
             throw new DeserializationException("No worlds specified for world group: " + name);
