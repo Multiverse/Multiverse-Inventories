@@ -73,6 +73,20 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
+    public void removeWorldGroup(WorldGroup worldGroup) {
+        this.getGroupNames().remove(worldGroup.getName().toLowerCase());
+        for (String worldName : worldGroup.getWorlds()) {
+            List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
+            if (worldGroupsForWorld != null) {
+                worldGroupsForWorld.remove(worldGroup);
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setWorldGroups(List<WorldGroup> worldGroups) {
         if (worldGroups == null) {
             MVILog.info("No world groups have been configured!");

@@ -46,6 +46,13 @@ public interface MVIConfig {
     void updateWorldGroup(WorldGroup worldGroup);
 
     /**
+     * Removes the specified world group in the config.
+     *
+     * @param worldGroup Group to remove.
+     */
+    void removeWorldGroup(WorldGroup worldGroup);
+
+    /**
      * Tells whether this is the first time the plugin has run as set by a config flag.
      *
      * @return True if first_run is set to true in config.

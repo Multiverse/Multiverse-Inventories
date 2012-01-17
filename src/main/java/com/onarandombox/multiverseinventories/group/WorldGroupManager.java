@@ -36,4 +36,11 @@ public interface WorldGroupManager {
      * @param worldGroup World group to add.
      */
     void addWorldGroup(WorldGroup worldGroup);
+
+    /**
+     * Removes a World Group from the collection in memory AND from the config.
+     *
+     * @param worldGroup World group to remove.
+     */
+    void removeWorldGroup(WorldGroup worldGroup);
 }

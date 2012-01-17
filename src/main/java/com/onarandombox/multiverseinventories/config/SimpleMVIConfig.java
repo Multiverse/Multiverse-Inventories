@@ -242,6 +242,14 @@ public class SimpleMVIConfig implements MVIConfig {
      * {@inheritDoc}
      */
     @Override
+    public void removeWorldGroup(WorldGroup worldGroup) {
+        this.getConfig().set("groups." + worldGroup.getName(), null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void save() {
         this.getConfig().save();
     }
