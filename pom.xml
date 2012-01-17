@@ -14,7 +14,7 @@
     <repositories>
         <repository>
             <id>bukkit</id>
-            <url>http://repo.bukkit.org/</url>
+            <url>http://repo.bukkit.org/content/groups/repo/</url>
         </repository>
 
         <repository>

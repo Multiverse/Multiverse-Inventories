@@ -12,8 +12,7 @@ import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
-import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
-import com.onarandombox.multiverseinventories.listener.MVIServerListener;
+import com.onarandombox.multiverseinventories.listener.MVIListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
@@ -31,7 +30,6 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,8 +49,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private final int requiresProtocol = 9;
     private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
-    private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
-    private final MVIServerListener serverListener = new MVIServerListener(this);
+    private final MVIListener listener = new MVIListener(this);
 
     private Messager messager = new SimpleMessager(this);
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager(this);
@@ -145,9 +142,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private void registerEvents() {
         final PluginManager pm = Bukkit.getPluginManager();
         // Event registering goes here
-        pm.registerEvent(Event.Type.PLAYER_CHANGED_WORLD, playerListener, Event.Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLUGIN_ENABLE, serverListener, Event.Priority.Normal, this);
-        pm.registerEvent(Event.Type.PLUGIN_DISABLE, serverListener, Event.Priority.Normal, this);
+        pm.registerEvents(listener, this);
     }
 
     private void registerCommands() {
