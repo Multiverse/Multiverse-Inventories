@@ -27,8 +27,14 @@ public interface Shares {
     boolean isSharing(Sharable sharable);
 
     /**
+     * @param sharables Set of sharables to compare with.
+     * @return True if it is sharing the same sharables.
+     */
+    boolean isSharing(EnumSet<Sharable> sharables);
+
+    /**
      * @param sharable The Sharable you wish to set sharing for.
-     * @param sharing Whether to share or not.
+     * @param sharing  Whether to share or not.
      */
     void setSharing(Sharable sharable, boolean sharing);
 

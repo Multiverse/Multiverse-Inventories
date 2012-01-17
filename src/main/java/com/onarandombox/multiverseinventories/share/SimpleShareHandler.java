@@ -101,7 +101,7 @@ public class SimpleShareHandler implements ShareHandler {
     public void handleSharing() {
         WorldProfile fromWorldProfile = this.plugin.getProfileManager()
                 .getWorldProfile(this.getFromWorld().getName());
-        this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.ALL),
+        this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.all()),
                 fromWorldProfile.getPlayerData(this.getPlayer()));
 
         boolean usingBypass = this.plugin.getSettings().isUsingBypassPerms();
@@ -118,12 +118,11 @@ public class SimpleShareHandler implements ShareHandler {
             PlayerProfile profile = fromWorldGroup.getPlayerData(this.getPlayer());
             if (!fromWorldGroup.containsWorld(this.getToWorld().getName())) {
                 this.addFromProfile(fromWorldGroup,
-                        new SimpleShares(Sharable.ALL), profile);
+                        new SimpleShares(Sharable.all()), profile);
             } else {
-                if (!fromWorldGroup.getShares().isSharing(Sharable.ALL)) {
+                if (!fromWorldGroup.getShares().isSharing(Sharable.all())) {
                     EnumSet<Sharable> sharing =
                             EnumSet.complementOf(fromWorldGroup.getShares().getSharables());
-                    sharing.remove(Sharable.ALL);
                     this.addFromProfile(fromWorldGroup, new SimpleShares(sharing), profile);
                 }
             }
@@ -138,12 +137,11 @@ public class SimpleShareHandler implements ShareHandler {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());
                     if (!toWorldGroup.containsWorld(this.getFromWorld().getName())) {
                         this.addToProfile(toWorldGroup,
-                                new SimpleShares(Sharable.ALL), profile);
+                                new SimpleShares(Sharable.all()), profile);
                     } else {
-                        if (!toWorldGroup.getShares().isSharing(Sharable.ALL)) {
+                        if (!toWorldGroup.getShares().isSharing(Sharable.all())) {
                             EnumSet<Sharable> shares =
                                     EnumSet.complementOf(toWorldGroup.getShares().getSharables());
-                            shares.remove(Sharable.ALL);
                             this.addToProfile(toWorldGroup,
                                     new SimpleShares(shares), profile);
                         }
@@ -153,7 +151,7 @@ public class SimpleShareHandler implements ShareHandler {
         } else {
             WorldProfile toWorldProfile = this.plugin.getProfileManager()
                     .getWorldProfile(this.getToWorld().getName());
-            this.addToProfile(toWorldProfile, new SimpleShares(Sharable.ALL),
+            this.addToProfile(toWorldProfile, new SimpleShares(Sharable.all()),
                     toWorldProfile.getPlayerData(this.getPlayer()));
         }
 

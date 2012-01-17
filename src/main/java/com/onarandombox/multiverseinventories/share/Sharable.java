@@ -98,6 +98,7 @@ public enum Sharable {
     /**
      * Indicates ALL of the above.
      */
+    /*
     ALL("*", "all", "everything") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -116,9 +117,11 @@ public enum Sharable {
                 sharable.updatePlayer(player, profile);
             }
         }
-    };
+    }*/;
 
     private String[] names;
+
+    private static EnumSet<Sharable> all = EnumSet.allOf(Sharable.class);
 
     private static Map<String, Sharable> lookup = new HashMap<String, Sharable>();
 
@@ -169,5 +172,12 @@ public enum Sharable {
      */
     public static Sharable lookup(String name) {
         return Sharable.lookup.get(name);
+    }
+
+    /**
+     * @return A set with all of the enum values.
+     */
+    public static EnumSet<Sharable> all() {
+        return all;
     }
 }

@@ -11,7 +11,7 @@ public class SimpleShares implements Shares {
 
     private EnumSet<Sharable> sharing = EnumSet.noneOf(Sharable.class);
 
-    public SimpleShares(Sharable...sharables) {
+    public SimpleShares(Sharable... sharables) {
         for (Sharable sharable : sharables) {
             this.sharing.add(sharable);
         }
@@ -46,9 +46,16 @@ public class SimpleShares implements Shares {
 
     public SimpleShares(List sharesList) {
         for (Object shareStringObj : sharesList) {
-            Sharable sharable = Sharable.lookup(shareStringObj.toString());
+            String shareString = shareStringObj.toString();
+            Sharable sharable = Sharable.lookup(shareString);
             if (sharable != null) {
                 this.sharing.add(sharable);
+            } else {
+                if (shareString.equals("*") || shareString.equalsIgnoreCase("all")
+                        || shareString.equalsIgnoreCase("everything")) {
+                    this.sharing = Sharable.all();
+                    break;
+                }
             }
         }
     }
@@ -74,16 +81,22 @@ public class SimpleShares implements Shares {
      */
     @Override
     public boolean isSharing(Sharable sharable) {
-        boolean isSharing = this.getSharables().contains(sharable);
-        if (sharable.equals(Sharable.ALL) && !isSharing) {
-            EnumSet<Sharable> shareSet = EnumSet.allOf(Sharable.class);
-            shareSet.remove(Sharable.ALL);
-            for (Sharable share : shareSet) {
-                if (!this.getSharables().contains(share)) {
+        return this.getSharables().contains(sharable);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSharing(EnumSet<Sharable> sharables) {
+        boolean isSharing = this.getSharables().equals(sharables);
+        if (!isSharing) {
+            for (Sharable sharable : sharables) {
+                if (!this.isSharing(sharable)) {
                     return false;
                 }
             }
-            return true;
+            isSharing = true;
         }
         return isSharing;
     }
@@ -106,8 +119,12 @@ public class SimpleShares implements Shares {
     @Override
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
-        for (Sharable sharable : this.getSharables()) {
-            list.add(sharable.toString());
+        if (this.isSharing(Sharable.all())) {
+            list.add("*");
+        } else {
+            for (Sharable sharable : this.getSharables()) {
+                list.add(sharable.toString());
+            }
         }
         return list;
     }
