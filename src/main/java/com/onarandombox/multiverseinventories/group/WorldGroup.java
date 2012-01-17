@@ -28,7 +28,7 @@ public interface WorldGroup extends ProfileContainer {
     void setName(String name);
 
     /**
-     * Adds a world to this world group.
+     * Adds a world to this world group and updates it in the Config file.
      *
      * @param worldName The name of the world to add.
      */

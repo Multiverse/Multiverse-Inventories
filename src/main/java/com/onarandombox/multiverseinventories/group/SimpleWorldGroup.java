@@ -105,6 +105,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
     @Override
     public void addWorld(String worldName) {
         this.getWorlds().add(worldName);
+        this.getPlugin().getSettings().updateWorldGroup(this);
     }
 
     /**
@@ -112,7 +113,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
      */
     @Override
     public void addWorld(World world) {
-        this.getWorlds().add(world.getName());
+        this.addWorld(world.getName());
     }
 
     /**
@@ -129,6 +130,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
     @Override
     public void setShares(Shares shares) {
         this.shares = shares;
+        this.getPlugin().getSettings().updateWorldGroup(this);
     }
 
     /**

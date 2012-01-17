@@ -34,8 +34,9 @@ public interface WorldGroupManager {
      * Adds a World Group to the collection in memory.
      *
      * @param worldGroup World group to add.
+     * @param persist True means this world group will be added to the Config file as well.
      */
-    void addWorldGroup(WorldGroup worldGroup);
+    void addWorldGroup(WorldGroup worldGroup, boolean persist);
 
     /**
      * Removes a World Group from the collection in memory AND from the config.

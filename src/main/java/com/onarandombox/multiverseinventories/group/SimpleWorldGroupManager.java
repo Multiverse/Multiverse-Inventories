@@ -66,7 +66,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void addWorldGroup(WorldGroup worldGroup) {
+    public void addWorldGroup(WorldGroup worldGroup, boolean persist) {
         this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
         for (String worldName : worldGroup.getWorlds()) {
             List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
@@ -75,6 +75,10 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
                 this.getWorldGroups().put(worldName, worldGroupsForWorld);
             }
             worldGroupsForWorld.add(worldGroup);
+        }
+        this.plugin.getSettings().updateWorldGroup(worldGroup);
+        if (persist) {
+            this.plugin.getSettings().save();
         }
     }
 
@@ -91,6 +95,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
             }
         }
         this.plugin.getSettings().removeWorldGroup(worldGroup);
+        this.plugin.getSettings().save();
     }
 
     /**
@@ -105,7 +110,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         }
 
         for (WorldGroup worldGroup : worldGroups) {
-            this.addWorldGroup(worldGroup);
+            this.addWorldGroup(worldGroup, false);
         }
     }
 
@@ -122,7 +127,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
             for (MultiverseWorld mvWorld : mvWorlds) {
                 worldGroup.addWorld(mvWorld.getName());
             }
-            this.plugin.getSettings().updateWorldGroup(worldGroup);
+            this.addWorldGroup(worldGroup, false);
             this.plugin.getSettings().setFirstRun(false);
             this.plugin.getSettings().save();
             MVILog.info("Created a default group for you containing all of your MV Worlds!");

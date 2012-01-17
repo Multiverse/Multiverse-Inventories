@@ -74,9 +74,12 @@ public class MultiInvImporter implements DataImporter {
                 worldGroup = new SimpleWorldGroup(this.plugin, groupEntry.getValue());
                 worldGroup.setShares(new SimpleShares(Sharable.all()));
                 MVILog.info("Importing group: " + groupEntry.getValue());
+                this.plugin.getGroupManager().addWorldGroup(worldGroup, false);
             }
             worldGroup.addWorld(groupEntry.getValue());
         }
+        this.plugin.getSettings().save();
+
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             MVILog.info("Processing MultiInv data for player: " + player.getName());
             for (Map.Entry<String, String> entry : miGroupMap.entrySet()) {
