@@ -1,9 +1,13 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
@@ -61,9 +65,36 @@ public class WorldInventoriesImporter implements DataImporter {
             throw new MigrationException("Unable to import from this version of WorldInventories!")
                     .setCauseException(e);
         }
+        if (wiGroups == null) {
+            throw new MigrationException("No data to import from WorldInventories!");
+        }
+        if (!wiGroups.isEmpty()) {
+            WorldGroup defaultWorldGroup = this.plugin.getGroupManager().getDefaultGroup();
+            if (defaultWorldGroup != null) {
+                this.plugin.getGroupManager().removeWorldGroup(defaultWorldGroup);
+                MVILog.info("Removed automatically created world group in favor of imported groups.");
+            }
+        }
+        for (Group wiGroup : wiGroups) {
+            WorldGroup newGroup = new SimpleWorldGroup(this.plugin.getData(), wiGroup.getName());
+            for (String worldName : wiGroup.getWorlds()) {
+                newGroup.addWorld(worldName);
+            }
+            if (WorldInventories.doStats) {
+                newGroup.setShares(new SimpleShares(Sharable.all()));
+            } else {
+                newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+            }
+            MVILog.info("Imported group: " + wiGroup.getName());
+        }
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             MVILog.info("Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
+                WorldGroup worldGroup = this.plugin.getGroupManager().getGroup(wiGroup.getName());
+                if (worldGroup == null) {
+                    MVILog.warning("Could not import player data for group: " + wiGroup.getName());
+                    continue;
+                }
                 WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
                 if (wiInventory == null) {
                     continue;
@@ -72,19 +103,16 @@ public class WorldInventoriesImporter implements DataImporter {
                 if (wiStats == null) {
                     continue;
                 }
-                for (String worldName : wiGroup.getWorlds()) {
-                    PlayerProfile playerProfile = this.plugin.getProfileManager()
-                            .getWorldProfile(worldName).getPlayerData(player);
-                    playerProfile.setInventoryContents(wiInventory.getItems());
-                    playerProfile.setArmorContents(wiInventory.getArmour());
-                    playerProfile.setHealth(wiStats.getHealth());
-                    playerProfile.setSaturation(wiStats.getSaturation());
-                    playerProfile.setExp(wiStats.getExp());
-                    playerProfile.setLevel(wiStats.getLevel());
-                    playerProfile.setExhaustion(wiStats.getExhaustion());
-                    playerProfile.setFoodLevel(wiStats.getFoodLevel());
-                    this.plugin.getData().updatePlayerData(worldName, playerProfile);
-                }
+                PlayerProfile playerProfile = worldGroup.getPlayerData(player);
+                playerProfile.setInventoryContents(wiInventory.getItems());
+                playerProfile.setArmorContents(wiInventory.getArmour());
+                playerProfile.setHealth(wiStats.getHealth());
+                playerProfile.setSaturation(wiStats.getSaturation());
+                playerProfile.setExp(wiStats.getExp());
+                playerProfile.setLevel(wiStats.getLevel());
+                playerProfile.setExhaustion(wiStats.getExhaustion());
+                playerProfile.setFoodLevel(wiStats.getFoodLevel());
+                this.plugin.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
             }
         }
 
