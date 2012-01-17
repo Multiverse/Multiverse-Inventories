@@ -118,15 +118,24 @@ public enum Sharable {
         }
     };
 
-    private String name;
+    private String[] names;
 
     private static Map<String, Sharable> lookup = new HashMap<String, Sharable>();
 
-    Sharable(String name, String...extraNames) {
-        this.addLookup(name);
-        for (String extraName : extraNames) {
-            this.addLookup(extraName);
+    static {
+        for (Sharable sharable : EnumSet.allOf(Sharable.class)) {
+            for (String name : sharable.getNames()) {
+                lookup.put(name, sharable);
+            }
         }
+    }
+
+    Sharable(String... names) {
+        this.names = names;
+    }
+
+    private String[] getNames() {
+        return this.names;
     }
 
     private void addLookup(String name) {
@@ -136,20 +145,20 @@ public enum Sharable {
     /**
      * @param profile Updates the data of this profile according to the Sharable
      *                with the values of the player.
-     * @param player The player whose values will be used to update the given profile.
+     * @param player  The player whose values will be used to update the given profile.
      */
     public abstract void updateProfile(PlayerProfile profile, Player player);
 
     /**
-     * @param player Updates the data of this player according to the Sharable
-     *               with the values of the given profile.
+     * @param player  Updates the data of this player according to the Sharable
+     *                with the values of the given profile.
      * @param profile The profile whose values will be used to update the give player.
      */
     public abstract void updatePlayer(Player player, PlayerProfile profile);
 
     @Override
     public String toString() {
-        return this.name;
+        return this.names[0];
     }
 
     /**
