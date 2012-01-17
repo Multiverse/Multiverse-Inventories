@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
@@ -10,9 +9,7 @@ import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
 import com.onarandombox.multiverseinventories.data.MVIData;
-import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
 import com.onarandombox.multiverseinventories.listener.MVIServerListener;
@@ -42,7 +39,6 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.logging.Level;
 

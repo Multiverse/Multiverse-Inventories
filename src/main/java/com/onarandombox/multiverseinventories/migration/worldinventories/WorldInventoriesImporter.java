@@ -64,6 +64,8 @@ public class WorldInventoriesImporter implements DataImporter {
         } catch (Exception e) {
             throw new MigrationException("Unable to import from this version of WorldInventories!")
                     .setCauseException(e);
+        } catch (Error e) {
+            throw new MigrationException("Unable to import from this version of WorldInventories!");
         }
         if (wiGroups == null) {
             throw new MigrationException("No data to import from WorldInventories!");
@@ -80,11 +82,21 @@ public class WorldInventoriesImporter implements DataImporter {
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
             }
-            if (WorldInventories.doStats) {
-                newGroup.setShares(new SimpleShares(Sharable.all()));
-            } else {
+
+            try {
+                if (WorldInventories.doStats) {
+                    newGroup.setShares(new SimpleShares(Sharable.all()));
+                } else {
+                    newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+                }
+            } catch (Exception ignore) {
+                MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
+                newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+            } catch (Error e) {
+                MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
             }
+
             MVILog.info("Imported group: " + wiGroup.getName());
         }
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {

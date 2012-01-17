@@ -86,7 +86,7 @@ public enum MVIPerms {
         }
         return hasBypass;
     }
-    
+
     private String getBypassMessage(Player player, String name) {
         return "";
     }

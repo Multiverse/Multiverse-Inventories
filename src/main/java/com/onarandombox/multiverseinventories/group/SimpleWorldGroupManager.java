@@ -18,7 +18,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
     private HashMap<String, List<WorldGroup>> worldGroupsMap = new HashMap<String, List<WorldGroup>>();
     private HashMap<String, WorldGroup> groupNamesMap = new HashMap<String, WorldGroup>();
     private MultiverseInventories plugin;
-    
+
     public SimpleWorldGroupManager(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
