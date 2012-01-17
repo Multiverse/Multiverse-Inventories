@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import org.bukkit.OfflinePlayer;
 
@@ -12,11 +13,11 @@ import java.util.WeakHashMap;
 public abstract class WeakProfileContainer implements ProfileContainer {
 
     private Map<OfflinePlayer, PlayerProfile> playerData = new WeakHashMap<OfflinePlayer, PlayerProfile>();
-    private MVIData data;
+    private MultiverseInventories plugin;
     private ProfileType type;
 
-    public WeakProfileContainer(MVIData data, ProfileType type) {
-        this.data = data;
+    public WeakProfileContainer(MultiverseInventories plugin, ProfileType type) {
+        this.plugin = plugin;
         this.type = type;
     }
 
@@ -31,7 +32,11 @@ public abstract class WeakProfileContainer implements ProfileContainer {
      * @return The data class for MultiverseInventories.
      */
     protected MVIData getData() {
-        return this.data;
+        return this.getPlugin().getData();
+    }
+    
+    protected MultiverseInventories getPlugin() {
+        return this.plugin;
     }
 
     /**

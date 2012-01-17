@@ -71,7 +71,7 @@ public class MultiInvImporter implements DataImporter {
         for (Map.Entry<String, String> groupEntry : miGroupMap.entrySet()) {
             WorldGroup worldGroup = this.plugin.getGroupManager().getGroup(groupEntry.getValue());
             if (worldGroup == null) {
-                worldGroup = new SimpleWorldGroup(this.plugin.getData(), groupEntry.getValue());
+                worldGroup = new SimpleWorldGroup(this.plugin, groupEntry.getValue());
                 worldGroup.setShares(new SimpleShares(Sharable.all()));
                 MVILog.info("Importing group: " + groupEntry.getValue());
             }

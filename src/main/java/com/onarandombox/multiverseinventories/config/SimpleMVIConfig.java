@@ -202,7 +202,7 @@ public class SimpleMVIConfig implements MVIConfig {
                     MVILog.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
                 }
-                worldGroup = new SimpleWorldGroup(this.plugin.getData(),
+                worldGroup = new SimpleWorldGroup(this.plugin,
                         groupName, groupSection.getValues(true));
             } catch (DeserializationException e) {
                 MVILog.warning("Unable to load world group: " + groupName);

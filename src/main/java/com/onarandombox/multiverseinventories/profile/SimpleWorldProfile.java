@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -11,8 +11,8 @@ public class SimpleWorldProfile extends WeakProfileContainer implements WorldPro
 
     private String worldName;
 
-    public SimpleWorldProfile(MVIData data, String worldName) {
-        super(data, ProfileType.WORLD);
+    public SimpleWorldProfile(MultiverseInventories plugin, String worldName) {
+        super(plugin, ProfileType.WORLD);
         this.worldName = worldName;
     }
 

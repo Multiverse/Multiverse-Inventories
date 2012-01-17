@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.group;
 
 import com.google.common.collect.Lists;
-import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.WeakProfileContainer;
 import com.onarandombox.multiverseinventories.share.Shares;
@@ -26,13 +26,14 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
     private Shares shares = new SimpleShares();
     //private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
 
-    public SimpleWorldGroup(MVIData data, String name) {
-        super(data, ProfileType.GROUP);
+    public SimpleWorldGroup(MultiverseInventories plugin, String name) {
+        super(plugin, ProfileType.GROUP);
         this.name = name;
     }
 
-    public SimpleWorldGroup(MVIData data, String name, Map<String, Object> dataMap) throws DeserializationException {
-        this(data, name);
+    public SimpleWorldGroup(MultiverseInventories plugin, String name, Map<String, Object> dataMap)
+            throws DeserializationException {
+        this(plugin, name);
         if (!dataMap.containsKey("worlds")) {
             throw new DeserializationException("No worlds specified for world group: " + name);
         }

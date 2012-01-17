@@ -78,7 +78,7 @@ public class WorldInventoriesImporter implements DataImporter {
             }
         }
         for (Group wiGroup : wiGroups) {
-            WorldGroup newGroup = new SimpleWorldGroup(this.plugin.getData(), wiGroup.getName());
+            WorldGroup newGroup = new SimpleWorldGroup(this.plugin, wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
             }

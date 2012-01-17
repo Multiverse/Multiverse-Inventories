@@ -116,7 +116,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
     public void createDefaultGroup() {
         Collection<MultiverseWorld> mvWorlds = this.plugin.getCore().getMVWorldManager().getMVWorlds();
         if (!mvWorlds.isEmpty()) {
-            WorldGroup worldGroup = new SimpleWorldGroup(this.plugin.getData(), "default");
+            WorldGroup worldGroup = new SimpleWorldGroup(this.plugin, "default");
             worldGroup.setShares(new SimpleShares(true, true,
                     true, true, true));
             for (MultiverseWorld mvWorld : mvWorlds) {

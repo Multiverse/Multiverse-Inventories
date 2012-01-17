@@ -37,7 +37,7 @@ public class WeakProfileManager implements ProfileManager {
     public WorldProfile getWorldProfile(String worldName) {
         WorldProfile worldProfile = this.worldProfiles.get(worldName.toLowerCase());
         if (worldProfile == null) {
-            worldProfile = new SimpleWorldProfile(this.getPlugin().getData(), worldName);
+            worldProfile = new SimpleWorldProfile(this.getPlugin(), worldName);
             this.addWorldProfile(worldProfile);
         }
         return worldProfile;
