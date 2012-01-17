@@ -30,6 +30,12 @@ public enum MultiverseMessage {
     ERROR_PLUGIN_NOT_ENABLED("%1 is not enabled so you may not import data from it!"),
     ERROR_UNSUPPORTED_IMPORT("Sorry, '%1' is not supported for importing."),
 
+    // Group Conflicts
+    CONFLICT_RESULTS("Conflict found for groups: '%1' and '%2' because they both share: '%3' for the world(s): '%4'"),
+    CONFLICT_CHECKING("Checking for conflicts in groups..."),
+    CONFLICT_FOUND("Conflicts have been found... If these are not resolved, you may experience problems with your data."),
+    CONFLICT_NOT_FOUND("No group conflicts found!"),
+
     //// Commands
     // Info Command
     INFO_WORLD("Info for world: %1", "Groups: %2"),

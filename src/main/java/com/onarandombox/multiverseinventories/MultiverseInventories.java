@@ -9,6 +9,7 @@ import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
 import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
@@ -39,6 +40,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -133,6 +135,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (this.getSettings().isFirstRun()) {
             this.getGroupManager().createDefaultGroup();
         }
+
+        this.checkForGroupConflicts(null);
 
         // Display enable message/version info
         MVILog.info("enabled.", true);
@@ -277,6 +281,42 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             }
         }
         return this.data;
+    }
+
+    /**
+     * Runs a check for conflicts between groups and displays them to console and sender if not null.
+     *
+     * @param sender The sender to relay information to.  If null, info only displayed in console.
+     */
+    public void checkForGroupConflicts(CommandSender sender) {
+        String message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_CHECKING);
+        if (sender != null) {
+            this.getMessager().sendMessage(sender, message);
+        }
+        MVILog.info(message);
+        List<GroupingConflict> conflicts = this.getGroupManager().checkGroups();
+        for (GroupingConflict conflict : conflicts) {
+            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_RESULTS,
+                    conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),
+                    conflict.getConflictingShares().toString(), conflict.getWorldsString());
+            if (sender != null) {
+                this.getMessager().sendMessage(sender, message);
+            }
+            MVILog.info(message);
+        }
+        if (!conflicts.isEmpty()) {
+            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_FOUND);
+            if (sender != null) {
+                this.getMessager().sendMessage(sender, message);
+            }
+            MVILog.info(message);
+        } else {
+            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_NOT_FOUND);
+            if (sender != null) {
+                this.getMessager().sendMessage(sender, message);
+            }
+            MVILog.info(message);
+        }
     }
 
     /**

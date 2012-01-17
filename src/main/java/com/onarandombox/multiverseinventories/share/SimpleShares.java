@@ -105,6 +105,20 @@ public class SimpleShares implements Shares {
      * {@inheritDoc}
      */
     @Override
+    public EnumSet<Sharable> isSharingAnyOf(EnumSet<Sharable> sharables) {
+        EnumSet<Sharable> bothSharing = EnumSet.noneOf(Sharable.class);
+        for (Sharable sharable : sharables) {
+            if (this.isSharing(sharable)) {
+                bothSharing.add(sharable);
+            }
+        }
+        return bothSharing;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setSharing(Sharable sharable, boolean sharing) {
         if (sharing) {
             this.getSharables().add(sharable);
@@ -132,18 +146,12 @@ public class SimpleShares implements Shares {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Inventory: ");
-        stringBuilder.append(this.isSharing(Sharable.INVENTORY));
-        stringBuilder.append(" Health: ");
-        stringBuilder.append(this.isSharing(Sharable.HEALTH));
-        stringBuilder.append(" Exp: ");
-        stringBuilder.append(this.isSharing(Sharable.EXPERIENCE));
-        stringBuilder.append(" Hunger: ");
-        stringBuilder.append(this.isSharing(Sharable.HUNGER));
-        /*
-        stringBuilder.append(" Effects: ");
-        stringBuilder.append(this.isSharing(Sharable.EFFECTS));
-        */
+        for (Sharable sharable : this.getSharables()) {
+            if (!stringBuilder.toString().isEmpty()) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(sharable);
+        }
         return stringBuilder.toString();
     }
 }

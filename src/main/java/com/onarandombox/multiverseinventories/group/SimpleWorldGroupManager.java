@@ -2,13 +2,16 @@ package com.onarandombox.multiverseinventories.group;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of WorldGroupManager.
@@ -143,5 +146,42 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
     @Override
     public WorldGroup getDefaultGroup() {
         return this.getGroupNames().get("default");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GroupingConflict> checkGroups() {
+        List<GroupingConflict> conflicts = new ArrayList<GroupingConflict>();
+        Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<WorldGroup, WorldGroup>();
+        for (WorldGroup checkingGroup : this.getGroupNames().values()) {
+            for (String worldName : checkingGroup.getWorlds()) {
+                for (WorldGroup worldGroup : this.getWorldGroups(worldName)) {
+                    if (checkingGroup.equals(worldGroup)) {
+                        continue;
+                    }
+                    if (previousConflicts.containsKey(checkingGroup)) {
+                        if (previousConflicts.get(checkingGroup).equals(worldGroup)) {
+                            continue;
+                        }
+                    }
+                    if (previousConflicts.containsKey(worldGroup)) {
+                        if (previousConflicts.get(worldGroup).equals(checkingGroup)) {
+                            continue;
+                        }
+                    }
+                    previousConflicts.put(checkingGroup, worldGroup);
+                    EnumSet<Sharable> conflictingShares = worldGroup.getShares()
+                            .isSharingAnyOf(checkingGroup.getShares().getSharables());
+                    if (!conflictingShares.isEmpty()) {
+                        conflicts.add(new SimpleGroupingConflict(checkingGroup, worldGroup,
+                                new SimpleShares(conflictingShares)));
+                    }
+                }
+            }
+        }
+
+        return conflicts;
     }
 }

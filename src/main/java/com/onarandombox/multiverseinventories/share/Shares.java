@@ -33,6 +33,14 @@ public interface Shares {
     boolean isSharing(EnumSet<Sharable> sharables);
 
     /**
+     * Checks to see if any of the sharables passed in are shared by this Shares.
+     *
+     * @param sharables Sharables to check for.
+     * @return A Set containing all of the Sharables both sets contain.
+     */
+    EnumSet<Sharable> isSharingAnyOf(EnumSet<Sharable> sharables);
+
+    /**
      * @param sharable The Sharable you wish to set sharing for.
      * @param sharing  Whether to share or not.
      */

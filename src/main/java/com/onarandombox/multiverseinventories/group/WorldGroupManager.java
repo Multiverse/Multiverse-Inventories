@@ -54,4 +54,11 @@ public interface WorldGroupManager {
      * @return The default world group or null if non-existent.
      */
     WorldGroup getDefaultGroup();
+
+    /**
+     * Checks all the world groups to see if there are any potential issues.
+     *
+     * @return A list of all the potential conflicts.
+     */
+    List<GroupingConflict> checkGroups();
 }
