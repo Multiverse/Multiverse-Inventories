@@ -235,6 +235,7 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public void updateWorldGroup(WorldGroup worldGroup) {
+        MVILog.debug("Updating group in config: " + worldGroup.getName());
         this.getConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
     }
 
@@ -243,6 +244,7 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public void removeWorldGroup(WorldGroup worldGroup) {
+        MVILog.debug("Removing group from config: " + worldGroup.getName());
         this.getConfig().set("groups." + worldGroup.getName(), null);
     }
 
