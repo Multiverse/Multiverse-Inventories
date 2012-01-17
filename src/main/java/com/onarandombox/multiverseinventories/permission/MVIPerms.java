@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.permission;
 
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -22,11 +23,19 @@ public enum MVIPerms {
     /**
      * Permission prefix for bypassing groups.
      */
-    BYPASS_GROUP("mvinv.bypass.group."),
+    BYPASS_GROUP("mvinv.bypass.group.") {
+        private String getBypassMessage(Player player, String name) {
+            return "Player: " + player.getName() + " has bypass perms for group: " + name;
+        }
+    },
     /**
      * Permission prefix for bypassing worlds.
      */
-    BYPASS_WORLD("mvinv.bypass.world.");
+    BYPASS_WORLD("mvinv.bypass.world.") {
+        private String getBypassMessage(Player player, String name) {
+            return "Player: " + player.getName() + " has bypass perms for world: " + name;
+        }
+    };
 
     private Permission perm = null;
     private String permNode = "";
@@ -70,8 +79,16 @@ public enum MVIPerms {
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name) {
-        return player.hasPermission(this.getBypassNode(name))
+        boolean hasBypass = player.hasPermission(this.getBypassNode(name))
                 || player.hasPermission(this.getBypassNode("*"));
+        if (hasBypass) {
+            MVILog.debug(this.getBypassMessage(player, name));
+        }
+        return hasBypass;
+    }
+    
+    private String getBypassMessage(Player player, String name) {
+        return "";
     }
 
     /**
