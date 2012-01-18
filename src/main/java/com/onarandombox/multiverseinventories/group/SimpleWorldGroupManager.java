@@ -38,7 +38,17 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
-    public List<WorldGroup> getWorldGroups(String worldName) {
+    public List<WorldGroup> getGroups() {
+        List<WorldGroup> groups = new ArrayList<WorldGroup>();
+        groups.addAll(this.getGroupNames().values());
+        return groups;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<WorldGroup> getGroupsForWorld(String worldName) {
         List<WorldGroup> worldGroups = this.getWorldGroups().get(worldName);
         if (worldGroups == null) {
             worldGroups = new ArrayList<WorldGroup>();
@@ -69,7 +79,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void addWorldGroup(WorldGroup worldGroup, boolean persist) {
+    public void addGroup(WorldGroup worldGroup, boolean persist) {
         this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
         for (String worldName : worldGroup.getWorlds()) {
             List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
@@ -89,7 +99,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void removeWorldGroup(WorldGroup worldGroup) {
+    public void removeGroup(WorldGroup worldGroup) {
         this.getGroupNames().remove(worldGroup.getName().toLowerCase());
         for (String worldName : worldGroup.getWorlds()) {
             List<WorldGroup> worldGroupsForWorld = this.getWorldGroups().get(worldName);
@@ -105,7 +115,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void setWorldGroups(List<WorldGroup> worldGroups) {
+    public void setGroups(List<WorldGroup> worldGroups) {
         if (worldGroups == null) {
             MVILog.info("No world groups have been configured!");
             MVILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
@@ -113,7 +123,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         }
 
         for (WorldGroup worldGroup : worldGroups) {
-            this.addWorldGroup(worldGroup, false);
+            this.addGroup(worldGroup, false);
         }
     }
 
@@ -130,7 +140,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
             for (MultiverseWorld mvWorld : mvWorlds) {
                 worldGroup.addWorld(mvWorld.getName());
             }
-            this.addWorldGroup(worldGroup, false);
+            this.addGroup(worldGroup, false);
             this.plugin.getSettings().setFirstRun(false);
             this.plugin.getSettings().save();
             MVILog.info("Created a default group for you containing all of your MV Worlds!");
@@ -157,7 +167,7 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<WorldGroup, WorldGroup>();
         for (WorldGroup checkingGroup : this.getGroupNames().values()) {
             for (String worldName : checkingGroup.getWorlds()) {
-                for (WorldGroup worldGroup : this.getWorldGroups(worldName)) {
+                for (WorldGroup worldGroup : this.getGroupsForWorld(worldName)) {
                     if (checkingGroup.equals(worldGroup)) {
                         continue;
                     }

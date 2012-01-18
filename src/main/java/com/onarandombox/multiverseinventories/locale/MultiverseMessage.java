@@ -38,10 +38,14 @@ public enum MultiverseMessage {
 
     //// Commands
     // Info Command
-    INFO_WORLD("&b--- Info for world: %1 ---"),
+    INFO_WORLD("&b===[ Info for world: %1 ]==="),
     INFO_WORLD_INFO("&1Groups:&f %1"),
-    INFO_GROUP("&b--- Info for group: %1 ---"),
-    INFO_GROUP_INFO("&1Worlds:&f %1", "&1Shares:&f %2");
+    INFO_GROUP("&b===[ Info for group: %1 ]==="),
+    INFO_GROUP_INFO("&1Worlds:&f %1", "&1Shares:&f %2"),
+    // List Command
+    LIST_GROUPS("&b===[ Group List ]===", "&1Groups:&f %1"),
+    ;
+
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
     private final List<String> def;

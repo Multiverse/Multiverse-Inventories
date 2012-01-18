@@ -16,19 +16,24 @@ public interface WorldGroupManager {
     WorldGroup getGroup(String groupName);
 
     /**
+     * @return A List of all world groups.
+     */
+    List<WorldGroup> getGroups();
+
+    /**
      * Retrieves all of the World Groups associated with the given world.  Casing is ignored.
      *
      * @param worldName Name of the world to get groups for.
      * @return List of World Groups associated with the world or null if none.
      */
-    List<WorldGroup> getWorldGroups(String worldName);
+    List<WorldGroup> getGroupsForWorld(String worldName);
 
     /**
      * Sets up the World Groups in memory.
      *
      * @param worldGroups List of World Groups to store in memory.
      */
-    void setWorldGroups(List<WorldGroup> worldGroups);
+    void setGroups(List<WorldGroup> worldGroups);
 
     /**
      * Adds a World Group to the collection in memory.
@@ -36,14 +41,14 @@ public interface WorldGroupManager {
      * @param worldGroup World group to add.
      * @param persist True means this world group will be added to the Config file as well.
      */
-    void addWorldGroup(WorldGroup worldGroup, boolean persist);
+    void addGroup(WorldGroup worldGroup, boolean persist);
 
     /**
      * Removes a World Group from the collection in memory AND from the config.
      *
      * @param worldGroup World group to remove.
      */
-    void removeWorldGroup(WorldGroup worldGroup);
+    void removeGroup(WorldGroup worldGroup);
 
     /**
      * Creates a default world group including all of the loaded MV worlds sharing everything.

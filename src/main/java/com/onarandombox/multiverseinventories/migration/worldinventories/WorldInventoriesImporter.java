@@ -73,7 +73,7 @@ public class WorldInventoriesImporter implements DataImporter {
         if (!wiGroups.isEmpty()) {
             WorldGroup defaultWorldGroup = this.plugin.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
-                this.plugin.getGroupManager().removeWorldGroup(defaultWorldGroup);
+                this.plugin.getGroupManager().removeGroup(defaultWorldGroup);
                 MVILog.info("Removed automatically created world group in favor of imported groups.");
             }
         }

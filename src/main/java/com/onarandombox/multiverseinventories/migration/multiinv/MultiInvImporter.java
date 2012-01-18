@@ -64,7 +64,7 @@ public class MultiInvImporter implements DataImporter {
         if (!miGroupMap.isEmpty()) {
             WorldGroup defaultWorldGroup = this.plugin.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
-                this.plugin.getGroupManager().removeWorldGroup(defaultWorldGroup);
+                this.plugin.getGroupManager().removeGroup(defaultWorldGroup);
                 MVILog.info("Removed automatically created world group in favor of imported groups.");
             }
         }
@@ -74,7 +74,7 @@ public class MultiInvImporter implements DataImporter {
                 worldGroup = new SimpleWorldGroup(this.plugin, groupEntry.getValue());
                 worldGroup.setShares(new SimpleShares(Sharable.all()));
                 MVILog.info("Importing group: " + groupEntry.getValue());
-                this.plugin.getGroupManager().addWorldGroup(worldGroup, false);
+                this.plugin.getGroupManager().addGroup(worldGroup, false);
             }
             worldGroup.addWorld(groupEntry.getValue());
         }

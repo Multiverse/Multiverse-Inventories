@@ -113,7 +113,7 @@ public class SimpleShareHandler implements ShareHandler {
         }
 
         List<WorldGroup> fromWorldGroups = this.plugin.getGroupManager()
-                .getWorldGroups(this.getFromWorld().getName());
+                .getGroupsForWorld(this.getFromWorld().getName());
         for (WorldGroup fromWorldGroup : fromWorldGroups) {
             PlayerProfile profile = fromWorldGroup.getPlayerData(this.getPlayer());
             if (!fromWorldGroup.containsWorld(this.getToWorld().getName())) {
@@ -129,7 +129,7 @@ public class SimpleShareHandler implements ShareHandler {
         }
 
         List<WorldGroup> toWorldGroups = this.plugin.getGroupManager()
-                .getWorldGroups(this.getToWorld().getName());
+                .getGroupsForWorld(this.getToWorld().getName());
         if (!toWorldGroups.isEmpty()) {
             for (WorldGroup toWorldGroup : toWorldGroups) {
                 if (!usingBypass || !MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
