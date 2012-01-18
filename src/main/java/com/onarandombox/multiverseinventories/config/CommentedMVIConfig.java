@@ -6,6 +6,7 @@ import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Set;
 /**
  * Implementation of MVIConfig.
  */
-public class SimpleMVIConfig implements MVIConfig {
+public class CommentedMVIConfig implements MVIConfig {
 
     /**
      * Enum for easily keeping track of config paths, defaults and comments.
@@ -116,14 +117,17 @@ public class SimpleMVIConfig implements MVIConfig {
     private CommentedConfiguration config;
     private MultiverseInventories plugin;
 
-    public SimpleMVIConfig(MultiverseInventories plugin) throws Exception {
+    public CommentedMVIConfig(MultiverseInventories plugin) throws Exception {
         this.plugin = plugin;
         // Make the data folders
-        plugin.getDataFolder().mkdirs();
+        if (plugin.getDataFolder().mkdirs()) {
+            MVILog.debug("Created data folder.");
+        }
 
         // Check if the config file exists.  If not, create it.
         File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
+            MVILog.debug("Created config file.");
             configFile.createNewFile();
         }
 
@@ -142,10 +146,13 @@ public class SimpleMVIConfig implements MVIConfig {
      * Loads default settings for any missing config values.
      */
     private void setDefaults() {
-        for (SimpleMVIConfig.Path path : SimpleMVIConfig.Path.values()) {
+        for (CommentedMVIConfig.Path path : CommentedMVIConfig.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
-            if (config.getString(path.getPath()) == null) {
-                config.set(path.getPath(), path.getDefault());
+            if (this.getConfig().get(path.getPath()) == null) {
+                if (path.getDefault() != null) {
+                    MVILog.debug("Config: Defaulting '" + path.getPath() + "' to " + path.getDefault());
+                    this.getConfig().set(path.getPath(), path.getDefault());
+                }
             }
         }
     }
@@ -166,8 +173,8 @@ public class SimpleMVIConfig implements MVIConfig {
      * {@inheritDoc}
      */
     @Override
-    public CommentedConfiguration getConfig() {
-        return this.config;
+    public FileConfiguration getConfig() {
+        return this.config.getConfig();
     }
 
     /**
@@ -191,13 +198,16 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public List<WorldGroup> getWorldGroups() {
+        MVILog.debug("Getting world groups from config file");
         ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
         if (groupsSection == null) {
+            MVILog.debug("Could not find a 'groups' section in config!");
             return null;
         }
         Set<String> groupNames = groupsSection.getKeys(false);
         List<WorldGroup> worldGroups = new ArrayList<WorldGroup>(groupNames.size());
         for (String groupName : groupNames) {
+            MVILog.debug("Attempting to load group: " + groupName + "...");
             WorldGroup worldGroup;
             try {
                 ConfigurationSection groupSection =
@@ -214,6 +224,7 @@ public class SimpleMVIConfig implements MVIConfig {
                 continue;
             }
             worldGroups.add(worldGroup);
+            MVILog.debug("Group: " + worldGroup.getName() + " added to memory");
         }
         return worldGroups;
     }
@@ -257,7 +268,7 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     @Override
     public void save() {
-        this.getConfig().save();
+        this.config.save();
     }
 
     /**

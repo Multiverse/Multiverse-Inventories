@@ -28,11 +28,19 @@ public interface WorldGroup extends ProfileContainer {
     void setName(String name);
 
     /**
-     * Adds a world to this world group and updates it in the Config file.
+     * Adds a world to this world group and updates it in the Config.
      *
      * @param worldName The name of the world to add.
      */
     void addWorld(String worldName);
+
+    /**
+     * Adds a world to this world group and optionally updates it in the Config.
+     *
+     * @param worldName The name of the world to add.
+     * @param updateConfig True to update this group in the config.
+     */
+    void addWorld(String worldName, boolean updateConfig);
 
     /**
      * Convenience method to add a {@link org.bukkit.World} to this World Group.

@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.config;
 
 import com.onarandombox.multiverseinventories.group.WorldGroup;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface MVIConfig {
      *
      * @return The underlying FileConfiguration object.
      */
-    CommentedConfiguration getConfig();
+    FileConfiguration getConfig();
 
     /**
      * Checks to see if debug mode is set in the config.

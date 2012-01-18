@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.config;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.BufferedReader;
@@ -18,10 +19,11 @@ import java.util.HashMap;
 /**
  * A Configuration wrapper class that allows for comments to be applied to the config paths.
  */
-public class CommentedConfiguration extends YamlConfiguration {
+public class CommentedConfiguration {
 
     private HashMap<String, String> comments;
     private File file;
+    private FileConfiguration config = null;
 
     public CommentedConfiguration(File file) {
         super();
@@ -35,7 +37,14 @@ public class CommentedConfiguration extends YamlConfiguration {
      * @throws Exception If anything goes wrong while loading this Configuration object into memory.
      */
     public void load() throws Exception {
-        this.load(file);
+        config = YamlConfiguration.loadConfiguration(file);
+    }
+
+    /**
+     * @return The underlying configuration object.
+     */
+    public FileConfiguration getConfig() {
+        return this.config;
     }
 
     /**
@@ -50,7 +59,7 @@ public class CommentedConfiguration extends YamlConfiguration {
 
         // Save the config just like normal
         try {
-            super.save(file);
+            config.save(file);
         } catch (Exception e) {
             saved = false;
         }

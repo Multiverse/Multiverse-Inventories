@@ -8,7 +8,7 @@ import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
-import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
+import com.onarandombox.multiverseinventories.config.CommentedMVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
@@ -108,9 +108,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         this.reloadConfig();
 
-        // Set debug mode from config
-        MVILog.setDebugMode(this.getSettings().isDebugging());
-
         try {
             this.getMessager().setLocale(new Locale(this.getSettings().getLocale()));
         } catch (IllegalArgumentException e) {
@@ -132,11 +129,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Hook plugins that can be imported from
         this.hookImportables();
-
-        // Create initial World Group for first run
-        if (this.getSettings().isFirstRun()) {
-            this.getGroupManager().createDefaultGroup();
-        }
 
         this.checkForGroupConflicts(null);
 
@@ -259,7 +251,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (this.config == null) {
             // Loads the configuration
             try {
-                this.config = new SimpleMVIConfig(this);
+                this.config = new CommentedMVIConfig(this);
+                MVILog.debug("Loaded config file!");
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
                 MVILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
                 MVILog.severe(e.getMessage());
@@ -275,8 +268,17 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     public void reloadConfig() {
         this.config = null;
+        // Set debug mode from config
+        MVILog.setDebugMode(this.getSettings().isDebugging());
         // Get world groups from config
         this.getGroupManager().setGroups(this.getSettings().getWorldGroups());
+        // Create initial World Group for first run IF NO GROUPS EXIST
+        if (this.getSettings().isFirstRun()) {
+            MVILog.info("First run!");
+            if (this.getGroupManager().getGroups().isEmpty()) {
+                this.getGroupManager().createDefaultGroup();
+            }
+        }
     }
 
     /**
