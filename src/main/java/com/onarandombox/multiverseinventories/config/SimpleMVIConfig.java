@@ -22,6 +22,10 @@ public class SimpleMVIConfig implements MVIConfig {
      */
     public enum Path {
         /**
+         * Add a comment to the top of file.
+         */
+        SETTINGS("settings", null, "# ===[ Multiverse Inventories Config ]==="),
+        /**
          * Locale name config path, default and comments.
          */
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
@@ -32,7 +36,7 @@ public class SimpleMVIConfig implements MVIConfig {
         /**
          * First Run flag config path, default and comments.
          */
-        FIRST_RUN("first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
+        FIRST_RUN("settings.first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
         /**
          * First Run flag config path, default and comments.
          */
