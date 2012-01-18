@@ -81,8 +81,23 @@ public enum Sharable {
         }
     },
     /**
+     * Sharing Hunger.
+     */
+    BED_SPAWN("bed_spawn", "bedspawn", "bed", "beds") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setBedSpawnLocation(player.getBedSpawnLocation());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setBedSpawnLocation(profile.getBedSpawnLocation());
+        }
+    },
+    /** TODO: add when there's bukkit api for this.
      * Sharing Effects.
      */
+    /*
     EFFECTS("effects", "fx", "potions") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -93,31 +108,7 @@ public enum Sharable {
         public void updatePlayer(Player player, PlayerProfile profile) {
             // NO API FOR EFFECTS AS OF YET
         }
-    },
-
-    /**
-     * Indicates ALL of the above.
-     */
-    /*
-    ALL("*", "all", "everything") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            EnumSet<Sharable> sharables = EnumSet.allOf(Sharable.class);
-            sharables.remove(ALL);
-            for (Sharable sharable : sharables) {
-                sharable.updateProfile(profile, player);
-            }
-        }
-
-        @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
-            EnumSet<Sharable> sharables = EnumSet.allOf(Sharable.class);
-            sharables.remove(ALL);
-            for (Sharable sharable : sharables) {
-                sharable.updatePlayer(player, profile);
-            }
-        }
-    }*/;
+    },*/;
 
     private String[] names;
 

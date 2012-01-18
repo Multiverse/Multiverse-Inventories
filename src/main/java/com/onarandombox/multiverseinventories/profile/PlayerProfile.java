@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
@@ -32,6 +33,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the inventory contents for this Profile.
+     *
      * @param inventoryContents Inventory contents for this profile.
      */
     void setInventoryContents(ItemStack[] inventoryContents);
@@ -43,6 +45,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the armor contents for this Profile.
+     *
      * @param armorContents Armor contents for this profile.
      */
     void setArmorContents(ItemStack[] armorContents);
@@ -54,6 +57,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the health for this Profile.
+     *
      * @param health New health for Profile.
      */
     void setHealth(Integer health);
@@ -65,6 +69,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the exp for this Profile.
+     *
      * @param exp New exp for Profile.
      */
     void setExp(Float exp);
@@ -76,6 +81,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the total exp for this Profile.
+     *
      * @param totalExperience exp New total exp for Profile.
      */
     void setTotalExperience(Integer totalExperience);
@@ -87,6 +93,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the level for this Profile.
+     *
      * @param level New level for Profile.
      */
     void setLevel(Integer level);
@@ -98,6 +105,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the food level for this Profile.
+     *
      * @param foodLevel New food level for Profile.
      */
     void setFoodLevel(Integer foodLevel);
@@ -109,6 +117,7 @@ public interface PlayerProfile {
 
     /**
      * Sets the exhaustion for this Profile.
+     *
      * @param exhaustion New exhaustion for Profile.
      */
     void setExhaustion(Float exhaustion);
@@ -120,7 +129,20 @@ public interface PlayerProfile {
 
     /**
      * Sets the saturation for this Profile.
+     *
      * @param saturation New saturation for Profile.
      */
     void setSaturation(Float saturation);
+
+    /**
+     * @return The bed spawn location of this Profile.
+     */
+    Location getBedSpawnLocation();
+
+    /**
+     * Sets the bed spawn location for this Profile.
+     *
+     * @param location New bed spawn location for Profile.
+     */
+    void setBedSpawnLocation(Location location);
 }

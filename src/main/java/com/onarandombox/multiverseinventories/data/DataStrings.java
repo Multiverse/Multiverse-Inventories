@@ -65,8 +65,33 @@ public class DataStrings {
      * Player saturation identifier.
      */
     public static final String PLAYER_SATURATION = "sa";
+    /**
+     * Location x identifier.
+     */
+    public static final String LOCATION_X = "x";
+    /**
+     * Location y identifier.
+     */
+    public static final String LOCATION_Y = "y";
+    /**
+     * Location z identifier.
+     */
+    public static final String LOCATION_Z = "z";
+    /**
+     * Location world identifier.
+     */
+    public static final String LOCATION_WORLD = "wo";
+    /**
+     * Location pitch identifier.
+     */
+    public static final String LOCATION_PITCH = "pi";
+    /**
+     * Location yaw identifier.
+     */
+    public static final String LOCATION_YAW = "ya";
 
-    private DataStrings() { }
+    private DataStrings() {
+    }
 
     /**
      * Splits a key:value string into a String[2] where string[0] == key and string[1] == value.
@@ -81,7 +106,7 @@ public class DataStrings {
     /**
      * Creates a key:value string from the string form of the key object and value object.
      *
-     * @param key Object that is to be the key.
+     * @param key   Object that is to be the key.
      * @param value Object that is to be the value.
      * @return String of key and value joined with the {@link #VALUE_DELIMITER}.
      */

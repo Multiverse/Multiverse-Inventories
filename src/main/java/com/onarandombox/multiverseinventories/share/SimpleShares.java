@@ -26,7 +26,7 @@ public class SimpleShares implements Shares {
     }
 
     public SimpleShares(boolean sharingInventory, boolean sharingHealth, boolean sharingHunger,
-                        boolean sharingExp, boolean sharingEffects) {
+                        boolean sharingExp, boolean sharingBeds) {
         if (sharingInventory) {
             this.sharing.add(Sharable.INVENTORY);
         }
@@ -39,9 +39,14 @@ public class SimpleShares implements Shares {
         if (sharingExp) {
             this.sharing.add(Sharable.EXPERIENCE);
         }
+        if (sharingBeds) {
+            this.sharing.add(Sharable.BED_SPAWN);
+        }
+        /* TODO: add when there's bukkit api for this.
         if (sharingEffects) {
             this.sharing.add(Sharable.EFFECTS);
         }
+        */
     }
 
     public SimpleShares(List sharesList) {

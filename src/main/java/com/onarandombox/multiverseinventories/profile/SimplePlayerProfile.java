@@ -7,7 +7,9 @@ import com.onarandombox.multiverseinventories.util.MVILog;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import com.onarandombox.multiverseinventories.util.PlayerStats;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.LinkedHashMap;
@@ -27,6 +29,7 @@ public class SimplePlayerProfile implements PlayerProfile {
     private Integer foodLevel = PlayerStats.FOOD_LEVEL;
     private Float exhaustion = PlayerStats.EXHAUSTION;
     private Float saturation = PlayerStats.SATURATION;
+    private Location bedSpawnLocation = null;
 
     private OfflinePlayer player;
     private ProfileType type;
@@ -46,6 +49,9 @@ public class SimplePlayerProfile implements PlayerProfile {
         }
         if (playerData.containsKey("armorContents")) {
             this.parsePlayerArmor(playerData.get("armorContents").toString().split(DataStrings.ITEM_DELIMITER));
+        }
+        if (playerData.containsKey("bedSpawnLocation")) {
+            this.parseLocation(playerData.get("bedSpawnLocation").toString().split(DataStrings.GENERAL_DELIMITER));
         }
     }
 
@@ -122,13 +128,51 @@ public class SimplePlayerProfile implements PlayerProfile {
     }
 
     /**
+     * @param locArray Parses these values and creates Location.
+     * @return New location object or null if no location could be created.
+     */
+    protected Location parseLocation(String[] locArray) {
+        World world = null;
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        float pitch = 0;
+        float yaw = 0;
+        try {
+            for (String stat : locArray) {
+                String[] statValues = DataStrings.splitEntry(stat);
+                if (statValues[0].equals(DataStrings.LOCATION_X)) {
+                    x = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Y)) {
+                    y = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Z)) {
+                    z = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_WORLD)) {
+                    world = Bukkit.getWorld(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_PITCH)) {
+                    yaw = Float.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_YAW)) {
+                    pitch = Float.valueOf(statValues[1]);
+                }
+            }
+        } catch (Exception e) {
+            MVILog.debug("Could not parse location: " + locArray.toString());
+            return null;
+        }
+        if (world == null) {
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> playerData = new LinkedHashMap<String, Object>();
-        StringBuilder builder = new StringBuilder();
 
+        StringBuilder builder = new StringBuilder();
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_HEALTH, this.getHealth()));
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_EXPERIENCE, this.getExp()));
@@ -142,8 +186,23 @@ public class SimplePlayerProfile implements PlayerProfile {
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_EXHAUSTION, this.getExhaustion()));
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.PLAYER_SATURATION, this.getSaturation()));
-
         playerData.put("stats", builder.toString());
+
+        if (this.getBedSpawnLocation() != null) {
+            builder = new StringBuilder();
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, this.getBedSpawnLocation().getX()));
+            builder.append(DataStrings.GENERAL_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_X, this.getBedSpawnLocation().getY()));
+            builder.append(DataStrings.GENERAL_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Y, this.getBedSpawnLocation().getZ()));
+            builder.append(DataStrings.GENERAL_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, this.getBedSpawnLocation().getWorld()));
+            builder.append(DataStrings.GENERAL_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_PITCH, this.getBedSpawnLocation().getPitch()));
+            builder.append(DataStrings.GENERAL_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_YAW, this.getBedSpawnLocation().getYaw()));
+            playerData.put("bedSpawnLocation", builder.toString());
+        }
 
         builder = new StringBuilder();
         boolean first = true;
@@ -333,5 +392,21 @@ public class SimplePlayerProfile implements PlayerProfile {
     @Override
     public void setSaturation(Float saturation) {
         this.saturation = saturation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Location getBedSpawnLocation() {
+        return this.bedSpawnLocation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBedSpawnLocation(Location location) {
+        this.bedSpawnLocation = location;
     }
 }
