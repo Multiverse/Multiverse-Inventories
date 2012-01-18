@@ -196,7 +196,7 @@ public class SimplePlayerProfile implements PlayerProfile {
             builder.append(DataStrings.GENERAL_DELIMITER);
             builder.append(DataStrings.createEntry(DataStrings.LOCATION_Y, this.getBedSpawnLocation().getZ()));
             builder.append(DataStrings.GENERAL_DELIMITER);
-            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, this.getBedSpawnLocation().getWorld()));
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, this.getBedSpawnLocation().getWorld().getName()));
             builder.append(DataStrings.GENERAL_DELIMITER);
             builder.append(DataStrings.createEntry(DataStrings.LOCATION_PITCH, this.getBedSpawnLocation().getPitch()));
             builder.append(DataStrings.GENERAL_DELIMITER);
