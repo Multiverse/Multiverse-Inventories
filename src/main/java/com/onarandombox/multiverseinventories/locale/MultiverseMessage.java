@@ -45,8 +45,7 @@ public enum MultiverseMessage {
     // List Command
     LIST_GROUPS("&b===[ Group List ]===", "&1Groups:&f %1"),
     // Reload Command
-    RELOAD_COMPLETE("&b===[ Reload Complete! ]==="),
-    ;
+    RELOAD_COMPLETE("&b===[ Reload Complete! ]===");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
