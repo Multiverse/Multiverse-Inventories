@@ -42,11 +42,10 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
             throw new DeserializationException("World list formatted incorrectly for world group: " + name);
         }
         for (Object worldNameObj : (List) worldListObj) {
+            this.addWorld(worldNameObj.toString());
             World world = Bukkit.getWorld(worldNameObj.toString());
-            if (world != null) {
-                this.addWorld(world);
-            } else {
-                MVILog.warning("");
+            if (world == null) {
+                MVILog.debug("World: " + worldNameObj.toString() + " is not loaded.");
             }
         }
         if (dataMap.containsKey("shares")) {
