@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -63,16 +64,15 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
      * Formats a list of strings by passing each through {@link #format(String, Object...)}.
      *
      * @param strings List of strings to format.
-     * @param args Arguments to pass in via %n.
+     * @param args    Arguments to pass in via %n.
      * @return List of formatted strings.
      */
     public List<String> format(List<String> strings, Object... args) {
-        for (int i = 0; i < strings.size(); i++) {
-            //for (String string : strings) {
-            //string = format(string, args);
-            strings.set(i, format(strings.get(i), args));
+        List<String> formattedStrings = new ArrayList<String>();
+        for (String string : strings) {
+            formattedStrings.add(format(string, args));
         }
-        return strings;
+        return formattedStrings;
     }
 
     /**
@@ -80,12 +80,12 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
      * object where n = argument index + 1.
      *
      * @param string String to format.
-     * @param args Arguments to pass in via %n.
+     * @param args   Arguments to pass in via %n.
      * @return The formatted string.
      */
     public String format(String string, Object... args) {
         // Replaces & with the Section character
-        string = string.replaceAll("&", Character.toString(Font.SECTION_SYMBOL));
+        string = string.replaceAll("(&([a-fA-FkK0-9]))", Font.SECTION_SYMBOL + "$2");
         // If there are arguments, %n notations in the message will be
         // replaced
         if (args != null) {
@@ -195,8 +195,9 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
         List<String> result;
         if (!isLocaleLoaded(locale)) {
             result = format(key.getDefault(), args);
-        } else
+        } else {
             result = format(this.messages.get(locale).get(key), args);
+        }
         return result;
     }
 
