@@ -88,18 +88,15 @@ public class WorldInventoriesImporter implements DataImporter {
                     newGroup.setShares(new SimpleShares(Sharable.all()));
                 } else {
                     newGroup.getShares().setSharing(Sharable.INVENTORY, true);
-                    this.plugin.getSettings().updateWorldGroup(newGroup);
                 }
             } catch (Exception ignore) {
                 MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
-                this.plugin.getSettings().updateWorldGroup(newGroup);
             } catch (Error e) {
                 MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
-                this.plugin.getSettings().updateWorldGroup(newGroup);
             }
-
+            this.plugin.getGroupManager().addGroup(newGroup, true);
             MVILog.info("Imported group: " + wiGroup.getName());
         }
         this.plugin.getSettings().save();
