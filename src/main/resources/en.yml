@@ -41,3 +41,7 @@ INFO_GROUP_INFO:
 LIST_GROUPS:
 - '&b===[ Group List ]==='
 - '&1Groups:&f %1'
+
+# Reload Command
+RELOAD_COMPLETE:
+- '&b===[ Reload Complete! ]==='

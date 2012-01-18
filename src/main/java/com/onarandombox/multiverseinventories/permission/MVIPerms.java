@@ -23,6 +23,10 @@ public enum MVIPerms {
     /**
      * Permission for /mvi info.
      */
+    COMMAND_RELOAD(new Permission("multiverse.inventories.reload", "Reloads config file.", PermissionDefault.OP)),
+    /**
+     * Permission for /mvi info.
+     */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
      * Permission prefix for bypassing groups.

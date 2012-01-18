@@ -6,6 +6,7 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
+import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.config.SimpleMVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
@@ -101,8 +102,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         MVIDebug.init(this);
 
-        // Get world groups from config
-        this.getGroupManager().setGroups(this.getSettings().getWorldGroups());
+        this.reloadConfig();
 
         // Set debug mode from config
         MVILog.setDebugMode(this.getSettings().isDebugging());
@@ -151,6 +151,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.getCommandHandler().registerCommand(new InfoCommand(this));
         this.getCommandHandler().registerCommand(new ImportCommand(this));
         this.getCommandHandler().registerCommand(new ListCommand(this));
+        this.getCommandHandler().registerCommand(new ReloadCommand(this));
         for (com.pneumaticraft.commandhandler.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");
@@ -260,6 +261,15 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             }
         }
         return this.config;
+    }
+
+    /**
+     * Nulls the config object and reloads a new one, also resetting the world groups in memory.
+     */
+    public void reloadConfig() {
+        this.config = null;
+        // Get world groups from config
+        this.getGroupManager().setGroups(this.getSettings().getWorldGroups());
     }
 
     /**
