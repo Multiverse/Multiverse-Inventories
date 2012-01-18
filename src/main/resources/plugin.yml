@@ -21,3 +21,12 @@ commands:
   mvinvimport:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
+  mvinvlist:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvl:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvreload:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
