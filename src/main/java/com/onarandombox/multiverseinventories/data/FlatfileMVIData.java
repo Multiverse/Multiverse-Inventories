@@ -32,7 +32,7 @@ public class FlatfileMVIData implements MVIData {
                 throw new IOException("Could not create world folder!");
             }
         }
-        this.groupFolder = new File(plugin.getDataFolder(), "worlds");
+        this.groupFolder = new File(plugin.getDataFolder(), "groups");
         if (!this.groupFolder.exists()) {
             if (!this.groupFolder.mkdirs()) {
                 throw new IOException("Could not create group folder!");
@@ -61,6 +61,7 @@ public class FlatfileMVIData implements MVIData {
         if (!folder.exists()) {
             folder.mkdirs();
         }
+        MVILog.debug("got data folder: " + folder.getPath() + " from type: " + type);
         return folder;
     }
 
@@ -130,6 +131,6 @@ public class FlatfileMVIData implements MVIData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new SimplePlayerProfile(type, playerName,  section.getValues(true));
+        return new SimplePlayerProfile(type, playerName, section.getValues(true));
     }
 }

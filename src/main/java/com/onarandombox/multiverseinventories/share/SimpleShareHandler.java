@@ -181,8 +181,8 @@ public class SimpleShareHandler implements ShareHandler {
             MVILog.debug("Persisting: " + sharable + " to " + profile.getProfile().getType()
                     + ":" + profile.getDataName() + " for player " + profile.getProfile().getPlayer().getName());
             sharable.updateProfile(profile.getProfile(), this.getPlayer());
-            this.plugin.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
         }
+        this.plugin.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
     }
 
     private void updatePlayer(PersistingProfile profile) {

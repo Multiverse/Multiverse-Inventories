@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.EnumSet;
@@ -91,7 +92,11 @@ public enum Sharable {
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setBedSpawnLocation(profile.getBedSpawnLocation());
+            Location loc = profile.getBedSpawnLocation();
+            if (loc == null) {
+                loc = player.getWorld().getSpawnLocation();
+            }
+            player.setBedSpawnLocation(loc);
         }
     },
     /** TODO: add when there's bukkit api for this.

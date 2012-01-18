@@ -190,13 +190,13 @@ public class SimplePlayerProfile implements PlayerProfile {
 
         if (this.getBedSpawnLocation() != null) {
             builder = new StringBuilder();
-            builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, this.getBedSpawnLocation().getX()));
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, this.getBedSpawnLocation().getWorld().getName()));
             builder.append(DataStrings.GENERAL_DELIMITER);
-            builder.append(DataStrings.createEntry(DataStrings.LOCATION_X, this.getBedSpawnLocation().getY()));
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_X, this.getBedSpawnLocation().getX()));
             builder.append(DataStrings.GENERAL_DELIMITER);
-            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Y, this.getBedSpawnLocation().getZ()));
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Y, this.getBedSpawnLocation().getY()));
             builder.append(DataStrings.GENERAL_DELIMITER);
-            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, this.getBedSpawnLocation().getWorld().getName()));
+            builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, this.getBedSpawnLocation().getZ()));
             builder.append(DataStrings.GENERAL_DELIMITER);
             builder.append(DataStrings.createEntry(DataStrings.LOCATION_PITCH, this.getBedSpawnLocation().getPitch()));
             builder.append(DataStrings.GENERAL_DELIMITER);
