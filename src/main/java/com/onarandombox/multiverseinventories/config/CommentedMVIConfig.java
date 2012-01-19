@@ -41,7 +41,7 @@ public class CommentedMVIConfig implements MVIConfig {
         /**
          * First Run flag config path, default and comments.
          */
-        BYPASS_PERM("settings.use_bypass_permissions", true,
+        BYPASS_PERM("settings.use_bypass_permissions", false,
                 "# If this is true it will allow people with sufficient permissions",
                 "# to bypass world groups and/or worlds set here in config."),
         /**
