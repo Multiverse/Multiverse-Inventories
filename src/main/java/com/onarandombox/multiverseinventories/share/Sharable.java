@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -96,7 +97,11 @@ public enum Sharable {
             if (loc == null) {
                 loc = player.getWorld().getSpawnLocation();
             }
-            player.setBedSpawnLocation(loc);
+            try {
+                player.setBedSpawnLocation(loc);
+            } catch (NoSuchMethodError e) {
+                MVILog.warning("Cannot set bed spawn with this version of bukkit");
+            }
         }
     },
     /** TODO: add when there's bukkit api for this.
