@@ -279,3 +279,4 @@ public class CommentedMVIConfig implements MVIConfig {
         return this.getBoolean(Path.BYPASS_PERM);
     }
 }
+

@@ -30,3 +30,5 @@ public abstract class InventoriesCommand extends Command {
     @Override
     public abstract void runCommand(CommandSender sender, List<String> args);
 }
+
+

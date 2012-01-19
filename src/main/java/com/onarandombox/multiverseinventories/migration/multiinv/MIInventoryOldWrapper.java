@@ -22,3 +22,4 @@ public class MIInventoryOldWrapper extends MIInventoryOld implements MIInventory
         return MIInventoryConverter.convertMIItems(this.MIArmourContents);
     }
 }
+

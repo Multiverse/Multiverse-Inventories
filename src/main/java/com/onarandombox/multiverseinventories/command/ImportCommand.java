@@ -52,3 +52,4 @@ public class ImportCommand extends InventoriesCommand {
         }
     }
 }
+

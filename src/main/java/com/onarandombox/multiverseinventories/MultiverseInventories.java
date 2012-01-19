@@ -391,3 +391,4 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return this.bypassShares;
     }
 }
+

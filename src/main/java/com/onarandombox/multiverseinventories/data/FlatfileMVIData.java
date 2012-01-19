@@ -134,3 +134,4 @@ public class FlatfileMVIData implements MVIData {
         return new SimplePlayerProfile(type, playerName, section.getValues(true));
     }
 }
+

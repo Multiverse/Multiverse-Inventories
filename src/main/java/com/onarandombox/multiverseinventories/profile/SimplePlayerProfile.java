@@ -410,3 +410,4 @@ public class SimplePlayerProfile implements PlayerProfile {
         this.bedSpawnLocation = location;
     }
 }
+

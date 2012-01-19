@@ -203,3 +203,4 @@ public class SimpleShareHandler implements ShareHandler {
                 + profile.getProfile().getType() + ":" + profile.getDataName());
     }
 }
+

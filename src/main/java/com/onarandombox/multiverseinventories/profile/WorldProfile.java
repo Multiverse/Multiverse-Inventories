@@ -24,3 +24,4 @@ public interface WorldProfile extends ProfileContainer {
      */
     void setWorld(String worldName);
 }
+

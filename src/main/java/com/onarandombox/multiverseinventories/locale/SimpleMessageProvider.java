@@ -240,3 +240,4 @@ public class SimpleMessageProvider implements LazyLocaleMessageProvider {
         this.locale = locale;
     }
 }
+

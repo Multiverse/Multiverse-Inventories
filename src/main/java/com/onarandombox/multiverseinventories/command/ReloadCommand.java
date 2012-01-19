@@ -28,3 +28,4 @@ public class ReloadCommand extends InventoriesCommand {
         this.getPlugin().getMessager().normal(MultiverseMessage.RELOAD_COMPLETE, sender);
     }
 }
+

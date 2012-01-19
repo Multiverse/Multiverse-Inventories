@@ -38,3 +38,4 @@ public interface LazyLocaleMessageProvider extends MessageProvider {
     boolean isLocaleLoaded(Locale locale);
 
 }
+

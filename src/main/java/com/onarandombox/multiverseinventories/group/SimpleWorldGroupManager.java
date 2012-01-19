@@ -195,3 +195,4 @@ public class SimpleWorldGroupManager implements WorldGroupManager {
         return conflicts;
     }
 }
+

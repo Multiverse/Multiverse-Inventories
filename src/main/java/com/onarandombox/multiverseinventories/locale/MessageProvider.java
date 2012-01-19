@@ -66,3 +66,4 @@ public interface MessageProvider {
      */
     void setLocale(Locale locale);
 }
+

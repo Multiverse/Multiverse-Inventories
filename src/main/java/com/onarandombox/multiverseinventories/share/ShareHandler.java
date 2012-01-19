@@ -58,3 +58,4 @@ public interface ShareHandler {
      */
     void handleSharing();
 }
+

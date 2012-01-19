@@ -26,3 +26,4 @@ public class MIInventoryConverter {
     private MIInventoryConverter() {
     }
 }
+

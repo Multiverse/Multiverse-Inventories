@@ -41,3 +41,4 @@ public class ListCommand extends InventoriesCommand {
         this.getPlugin().getMessager().normal(MultiverseMessage.LIST_GROUPS, sender, groupsString);
     }
 }
+

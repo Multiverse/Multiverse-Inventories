@@ -44,3 +44,4 @@ public class PlayerStats {
 
     private PlayerStats() { }
 }
+

@@ -160,3 +160,4 @@ public class SimpleShares implements Shares {
         return stringBuilder.toString();
     }
 }
+

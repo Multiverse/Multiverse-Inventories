@@ -28,3 +28,4 @@ public interface MVIData {
      */
     PlayerProfile getPlayerData(ProfileType type, String dataName, String playerName);
 }
+

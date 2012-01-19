@@ -22,3 +22,4 @@ public interface PersistingProfile {
      */
     PlayerProfile getProfile();
 }
+

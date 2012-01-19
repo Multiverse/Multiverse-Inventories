@@ -77,3 +77,4 @@ public interface MVIConfig {
      */
     boolean isUsingBypassPerms();
 }
+

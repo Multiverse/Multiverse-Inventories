@@ -84,3 +84,4 @@ public interface WorldGroup extends ProfileContainer {
 
     // ItemBlacklist getItemBlacklist(String worldName);
 }
+

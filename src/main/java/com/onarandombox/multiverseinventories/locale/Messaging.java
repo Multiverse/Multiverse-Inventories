@@ -17,3 +17,4 @@ public interface Messaging {
      */
     void setMessager(Messager messager);
 }
+

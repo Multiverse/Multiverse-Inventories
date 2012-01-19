@@ -42,4 +42,3 @@ public class LocalizationLoadingException extends IOException {
         return super.getMessage() + " (While trying to load localization for locale " + getLocale() + ")";
     }
 }
-

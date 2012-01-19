@@ -14,3 +14,4 @@ public interface ItemWrapper {
      */
     ItemStack getItem();
 }
+

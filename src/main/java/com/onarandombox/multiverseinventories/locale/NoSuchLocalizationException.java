@@ -24,3 +24,4 @@ public class NoSuchLocalizationException extends LocalizationLoadingException {
     }
 
 }
+

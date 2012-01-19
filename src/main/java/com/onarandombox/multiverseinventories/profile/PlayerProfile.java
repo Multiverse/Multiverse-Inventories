@@ -146,3 +146,4 @@ public interface PlayerProfile {
      */
     void setBedSpawnLocation(Location location);
 }
+

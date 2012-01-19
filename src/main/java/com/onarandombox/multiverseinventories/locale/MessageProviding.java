@@ -20,3 +20,4 @@ public interface MessageProviding {
     void setMessageProvider(MessageProvider provider);
 
 }
+

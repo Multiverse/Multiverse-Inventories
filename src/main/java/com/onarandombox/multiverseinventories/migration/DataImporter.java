@@ -19,3 +19,4 @@ public interface DataImporter {
      */
     Plugin getPlugin();
 }
+

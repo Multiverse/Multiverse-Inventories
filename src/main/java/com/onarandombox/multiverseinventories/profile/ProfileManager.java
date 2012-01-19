@@ -27,3 +27,4 @@ public interface ProfileManager {
      */
     void setWorldProfiles(List<WorldProfile> worldProfiles);
 }
+

@@ -51,3 +51,4 @@ public interface Shares {
      */
     List<String> toStringList();
 }
+

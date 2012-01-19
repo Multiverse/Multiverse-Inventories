@@ -9,3 +9,4 @@ public class DeserializationException extends Exception {
         super(message);
     }
 }
+

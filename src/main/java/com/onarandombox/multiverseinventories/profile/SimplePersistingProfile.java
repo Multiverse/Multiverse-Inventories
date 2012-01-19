@@ -41,3 +41,4 @@ public class SimplePersistingProfile implements PersistingProfile {
         return this.profile;
     }
 }
+

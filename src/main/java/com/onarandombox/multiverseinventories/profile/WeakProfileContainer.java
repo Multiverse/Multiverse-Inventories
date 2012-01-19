@@ -79,3 +79,4 @@ public abstract class WeakProfileContainer implements ProfileContainer {
         this.getPlayerData().put(playerProfile.getPlayer(), playerProfile);
     }
 }
+

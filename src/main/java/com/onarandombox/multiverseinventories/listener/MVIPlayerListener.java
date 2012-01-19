@@ -47,3 +47,4 @@ public class MVIPlayerListener extends PlayerListener {
         new SimpleShareHandler(this.plugin, player, fromWorld, toWorld).handleSharing();
     }
 }
+

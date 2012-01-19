@@ -48,3 +48,4 @@ public class SimpleWorldProfile extends WeakProfileContainer implements WorldPro
         return this.getWorld();
     }
 }
+

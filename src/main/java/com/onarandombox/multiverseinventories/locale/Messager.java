@@ -70,3 +70,4 @@ public interface Messager extends MessageProvider {
      */
     void sendMessages(CommandSender player, List<String> messages);
 }
+

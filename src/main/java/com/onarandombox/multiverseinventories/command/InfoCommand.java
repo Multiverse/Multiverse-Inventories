@@ -83,3 +83,4 @@ public class InfoCommand extends InventoriesCommand {
                 sender, groupsString.toString());
     }
 }
+

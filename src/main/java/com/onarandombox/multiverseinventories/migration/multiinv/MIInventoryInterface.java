@@ -17,3 +17,4 @@ public interface MIInventoryInterface {
      */
     ItemStack[] getArmorContents();
 }
+
