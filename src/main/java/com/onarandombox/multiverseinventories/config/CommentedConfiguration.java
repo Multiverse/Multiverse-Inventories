@@ -81,8 +81,18 @@ public class CommentedConfiguration {
             // The depth of the path. (number of words separated by periods - 1)
             int depth = 0;
 
+            // TODO find a better solution here?
+            // This will cause the first line to be ignored.
+            boolean firstLine = true;
+
             // Loop through the config lines
             for (String line : yamlContents) {
+                if (firstLine) {
+                    firstLine = false;
+                    if (line.startsWith("#")) {
+                        continue;
+                    }
+                }
                 // If the line is a node (and not something like a list value)
                 if (line.contains(": ") || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
                     // This is a new node so we need to mark it for commenting (if there are comments)
@@ -176,9 +186,11 @@ public class CommentedConfiguration {
              * Due to a bukkit bug we need to strip any extra new lines from the
              * beginning of this file, else they will multiply.
              */
+            /*
             while (newContents.startsWith(System.getProperty("line.separator"))) {
                 newContents = newContents.replaceFirst(System.getProperty("line.separator"), "");
             }
+            */
 
             try {
                 // Write the string to the config file

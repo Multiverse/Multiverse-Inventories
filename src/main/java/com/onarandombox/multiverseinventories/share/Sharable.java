@@ -97,6 +97,8 @@ public enum Sharable {
             if (loc == null) {
                 loc = player.getWorld().getSpawnLocation();
             }
+
+            // TODO Remove try-catch when this is part of RB.
             try {
                 player.setBedSpawnLocation(loc);
             } catch (NoSuchMethodError e) {

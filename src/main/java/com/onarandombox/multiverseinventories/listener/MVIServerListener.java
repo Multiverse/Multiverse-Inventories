@@ -7,14 +7,18 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
+/**
+ * Temporary server listener class to be soon replaced by a single Listener class using the new bukkit
+ * event system.
+ */
 public class MVIServerListener extends ServerListener {
-    
+
     private MultiverseInventories plugin;
 
     public MVIServerListener(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
-    
+
     /**
      * Called when a plugin is enabled.
      *
@@ -29,7 +33,8 @@ public class MVIServerListener extends ServerListener {
             } else if (event.getPlugin() instanceof WorldInventories) {
                 this.plugin.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
             }
-        } catch (NoClassDefFoundError ignore) { }
+        } catch (NoClassDefFoundError ignore) {
+        }
     }
 
     /**
@@ -46,6 +51,7 @@ public class MVIServerListener extends ServerListener {
             } else if (event.getPlugin() instanceof WorldInventories) {
                 this.plugin.getImportManager().unHookWorldInventories();
             }
-        } catch (NoClassDefFoundError ignore) { }
+        } catch (NoClassDefFoundError ignore) {
+        }
     }
 }
