@@ -173,7 +173,7 @@ and adjust the build number accordingly -->
 
     <distributionManagement>
         <repository>
-            <id>onarandombox</id>
+            <id>OnARandomBox</id>
             <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
         </repository>
     </distributionManagement>
