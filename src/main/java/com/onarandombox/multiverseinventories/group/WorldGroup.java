@@ -82,5 +82,5 @@ public interface WorldGroup extends ProfileContainer {
      */
     boolean containsWorld(String worldName);
 
-    //ItemBlacklist getItemBlacklist(String worldName);
+    // ItemBlacklist getItemBlacklist(String worldName);
 }
