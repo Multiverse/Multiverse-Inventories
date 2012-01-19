@@ -9,7 +9,8 @@ import java.util.Map;
 
 /**
  * Contains all the information related to a World Group as defined in the plugin's config.yml
- * including the worlds making up the group and the things those worlds share.
+ * including the worlds making up the group and the things those worlds share.  Also extends
+ * Profile container which allows World Groups to hold player profiles.
  */
 public interface WorldGroup extends ProfileContainer {
 
