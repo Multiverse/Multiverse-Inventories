@@ -18,7 +18,7 @@
         </repository>
 
         <repository>
-            <id>OnARandomBox</id>
+            <id>onarandombox</id>
             <url>http://repo.onarandombox.com/content/groups/public/</url>
         </repository>
     </repositories>
@@ -183,7 +183,7 @@ and adjust the build number accordingly -->
 
     <distributionManagement>
         <repository>
-            <id>OnARandomBox</id>
+            <id>onarandombox</id>
             <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
         </repository>
     </distributionManagement>
