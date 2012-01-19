@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * Enum for specifying the different sharable things.
  */
-public enum Sharable {
+public enum Sharable implements SharableInterface {
 
     /**
      * Sharing Inventory.
@@ -29,6 +29,7 @@ public enum Sharable {
             player.getInventory().clear();
             player.getInventory().setContents(profile.getInventoryContents());
             player.getInventory().setArmorContents(profile.getArmorContents());
+            EnumSet<SharableInterface>
         }
     },
     /**
@@ -149,17 +150,15 @@ public enum Sharable {
     }
 
     /**
-     * @param profile Updates the data of this profile according to the Sharable
-     *                with the values of the player.
-     * @param player  The player whose values will be used to update the given profile.
+     * {@inheritDoc}
      */
+    @Override
     public abstract void updateProfile(PlayerProfile profile, Player player);
 
     /**
-     * @param player  Updates the data of this player according to the Sharable
-     *                with the values of the given profile.
-     * @param profile The profile whose values will be used to update the give player.
+     * {@inheritDoc}
      */
+    @Override
     public abstract void updatePlayer(Player player, PlayerProfile profile);
 
     @Override
