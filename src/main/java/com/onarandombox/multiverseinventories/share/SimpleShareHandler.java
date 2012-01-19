@@ -27,6 +27,7 @@ public class SimpleShareHandler implements ShareHandler {
     private World fromWorld;
     private World toWorld;
     private MultiverseInventories plugin;
+    private boolean hasBypass = false;
 
     public SimpleShareHandler(MultiverseInventories plugin, Player player,
                               World fromWorld, World toWorld) {
@@ -108,6 +109,7 @@ public class SimpleShareHandler implements ShareHandler {
 
         if (usingBypass && MVIPerms.BYPASS_WORLD.hasBypass(this.getPlayer(),
                 this.getToWorld().getName())) {
+            this.hasBypass = true;
             completeSharing();
             return;
         }
@@ -132,8 +134,10 @@ public class SimpleShareHandler implements ShareHandler {
                 .getGroupsForWorld(this.getToWorld().getName());
         if (!toWorldGroups.isEmpty()) {
             for (WorldGroup toWorldGroup : toWorldGroups) {
-                if (!usingBypass || !MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
+                if (usingBypass && MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
                         toWorldGroup.getName())) {
+                    this.hasBypass = true;
+                } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());
                     if (!toWorldGroup.containsWorld(this.getFromWorld().getName())) {
                         this.addToProfile(toWorldGroup,
@@ -160,7 +164,11 @@ public class SimpleShareHandler implements ShareHandler {
 
     private void completeSharing() {
         if (this.getToProfiles().isEmpty()) {
-            MVILog.debug("No toProfiles...");
+            if (hasBypass) {
+                MVILog.debug("Player has bypass permission for 1 or more world/groups!");
+            } else {
+                MVILog.debug("No toProfiles...");
+            }
             if (!this.getFromProfiles().isEmpty()) {
                 updateProfile(this.getFromProfiles().get(0));
             } else {
@@ -178,18 +186,20 @@ public class SimpleShareHandler implements ShareHandler {
 
     private void updateProfile(PersistingProfile profile) {
         for (Sharable sharable : profile.getShares().getSharables()) {
-            MVILog.debug("Persisting: " + sharable + " to " + profile.getProfile().getType()
-                    + ":" + profile.getDataName() + " for player " + profile.getProfile().getPlayer().getName());
             sharable.updateProfile(profile.getProfile(), this.getPlayer());
         }
+        MVILog.debug("Persisting: " + profile.getShares().toString() + " to "
+                + profile.getProfile().getType() + ":" + profile.getDataName()
+                + " for player " + profile.getProfile().getPlayer().getName());
         this.plugin.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
     }
 
     private void updatePlayer(PersistingProfile profile) {
         for (Sharable sharable : profile.getShares().getSharables()) {
-            MVILog.debug("Updating " + sharable + " for " + profile.getProfile().getPlayer().getName()
-                    + "for " + profile.getProfile().getType() + ":" + profile.getDataName());
             sharable.updatePlayer(this.getPlayer(), profile.getProfile());
         }
+        MVILog.debug("Updating " + profile.getShares().toString() + " for "
+                + profile.getProfile().getPlayer().getName() + "for "
+                + profile.getProfile().getType() + ":" + profile.getDataName());
     }
 }
