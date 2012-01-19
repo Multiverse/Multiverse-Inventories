@@ -17,10 +17,10 @@
             <url>http://repo.bukkit.org/</url>
         </repository>
 
-        <!--<repository>
+        <repository>
             <id>OnARandomBox</id>
             <url>http://repo.onarandombox.com/content/groups/public/</url>
-        </repository>-->
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -174,7 +174,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>me.drayshak</groupId>
             <artifactId>WorldInventories</artifactId>
-            <version>dev-SNAPSHOT</version>
+            <version>1.0.2</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
