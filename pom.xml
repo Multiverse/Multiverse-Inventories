@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.onarandombox.multiverseinventories</groupId>
     <artifactId>Multiverse-Inventories</artifactId>
-    <version>2.2</version>
+    <version>2.3</version>
     <name>Multiverse-Inventories</name>
     <description>Multiverse Multiworld Inventories Module</description>
     <properties>
@@ -12,11 +12,6 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>bukkit</id>
-            <url>http://repo.bukkit.org/</url>
-        </repository>
-
         <repository>
             <id>onarandombox</id>
             <url>http://repo.onarandombox.com/content/groups/public/</url>
@@ -33,11 +28,6 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.onarandombox.com</url>
-    </ciManagement>
 
     <!-- Profiles are used to detect whether this is a local or Jenkins build
 and adjust the build number accordingly -->
@@ -154,7 +144,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
