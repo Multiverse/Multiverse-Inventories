@@ -100,6 +100,9 @@ public class SimpleShareHandler implements ShareHandler {
      */
     @Override
     public void handleSharing() {
+        MVILog.debug("=== Player traveling from world: " + this.getFromWorld().getName() + " to world: "
+                + this.getToWorld().getName() + " ===");
+        // Grab the profile from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.plugin.getProfileManager()
                 .getWorldProfile(this.getFromWorld().getName());
         this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.all()),
@@ -114,6 +117,7 @@ public class SimpleShareHandler implements ShareHandler {
             return;
         }
 
+        // Get any groups we need to save stuff to.
         List<WorldGroup> fromWorldGroups = this.plugin.getGroupManager()
                 .getGroupsForWorld(this.getFromWorld().getName());
         for (WorldGroup fromWorldGroup : fromWorldGroups) {
@@ -129,10 +133,14 @@ public class SimpleShareHandler implements ShareHandler {
                 }
             }
         }
+        if (fromWorldGroups.isEmpty()) {
+            MVILog.debug("No groups for fromWorld.");
+        }
 
         List<WorldGroup> toWorldGroups = this.plugin.getGroupManager()
                 .getGroupsForWorld(this.getToWorld().getName());
         if (!toWorldGroups.isEmpty()) {
+            // Get groups we need to load from
             for (WorldGroup toWorldGroup : toWorldGroups) {
                 if (usingBypass && MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
                         toWorldGroup.getName())) {
@@ -153,6 +161,8 @@ public class SimpleShareHandler implements ShareHandler {
                 }
             }
         } else {
+            // Get world we need to load from.
+            MVILog.debug("No groups for toWorld.");
             WorldProfile toWorldProfile = this.plugin.getProfileManager()
                     .getWorldProfile(this.getToWorld().getName());
             this.addToProfile(toWorldProfile, new SimpleShares(Sharable.all()),
@@ -163,6 +173,9 @@ public class SimpleShareHandler implements ShareHandler {
     }
 
     private void completeSharing() {
+        MVILog.debug("Travel affected by " + this.getFromProfiles().size() + " fromProfiles and "
+                + this.getToProfiles().size() + " toProfiles");
+        // This if statement should never happen, really.
         if (this.getToProfiles().isEmpty()) {
             if (hasBypass) {
                 MVILog.debug("Player has bypass permission for 1 or more world/groups!");
@@ -176,12 +189,14 @@ public class SimpleShareHandler implements ShareHandler {
             }
             return;
         }
+
         for (PersistingProfile persistingProfile : this.getFromProfiles()) {
             updateProfile(persistingProfile);
         }
         for (PersistingProfile persistingProfile : this.getToProfiles()) {
             updatePlayer(persistingProfile);
         }
+        MVILog.debug("=== Player travel handling complete! ===");
     }
 
     private void updateProfile(PersistingProfile profile) {
