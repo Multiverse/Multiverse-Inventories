@@ -78,6 +78,10 @@ public class WorldInventoriesImporter implements DataImporter {
             }
         }
         for (Group wiGroup : wiGroups) {
+            if (wiGroup.getWorlds().isEmpty()) {
+                MVILog.warning("Group '" + wiGroup.getName() + "' has no worlds.  It will not be imported!");
+                continue;
+            }
             WorldGroup newGroup = new SimpleWorldGroup(this.plugin, wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
@@ -126,6 +130,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 playerProfile.setExhaustion(wiStats.getExhaustion());
                 playerProfile.setFoodLevel(wiStats.getFoodLevel());
                 this.plugin.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
+                MVILog.info("Player's data imported successfully from group: " + wiGroup.getName());
             }
         }
 
