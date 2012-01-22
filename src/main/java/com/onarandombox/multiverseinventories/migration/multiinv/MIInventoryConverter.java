@@ -16,7 +16,7 @@ public class MIInventoryConverter {
     public static ItemStack[] convertMIItems(MIItemStack[] oldContents) {
         ItemStack[] newContents = MinecraftTools.fillWithAir(new ItemStack[oldContents.length]);
         for (int i = 0; i < oldContents.length; i++) {
-            if (oldContents[i].getItemStack() != null) {
+            if (oldContents[i] != null && oldContents[i].getItemStack() != null) {
                 newContents[i] = oldContents[i].getItemStack();
             }
         }
