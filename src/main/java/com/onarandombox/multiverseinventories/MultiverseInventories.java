@@ -14,6 +14,7 @@ import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
+import com.onarandombox.multiverseinventories.listener.MVICoreListener;
 import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
 import com.onarandombox.multiverseinventories.listener.MVIServerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
@@ -53,6 +54,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final int requiresProtocol = 9;
     private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
     private final MVIServerListener serverListener = new MVIServerListener(this);
+    private final MVICoreListener coreListener = new MVICoreListener(this);
 
     private Messager messager = new SimpleMessager(this);
     private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager(this);
@@ -140,6 +142,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         pm.registerEvent(Type.PLAYER_CHANGED_WORLD, playerListener, Priority.Normal, this);
         pm.registerEvent(Type.PLUGIN_ENABLE, serverListener, Priority.Normal, this);
         pm.registerEvent(Type.PLUGIN_DISABLE, serverListener, Priority.Normal, this);
+        pm.registerEvent(Type.CUSTOM_EVENT, coreListener, Priority.Normal, this);
     }
 
     private void registerCommands() {
@@ -230,19 +233,26 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public String dumpVersionInfo(String buffer) {
+        buffer += this.getVersionInfo();
+        return buffer;
+    }
+
+    /**
+     * @return The pastebin version string.
+     */
+    public String getVersionInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
         builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getSettings().isDebugging()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getSettings().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));
-        buffer += builder.toString();
-        return buffer;
+        return builder.toString();
     }
 
     private String logAndAddToPasteBinBuffer(String string) {
         MVILog.info(string);
-        return MVILog.getString(string + System.getProperty("line.separator"), false);
+        return MVILog.getString(string + "\n", false);
     }
 
     /**
