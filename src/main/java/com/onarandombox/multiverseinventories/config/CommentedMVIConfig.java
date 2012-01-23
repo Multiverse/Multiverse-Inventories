@@ -33,7 +33,7 @@ public class CommentedMVIConfig implements MVIConfig {
         /**
          * Debug Mode config path, default and comments.
          */
-        DEBUG_MODE("settings.debug_mode.enable", false, "# Enables debug mode."),
+        DEBUG_MODE("settings.debug_mode", false, "# Setting this to true enables debug mode."),
         /**
          * First Run flag config path, default and comments.
          */
