@@ -82,6 +82,7 @@ public enum MVIPerms {
 
     /**
      * @param finalNode String to add to the bypass prefix.
+     * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return The full permission node for bypass.
      */
     public String getBypassNode(String finalNode, WorldGroupManager groupManager) {
@@ -101,6 +102,7 @@ public enum MVIPerms {
      *
      * @param player Player to check permission for.
      * @param name   Name of object to bypass.
+     * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name, WorldGroupManager groupManager) {
