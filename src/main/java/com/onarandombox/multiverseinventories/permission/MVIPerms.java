@@ -1,6 +1,8 @@
 package com.onarandombox.multiverseinventories.permission;
 
+import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.util.MVILog;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -29,6 +31,10 @@ public enum MVIPerms {
      */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
+     * Permission for bypassing all groups.
+     */
+    BYPASS_GROUP_ALL(new Permission("mvinv.bypass.group.*", "", PermissionDefault.FALSE)),
+    /**
      * Permission prefix for bypassing groups.
      */
     BYPASS_GROUP("mvinv.bypass.group.") {
@@ -36,6 +42,10 @@ public enum MVIPerms {
             return "Player: " + player.getName() + " has bypass perms for group: " + name;
         }
     },
+    /**
+     * Permission for bypassing all worlds.
+     */
+    BYPASS_WORLD_ALL(new Permission("mvinv.bypass.world.*", "", PermissionDefault.FALSE)),
     /**
      * Permission prefix for bypassing worlds.
      */
@@ -74,8 +84,15 @@ public enum MVIPerms {
      * @param finalNode String to add to the bypass prefix.
      * @return The full permission node for bypass.
      */
-    public String getBypassNode(String finalNode) {
-        return this.getPermNode() + finalNode;
+    public String getBypassNode(String finalNode, WorldGroupManager groupManager) {
+        String bypassNode = this.getPermNode() + finalNode;
+        if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
+            if (Bukkit.getWorld(finalNode) != null
+                    || (groupManager != null && groupManager.getGroup(finalNode) != null)) {
+                Bukkit.getPluginManager().addPermission(new Permission(bypassNode, PermissionDefault.FALSE));
+            }
+        }
+        return bypassNode;
     }
 
     /**
@@ -83,12 +100,12 @@ public enum MVIPerms {
      * A World name for example.
      *
      * @param player Player to check permission for.
-     * @param name Name of object to bypass.
+     * @param name   Name of object to bypass.
      * @return True if player is allowed to bypass.
      */
-    public boolean hasBypass(Player player, String name) {
-        boolean hasBypass = player.hasPermission(this.getBypassNode(name))
-                || player.hasPermission(this.getBypassNode("*"));
+    public boolean hasBypass(Player player, String name, WorldGroupManager groupManager) {
+        boolean hasBypass = player.hasPermission(this.getBypassNode(name, groupManager))
+                || player.hasPermission(this.getBypassNode("*", groupManager));
         if (hasBypass) {
             MVILog.debug(this.getBypassMessage(player, name));
         }

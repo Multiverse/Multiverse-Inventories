@@ -233,7 +233,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
-        builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getSettings().isUsingBypassPerms()));
         builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getSettings().isDebugging()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getSettings().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));

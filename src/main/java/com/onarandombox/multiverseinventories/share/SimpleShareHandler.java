@@ -108,10 +108,8 @@ public class SimpleShareHandler implements ShareHandler {
         this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.all()),
                 fromWorldProfile.getPlayerData(this.getPlayer()));
 
-        boolean usingBypass = this.plugin.getSettings().isUsingBypassPerms();
-
-        if (usingBypass && MVIPerms.BYPASS_WORLD.hasBypass(this.getPlayer(),
-                this.getToWorld().getName())) {
+        if (MVIPerms.BYPASS_WORLD.hasBypass(this.getPlayer(),
+                this.getToWorld().getName(), this.plugin.getGroupManager())) {
             this.hasBypass = true;
             completeSharing();
             return;
@@ -142,8 +140,8 @@ public class SimpleShareHandler implements ShareHandler {
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroup toWorldGroup : toWorldGroups) {
-                if (usingBypass && MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
-                        toWorldGroup.getName())) {
+                if (MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
+                        toWorldGroup.getName(), this.plugin.getGroupManager())) {
                     this.hasBypass = true;
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());

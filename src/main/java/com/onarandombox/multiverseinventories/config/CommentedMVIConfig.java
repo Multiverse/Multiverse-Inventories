@@ -39,12 +39,6 @@ public class CommentedMVIConfig implements MVIConfig {
          */
         FIRST_RUN("settings.first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
         /**
-         * First Run flag config path, default and comments.
-         */
-        BYPASS_PERM("settings.use_bypass_permissions", false,
-                "# If this is true it will allow people with sufficient permissions",
-                "# to bypass world groups and/or worlds set here in config."),
-        /**
          * Groups section path and comments.  No simple default for this.
          */
         GROUPS("groups", null, "# This is where you configure your world groups",
@@ -269,14 +263,6 @@ public class CommentedMVIConfig implements MVIConfig {
     @Override
     public void save() {
         this.config.save();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isUsingBypassPerms() {
-        return this.getBoolean(Path.BYPASS_PERM);
     }
 }
 
