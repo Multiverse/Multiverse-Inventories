@@ -94,10 +94,9 @@ public class SimplePlayerProfile implements PlayerProfile {
         for (String itemString : inventoryArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
-                MVILog.debug("Unwrapping item from string: " + itemString);
                 ItemWrapper itemWrapper = new SimpleItemWrapper(itemValues[1]);
-                MVILog.debug("Unwrapped item: " + itemWrapper.getItem().toString());
                 invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
+                MVILog.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
                     MVILog.debug("Could not parse item string: " + itemString);

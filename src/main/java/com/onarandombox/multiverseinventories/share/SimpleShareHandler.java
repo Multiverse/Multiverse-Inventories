@@ -100,8 +100,8 @@ public class SimpleShareHandler implements ShareHandler {
      */
     @Override
     public void handleSharing() {
-        MVILog.debug("=== Player traveling from world: " + this.getFromWorld().getName() + " to world: "
-                + this.getToWorld().getName() + " ===");
+        MVILog.debug("=== " + this.getPlayer().getName() + " traveling from world: " + this.getFromWorld().getName()
+                + " to " + "world: " + this.getToWorld().getName() + " ===");
         // Grab the profile from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.plugin.getProfileManager()
                 .getWorldProfile(this.getFromWorld().getName());
@@ -176,7 +176,7 @@ public class SimpleShareHandler implements ShareHandler {
         // This if statement should never happen, really.
         if (this.getToProfiles().isEmpty()) {
             if (hasBypass) {
-                MVILog.debug("Player has bypass permission for 1 or more world/groups!");
+                MVILog.debug(this.getPlayer().getName() + " has bypass permission for 1 or more world/groups!");
             } else {
                 MVILog.debug("No toProfiles...");
             }
@@ -185,6 +185,7 @@ public class SimpleShareHandler implements ShareHandler {
             } else {
                 MVILog.warning("No fromWorld to save to");
             }
+            MVILog.debug("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
             return;
         }
 
@@ -194,7 +195,7 @@ public class SimpleShareHandler implements ShareHandler {
         for (PersistingProfile persistingProfile : this.getToProfiles()) {
             updatePlayer(persistingProfile);
         }
-        MVILog.debug("=== Player travel handling complete! ===");
+        MVILog.debug("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
     }
 
     private void updateProfile(PersistingProfile profile) {

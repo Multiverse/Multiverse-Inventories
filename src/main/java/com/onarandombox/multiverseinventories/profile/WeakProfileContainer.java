@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.profile;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
+import com.onarandombox.multiverseinventories.util.MVIDebug;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Map;
@@ -64,9 +65,11 @@ public abstract class WeakProfileContainer implements ProfileContainer {
     public PlayerProfile getPlayerData(OfflinePlayer player) {
         PlayerProfile playerProfile = this.playerData.get(player);
         if (playerProfile == null) {
+            MVIDebug.info("--- Profile for " + player.getName() + " not cached, loading from disk ---");
             playerProfile = this.getData().getPlayerData(this.type,
                     this.getDataName(), player.getName());
             this.playerData.put(player, playerProfile);
+            MVIDebug.info("--- Profile for " + player.getName() + " loaded from disk into cache! ---");
         }
         return playerProfile;
     }
