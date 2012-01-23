@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
-import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -34,7 +33,7 @@ public class MVIPlayerListener extends PlayerListener {
 
         // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {
-            MVIDebug.info("PlayerChangedWorldEvent fired when player travelling in same world.");
+            MVILog.debug("PlayerChangedWorldEvent fired when player travelling in same world.");
             return;
         }
         // Do nothing if dealing with non-managed worlds
