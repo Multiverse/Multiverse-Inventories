@@ -7,8 +7,8 @@ import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
-import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.config.CommentedMVIConfig;
+import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
@@ -233,15 +233,20 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public String dumpVersionInfo(String buffer) {
-        buffer += this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: " + this.getDescription().getVersion());
-        buffer += this.logAndAddToPasteBinBuffer("Bukkit Version: " + this.getServer().getVersion());
-        buffer += this.logAndAddToPasteBinBuffer("Special Code: FRN001");
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
+                + this.getDescription().getVersion()));
+        builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getSettings().isUsingBypassPerms()));
+        builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getSettings().isDebugging()));
+        builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getSettings().isFirstRun()));
+        builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));
+        buffer += builder.toString();
         return buffer;
     }
 
     private String logAndAddToPasteBinBuffer(String string) {
         MVILog.info(string);
-        return MVILog.getString(string + "\n", false);
+        return MVILog.getString(string + System.getProperty("line.separator"), false);
     }
 
     /**

@@ -166,6 +166,21 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
         return this.getName();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getName() + ": {Worlds: [");
+        String[] worlds = this.getWorlds().toArray(new String[this.getWorlds().size()]);
+        for (int i = 0; i < worlds.length; i++) {
+            if (i != 0) {
+                builder.append(", ");
+            }
+            builder.append(worlds[i]);
+        }
+        builder.append("], Shares: [" + this.getShares().toString() + "]}");
+        return builder.toString();
+    }
+
     /*
     protected HashMap<String, ItemBlacklist> getItemBlacklist() {
         return this.itemBlacklist;
