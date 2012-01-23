@@ -5,6 +5,9 @@ import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.MultiverseCore.listeners.MultiverseCoreListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 
+/**
+ * Listener for custom events from Multiverse-Core.
+ */
 public class MVICoreListener extends MultiverseCoreListener {
 
     private MultiverseInventories plugin;
