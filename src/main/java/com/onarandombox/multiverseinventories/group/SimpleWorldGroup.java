@@ -169,7 +169,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(this.getName() + ": {Worlds: [");
+        builder.append(this.getName()).append(": {Worlds: [");
         String[] worldsString = this.getWorlds().toArray(new String[this.getWorlds().size()]);
         for (int i = 0; i < worldsString.length; i++) {
             if (i != 0) {
@@ -177,7 +177,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
             }
             builder.append(worldsString[i]);
         }
-        builder.append("], Shares: [" + this.getShares().toString() + "]}");
+        builder.append("], Shares: [").append(this.getShares().toString()).append("]}");
         return builder.toString();
     }
 
