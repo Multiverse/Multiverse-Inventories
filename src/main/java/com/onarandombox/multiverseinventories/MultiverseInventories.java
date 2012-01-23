@@ -24,8 +24,6 @@ import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
-import com.onarandombox.multiverseinventories.share.Shares;
-import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import com.pneumaticraft.commandhandler.CommandHandler;
@@ -53,7 +51,6 @@ import java.util.logging.Level;
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
     private final int requiresProtocol = 9;
-    private final Shares bypassShares = new SimpleShares(true, true, true, true, true);
     private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
     private final MVIServerListener serverListener = new MVIServerListener(this);
 
@@ -388,12 +385,5 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return this.defaultShares;
     }
     */
-
-    /**
-     * @return A set of bypass shares (all true)
-     */
-    public Shares getBypassShares() {
-        return this.bypassShares;
-    }
 }
 
