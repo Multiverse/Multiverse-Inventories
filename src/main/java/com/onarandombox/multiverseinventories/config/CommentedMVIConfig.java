@@ -43,26 +43,17 @@ public class CommentedMVIConfig implements MVIConfig {
          */
         GROUPS("groups", null, "# This is where you configure your world groups",
                 "# example below: ",
-                "# groups:",
-                "#   survival_group_1:",
-                "#     worlds:",
-                "#     - world",
-                "#     - world_nether",
-                "#     - world_the_end",
-                "#     shares:",
-                "#     - all",
-                "#   survival_group_2:",
-                "#     worlds:",
-                "#     - world2",
-                "#     - world2_nether",
-                "#     - world2_the_end",
-                "#     shares:",
-                "#     - all"/*,
-                "#   survival_share_exp:",
-                "#     worlds: ",
-                "#     - all_survival",
-                "#     shares:",
-                "#     - experience"*/);
+                "#    groups:",
+                "#      example_group:",
+                "#        worlds:",
+                "#        - world1",
+                "#        - world2",
+                "#        shares:",
+                "#        - all",
+                "# In this example, world1 and world2 will share everything sharable.",
+                "# When things are shared this means they are the SAME for each world listed in the group.",
+                "# Options for shares: inventory, exp, health, hunger, beds",
+                "# Worlds not listed in a group will have a separate personal inventory/stats/bed.");
 
         private String path;
         private Object def;
