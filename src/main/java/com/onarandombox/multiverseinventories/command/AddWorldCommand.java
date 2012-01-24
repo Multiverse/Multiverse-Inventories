@@ -40,6 +40,11 @@ public class AddWorldCommand extends InventoriesCommand {
             this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
+        if (worldGroup.containsWorld(world.getName())) {
+            this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ALREADY_EXISTS, sender, world.getName(),
+                    worldGroup.getName());
+            return;
+        }
         worldGroup.addWorld(world);
         this.getPlugin().getSettings().save();
         this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ADDED, sender, world.getName(), 

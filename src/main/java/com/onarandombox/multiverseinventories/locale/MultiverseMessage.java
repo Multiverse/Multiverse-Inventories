@@ -48,7 +48,8 @@ public enum MultiverseMessage {
     // Reload Command
     RELOAD_COMPLETE("&b===[ Reload Complete! ]==="),
     // AddWorld Command
-    WORLD_ADDED("&1World:&f %1 &7added to &1Group: &f%2");
+    WORLD_ADDED("&1World:&f %1 &7added to &1Group: &f%2"),
+    WORLD_ALREADY_EXISTS("&1World:&f %1 &7already part of &1Group: &f%2");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
