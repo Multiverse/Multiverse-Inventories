@@ -57,8 +57,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final MVICoreListener coreListener = new MVICoreListener(this);
 
     private Messager messager = new SimpleMessager(this);
-    private WorldGroupManager worldGroupManager = new SimpleWorldGroupManager(this);
-    private ProfileManager profileManager = new WeakProfileManager(this);
+    private WorldGroupManager worldGroupManager = null;
+    private ProfileManager profileManager = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
@@ -128,8 +128,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Hook plugins that can be imported from
         this.hookImportables();
-
-        this.checkForGroupConflicts(null);
 
         // Display enable message/version info
         MVILog.info("enabled.", true);
@@ -279,9 +277,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     public void reloadConfig() {
         this.config = null;
+        this.worldGroupManager = null;
+        this.profileManager = null;
         // Set debug mode from config
         MVILog.setDebugMode(this.getSettings().isDebugging());
         // Get world groups from config
+
         this.getGroupManager().setGroups(this.getSettings().getWorldGroups());
         // Create initial World Group for first run IF NO GROUPS EXIST
         if (this.getSettings().isFirstRun()) {
@@ -290,6 +291,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 this.getGroupManager().createDefaultGroup();
             }
         }
+        this.checkForGroupConflicts(null);
     }
 
     /**
@@ -376,6 +378,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * @return The World Group manager for this plugin.
      */
     public WorldGroupManager getGroupManager() {
+        if (this.worldGroupManager == null) {
+            this.worldGroupManager = new SimpleWorldGroupManager(this);
+        }
         return this.worldGroupManager;
     }
 
@@ -383,6 +388,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * @return The Profile manager for this plugin.
      */
     public ProfileManager getProfileManager() {
+        if (this.profileManager == null) {
+            this.profileManager = new WeakProfileManager(this);
+        }
         return this.profileManager;
     }
 
