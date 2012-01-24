@@ -129,6 +129,33 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
      * {@inheritDoc}
      */
     @Override
+    public void removeWorld(String worldName) {
+        this.removeWorld(worldName, true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeWorld(String worldName, boolean updateConfig) {
+        this.getWorlds().remove(worldName);
+        if (updateConfig) {
+            this.getPlugin().getSettings().updateWorldGroup(this);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeWorld(World world) {
+        this.removeWorld(world.getName());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public HashSet<String> getWorlds() {
         return this.worlds;
     }

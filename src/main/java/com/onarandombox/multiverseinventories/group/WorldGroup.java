@@ -51,6 +51,28 @@ public interface WorldGroup extends ProfileContainer {
     void addWorld(World world);
 
     /**
+     * Removes a world from this world group and updates the group in the Config.
+     *
+     * @param worldName The name of the world to remove.
+     */
+    void removeWorld(String worldName);
+
+    /**
+     * Removes a world from this world group and optionally updates it in the Config.
+     *
+     * @param worldName The name of the world to remove.
+     * @param updateConfig True to update this group in the config.
+     */
+    void removeWorld(String worldName, boolean updateConfig);
+
+    /**
+     * Convenience method to remove a {@link org.bukkit.World} from this World Group.
+     *
+     * @param world The world to remove.
+     */
+    void removeWorld(World world);
+
+    /**
      * Retrieves all of the worlds in this World Group.
      *
      * @return The worlds of this World Group.

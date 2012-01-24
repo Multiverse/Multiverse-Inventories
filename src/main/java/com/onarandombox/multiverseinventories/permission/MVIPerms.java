@@ -15,25 +15,30 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public enum MVIPerms {
     /**
-     * Permission for /mvi info.
+     * Permission for /mvinv info.
      */
     COMMAND_INFO(new Permission("multiverse.inventories.info", "Displays information about a world or group.", PermissionDefault.OP)),
     /**
-     * Permission for /mvi info.
+     * Permission for /mvinv list.
      */
     COMMAND_LIST(new Permission("multiverse.inventories.list", "Displays a list of groups.", PermissionDefault.OP)),
     /**
-     * Permission for /mvi info.
+     * Permission for /mvinv reload.
      */
     COMMAND_RELOAD(new Permission("multiverse.inventories.reload", "Reloads config file.", PermissionDefault.OP)),
     /**
-     * Permission for /mvi info.
+     * Permission for /mvinv import.
      */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
-     * Permission for /mvi info.
+     * Permission for /mvinv addworld.
      */
     COMMAND_ADDWORLD(new Permission("multiverse.inventories.addworld", "Adds a world to a world group",
+            PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv remvoveworld.
+     */
+    COMMAND_RMWORLD(new Permission("multiverse.inventories.removeworld", "Removes a world from a world group",
             PermissionDefault.OP)),
     /**
      * Permission for bypassing all groups.
