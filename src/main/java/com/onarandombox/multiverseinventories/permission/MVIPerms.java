@@ -31,6 +31,11 @@ public enum MVIPerms {
      */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
+     * Permission for /mvi info.
+     */
+    COMMAND_ADDWORLD(new Permission("multiverse.inventories.addworld", "Adds a world to a world group",
+            PermissionDefault.OP)),
+    /**
      * Permission for bypassing all groups.
      */
     BYPASS_GROUP_ALL(new Permission("mvinv.bypass.group.*", "", PermissionDefault.FALSE)),

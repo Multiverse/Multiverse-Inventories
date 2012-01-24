@@ -26,6 +26,7 @@ public enum MultiverseMessage {
     ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),
     ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
     ERROR_NO_GROUP("There is no group with the name: %1"),
+    ERROR_NO_WORLD("There is no world with the name: %1"),
     ERROR_NO_WORLD_PROFILE("There is no world profile for the world: %1"),
     ERROR_PLUGIN_NOT_ENABLED("%1 is not enabled so you may not import data from it!"),
     ERROR_UNSUPPORTED_IMPORT("Sorry, '%1' is not supported for importing."),
@@ -45,7 +46,9 @@ public enum MultiverseMessage {
     // List Command
     LIST_GROUPS("&b===[ Group List ]===", "&1Groups:&f %1"),
     // Reload Command
-    RELOAD_COMPLETE("&b===[ Reload Complete! ]===");
+    RELOAD_COMPLETE("&b===[ Reload Complete! ]==="),
+    // AddWorld Command
+    WORLD_ADDED("&1World:&f %1 &7added to &1Group: &f%2");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
