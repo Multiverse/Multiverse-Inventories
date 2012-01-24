@@ -30,6 +30,7 @@ public enum MultiverseMessage {
     ERROR_NO_WORLD_PROFILE("There is no world profile for the world: %1"),
     ERROR_PLUGIN_NOT_ENABLED("%1 is not enabled so you may not import data from it!"),
     ERROR_UNSUPPORTED_IMPORT("Sorry, '%1' is not supported for importing."),
+    ERROR_NO_SHARES_SPECIFIED("You did not specify any valid shares!"),
 
     // Group Conflicts
     CONFLICT_RESULTS("Conflict found for groups: '%1' and '%2' because they both share: '%3' for the world(s): '%4'"),
@@ -52,7 +53,9 @@ public enum MultiverseMessage {
     WORLD_ALREADY_EXISTS("&1World:&f %1 &7already part of &1Group: &f%2"),
     // RemoveWorld Command
     WORLD_REMOVED("&1World:&f %1 &7removed from &1Group: &f%2"),
-    WORLD_NOT_IN_GROUP("&1World:&f %1 &7is not part of &1Group: &f%2");
+    WORLD_NOT_IN_GROUP("&1World:&f %1 &7is not part of &1Group: &f%2"),
+    // AddShares Command
+    SHARES_ADDED("&1Group: &f%1 &7is now &1sharing: &f%2");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
