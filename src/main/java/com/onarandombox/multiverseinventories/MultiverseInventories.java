@@ -140,11 +140,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private void registerEvents() {
         final PluginManager pm = Bukkit.getPluginManager();
         // Event registering goes here
-        //pm.registerEvents(playerListener, this);
-        pm.registerEvent(Type.PLAYER_CHANGED_WORLD, playerListener, Priority.Normal, this);
-        pm.registerEvent(Type.PLUGIN_ENABLE, serverListener, Priority.Normal, this);
-        pm.registerEvent(Type.PLUGIN_DISABLE, serverListener, Priority.Normal, this);
-        pm.registerEvent(Type.CUSTOM_EVENT, coreListener, Priority.Normal, this);
+        pm.registerEvents(playerListener, this);
+        pm.registerEvents(serverListener, this);
+        pm.registerEvents(coreListener, this);
     }
 
     private void registerCommands() {

@@ -5,13 +5,14 @@ import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerListener;
 
 /**
  * PlayerListener for MultiverseInventories.
  */
-public class MVIPlayerListener extends PlayerListener {
+public class MVIPlayerListener implements Listener {
 
     private MultiverseInventories plugin;
 
@@ -24,8 +25,7 @@ public class MVIPlayerListener extends PlayerListener {
      *
      * @param event The world change event.
      */
-    //@EventHandler(event = PlayerChangedWorldEvent.class, priority = org.bukkit.event.EventPriority.NORMAL)
-    @Override
+    @EventHandler(event = PlayerChangedWorldEvent.class)
     public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();

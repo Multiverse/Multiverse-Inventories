@@ -2,16 +2,17 @@ package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import me.drayshak.WorldInventories.WorldInventories;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.event.server.ServerListener;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 /**
  * Temporary server listener class to be soon replaced by a single Listener class using the new bukkit
  * event system.
  */
-public class MVIServerListener extends ServerListener {
+public class MVIServerListener implements Listener {
 
     private MultiverseInventories plugin;
 
@@ -24,8 +25,7 @@ public class MVIServerListener extends ServerListener {
      *
      * @param event The plugin enable event.
      */
-    //@EventHandler(event = PluginEnableEvent.class, priority = org.bukkit.event.EventPriority.NORMAL)
-    @Override
+    @EventHandler(event = PluginEnableEvent.class)
     public void onPluginEnable(PluginEnableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
@@ -42,8 +42,7 @@ public class MVIServerListener extends ServerListener {
      *
      * @param event The plugin disable event.
      */
-    //@EventHandler(event = PluginDisableEvent.class, priority = org.bukkit.event.EventPriority.NORMAL)
-    @Override
+    @EventHandler(event = PluginDisableEvent.class)
     public void onPluginDisable(PluginDisableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
