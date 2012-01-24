@@ -3,11 +3,13 @@ package com.onarandombox.multiverseinventories;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
+import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.config.CommentedMVIConfig;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
@@ -153,6 +155,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.getCommandHandler().registerCommand(new ReloadCommand(this));
         this.getCommandHandler().registerCommand(new AddWorldCommand(this));
         this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
+        this.getCommandHandler().registerCommand(new AddSharesCommand(this));
+        this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
         for (com.pneumaticraft.commandhandler.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");

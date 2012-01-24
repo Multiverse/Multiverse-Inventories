@@ -46,6 +46,11 @@ public enum MVIPerms {
     COMMAND_ADDSHARES(new Permission("multiverse.inventories.addshares", "Adds share(s) to a world group",
             PermissionDefault.OP)),
     /**
+     * Permission for /mvinv addshare.
+     */
+    COMMAND_RMSHARES(new Permission("multiverse.inventories.removeshares", "Removes share(s) from a world group",
+            PermissionDefault.OP)),
+    /**
      * Permission for bypassing all groups.
      */
     BYPASS_GROUP_ALL(new Permission("mvinv.bypass.group.*", "", PermissionDefault.FALSE)),

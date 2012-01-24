@@ -14,21 +14,27 @@ import java.util.List;
 /**
  * The /mvi info Command.
  */
-public class AddSharesCommand extends InventoriesCommand {
+public class RemoveSharesCommand extends InventoriesCommand {
 
-    public AddSharesCommand(MultiverseInventories plugin) {
+    public RemoveSharesCommand(MultiverseInventories plugin) {
         super(plugin);
-        this.setName("Adds share(s) to a World Group.");
-        this.setCommandUsage("/mvinv addshares {SHARE[,EXTRA]} {GROUP}");
+        this.setName("Removes share(s) from a World Group.");
+        this.setCommandUsage("/mvinv removeshares {SHARE[,EXTRA]} {GROUP}");
         this.setArgRange(2, 2);
-        this.addKey("mvinv addshares");
-        this.addKey("mvinv addshare");
-        this.addKey("mvinv adds");
-        this.addKey("mvinvas");
-        this.addKey("mvinvadds");
-        this.addKey("mvinvaddshares");
-        this.addKey("mvinvaddshare");
-        this.setPermission(MVIPerms.COMMAND_ADDSHARES.getPerm());
+        this.addKey("mvinv removeshares");
+        this.addKey("mvinv rmhares");
+        this.addKey("mvinv removeshare");
+        this.addKey("mvinv rmshare");
+        this.addKey("mvinv removes");
+        this.addKey("mvinv rms");
+        this.addKey("mvinvrs");
+        this.addKey("mvinvrms");
+        this.addKey("mvinvremoves");
+        this.addKey("mvinvremoveshares");
+        this.addKey("mvinvrmshares");
+        this.addKey("mvinvremoveshare");
+        this.addKey("mvinvrmshare");
+        this.setPermission(MVIPerms.COMMAND_RMSHARES.getPerm());
     }
 
     @Override
@@ -56,7 +62,9 @@ public class AddSharesCommand extends InventoriesCommand {
             this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
-        worldGroup.getShares().mergeShares(newShares);
+        for (Sharable sharable : newShares.getSharables()) {
+            worldGroup.getShares().setSharing(sharable, false);
+        }
         this.getPlugin().getSettings().save();
         this.getPlugin().getMessager().normal(MultiverseMessage.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());

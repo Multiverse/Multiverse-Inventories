@@ -60,6 +60,6 @@ WORLD_REMOVED:
 WORLD_NOT_IN_GROUP:
 - '&1World:&f %1 &7is not part of &1Group: &f%2'
 
-# Addshares command
-SHARES_ADDED:
+# Add/remove shares command
+NOW_SHARING:
 - '&1Group: &f%1 &7is now &1sharing: &f%2'

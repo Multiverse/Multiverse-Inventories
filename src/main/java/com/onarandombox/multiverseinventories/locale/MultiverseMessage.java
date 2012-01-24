@@ -55,7 +55,7 @@ public enum MultiverseMessage {
     WORLD_REMOVED("&1World:&f %1 &7removed from &1Group: &f%2"),
     WORLD_NOT_IN_GROUP("&1World:&f %1 &7is not part of &1Group: &f%2"),
     // AddShares Command
-    SHARES_ADDED("&1Group: &f%1 &7is now &1sharing: &f%2");
+    NOW_SHARING("&1Group: &f%1 &7is now &1sharing: &f%2");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
