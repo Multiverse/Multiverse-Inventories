@@ -53,6 +53,7 @@ public class SimplePlayerProfile implements PlayerProfile {
         if (playerData.containsKey("bedSpawnLocation")) {
             this.parseLocation(playerData.get("bedSpawnLocation").toString().split(DataStrings.GENERAL_DELIMITER));
         }
+        MVILog.debug("Created player profile from map for '" + playerName + "'.");
     }
 
     /**
@@ -96,7 +97,7 @@ public class SimplePlayerProfile implements PlayerProfile {
             try {
                 ItemWrapper itemWrapper = new SimpleItemWrapper(itemValues[1]);
                 invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
-                MVILog.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
+                //MVILog.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
                     MVILog.debug("Could not parse item string: " + itemString);
