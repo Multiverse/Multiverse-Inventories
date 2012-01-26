@@ -25,8 +25,8 @@ public class MVIServerListener implements Listener {
      *
      * @param event The plugin enable event.
      */
-    @EventHandler(event = PluginEnableEvent.class)
-    public void onPluginEnable(PluginEnableEvent event) {
+    @EventHandler
+    public void pluginEnable(PluginEnableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
                 this.plugin.getImportManager().hookMultiInv((MultiInv) event.getPlugin());
@@ -42,8 +42,8 @@ public class MVIServerListener implements Listener {
      *
      * @param event The plugin disable event.
      */
-    @EventHandler(event = PluginDisableEvent.class)
-    public void onPluginDisable(PluginDisableEvent event) {
+    @EventHandler
+    public void pluginDisable(PluginDisableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
                 this.plugin.getImportManager().unHookMultiInv();

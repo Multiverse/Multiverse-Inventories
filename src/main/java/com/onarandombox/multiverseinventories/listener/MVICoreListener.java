@@ -17,16 +17,16 @@ public class MVICoreListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(event = MVVersionEvent.class)
-    public void onVersionRequest(MVVersionEvent event) {
+    @EventHandler
+    public void versionRequest(MVVersionEvent event) {
         event.appendVersionInfo(this.plugin.getVersionInfo());
     }
 
     /**
      * {@inheritDoc}
      */
-    @EventHandler(event = MVConfigReloadEvent.class)
-    public void onMVConfigReload(MVConfigReloadEvent event) {
+    @EventHandler
+    public void configReload(MVConfigReloadEvent event) {
         this.plugin.reloadConfig();
         event.addConfig("Multiverse-Inventories - config.yml");
     }

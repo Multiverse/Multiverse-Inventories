@@ -25,8 +25,8 @@ public class MVIPlayerListener implements Listener {
      *
      * @param event The world change event.
      */
-    @EventHandler(event = PlayerChangedWorldEvent.class)
-    public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
+    @EventHandler
+    public void playerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
         World toWorld = player.getWorld();
