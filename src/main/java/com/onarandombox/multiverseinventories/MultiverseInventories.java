@@ -55,7 +55,7 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
-    private final int requiresProtocol = 9;
+    private final int requiresProtocol = 12;
     private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
     private final MVIServerListener serverListener = new MVIServerListener(this);
     private final MVICoreListener coreListener = new MVICoreListener(this);
