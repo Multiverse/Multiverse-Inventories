@@ -14,7 +14,11 @@
     <repositories>
         <repository>
             <id>onarandombox</id>
-            <url>http://repo.onarandombox.com/content/groups/public/</url>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>Official Bukkit</id>
+            <url>http://repo.bukkit.org/content/repositories/public</url>
         </repository>
     </repositories>
 
