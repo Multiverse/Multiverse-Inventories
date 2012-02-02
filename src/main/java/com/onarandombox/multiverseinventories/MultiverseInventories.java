@@ -31,7 +31,7 @@ import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
-import com.pneumaticraft.commandhandler.CommandHandler;
+import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -155,7 +155,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
         this.getCommandHandler().registerCommand(new AddSharesCommand(this));
         this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
-        for (com.pneumaticraft.commandhandler.Command c : this.commandHandler.getAllCommands()) {
+        for (com.pneumaticraft.commandhandler.multiverse.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");
             }

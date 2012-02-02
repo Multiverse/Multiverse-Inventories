@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.pneumaticraft.commandhandler.Command;
+import com.pneumaticraft.commandhandler.multiverse.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
