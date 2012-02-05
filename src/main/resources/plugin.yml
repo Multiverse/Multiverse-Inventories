@@ -30,3 +30,60 @@ commands:
   mvinvreload:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
+  mvinvaddshares:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvadds:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvas:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvraddshare:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvaddword:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvaddw:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvaw:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvremoveshares:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvremoveshare:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvremoves:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrmshares:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrmshare:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrms:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrs:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvremoveworld:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvremovew:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrmworld:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrmw:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvrw:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
