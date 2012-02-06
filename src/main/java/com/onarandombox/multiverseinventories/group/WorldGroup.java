@@ -104,6 +104,18 @@ public interface WorldGroup extends ProfileContainer {
      */
     boolean containsWorld(String worldName);
 
+    /**
+     * @return The name of the world that will be used as the spawn for this group.
+     * Or null if no world was specified as the group spawn world.
+     */
+    String getSpawnWorld();
+
+    /**
+     * @return True if the world specified in this group as the group spawn will be the
+     * the world the user goes to when using /mvspawn.
+     */
+    boolean isSpawnForMV();
+
     // ItemBlacklist getItemBlacklist(String worldName);
 }
 

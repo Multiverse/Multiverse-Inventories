@@ -22,6 +22,8 @@ import java.util.Map;
 public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup {
 
     private String name = "";
+    private String spawnWorld = null;
+    private boolean spawnForMV = false;
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
     //private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
@@ -56,6 +58,20 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
                 MVILog.warning("Shares formatted incorrectly for group: " + name);
             }
         }
+        if (dataMap.containsKey("spawn")) {
+            Object spawnPropsObj = dataMap.get("spawn");
+            if (spawnPropsObj instanceof Map) {
+                Map spawnProps = (Map) spawnPropsObj;
+                if (spawnProps.containsKey("world")) {
+                    this.spawnWorld = spawnProps.get("world").toString();
+                }
+                if (spawnProps.containsKey("override_mv_spawn")) {
+                    this.spawnForMV = Boolean.valueOf(spawnProps.get("override_mv_spawn").toString());
+                }
+            } else {
+                MVILog.warning("Spawn settings for group formatted incorrectly");
+            }
+        }
         /*
         if (data.contains("blacklist")) {
 
@@ -73,6 +89,18 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
         List<String> sharesList = this.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             results.put("shares", sharesList);
+        }
+        Map<String, Object> spawnProps = new LinkedHashMap<String, Object>();
+        if (this.getSpawnWorld() != null) {
+            spawnProps.put("world", this.getSpawnWorld());
+        }
+        if (this.isSpawnForMV()) {
+            spawnProps.put("override_mv_spawn", true);
+        } else if (!spawnProps.isEmpty()) {
+            spawnProps.put("override_mv_spawn", false);
+        }
+        if (!spawnProps.isEmpty()) {
+            results.put("spawn", spawnProps);
         }
         /*
         if (!this.getItemBlacklist().isEmpty()) {
@@ -206,6 +234,22 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
         }
         builder.append("], Shares: [").append(this.getShares().toString()).append("]}");
         return builder.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getSpawnWorld() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSpawnForMV() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /*
