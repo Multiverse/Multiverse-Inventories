@@ -51,6 +51,16 @@ public enum MVIPerms {
     COMMAND_RMSHARES(new Permission("multiverse.inventories.removeshares", "Removes share(s) from a world group",
             PermissionDefault.OP)),
     /**
+     * Permissions for /mvinv spawn.
+     */
+    COMMAND_SPAWN(new Permission("multiverse.inventories.spawn.self", "teleport yourself to group spawn",
+            PermissionDefault.OP)),
+    /**
+     * Permissions for /mvinv spawn.
+     */
+    COMMAND_SPAWN_OTHER(new Permission("multiverse.inventories.spawn.other", "teleport other to group spawn",
+            PermissionDefault.OP)),
+    /**
      * Permission for bypassing all groups.
      */
     BYPASS_GROUP_ALL(new Permission("mvinv.bypass.group.*", "", PermissionDefault.FALSE)),

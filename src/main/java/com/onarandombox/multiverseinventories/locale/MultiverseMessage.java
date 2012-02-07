@@ -21,10 +21,13 @@ public enum MultiverseMessage {
     GENERIC_SUCCESS("[Success]"),
     GENERIC_INFO("[Info]"),
     GENERIC_HELP("[Help]"),
+    GENERIC_COMMAND_NO_PERMISSION("You do not have permission to %1. (%2)"),
+    GENERIC_THE_CONSOLE("the console"),
+    GENERIC_NOT_LOGGED_IN("%1 is not logged on right now!"),
 
     // Errors
-    ERROR_CONFIG_LOAD("&6Encountered an error while loading the configuration file.  Disabling..."),
-    ERROR_DATA_LOAD("&6Encountered an error while loading the data file.  Disabling..."),
+    ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),
+    ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
     ERROR_NO_GROUP("&6There is no group with the name: &f%1"),
     ERROR_NO_WORLD("&6There is no world with the name: &f%1"),
     ERROR_NO_WORLD_PROFILE("&6There is no world profile for the world: &f%1"),
@@ -33,10 +36,10 @@ public enum MultiverseMessage {
     ERROR_NO_SHARES_SPECIFIED("&cYou did not specify any valid shares!"),
 
     // Group Conflicts
-    CONFLICT_RESULTS("&6Conflict found for groups: '&f%1&6' and '&f%2&6' because they both share: '&f%3&6' for the world(s): '&f%4&6'"),
-    CONFLICT_CHECKING("&6Checking for conflicts in groups..."),
-    CONFLICT_FOUND("&6Conflicts have been found... If these are not resolved, you may experience problems with your data."),
-    CONFLICT_NOT_FOUND("&6No group conflicts found!"),
+    CONFLICT_RESULTS("Conflict found for groups: '%1' and '%2' because they both share: '%3' for the world(s): '%4'"),
+    CONFLICT_CHECKING("Checking for conflicts in groups..."),
+    CONFLICT_FOUND("Conflicts have been found... If these are not resolved, you may experience problems with your data."),
+    CONFLICT_NOT_FOUND("No group conflicts found!"),
 
     //// Commands
     // Info Command
@@ -55,7 +58,11 @@ public enum MultiverseMessage {
     WORLD_REMOVED("&6World:&f %1 &6removed from Group: &f%2"),
     WORLD_NOT_IN_GROUP("&6World:&f %1 &6is not part of Group: &f%2"),
     // AddShares Command
-    NOW_SHARING("&6Group: &f%1 &6is now sharing: &f%2");
+    NOW_SHARING("&6Group: &f%1 &6is now sharing: &f%2"),
+    // Spawn Command
+    TELEPORTING("Teleporting to this group's spawn..."),
+    TELEPORTED_BY("You were teleported by: %1"),
+    TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 

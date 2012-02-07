@@ -87,3 +87,15 @@ commands:
   mvinvrw:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
+  mvinvspawn:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvs:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  ispawn:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  gspawn:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
