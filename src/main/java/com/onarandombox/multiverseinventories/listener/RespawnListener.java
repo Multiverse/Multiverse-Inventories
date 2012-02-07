@@ -18,13 +18,18 @@ import java.util.List;
 public class RespawnListener implements Listener {
 
     private MultiverseInventories plugin;
-    List<WorldGroup> currentGroups;
-    Location spawnLoc = null;
+    private List<WorldGroup> currentGroups;
+    private Location spawnLoc = null;
 
     public RespawnListener(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Handles player respawns at the LOWEST priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void lowestPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -35,6 +40,11 @@ public class RespawnListener implements Listener {
         }
     }
 
+    /**
+     * Handles player respawns at the LOW priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.LOW)
     public void lowPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -42,6 +52,11 @@ public class RespawnListener implements Listener {
         }
     }
 
+    /**
+     * Handles player respawns at the NORMAL priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.NORMAL)
     public void normalPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -49,6 +64,11 @@ public class RespawnListener implements Listener {
         }
     }
 
+    /**
+     * Handles player respawns at the HIGH priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.HIGH)
     public void highPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -56,6 +76,11 @@ public class RespawnListener implements Listener {
         }
     }
 
+    /**
+     * Handles player respawns at the HIGHEST priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void highestPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -63,6 +88,11 @@ public class RespawnListener implements Listener {
         }
     }
 
+    /**
+     * Handles player respawns at the MONITOR priority.
+     *
+     * @param event The player respawn event.
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void monitorPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
@@ -70,7 +100,7 @@ public class RespawnListener implements Listener {
             this.updateCompass(event);
         }
     }
-    
+
     private void handleRespawn(PlayerRespawnEvent event, EventPriority priority) {
         for (WorldGroup group : this.currentGroups) {
             if (group.getSpawnPriority().equals(priority)) {

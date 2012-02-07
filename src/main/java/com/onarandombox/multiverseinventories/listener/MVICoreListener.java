@@ -17,13 +17,20 @@ public class MVICoreListener implements Listener {
         this.plugin = plugin;
     }
 
+    /**
+     * Adds Multiverse-Inventories version info to /mv version
+     *
+     * @param event The MVVersionEvent that this plugin will listen for.
+     */
     @EventHandler
     public void versionRequest(MVVersionEvent event) {
         event.appendVersionInfo(this.plugin.getVersionInfo());
     }
 
     /**
-     * {@inheritDoc}
+     * Hooks Multiverse-Inventories into the Multiverse reload command.
+     *
+     * @param event The MVConfigReloadEvent that this plugin will listen for.
      */
     @EventHandler
     public void configReload(MVConfigReloadEvent event) {

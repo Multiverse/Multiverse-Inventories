@@ -47,7 +47,7 @@ public class AddWorldCommand extends InventoriesCommand {
         }
         worldGroup.addWorld(world);
         this.getPlugin().getSettings().save();
-        this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ADDED, sender, world.getName(), 
+        this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ADDED, sender, world.getName(),
                 worldGroup.getName());
     }
 }
