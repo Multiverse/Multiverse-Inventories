@@ -1,22 +1,29 @@
 package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
 import com.onarandombox.multiverseinventories.util.MVILog;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
+import java.util.List;
 
 /**
  * PlayerListener for MultiverseInventories.
  */
-public class MVIPlayerListener implements Listener {
+public class WorldChangeListener implements Listener {
 
     private MultiverseInventories plugin;
 
-    public MVIPlayerListener(MultiverseInventories plugin) {
+    public WorldChangeListener(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

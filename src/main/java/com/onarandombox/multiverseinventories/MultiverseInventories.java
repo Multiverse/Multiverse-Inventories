@@ -19,7 +19,8 @@ import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
 import com.onarandombox.multiverseinventories.group.WorldGroupManager;
 import com.onarandombox.multiverseinventories.listener.MVICoreListener;
-import com.onarandombox.multiverseinventories.listener.MVIPlayerListener;
+import com.onarandombox.multiverseinventories.listener.RespawnListener;
+import com.onarandombox.multiverseinventories.listener.WorldChangeListener;
 import com.onarandombox.multiverseinventories.listener.MVIServerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
@@ -36,8 +37,6 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.Event.Priority;
-import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -56,9 +55,10 @@ import java.util.logging.Level;
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
     private final int requiresProtocol = 12;
-    private final MVIPlayerListener playerListener = new MVIPlayerListener(this);
+    private final WorldChangeListener worldChangeListener = new WorldChangeListener(this);
     private final MVIServerListener serverListener = new MVIServerListener(this);
     private final MVICoreListener coreListener = new MVICoreListener(this);
+    private final RespawnListener respawnListener = new RespawnListener(this);
 
     private Messager messager = new SimpleMessager(this);
     private WorldGroupManager worldGroupManager = null;
@@ -140,9 +140,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private void registerEvents() {
         final PluginManager pm = Bukkit.getPluginManager();
         // Event registering goes here
-        pm.registerEvents(playerListener, this);
+        pm.registerEvents(worldChangeListener, this);
         pm.registerEvents(serverListener, this);
         pm.registerEvents(coreListener, this);
+        pm.registerEvents(respawnListener, this);
     }
 
     private void registerCommands() {

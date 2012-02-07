@@ -10,6 +10,7 @@ import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -24,6 +25,7 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
     private String name = "";
     private String spawnWorld = null;
     private boolean spawnForMV = false;
+    private EventPriority spawnPriority = EventPriority.NORMAL;
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = new SimpleShares();
     //private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
@@ -63,10 +65,18 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
             if (spawnPropsObj instanceof Map) {
                 Map spawnProps = (Map) spawnPropsObj;
                 if (spawnProps.containsKey("world")) {
-                    this.spawnWorld = spawnProps.get("world").toString();
+                    this.setSpawnWorld(spawnProps.get("world").toString());
                 }
                 if (spawnProps.containsKey("override_mv_spawn")) {
-                    this.spawnForMV = Boolean.valueOf(spawnProps.get("override_mv_spawn").toString());
+                    this.setOverridingMVSpawn(Boolean.valueOf(
+                            spawnProps.get("override_mv_spawn").toString()));
+                }
+                if (spawnProps.containsKey("priority")) {
+                    EventPriority priority = EventPriority.valueOf(
+                            spawnProps.get("priority").toString().toUpperCase());
+                    if (priority != null) {
+                        this.setSpawnPriority(priority);
+                    }
                 }
             } else {
                 MVILog.warning("Spawn settings for group formatted incorrectly");
@@ -93,13 +103,8 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
         Map<String, Object> spawnProps = new LinkedHashMap<String, Object>();
         if (this.getSpawnWorld() != null) {
             spawnProps.put("world", this.getSpawnWorld());
-        }
-        if (this.isSpawnForMV()) {
-            spawnProps.put("override_mv_spawn", true);
-        } else if (!spawnProps.isEmpty()) {
-            spawnProps.put("override_mv_spawn", false);
-        }
-        if (!spawnProps.isEmpty()) {
+            spawnProps.put("override_mv_spawn", this.isOverridingMVSpawn());
+            spawnProps.put("priority", this.getSpawnPriority().toString());
             results.put("spawn", spawnProps);
         }
         /*
@@ -241,15 +246,47 @@ public class SimpleWorldGroup extends WeakProfileContainer implements WorldGroup
      */
     @Override
     public String getSpawnWorld() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.spawnWorld;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isSpawnForMV() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public void setSpawnWorld(String worldName) {
+        this.spawnWorld = worldName;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isOverridingMVSpawn() {
+        return this.spawnForMV;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOverridingMVSpawn(boolean override) {
+        this.spawnForMV = override;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EventPriority getSpawnPriority() {
+        return this.spawnPriority;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setSpawnPriority(EventPriority priority) {
+        this.spawnPriority = priority;
     }
 
     /*
