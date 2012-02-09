@@ -42,6 +42,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +70,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private MultiverseCore core = null;
     private MVIConfig config = null;
     private MVIData data = null;
+
+    private File serverFolder = new File(System.getProperty("user.dir"));
 
     /**
      * {@inheritDoc}
@@ -399,6 +402,27 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             this.profileManager = new WeakProfileManager(this);
         }
         return this.profileManager;
+    }
+
+    /**
+     * Gets the server's root-folder as {@link File}.
+     *
+     * @return The server's root-folder
+     */
+    public File getServerFolder() {
+        return serverFolder;
+    }
+
+    /**
+     * Sets this server's root-folder.
+     *
+     * @param newServerFolder The new server-root
+     */
+    public void setServerFolder(File newServerFolder) {
+        if (!newServerFolder.isDirectory())
+            throw new IllegalArgumentException("That's not a folder!");
+
+        this.serverFolder = newServerFolder;
     }
 
     /**

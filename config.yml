@@ -5,6 +5,8 @@ groups:
         - world2
         shares:
         - inventory
+        spawn:
+          world: world1
     group2:
         worlds:
         - world2
