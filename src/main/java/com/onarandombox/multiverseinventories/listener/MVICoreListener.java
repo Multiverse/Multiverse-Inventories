@@ -18,7 +18,7 @@ public class MVICoreListener implements Listener {
     }
 
     /**
-     * Adds Multiverse-Inventories version info to /mv version
+     * Adds Multiverse-Inventories version info to /mv version.
      *
      * @param event The MVVersionEvent that this plugin will listen for.
      */

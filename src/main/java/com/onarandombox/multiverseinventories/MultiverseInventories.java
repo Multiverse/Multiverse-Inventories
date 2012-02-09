@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
@@ -23,7 +22,6 @@ import com.onarandombox.multiverseinventories.listener.RespawnListener;
 import com.onarandombox.multiverseinventories.listener.WorldChangeListener;
 import com.onarandombox.multiverseinventories.listener.MVIServerListener;
 import com.onarandombox.multiverseinventories.locale.Messager;
-import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
 import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;

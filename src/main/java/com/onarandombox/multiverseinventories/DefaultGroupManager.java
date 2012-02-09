@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.group.GroupManager;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleGroupingConflict;

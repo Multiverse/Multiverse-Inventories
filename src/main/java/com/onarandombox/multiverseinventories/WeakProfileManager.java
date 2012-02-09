@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.profile.SimpleWorldProfile;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
