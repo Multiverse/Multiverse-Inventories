@@ -1,6 +1,9 @@
-package com.onarandombox.multiverseinventories.profile;
+package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.profile.ProfileManager;
+import com.onarandombox.multiverseinventories.profile.SimpleWorldProfile;
+import com.onarandombox.multiverseinventories.profile.WorldProfile;
 
 import java.util.List;
 import java.util.Map;
@@ -9,7 +12,7 @@ import java.util.WeakHashMap;
 /**
  * Simple implementation of ProfileManager.
  */
-public class WeakProfileManager implements ProfileManager {
+class WeakProfileManager implements ProfileManager {
 
     private Map<String, WorldProfile> worldProfiles = new WeakHashMap<String, WorldProfile>();
     private MultiverseInventories plugin;

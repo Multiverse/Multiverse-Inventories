@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
@@ -16,8 +17,7 @@ import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
 import com.onarandombox.multiverseinventories.data.MVIData;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
-import com.onarandombox.multiverseinventories.group.SimpleWorldGroupManager;
-import com.onarandombox.multiverseinventories.group.WorldGroupManager;
+import com.onarandombox.multiverseinventories.group.GroupManager;
 import com.onarandombox.multiverseinventories.listener.MVICoreListener;
 import com.onarandombox.multiverseinventories.listener.RespawnListener;
 import com.onarandombox.multiverseinventories.listener.WorldChangeListener;
@@ -29,7 +29,6 @@ import com.onarandombox.multiverseinventories.locale.SimpleMessager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;
-import com.onarandombox.multiverseinventories.profile.WeakProfileManager;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
@@ -53,7 +52,7 @@ import java.util.logging.Level;
 /**
  * Multiverse-Inventories plugin main class.
  */
-public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
+public class MultiverseInventories extends JavaPlugin implements Inventories {
 
     private final int requiresProtocol = 12;
     private final WorldChangeListener worldChangeListener = new WorldChangeListener(this);
@@ -62,7 +61,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final RespawnListener respawnListener = new RespawnListener(this);
 
     private Messager messager = new SimpleMessager(this);
-    private WorldGroupManager worldGroupManager = null;
+    private GroupManager groupManager = null;
     private ProfileManager profileManager = null;
     private ImportManager importManager = new ImportManager(this);
 
@@ -179,8 +178,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return A class used for managing importing data from other similar plugins.
+     * {@inheritDoc}
      */
+    @Override
     public ImportManager getImportManager() {
         return this.importManager;
     }
@@ -246,8 +246,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return The pastebin version string.
+     * {@inheritDoc}
      */
+    @Override
     public String getVersionInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
@@ -264,8 +265,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return the MVIConfig object which contains settings for this plugin.
+     * {@inheritDoc}
      */
+    @Override
     public MVIConfig getSettings() {
         if (this.config == null) {
             // Loads the configuration
@@ -283,11 +285,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * Nulls the config object and reloads a new one, also resetting the world groups in memory.
+     * {@inheritDoc}
      */
+    @Override
     public void reloadConfig() {
         this.config = null;
-        this.worldGroupManager = null;
+        this.groupManager = null;
         this.profileManager = null;
         // Set debug mode from config
         MVILog.setDebugMode(this.getSettings().isDebugging());
@@ -305,8 +308,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return the MVIData object which contains data for this plugin.
+     * {@inheritDoc}
      */
+    @Override
     public MVIData getData() {
         if (this.data == null) {
             // Loads the data
@@ -323,10 +327,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * Runs a check for conflicts between groups and displays them to console and sender if not null.
-     *
-     * @param sender The sender to relay information to.  If null, info only displayed in console.
+     * {@inheritDoc}
      */
+    @Override
     public void checkForGroupConflicts(CommandSender sender) {
         String message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_CHECKING);
         if (sender != null) {
@@ -378,25 +381,28 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * @return The required protocol version of core.
+     * {@inheritDoc}
      */
+    @Override
     public int getRequiredProtocol() {
         return this.requiresProtocol;
     }
 
     /**
-     * @return The World Group manager for this plugin.
+     * {@inheritDoc}
      */
-    public WorldGroupManager getGroupManager() {
-        if (this.worldGroupManager == null) {
-            this.worldGroupManager = new SimpleWorldGroupManager(this);
+    @Override
+    public GroupManager getGroupManager() {
+        if (this.groupManager == null) {
+            this.groupManager = new DefaultGroupManager(this);
         }
-        return this.worldGroupManager;
+        return this.groupManager;
     }
 
     /**
-     * @return The Profile manager for this plugin.
+     * {@inheritDoc}
      */
+    @Override
     public ProfileManager getProfileManager() {
         if (this.profileManager == null) {
             this.profileManager = new WeakProfileManager(this);
@@ -405,33 +411,22 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     /**
-     * Gets the server's root-folder as {@link File}.
-     *
-     * @return The server's root-folder
+     * {@inheritDoc}
      */
+    @Override
     public File getServerFolder() {
         return serverFolder;
     }
 
     /**
-     * Sets this server's root-folder.
-     *
-     * @param newServerFolder The new server-root
+     * {@inheritDoc}
      */
+    @Override
     public void setServerFolder(File newServerFolder) {
         if (!newServerFolder.isDirectory())
             throw new IllegalArgumentException("That's not a folder!");
 
         this.serverFolder = newServerFolder;
     }
-
-    /**
-     * @return A set of default shares (all false)
-     */
-    /*
-    public Shares getDefaultShares() {
-        return this.defaultShares;
-    }
-    */
 }
 

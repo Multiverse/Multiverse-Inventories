@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Manager class for manipulating the groups of this plugin that are contained in memory.
  */
-public interface WorldGroupManager {
+public interface GroupManager {
 
     /**
      * Retrieves the WorldGroup associated with the given name.  Casing is ignored.

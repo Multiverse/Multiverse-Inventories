@@ -1,7 +1,12 @@
-package com.onarandombox.multiverseinventories.group;
+package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.group.GroupManager;
+import com.onarandombox.multiverseinventories.group.GroupingConflict;
+import com.onarandombox.multiverseinventories.group.SimpleGroupingConflict;
+import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
+import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -16,13 +21,13 @@ import java.util.Map;
 /**
  * Implementation of WorldGroupManager.
  */
-public class SimpleWorldGroupManager implements WorldGroupManager {
+class DefaultGroupManager implements GroupManager {
 
     private HashMap<String, List<WorldGroup>> worldGroupsMap = new HashMap<String, List<WorldGroup>>();
     private HashMap<String, WorldGroup> groupNamesMap = new HashMap<String, WorldGroup>();
     private MultiverseInventories plugin;
 
-    public SimpleWorldGroupManager(MultiverseInventories plugin) {
+    public DefaultGroupManager(MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

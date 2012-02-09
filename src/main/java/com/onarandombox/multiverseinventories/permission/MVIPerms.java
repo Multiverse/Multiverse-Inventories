@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.permission;
 
-import com.onarandombox.multiverseinventories.group.WorldGroupManager;
+import com.onarandombox.multiverseinventories.group.GroupManager;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -115,7 +115,7 @@ public enum MVIPerms {
      * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return The full permission node for bypass.
      */
-    public String getBypassNode(String finalNode, WorldGroupManager groupManager) {
+    public String getBypassNode(String finalNode, GroupManager groupManager) {
         String bypassNode = this.getPermNode() + finalNode;
         if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
             if (Bukkit.getWorld(finalNode) != null
@@ -135,7 +135,7 @@ public enum MVIPerms {
      * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return True if player is allowed to bypass.
      */
-    public boolean hasBypass(Player player, String name, WorldGroupManager groupManager) {
+    public boolean hasBypass(Player player, String name, GroupManager groupManager) {
         boolean hasBypass = player.hasPermission(this.getBypassNode(name, groupManager))
                 || player.hasPermission(this.getBypassNode("*", groupManager));
         if (hasBypass) {
