@@ -97,13 +97,7 @@ public enum Sharable {
             if (loc == null) {
                 loc = player.getWorld().getSpawnLocation();
             }
-
-            // TODO Remove try-catch when this is part of RB.
-            try {
-                player.setBedSpawnLocation(loc);
-            } catch (NoSuchMethodError e) {
-                Logging.warning("Cannot set bed spawn with this version of bukkit");
-            }
+            player.setBedSpawnLocation(loc);
         }
     },
     /** TODO: add when there's bukkit api for this.

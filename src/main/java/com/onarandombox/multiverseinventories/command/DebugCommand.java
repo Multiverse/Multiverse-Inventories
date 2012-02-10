@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
