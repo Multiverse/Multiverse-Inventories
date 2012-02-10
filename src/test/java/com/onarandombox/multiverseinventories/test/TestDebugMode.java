@@ -55,7 +55,7 @@ public class TestDebugMode {
     @Test
     public void testEnableDebugMode() {
         // Pull a core instance from the server.
-        Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
+        Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Core");
         Core core = (Core) plugin;
 
         // Make sure Core is not null

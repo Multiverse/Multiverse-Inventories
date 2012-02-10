@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
+import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
+import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
+import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import junit.framework.Assert;
 
@@ -37,46 +41,51 @@ import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
-import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
-import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
-import com.onarandombox.MultiverseCore.utils.WorldManager;
 
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
+    private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
 
-    public static final File pluginDirectory = new File("bin/test/server/plugins/xperkstest");
+    public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
+    public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
     public static final File serverDirectory = new File("bin/test/server");
     public static final File worldsDirectory = new File("bin/test/server");
 
     public boolean setUp() {
         try {
-            pluginDirectory.mkdirs();
-            Assert.assertTrue(pluginDirectory.exists());
+            invDirectory.mkdirs();
+            Assert.assertTrue(invDirectory.exists());
 
             plugin = PowerMockito.spy(new MultiverseInventories());
+            core = PowerMockito.spy(new MultiverseCore());
 
             // Let's let all MV files go to bin/test
-            doReturn(pluginDirectory).when(plugin).getDataFolder();
+            doReturn(invDirectory).when(plugin).getDataFolder();
+            // Let's let all MV files go to bin/test
+            doReturn(coreDirectory).when(core).getDataFolder();
 
             // Return a fake PDF file.
-            PluginDescriptionFile pdf = new PluginDescriptionFile("xPerks", "dev",
-                    "com.dumptruckman.xperks.XPerks");
+            PluginDescriptionFile pdf = new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
+                    "com.onarandombox.multiverseinventories.MultiverseInventories");
             doReturn(pdf).when(plugin).getDescription();
             doReturn(true).when(plugin).isEnabled();
+            PluginDescriptionFile pdfCore = new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
+                    "com.onarandombox.MultiverseCore.MultiverseCore");
+            doReturn(pdfCore).when(core).getDescription();
+            doReturn(true).when(core).isEnabled();
             plugin.setServerFolder(serverDirectory);
 
             // Add Core to the list of loaded plugins
-            JavaPlugin[] plugins = new JavaPlugin[] { plugin };
+            JavaPlugin[] plugins = new JavaPlugin[] { plugin, core };
 
             // Mock the Plugin Manager
             PluginManager mockPluginManager = PowerMockito.mock(PluginManager.class);
             when(mockPluginManager.getPlugins()).thenReturn(plugins);
-            when(mockPluginManager.getPlugin("xPerks")).thenReturn(plugin);
+            when(mockPluginManager.getPlugin("Multiverse-Inventories")).thenReturn(plugin);
+            when(mockPluginManager.getPlugin("Multiverse-Core")).thenReturn(core);
             when(mockPluginManager.getPermission(anyString())).thenReturn(null);
 
             // Make some fake folders to fool the fake MV into thinking these worlds exist
@@ -96,6 +105,8 @@ public class TestInstanceCreator {
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
+            when(plugin.getServer()).thenReturn(mockServer);
+            when(core.getServer()).thenReturn(mockServer);
 
             // Give the server some worlds
             when(mockServer.getWorld(anyString())).thenAnswer(new Answer<World>() {
@@ -171,7 +182,6 @@ public class TestInstanceCreator {
             serverfield.setAccessible(true);
             serverfield.set(plugin, mockServer);
 
-            /*
             // Set worldManager
             WorldManager wm = PowerMockito.spy(new WorldManager(core));
             Field worldmanagerfield = MultiverseCore.class.getDeclaredField("worldManager");
@@ -195,7 +205,6 @@ public class TestInstanceCreator {
             Field weatherlistenerfield = MultiverseCore.class.getDeclaredField("weatherListener");
             weatherlistenerfield.setAccessible(true);
             weatherlistenerfield.set(core, wl);
-            */
 
             // Init our command sender
             final Logger commandSenderLogger = Logger.getLogger("CommandSender");
@@ -218,9 +227,11 @@ public class TestInstanceCreator {
             Bukkit.setServer(mockServer);
 
             // Load Multiverse Core
+            core.onLoad();
             plugin.onLoad();
 
             // Enable it.
+            core.onEnable();
             plugin.onEnable();
 
             return true;
