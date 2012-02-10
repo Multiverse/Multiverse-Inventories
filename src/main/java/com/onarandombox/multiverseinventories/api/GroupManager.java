@@ -1,4 +1,6 @@
-package com.onarandombox.multiverseinventories.group;
+package com.onarandombox.multiverseinventories.api;
+
+import com.onarandombox.multiverseinventories.group.GroupingConflict;
 
 import java.util.List;
 
@@ -39,7 +41,7 @@ public interface GroupManager {
      * Adds a World Group to the collection in memory.
      *
      * @param worldGroup World group to add.
-     * @param persist True means this world group will be added to the Config file as well.
+     * @param persist    True means this world group will be added to the Config file as well.
      */
     void addGroup(WorldGroup worldGroup, boolean persist);
 

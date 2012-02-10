@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -35,7 +35,7 @@ public class RespawnListener implements Listener {
         if (!event.isBedSpawn()) {
             World world = event.getPlayer().getWorld();
             this.currentGroups = this.plugin.getGroupManager()
-                .getGroupsForWorld(world.getName());
+                    .getGroupsForWorld(world.getName());
             this.handleRespawn(event, EventPriority.LOWEST);
         }
     }

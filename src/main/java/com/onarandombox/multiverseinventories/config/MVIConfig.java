@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.config;
 
-import com.onarandombox.multiverseinventories.group.WorldGroup;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;

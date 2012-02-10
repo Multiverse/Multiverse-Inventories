@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

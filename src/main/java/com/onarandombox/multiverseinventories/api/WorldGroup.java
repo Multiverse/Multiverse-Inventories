@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.group;
+package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.share.Shares;
@@ -39,7 +39,7 @@ public interface WorldGroup extends ProfileContainer {
     /**
      * Adds a world to this world group and optionally updates it in the Config.
      *
-     * @param worldName The name of the world to add.
+     * @param worldName    The name of the world to add.
      * @param updateConfig True to update this group in the config.
      */
     void addWorld(String worldName, boolean updateConfig);
@@ -61,7 +61,7 @@ public interface WorldGroup extends ProfileContainer {
     /**
      * Removes a world from this world group and optionally updates it in the Config.
      *
-     * @param worldName The name of the world to remove.
+     * @param worldName    The name of the world to remove.
      * @param updateConfig True to update this group in the config.
      */
     void removeWorld(String worldName, boolean updateConfig);
@@ -107,7 +107,7 @@ public interface WorldGroup extends ProfileContainer {
 
     /**
      * @return The name of the world that will be used as the spawn for this group.
-     * Or null if no world was specified as the group spawn world.
+     *         Or null if no world was specified as the group spawn world.
      */
     String getSpawnWorld();
 
@@ -118,13 +118,14 @@ public interface WorldGroup extends ProfileContainer {
 
     /**
      * @return True if the world specified in this group as the group spawn will be the
-     * the world the user goes to when using /mvspawn.
+     *         the world the user goes to when using /mvspawn.
      */
     boolean isOverridingMVSpawn();
 
     /**
      * This will set whether the group's spawn location will be used when a user uses
      * /mvspawn.
+     *
      * @param override Set to true to use this group's spawn location when a user uses
      *                 /mvspawn.
      */

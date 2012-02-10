@@ -1,13 +1,14 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.profile.PersistingProfile;
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.profile.SimplePersistingProfile;
 import com.onarandombox.multiverseinventories.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ import java.util.List;
 /**
  * Simple implementation of ShareHandler.
  */
-public class SimpleShareHandler implements ShareHandler {
+public class ShareHandler {
 
     private List<PersistingProfile> fromProfiles;
     private List<PersistingProfile> toProfiles;
@@ -29,8 +30,8 @@ public class SimpleShareHandler implements ShareHandler {
     private MultiverseInventories plugin;
     private boolean hasBypass = false;
 
-    public SimpleShareHandler(MultiverseInventories plugin, Player player,
-                              World fromWorld, World toWorld) {
+    public ShareHandler(MultiverseInventories plugin, Player player,
+                        World fromWorld, World toWorld) {
         this.fromProfiles = new ArrayList<PersistingProfile>();
         this.toProfiles = new ArrayList<PersistingProfile>();
         this.player = player;
@@ -40,65 +41,62 @@ public class SimpleShareHandler implements ShareHandler {
     }
 
     /**
-     * {@inheritDoc}
+     * @return The profiles for the world/groups the player is coming from.
      */
-    @Override
-    public void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        this.getFromProfiles().add(new SimplePersistingProfile(container.getDataName(), shares, profile));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        this.getToProfiles().add(new SimplePersistingProfile(container.getDataName(), shares, profile));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PersistingProfile> getFromProfiles() {
+    public final List<PersistingProfile> getFromProfiles() {
         return this.fromProfiles;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The profiles for the world/groups the player is going to.
      */
-    @Override
     public List<PersistingProfile> getToProfiles() {
         return this.toProfiles;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The world travelling from.
      */
-    @Override
     public World getFromWorld() {
         return this.fromWorld;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The world travelling to.
      */
-    @Override
     public World getToWorld() {
         return this.toWorld;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The player involved in this sharing transaction.
      */
-    @Override
     public Player getPlayer() {
         return this.player;
     }
 
     /**
-     * {@inheritDoc}
+     * @param container The group/world the player's data is associated with.
+     * @param shares    What from this group needs to be saved.
+     * @param profile   The player profile that will need data saved to.
      */
-    @Override
+    private void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+        this.getFromProfiles().add(new SimplePersistingProfile(container.getDataName(), shares, profile));
+    }
+
+    /**
+     * @param container The group/world the player's data is associated with.
+     * @param shares    What from this group needs to be loaded.
+     * @param profile   The player profile that will need data loaded from.
+     */
+    private void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+        this.getToProfiles().add(new SimplePersistingProfile(container.getDataName(), shares, profile));
+    }
+
+    /**
+     * Finalizes the transfer from one world to another.  This handles the switching
+     * inventories/stats for a player and persisting the changes.
+     */
     public void handleSharing() {
         MVILog.debug("=== " + this.getPlayer().getName() + " traveling from world: " + this.getFromWorld().getName()
                 + " to " + "world: " + this.getToWorld().getName() + " ===");

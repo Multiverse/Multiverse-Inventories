@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
 
 /**

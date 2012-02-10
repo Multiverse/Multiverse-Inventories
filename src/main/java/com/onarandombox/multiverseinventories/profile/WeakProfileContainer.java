@@ -1,8 +1,9 @@
 package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
 import com.onarandombox.multiverseinventories.data.MVIData;
-import com.onarandombox.multiverseinventories.group.GroupManager;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import org.bukkit.OfflinePlayer;
 

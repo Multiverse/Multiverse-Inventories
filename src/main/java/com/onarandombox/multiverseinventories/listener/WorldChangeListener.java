@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.listener;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.share.SimpleShareHandler;
+import com.onarandombox.multiverseinventories.api.ShareHandler;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -43,7 +43,7 @@ public class WorldChangeListener implements Listener {
             return;
         }
 
-        new SimpleShareHandler(this.plugin, player, fromWorld, toWorld).handleSharing();
+        new ShareHandler(this.plugin, player, fromWorld, toWorld).handleSharing();
     }
 }
 

@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.group;
 
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.WeakProfileContainer;
 import com.onarandombox.multiverseinventories.share.Shares;

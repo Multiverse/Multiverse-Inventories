@@ -1,5 +1,6 @@
-package com.onarandombox.multiverseinventories.profile;
+package com.onarandombox.multiverseinventories.api;
 
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;

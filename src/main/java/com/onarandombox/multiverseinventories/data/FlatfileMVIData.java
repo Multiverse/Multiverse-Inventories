@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.data;
 
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.SimplePlayerProfile;
 import com.onarandombox.multiverseinventories.util.MVILog;

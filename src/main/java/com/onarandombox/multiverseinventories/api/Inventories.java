@@ -3,7 +3,6 @@ package com.onarandombox.multiverseinventories.api;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.multiverseinventories.config.MVIConfig;
 import com.onarandombox.multiverseinventories.data.MVIData;
-import com.onarandombox.multiverseinventories.group.GroupManager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.profile.ProfileManager;

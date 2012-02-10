@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.config;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.configuration.ConfigurationSection;

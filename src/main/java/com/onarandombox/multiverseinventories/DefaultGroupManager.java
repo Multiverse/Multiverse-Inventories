@@ -1,11 +1,11 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseinventories.group.GroupManager;
+import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import com.onarandombox.multiverseinventories.group.GroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleGroupingConflict;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;

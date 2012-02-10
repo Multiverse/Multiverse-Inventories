@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
 import com.onarandombox.multiverseinventories.data.DataStrings;
 import com.onarandombox.multiverseinventories.item.ItemWrapper;
 import com.onarandombox.multiverseinventories.item.SimpleItemWrapper;

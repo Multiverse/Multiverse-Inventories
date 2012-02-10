@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.permission;
 
-import com.onarandombox.multiverseinventories.group.GroupManager;
+import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -111,7 +111,7 @@ public enum MVIPerms {
     }
 
     /**
-     * @param finalNode String to add to the bypass prefix.
+     * @param finalNode    String to add to the bypass prefix.
      * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return The full permission node for bypass.
      */
@@ -130,8 +130,8 @@ public enum MVIPerms {
      * Checks if a player has permission to bypass something which requires a name of an object to be bypassed.
      * A World name for example.
      *
-     * @param player Player to check permission for.
-     * @param name   Name of object to bypass.
+     * @param player       Player to check permission for.
+     * @param name         Name of object to bypass.
      * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return True if player is allowed to bypass.
      */

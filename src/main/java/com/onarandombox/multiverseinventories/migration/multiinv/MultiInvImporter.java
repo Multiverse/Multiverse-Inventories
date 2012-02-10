@@ -1,11 +1,11 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.WorldGroup;
 import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
-import com.onarandombox.multiverseinventories.group.WorldGroup;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SimpleShares;
