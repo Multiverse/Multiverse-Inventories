@@ -9,7 +9,7 @@ import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -139,8 +139,8 @@ final class DefaultGroupManager implements GroupManager {
     @Override
     public void setGroups(List<WorldGroupProfile> worldGroups) {
         if (worldGroups == null) {
-            MVILog.info("No world groups have been configured!");
-            MVILog.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
+            Logging.info("No world groups have been configured!");
+            Logging.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
             return;
         }
 
@@ -165,10 +165,10 @@ final class DefaultGroupManager implements GroupManager {
             this.addGroup(worldGroup, false);
             this.inventories.getMVIConfig().setFirstRun(false);
             this.inventories.getMVIConfig().save();
-            MVILog.info("Created a default group for you containing all of your MV Worlds!");
+            Logging.info("Created a default group for you containing all of your MV Worlds!");
         } else {
-            MVILog.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
-            MVILog.info("Will attempt again at next start up.");
+            Logging.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
+            Logging.info("Will attempt again at next start up.");
         }
     }
 
@@ -226,7 +226,7 @@ final class DefaultGroupManager implements GroupManager {
         if (sender != null) {
             this.inventories.getMessager().sendMessage(sender, message);
         }
-        MVILog.info(message);
+        Logging.info(message);
         List<GroupingConflict> conflicts = this.inventories.getGroupManager().checkGroups();
         for (GroupingConflict conflict : conflicts) {
             message = this.inventories.getMessager().getMessage(Message.CONFLICT_RESULTS,
@@ -235,20 +235,20 @@ final class DefaultGroupManager implements GroupManager {
             if (sender != null) {
                 this.inventories.getMessager().sendMessage(sender, message);
             }
-            MVILog.info(message);
+            Logging.info(message);
         }
         if (!conflicts.isEmpty()) {
             message = this.inventories.getMessager().getMessage(Message.CONFLICT_FOUND);
             if (sender != null) {
                 this.inventories.getMessager().sendMessage(sender, message);
             }
-            MVILog.info(message);
+            Logging.info(message);
         } else {
             message = this.inventories.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
             if (sender != null) {
                 this.inventories.getMessager().sendMessage(sender, message);
             }
-            MVILog.info(message);
+            Logging.info(message);
         }
     }
 }

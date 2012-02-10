@@ -10,11 +10,18 @@ import java.util.List;
 public interface InventoriesConfig {
 
     /**
-     * Checks to see if debug mode is set in the config.
+     * Sets globalDebug level.
      *
-     * @return True if debug mode is enabled.
+     * @param globalDebug The new value. 0 = off.
      */
-    boolean isDebugging();
+    void setGlobalDebug(int globalDebug);
+
+    /**
+     * Gets globalDebug level.
+     *
+     * @return globalDebug.
+     */
+    int getGlobalDebug();
 
     /**
      * Retrieves the locale string from the config.

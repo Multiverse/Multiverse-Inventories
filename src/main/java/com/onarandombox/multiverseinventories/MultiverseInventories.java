@@ -9,20 +9,20 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.WorldProfileManager;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
+import com.onarandombox.multiverseinventories.command.DebugCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
+import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.data.FlatfilePlayerData;
 import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
-import com.onarandombox.multiverseinventories.util.MVIDebug;
-import com.onarandombox.multiverseinventories.util.MVILog;
-import com.onarandombox.multiverseinventories.util.MVIPerms;
+import com.onarandombox.multiverseinventories.util.Perm;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -66,7 +66,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     @Override
     public void onDisable() {
         // Display disable message/version info
-        MVILog.info("disabled.", true);
+        Logging.info("disabled.", true);
     }
 
     /**
@@ -74,37 +74,36 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void onEnable() {
-        MVILog.init(this);
-        MVIPerms.register(this);
+        Logging.init(this);
+        Perm.register(this);
 
         MultiverseCore mvCore;
         mvCore = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
         // Test if the Core was found, if not we'll disable this plugin.
         if (mvCore == null) {
-            MVILog.severe("Multiverse-Core not found, disabling...");
+            Logging.severe("Multiverse-Core not found, disabling...");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
         this.setCore(mvCore);
 
         if (this.getCore().getProtocolVersion() < this.getRequiredProtocol()) {
-            MVILog.severe("Your Multiverse-Core is OUT OF DATE");
-            MVILog.severe("This version of Profiles requires Protocol Level: " + this.getRequiredProtocol());
-            MVILog.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
-            MVILog.severe("Grab an updated copy at: ");
-            MVILog.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");
+            Logging.severe("Your Multiverse-Core is OUT OF DATE");
+            Logging.severe("This version of Profiles requires Protocol Level: " + this.getRequiredProtocol());
+            Logging.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
+            Logging.severe("Grab an updated copy at: ");
+            Logging.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        MVIDebug.init(this);
+        Logging.initDebug(this);
 
         this.reloadConfig();
 
         try {
             this.getMessager().setLocale(new Locale(this.getMVIConfig().getLocale()));
         } catch (IllegalArgumentException e) {
-            MVILog.severe(e.getMessage());
+            Logging.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -124,7 +123,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.hookImportables();
 
         // Display enable message/version info
-        MVILog.info("enabled.", true);
+        Logging.info("enabled.", true);
     }
 
     private void registerCommands() {
@@ -137,6 +136,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
         this.getCommandHandler().registerCommand(new AddSharesCommand(this));
         this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
+        this.getCommandHandler().registerCommand(new DebugCommand(this));
         for (com.pneumaticraft.commandhandler.multiverse.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");
@@ -187,8 +187,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void log(Level level, String msg) {
-        MVILog.log(level, msg, false);
-        MVIDebug.log(level, msg);
+        Logging.log(level, msg, false);
     }
 
     /**
@@ -232,15 +231,15 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
-        builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getMVIConfig().isDebugging()));
+        builder.append(this.logAndAddToPasteBinBuffer("Debug Level: " + this.getMVIConfig().getGlobalDebug()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));
         return builder.toString();
     }
 
     private String logAndAddToPasteBinBuffer(String string) {
-        MVILog.info(string);
-        return MVILog.getString(string + "\n", false);
+        Logging.info(string);
+        return Logging.getString(string + "\n", false);
     }
 
     /**
@@ -252,10 +251,10 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             // Loads the configuration
             try {
                 this.config = new CommentedInventoriesConfig(this);
-                MVILog.debug("Loaded config file!");
+                Logging.fine("Loaded config file!");
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
-                MVILog.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
-                MVILog.severe(e.getMessage());
+                Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
+                Logging.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
             }
@@ -271,14 +270,12 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.config = null;
         this.groupManager = null;
         this.profileManager = null;
-        // Set debug mode from config
-        MVILog.setDebugMode(this.getMVIConfig().isDebugging());
-        // Get world groups from config
 
+        // Get world groups from config
         this.getGroupManager().setGroups(this.getMVIConfig().getWorldGroups());
         // Create initial World Group for first run IF NO GROUPS EXIST
         if (this.getMVIConfig().isFirstRun()) {
-            MVILog.info("First run!");
+            Logging.info("First run!");
             if (this.getGroupManager().getGroups().isEmpty()) {
                 this.getGroupManager().createDefaultGroup();
             }
@@ -296,8 +293,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             try {
                 this.data = new FlatfilePlayerData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
-                MVILog.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
-                MVILog.severe(e.getMessage());
+                Logging.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
+                Logging.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
             }

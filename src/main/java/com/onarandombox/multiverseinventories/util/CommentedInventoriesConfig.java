@@ -31,7 +31,8 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         /**
          * Debug Mode config path, default and comments.
          */
-        DEBUG_MODE("settings.debug_mode", false, "# Setting this to true enables debug mode."),
+        DEBUG_LEVEL("settings.debug_level", 0, "# Level of debugging information to display.", "# 0 = off, "
+                + "1-3 increasing amount of debug spam."),
         /**
          * First Run flag config path, default and comments.
          */
@@ -104,13 +105,13 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         this.plugin = plugin;
         // Make the data folders
         if (plugin.getDataFolder().mkdirs()) {
-            MVILog.debug("Created data folder.");
+            Logging.fine("Created data folder.");
         }
 
         // Check if the config file exists.  If not, create it.
         File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
-            MVILog.debug("Created config file.");
+            Logging.fine("Created config file.");
             configFile.createNewFile();
         }
 
@@ -123,6 +124,8 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
 
         // Saves the configuration from memory to file
         config.save();
+
+        Logging.setDebugMode(this.getGlobalDebug());
     }
 
     /**
@@ -133,7 +136,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             config.addComment(path.getPath(), path.getComments());
             if (this.getConfig().get(path.getPath()) == null) {
                 if (path.getDefault() != null) {
-                    MVILog.debug("Config: Defaulting '" + path.getPath() + "' to " + path.getDefault());
+                    Logging.fine("Config: Defaulting '" + path.getPath() + "' to " + path.getDefault());
                     this.getConfig().set(path.getPath(), path.getDefault());
                 }
             }
@@ -160,8 +163,17 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      * {@inheritDoc}
      */
     @Override
-    public boolean isDebugging() {
-        return this.getBoolean(Path.DEBUG_MODE);
+    public void setGlobalDebug(int globalDebug) {
+        this.getConfig().set(Path.DEBUG_LEVEL.getPath(), globalDebug);
+        Logging.setDebugMode(globalDebug);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getGlobalDebug() {
+        return this.getInt(Path.DEBUG_LEVEL);
     }
 
     /**
@@ -177,32 +189,32 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public List<WorldGroupProfile> getWorldGroups() {
-        MVILog.debug("Getting world groups from config file");
+        Logging.finer("Getting world groups from config file");
         ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
         if (groupsSection == null) {
-            MVILog.debug("Could not find a 'groups' section in config!");
+            Logging.finer("Could not find a 'groups' section in config!");
             return null;
         }
         Set<String> groupNames = groupsSection.getKeys(false);
         List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>(groupNames.size());
         for (String groupName : groupNames) {
-            MVILog.debug("Attempting to load group: " + groupName + "...");
+            Logging.finer("Attempting to load group: " + groupName + "...");
             WorldGroupProfile worldGroup;
             try {
                 ConfigurationSection groupSection =
                         this.getConfig().getConfigurationSection("groups." + groupName);
                 if (groupSection == null) {
-                    MVILog.warning("Group: '" + groupName + "' is not formatted correctly!");
+                    Logging.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
                 }
                 worldGroup = this.plugin.getGroupManager().newGroupFromMap(groupName, groupSection.getValues(true));
             } catch (DeserializationException e) {
-                MVILog.warning("Unable to load world group: " + groupName);
-                MVILog.warning("Reason: " + e.getMessage());
+                Logging.warning("Unable to load world group: " + groupName);
+                Logging.warning("Reason: " + e.getMessage());
                 continue;
             }
             worldGroups.add(worldGroup);
-            MVILog.debug("Group: " + worldGroup.getName() + " added to memory");
+            Logging.finer("Group: " + worldGroup.getName() + " added to memory");
         }
         return worldGroups;
     }
@@ -228,7 +240,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void updateWorldGroup(WorldGroupProfile worldGroup) {
-        MVILog.debug("Updating group in config: " + worldGroup.getName());
+        Logging.finer("Updating group in config: " + worldGroup.getName());
         this.getConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
     }
 
@@ -237,7 +249,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void removeWorldGroup(WorldGroupProfile worldGroup) {
-        MVILog.debug("Removing group from config: " + worldGroup.getName());
+        Logging.finer("Removing group from config: " + worldGroup.getName());
         this.getConfig().set("groups." + worldGroup.getName(), null);
     }
 

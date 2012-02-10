@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.util.data;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,7 +61,7 @@ public class FlatfilePlayerData implements PlayerData {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        MVILog.debug("got data folder: " + folder.getPath() + " from type: " + type);
+        Logging.finer("got data folder: " + folder.getPath() + " from type: " + type);
         return folder;
     }
 
@@ -71,9 +71,9 @@ public class FlatfilePlayerData implements PlayerData {
             try {
                 playerFile.createNewFile();
             } catch (IOException e) {
-                MVILog.severe("Could not create necessary player file: " + playerName + YML);
-                MVILog.severe("Your data may not be saved!");
-                MVILog.severe(e.getMessage());
+                Logging.severe("Could not create necessary player file: " + playerName + YML);
+                Logging.severe("Your data may not be saved!");
+                Logging.severe(e.getMessage());
             }
 
         }
@@ -112,9 +112,9 @@ public class FlatfilePlayerData implements PlayerData {
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
-            MVILog.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+            Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
                     + " for world: " + dataName);
-            MVILog.severe(e.getMessage());
+            Logging.severe(e.getMessage());
             return false;
         }
         return true;

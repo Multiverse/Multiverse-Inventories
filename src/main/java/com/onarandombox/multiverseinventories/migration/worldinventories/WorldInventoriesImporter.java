@@ -7,7 +7,7 @@ import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
 import me.drayshak.WorldInventories.WIPlayerStats;
@@ -73,12 +73,12 @@ public class WorldInventoriesImporter implements DataImporter {
             WorldGroupProfile defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
                 this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
-                MVILog.info("Removed automatically created world group in favor of imported groups.");
+                Logging.info("Removed automatically created world group in favor of imported groups.");
             }
         }
         for (Group wiGroup : wiGroups) {
             if (wiGroup.getWorlds().isEmpty()) {
-                MVILog.warning("Group '" + wiGroup.getName() + "' has no worlds.  It will not be imported!");
+                Logging.warning("Group '" + wiGroup.getName() + "' has no worlds.  It will not be imported!");
                 continue;
             }
             WorldGroupProfile newGroup = this.inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
@@ -93,22 +93,22 @@ public class WorldInventoriesImporter implements DataImporter {
                     newGroup.getShares().setSharing(Sharable.INVENTORY, true);
                 }
             } catch (Exception ignore) {
-                MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
+                Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
             } catch (Error e) {
-                MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
+                Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
             }
             this.inventories.getGroupManager().addGroup(newGroup, true);
-            MVILog.info("Imported group: " + wiGroup.getName());
+            Logging.info("Imported group: " + wiGroup.getName());
         }
         this.inventories.getMVIConfig().save();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
-            MVILog.info("Processing WorldInventories data for player: " + player.getName());
+            Logging.info("Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
                 WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
                 if (worldGroup == null) {
-                    MVILog.warning("Could not import player data for group: " + wiGroup.getName());
+                    Logging.warning("Could not import player data for group: " + wiGroup.getName());
                     continue;
                 }
                 WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
@@ -129,11 +129,11 @@ public class WorldInventoriesImporter implements DataImporter {
                 playerProfile.setExhaustion(wiStats.getExhaustion());
                 playerProfile.setFoodLevel(wiStats.getFoodLevel());
                 this.inventories.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
-                MVILog.info("Player's data imported successfully from group: " + wiGroup.getName());
+                Logging.info("Player's data imported successfully from group: " + wiGroup.getName());
             }
         }
 
-        MVILog.info("Import from WorldInventories finished.  Disabling WorldInventories.");
+        Logging.info("Import from WorldInventories finished.  Disabling WorldInventories.");
         Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
     }
 

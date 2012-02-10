@@ -7,7 +7,7 @@ import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
@@ -49,7 +49,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             this.addWorld(worldNameObj.toString(), false);
             World world = Bukkit.getWorld(worldNameObj.toString());
             if (world == null) {
-                MVILog.debug("World: " + worldNameObj.toString() + " is not loaded.");
+                Logging.warning("World: " + worldNameObj.toString() + " is not loaded.");
             }
         }
         if (dataMap.containsKey("shares")) {
@@ -57,7 +57,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             if (sharesListObj instanceof List) {
                 this.setShares(new SimpleShares((List) sharesListObj));
             } else {
-                MVILog.warning("Shares formatted incorrectly for group: " + name);
+                Logging.warning("Shares formatted incorrectly for group: " + name);
             }
         }
         if (dataMap.containsKey("spawn")) {
@@ -79,7 +79,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                     }
                 }
             } else {
-                MVILog.warning("Spawn settings for group formatted incorrectly");
+                Logging.warning("Spawn settings for group formatted incorrectly");
             }
         }
         /*

@@ -8,7 +8,7 @@ import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -64,7 +64,7 @@ public class MultiInvImporter implements DataImporter {
             WorldGroupProfile defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
                 this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
-                MVILog.info("Removed automatically created world group in favor of imported groups.");
+                Logging.info("Removed automatically created world group in favor of imported groups.");
             }
         }
         for (Map.Entry<String, String> groupEntry : miGroupMap.entrySet()) {
@@ -72,7 +72,7 @@ public class MultiInvImporter implements DataImporter {
             if (worldGroup == null) {
                 worldGroup = this.inventories.getGroupManager().newEmptyGroup(groupEntry.getValue());
                 worldGroup.setShares(new SimpleShares(Sharable.all()));
-                MVILog.info("Importing group: " + groupEntry.getValue());
+                Logging.info("Importing group: " + groupEntry.getValue());
                 this.inventories.getGroupManager().addGroup(worldGroup, false);
             }
             worldGroup.addWorld(groupEntry.getValue());
@@ -80,7 +80,7 @@ public class MultiInvImporter implements DataImporter {
         this.inventories.getMVIConfig().save();
 
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
-            MVILog.info("Processing MultiInv data for player: " + player.getName());
+            Logging.info("Processing MultiInv data for player: " + player.getName());
             for (Map.Entry<String, String> entry : miGroupMap.entrySet()) {
                 String worldName = entry.getKey();
                 String groupName = entry.getValue();
@@ -89,7 +89,7 @@ public class MultiInvImporter implements DataImporter {
                 if (!playerFileLoader.load()) {
                     continue;
                 }
-                MVILog.info("Processing MultiInv data for player: " + player.getName()
+                Logging.info("Processing MultiInv data for player: " + player.getName()
                         + " for group: " + groupName);
                 mergeData(player, playerFileLoader, groupName, ProfileType.GROUP);
             }
@@ -100,13 +100,13 @@ public class MultiInvImporter implements DataImporter {
                 if (!playerFileLoader.load()) {
                     continue;
                 }
-                MVILog.info("Processing MultiInv data for player: " + player.getName()
+                Logging.info("Processing MultiInv data for player: " + player.getName()
                         + " for world only: " + worldName);
                 mergeData(player, playerFileLoader, worldName, ProfileType.WORLD);
             }
         }
 
-        MVILog.info("Import from MultiInv finished.  Disabling MultiInv.");
+        Logging.info("Import from MultiInv finished.  Disabling MultiInv.");
         Bukkit.getPluginManager().disablePlugin(this.getMIPlugin());
     }
 
@@ -117,7 +117,7 @@ public class MultiInvImporter implements DataImporter {
             WorldGroupProfile group = this.inventories.getGroupManager()
                     .getGroup(dataName);
             if (group == null) {
-                MVILog.warning("Could not import player data for group: " + dataName);
+                Logging.warning("Could not import player data for group: " + dataName);
                 return;
             }
             playerProfile = group.getPlayerData(player);

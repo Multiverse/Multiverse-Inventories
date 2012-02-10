@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * @author dumptruckman
  */
-public enum MVIPerms {
+public enum Perm {
     /**
      * Permission for /mvinv info.
      */
@@ -60,6 +60,10 @@ public enum MVIPerms {
     COMMAND_SPAWN_OTHER(new Permission("multiverse.inventories.spawn.other", "teleport other to group spawn",
             PermissionDefault.OP)),
     /**
+     * Permission for debug command.
+     */
+    COMMAND_DEBUG(new Permission("multiverse.inventories.debug", "Spams the console a bunch.", PermissionDefault.OP)),
+    /**
      * Permission for bypassing all groups.
      */
     BYPASS_GROUP_ALL(new Permission("mvinv.bypass.group.*", "", PermissionDefault.FALSE)),
@@ -87,25 +91,25 @@ public enum MVIPerms {
     private Permission perm = null;
     private String permNode = "";
 
-    MVIPerms(Permission perm) {
+    Perm(Permission perm) {
         this.perm = perm;
     }
 
-    MVIPerms(String permNode) {
+    Perm(String permNode) {
         this.permNode = permNode;
     }
 
     /**
      * @return the Permission.
      */
-    public Permission getPerm() {
+    public Permission getPermission() {
         return this.perm;
     }
 
     /**
      * @return the Permission node string.
      */
-    public String getPermNode() {
+    public String getNode() {
         return this.permNode;
     }
 
@@ -115,7 +119,7 @@ public enum MVIPerms {
      * @return The full permission node for bypass.
      */
     public String getBypassNode(String finalNode, GroupManager groupManager) {
-        String bypassNode = this.getPermNode() + finalNode;
+        String bypassNode = this.getNode() + finalNode;
         if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
             if (Bukkit.getWorld(finalNode) != null
                     || (groupManager != null && groupManager.getGroup(finalNode) != null)) {
@@ -138,7 +142,7 @@ public enum MVIPerms {
         boolean hasBypass = player.hasPermission(this.getBypassNode(name, groupManager))
                 || player.hasPermission(this.getBypassNode("*", groupManager));
         if (hasBypass) {
-            MVILog.debug(this.getBypassMessage(player, name));
+            Logging.fine(this.getBypassMessage(player, name));
         }
         return hasBypass;
     }
@@ -164,9 +168,9 @@ public enum MVIPerms {
      */
     public static void register(JavaPlugin plugin) {
         PluginManager pm = plugin.getServer().getPluginManager();
-        for (MVIPerms perm : MVIPerms.values()) {
-            if (perm.getPerm() != null) {
-                pm.addPermission(perm.getPerm());
+        for (Perm perm : Perm.values()) {
+            if (perm.getPermission() != null) {
+                pm.addPermission(perm.getPermission());
             }
         }
     }

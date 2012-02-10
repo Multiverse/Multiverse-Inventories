@@ -4,7 +4,7 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,7 +53,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         if (playerData.containsKey("bedSpawnLocation")) {
             this.parseLocation(playerData.get("bedSpawnLocation").toString().split(DataStrings.GENERAL_DELIMITER));
         }
-        MVILog.debug("Created player player from map for '" + playerName + "'.");
+        Logging.finer("Created player profile from map for '" + playerName + "'.");
     }
 
     /**
@@ -80,8 +80,8 @@ class DefaultPlayerProfile implements PlayerProfile {
                 }
             } catch (Exception e) {
                 if (!stat.isEmpty()) {
-                    MVILog.debug("Could not parse stat: '" + stat + "'");
-                    MVILog.debug(e.getMessage());
+                    Logging.fine("Could not parse stat: '" + stat + "'");
+                    Logging.fine(e.getMessage());
                 }
             }
         }
@@ -97,11 +97,11 @@ class DefaultPlayerProfile implements PlayerProfile {
             try {
                 ItemWrapper itemWrapper = new ItemWrapper(itemValues[1]);
                 invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
-                //MVILog.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
+                //Logging.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
-                    MVILog.debug("Could not parse item string: " + itemString);
-                    MVILog.debug(e.getMessage());
+                    Logging.fine("Could not parse item string: " + itemString);
+                    Logging.fine(e.getMessage());
                 }
             }
         }
@@ -119,8 +119,8 @@ class DefaultPlayerProfile implements PlayerProfile {
                 armContents[Integer.valueOf(itemValues[0])] = new ItemWrapper(itemValues[1]).getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
-                    MVILog.debug("Could not parse armor string: " + itemString);
-                    MVILog.debug(e.getMessage());
+                    Logging.fine("Could not parse armor string: " + itemString);
+                    Logging.fine(e.getMessage());
                 }
             }
         }
@@ -156,7 +156,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                 }
             }
         } catch (Exception e) {
-            MVILog.debug("Could not parse location: " + locArray.toString());
+            Logging.fine("Could not parse location: " + locArray.toString());
             return null;
         }
         if (world == null) {

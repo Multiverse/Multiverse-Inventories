@@ -8,8 +8,8 @@ import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
-import com.onarandombox.multiverseinventories.util.MVILog;
-import com.onarandombox.multiverseinventories.util.MVIPerms;
+import com.onarandombox.multiverseinventories.util.Logging;
+import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -98,7 +98,7 @@ final class ShareHandler {
      * inventories/stats for a player and persisting the changes.
      */
     public void handleSharing() {
-        MVILog.debug("=== " + this.getPlayer().getName() + " traveling from world: " + this.getFromWorld().getName()
+        Logging.finer("=== " + this.getPlayer().getName() + " traveling from world: " + this.getFromWorld().getName()
                 + " to " + "world: " + this.getToWorld().getName() + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.inventories.getWorldManager()
@@ -106,7 +106,7 @@ final class ShareHandler {
         this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.all()),
                 fromWorldProfile.getPlayerData(this.getPlayer()));
 
-        if (MVIPerms.BYPASS_WORLD.hasBypass(this.getPlayer(),
+        if (Perm.BYPASS_WORLD.hasBypass(this.getPlayer(),
                 this.getToWorld().getName(), this.inventories.getGroupManager())) {
             this.hasBypass = true;
             completeSharing();
@@ -130,7 +130,7 @@ final class ShareHandler {
             }
         }
         if (fromWorldGroups.isEmpty()) {
-            MVILog.debug("No groups for fromWorld.");
+            Logging.finer("No groups for fromWorld.");
         }
 
         List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
@@ -138,7 +138,7 @@ final class ShareHandler {
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroupProfile toWorldGroup : toWorldGroups) {
-                if (MVIPerms.BYPASS_GROUP.hasBypass(this.getPlayer(),
+                if (Perm.BYPASS_GROUP.hasBypass(this.getPlayer(),
                         toWorldGroup.getName(), this.inventories.getGroupManager())) {
                     this.hasBypass = true;
                 } else {
@@ -158,7 +158,7 @@ final class ShareHandler {
             }
         } else {
             // Get world we need to load from.
-            MVILog.debug("No groups for toWorld.");
+            Logging.finer("No groups for toWorld.");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
                     .getWorldProfile(this.getToWorld().getName());
             this.addToProfile(toWorldProfile, new SimpleShares(Sharable.all()),
@@ -169,21 +169,21 @@ final class ShareHandler {
     }
 
     private void completeSharing() {
-        MVILog.debug("Travel affected by " + this.getFromProfiles().size() + " fromProfiles and "
+        Logging.finer("Travel affected by " + this.getFromProfiles().size() + " fromProfiles and "
                 + this.getToProfiles().size() + " toProfiles");
         // This if statement should never happen, really.
         if (this.getToProfiles().isEmpty()) {
             if (hasBypass) {
-                MVILog.debug(this.getPlayer().getName() + " has bypass permission for 1 or more world/groups!");
+                Logging.fine(this.getPlayer().getName() + " has bypass permission for 1 or more world/groups!");
             } else {
-                MVILog.debug("No toProfiles...");
+                Logging.finer("No toProfiles...");
             }
             if (!this.getFromProfiles().isEmpty()) {
                 updateProfile(this.getFromProfiles().get(0));
             } else {
-                MVILog.warning("No fromWorld to save to");
+                Logging.warning("No fromWorld to save to");
             }
-            MVILog.debug("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
+            Logging.finer("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
             return;
         }
 
@@ -193,14 +193,14 @@ final class ShareHandler {
         for (PersistingProfile persistingProfile : this.getToProfiles()) {
             updatePlayer(persistingProfile);
         }
-        MVILog.debug("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
+        Logging.finer("=== " + this.getPlayer().getName() + "'s travel handling complete! ===");
     }
 
     private void updateProfile(PersistingProfile profile) {
         for (Sharable sharable : profile.getShares().getSharables()) {
             sharable.updateProfile(profile.getProfile(), this.getPlayer());
         }
-        MVILog.debug("Persisting: " + profile.getShares().toString() + " to "
+        Logging.finest("Persisting: " + profile.getShares().toString() + " to "
                 + profile.getProfile().getType() + ":" + profile.getDataName()
                 + " for player " + profile.getProfile().getPlayer().getName());
         this.inventories.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
@@ -210,7 +210,7 @@ final class ShareHandler {
         for (Sharable sharable : profile.getShares().getSharables()) {
             sharable.updatePlayer(this.getPlayer(), profile.getProfile());
         }
-        MVILog.debug("Updating " + profile.getShares().toString() + " for "
+        Logging.finest("Updating " + profile.getShares().toString() + " for "
                 + profile.getProfile().getPlayer().getName() + "for "
                 + profile.getProfile().getType() + ":" + profile.getDataName());
     }

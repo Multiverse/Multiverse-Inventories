@@ -5,7 +5,7 @@ import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -102,13 +102,13 @@ public final class InventoriesListener implements Listener {
 
         // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {
-            MVILog.debug("PlayerChangedWorldEvent fired when player travelling in same world.");
+            Logging.fine("PlayerChangedWorldEvent fired when player travelling in same world.");
             return;
         }
         // Do nothing if dealing with non-managed worlds
         if (this.inventories.getCore().getMVWorldManager().getMVWorld(toWorld) == null
                 || this.inventories.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
-            MVILog.debug("The from or to world is not managed by Multiverse!");
+            Logging.fine("The from or to world is not managed by Multiverse!");
             return;
         }
 
