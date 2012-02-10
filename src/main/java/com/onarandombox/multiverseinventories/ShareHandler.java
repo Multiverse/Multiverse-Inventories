@@ -5,7 +5,9 @@ import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.DefaultSharable;
+import com.onarandombox.multiverseinventories.api.share.ISharable;
+import com.onarandombox.multiverseinventories.api.share.SharableSet;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.Logging;
@@ -103,7 +105,7 @@ final class ShareHandler {
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.inventories.getWorldManager()
                 .getWorldProfile(this.getFromWorld().getName());
-        this.addFromProfile(fromWorldProfile, new SimpleShares(Sharable.all()),
+        this.addFromProfile(fromWorldProfile, SharableSet.allOf(),
                 fromWorldProfile.getPlayerData(this.getPlayer()));
 
         if (Perm.BYPASS_WORLD.hasBypass(this.getPlayer(),
@@ -120,12 +122,11 @@ final class ShareHandler {
             PlayerProfile profile = fromWorldGroup.getPlayerData(this.getPlayer());
             if (!fromWorldGroup.containsWorld(this.getToWorld().getName())) {
                 this.addFromProfile(fromWorldGroup,
-                        new SimpleShares(Sharable.all()), profile);
+                        SharableSet.allOf(), profile);
             } else {
-                if (!fromWorldGroup.getShares().isSharing(Sharable.all())) {
-                    EnumSet<Sharable> sharing =
-                            EnumSet.complementOf(fromWorldGroup.getShares().getSharables());
-                    this.addFromProfile(fromWorldGroup, new SimpleShares(sharing), profile);
+                if (!fromWorldGroup.getShares().isSharing(SharableSet.all())) {
+                    Shares sharing = SharableSet.complementOf(fromWorldGroup.getShares());
+                    this.addFromProfile(fromWorldGroup, SharableSet.fromShares(sharing), profile);
                 }
             }
         }
@@ -145,13 +146,12 @@ final class ShareHandler {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());
                     if (!toWorldGroup.containsWorld(this.getFromWorld().getName())) {
                         this.addToProfile(toWorldGroup,
-                                new SimpleShares(Sharable.all()), profile);
+                                SharableSet.allOf(), profile);
                     } else {
-                        if (!toWorldGroup.getShares().isSharing(Sharable.all())) {
-                            EnumSet<Sharable> shares =
-                                    EnumSet.complementOf(toWorldGroup.getShares().getSharables());
+                        if (!toWorldGroup.getShares().isSharing(SharableSet.all())) {
+                            Shares shares = SharableSet.complementOf(toWorldGroup.getShares());
                             this.addToProfile(toWorldGroup,
-                                    new SimpleShares(shares), profile);
+                                    SharableSet.fromShares(shares), profile);
                         }
                     }
                 }
@@ -161,7 +161,7 @@ final class ShareHandler {
             Logging.finer("No groups for toWorld.");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
                     .getWorldProfile(this.getToWorld().getName());
-            this.addToProfile(toWorldProfile, new SimpleShares(Sharable.all()),
+            this.addToProfile(toWorldProfile, SharableSet.allOf(),
                     toWorldProfile.getPlayerData(this.getPlayer()));
         }
 
@@ -197,7 +197,7 @@ final class ShareHandler {
     }
 
     private void updateProfile(PersistingProfile profile) {
-        for (Sharable sharable : profile.getShares().getSharables()) {
+        for (ISharable sharable : profile.getShares()) {
             sharable.updateProfile(profile.getProfile(), this.getPlayer());
         }
         Logging.finest("Persisting: " + profile.getShares().toString() + " to "
@@ -207,7 +207,7 @@ final class ShareHandler {
     }
 
     private void updatePlayer(PersistingProfile profile) {
-        for (Sharable sharable : profile.getShares().getSharables()) {
+        for (ISharable sharable : profile.getShares()) {
             sharable.updatePlayer(this.getPlayer(), profile.getProfile());
         }
         Logging.finest("Updating " + profile.getShares().toString() + " for "

@@ -6,7 +6,7 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.DefaultSharable;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
@@ -71,7 +71,7 @@ public class MultiInvImporter implements DataImporter {
             WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(groupEntry.getValue());
             if (worldGroup == null) {
                 worldGroup = this.inventories.getGroupManager().newEmptyGroup(groupEntry.getValue());
-                worldGroup.setShares(new SimpleShares(Sharable.all()));
+                worldGroup.setShares(new SimpleShares(DefaultSharable.all()));
                 Logging.info("Importing group: " + groupEntry.getValue());
                 this.inventories.getGroupManager().addGroup(worldGroup, false);
             }

@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories.api.share;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 
-public interface SharableInterface {
+public interface ISharable {
 
     /**
      * @param profile Updates the data of this profile according to the Sharable

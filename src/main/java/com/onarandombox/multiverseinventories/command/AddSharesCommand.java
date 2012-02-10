@@ -4,7 +4,7 @@ import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.DefaultSharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import org.bukkit.command.CommandSender;
@@ -35,12 +35,12 @@ public class AddSharesCommand extends InventoriesCommand {
     public void runCommand(CommandSender sender, List<String> args) {
         Shares newShares;
         if (args.get(0).contains("all") || args.get(0).contains("everything") || args.get(0).contains("*")) {
-            newShares = new SimpleShares(Sharable.all());
+            newShares = new SimpleShares(DefaultSharable.all());
         } else {
             newShares = new SimpleShares();
             String[] sharesString = args.get(0).split(",");
             for (String shareString : sharesString) {
-                Sharable sharable = Sharable.lookup(shareString);
+                DefaultSharable sharable = DefaultSharable.lookup(shareString);
                 if (sharable == null) {
                     continue;
                 }

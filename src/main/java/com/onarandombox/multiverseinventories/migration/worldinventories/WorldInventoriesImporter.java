@@ -3,9 +3,9 @@ package com.onarandombox.multiverseinventories.migration.worldinventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.share.DefaultSharable;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.Group;
@@ -88,16 +88,16 @@ public class WorldInventoriesImporter implements DataImporter {
 
             try {
                 if (WorldInventories.doStats) {
-                    newGroup.setShares(new SimpleShares(Sharable.all()));
+                    newGroup.setShares(new SimpleShares(DefaultSharable.all()));
                 } else {
-                    newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+                    newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
                 }
             } catch (Exception ignore) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+                newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
             } catch (Error e) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(Sharable.INVENTORY, true);
+                newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
             }
             this.inventories.getGroupManager().addGroup(newGroup, true);
             Logging.info("Imported group: " + wiGroup.getName());

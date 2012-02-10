@@ -5,16 +5,15 @@ import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.share.SharableSet;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
-import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,8 +156,7 @@ final class DefaultGroupManager implements GroupManager {
         Collection<MultiverseWorld> mvWorlds = this.inventories.getCore().getMVWorldManager().getMVWorlds();
         if (!mvWorlds.isEmpty()) {
             WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
-            worldGroup.setShares(new SimpleShares(true, true,
-                    true, true, true));
+            worldGroup.setShares(SharableSet.allOf());
             for (MultiverseWorld mvWorld : mvWorlds) {
                 worldGroup.addWorld(mvWorld.getName());
             }
@@ -204,11 +202,11 @@ final class DefaultGroupManager implements GroupManager {
                         }
                     }
                     previousConflicts.put(checkingGroup, worldGroup);
-                    EnumSet<Sharable> conflictingShares = worldGroup.getShares()
-                            .isSharingAnyOf(checkingGroup.getShares().getSharables());
+                    Shares conflictingShares = worldGroup.getShares()
+                            .compare(checkingGroup.getShares());
                     if (!conflictingShares.isEmpty()) {
                         conflicts.add(new DefaultGroupingConflict(checkingGroup, worldGroup,
-                                new SimpleShares(conflictingShares)));
+                                new SharableSet(conflictingShares)));
                     }
                 }
             }

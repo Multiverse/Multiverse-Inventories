@@ -1,12 +1,14 @@
 package com.onarandombox.multiverseinventories.api.share;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface for getting what is shared in a world player.
  */
-public interface Shares {
+public interface Shares extends Cloneable, Iterable<ISharable>, Collection<ISharable>, Set<ISharable> {
 
     /**
      * Merges what is shared with another share.  Only the false items should be merged.
@@ -16,35 +18,30 @@ public interface Shares {
     void mergeShares(Shares newShares);
 
     /**
-     * @return An EnumSet of all Sharables.
-     */
-    EnumSet<Sharable> getSharables();
-
-    /**
      * @param sharable The Sharable you want to check for.
      * @return True if it is sharing the sharable.
      */
-    boolean isSharing(Sharable sharable);
+    boolean isSharing(ISharable sharable);
 
     /**
-     * @param sharables Set of sharables to compare with.
+     * @param shares Shares to compare with.
      * @return True if it is sharing the same sharables.
      */
-    boolean isSharing(EnumSet<Sharable> sharables);
+    boolean isSharing(Shares shares);
 
     /**
      * Checks to see if any of the sharables passed in are shared by this Shares.
      *
-     * @param sharables Sharables to check for.
+     * @param shares Shares to check for.
      * @return A Set containing all of the Sharables both sets contain.
      */
-    EnumSet<Sharable> isSharingAnyOf(EnumSet<Sharable> sharables);
+    Shares compare(Shares shares);
 
     /**
      * @param sharable The Sharable you wish to set sharing for.
      * @param sharing  Whether to share or not.
      */
-    void setSharing(Sharable sharable, boolean sharing);
+    void setSharing(ISharable sharable, boolean sharing);
 
     /**
      * @return These shares as a string list.

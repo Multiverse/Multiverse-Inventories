@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Enum for specifying the different sharable things.
  */
-public enum Sharable implements SharableInterface {
+public enum DefaultSharable implements ISharable {
 
     /**
      * Sharing Inventory.
@@ -118,19 +118,19 @@ public enum Sharable implements SharableInterface {
 
     private String[] names;
 
-    private static EnumSet<Sharable> all = EnumSet.allOf(Sharable.class);
+    private static EnumSet<DefaultSharable> all = EnumSet.allOf(DefaultSharable.class);
 
-    private static Map<String, Sharable> lookup = new HashMap<String, Sharable>();
+    private static Map<String, DefaultSharable> lookup = new HashMap<String, DefaultSharable>();
 
     static {
-        for (Sharable sharable : EnumSet.allOf(Sharable.class)) {
+        for (DefaultSharable sharable : EnumSet.allOf(DefaultSharable.class)) {
             for (String name : sharable.getNames()) {
                 lookup.put(name, sharable);
             }
         }
     }
 
-    Sharable(String... names) {
+    DefaultSharable(String... names) {
         this.names = names;
     }
 
@@ -139,7 +139,7 @@ public enum Sharable implements SharableInterface {
     }
 
     private void addLookup(String name) {
-        Sharable.lookup.put(name, this);
+        DefaultSharable.lookup.put(name, this);
     }
 
     /**
@@ -165,14 +165,14 @@ public enum Sharable implements SharableInterface {
      * @param name Name to look up by.
      * @return Sharable by that name or null if none by that name.
      */
-    public static Sharable lookup(String name) {
-        return Sharable.lookup.get(name);
+    public static DefaultSharable lookup(String name) {
+        return DefaultSharable.lookup.get(name);
     }
 
     /**
      * @return A set with all of the enum values.
      */
-    public static EnumSet<Sharable> all() {
+    static EnumSet<DefaultSharable> all() {
         return all;
     }
 }
