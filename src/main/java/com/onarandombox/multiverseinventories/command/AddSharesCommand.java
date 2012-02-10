@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.MVIPerms;
+import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
@@ -28,7 +28,7 @@ public class AddSharesCommand extends InventoriesCommand {
         this.addKey("mvinvadds");
         this.addKey("mvinvaddshares");
         this.addKey("mvinvaddshare");
-        this.setPermission(MVIPerms.COMMAND_ADDSHARES.getPerm());
+        this.setPermission(Perm.COMMAND_ADDSHARES.getPermission());
     }
 
     @Override
@@ -48,17 +48,17 @@ public class AddSharesCommand extends InventoriesCommand {
             }
         }
         if (newShares.getSharables().isEmpty()) {
-            this.getPlugin().getMessager().normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
+            this.messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
             return;
         }
-        WorldGroupProfile worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(1));
+        WorldGroupProfile worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
         if (worldGroup == null) {
-            this.getPlugin().getMessager().normal(Message.ERROR_NO_GROUP, sender, args.get(1));
+            this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
         worldGroup.getShares().mergeShares(newShares);
-        this.getPlugin().getMVIConfig().save();
-        this.getPlugin().getMessager().normal(Message.NOW_SHARING, sender, worldGroup.getName(),
+        this.plugin.getMVIConfig().save();
+        this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());
     }
 }

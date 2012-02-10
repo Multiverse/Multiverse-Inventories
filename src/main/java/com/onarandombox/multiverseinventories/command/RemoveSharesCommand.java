@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.MVIPerms;
+import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
@@ -34,7 +34,7 @@ public class RemoveSharesCommand extends InventoriesCommand {
         this.addKey("mvinvrmshares");
         this.addKey("mvinvremoveshare");
         this.addKey("mvinvrmshare");
-        this.setPermission(MVIPerms.COMMAND_RMSHARES.getPerm());
+        this.setPermission(Perm.COMMAND_RMSHARES.getPermission());
     }
 
     @Override
@@ -54,19 +54,19 @@ public class RemoveSharesCommand extends InventoriesCommand {
             }
         }
         if (newShares.getSharables().isEmpty()) {
-            this.getPlugin().getMessager().normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
+            this.messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
             return;
         }
-        WorldGroupProfile worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(1));
+        WorldGroupProfile worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
         if (worldGroup == null) {
-            this.getPlugin().getMessager().normal(Message.ERROR_NO_GROUP, sender, args.get(1));
+            this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
         for (Sharable sharable : newShares.getSharables()) {
             worldGroup.getShares().setSharing(sharable, false);
         }
-        this.getPlugin().getMVIConfig().save();
-        this.getPlugin().getMessager().normal(Message.NOW_SHARING, sender, worldGroup.getName(),
+        this.plugin.getMVIConfig().save();
+        this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());
     }
 }

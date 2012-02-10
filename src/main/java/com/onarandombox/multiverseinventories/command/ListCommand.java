@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.MVIPerms;
+import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
@@ -21,12 +21,12 @@ public class ListCommand extends InventoriesCommand {
         this.addKey("mvinv list");
         this.addKey("mvinvl");
         this.addKey("mvinvlist");
-        this.setPermission(MVIPerms.COMMAND_LIST.getPerm());
+        this.setPermission(Perm.COMMAND_LIST.getPermission());
     }
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        List<WorldGroupProfile> groups = this.getPlugin().getGroupManager().getGroups();
+        List<WorldGroupProfile> groups = this.plugin.getGroupManager().getGroups();
         String groupsString = "N/A";
         if (!groups.isEmpty()) {
             StringBuilder builder = new StringBuilder();
@@ -38,7 +38,7 @@ public class ListCommand extends InventoriesCommand {
             }
             groupsString = builder.toString();
         }
-        this.getPlugin().getMessager().normal(Message.LIST_GROUPS, sender, groupsString);
+        this.messager.normal(Message.LIST_GROUPS, sender, groupsString);
     }
 }
 

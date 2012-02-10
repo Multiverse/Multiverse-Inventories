@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.locale.Messager;
 import com.pneumaticraft.commandhandler.multiverse.Command;
 import org.bukkit.command.CommandSender;
 
@@ -11,20 +12,19 @@ import java.util.List;
  */
 public abstract class InventoriesCommand extends Command {
 
-    private MultiverseInventories plugin;
+    /**
+     * Instance of MultiverseInventories.
+     */
+    protected MultiverseInventories plugin;
+    /**
+     * Instance of messager used for Inventories.
+     */
+    protected Messager messager;
 
     public InventoriesCommand(MultiverseInventories plugin) {
         super(plugin);
         this.plugin = plugin;
-    }
-
-    /**
-     * Returns the instance of MultiverseInventories passed to this command.
-     *
-     * @return Instance of MultiverseInventories
-     */
-    protected MultiverseInventories getPlugin() {
-        return this.plugin;
+        this.messager = plugin.getMessager();
     }
 
     @Override

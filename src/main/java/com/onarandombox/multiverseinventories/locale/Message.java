@@ -24,6 +24,7 @@ public enum Message {
     GENERIC_COMMAND_NO_PERMISSION("You do not have permission to %1. (%2)"),
     GENERIC_THE_CONSOLE("the console"),
     GENERIC_NOT_LOGGED_IN("%1 is not logged on right now!"),
+    GENERIC_OFF("OFF"),
 
     // Errors
     ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),
@@ -62,7 +63,10 @@ public enum Message {
     // Spawn Command
     TELEPORTING("Teleporting to this group's spawn..."),
     TELEPORTED_BY("You were teleported by: %1"),
-    TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER");
+    TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER"),
+    // DebugCommand
+    INVALID_DEBUG("&fInvalid debug level.  Please use number 0-3.  &b(3 being many many messages!)"),
+    DEBUG_SET("Debug mode is %1");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 

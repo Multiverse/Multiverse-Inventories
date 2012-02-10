@@ -99,3 +99,9 @@ commands:
   gspawn:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
+  mvinvdebug:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
+  mvinvd:
+    description: Generic Multiverse-Inventories Command
+    usage: /<command>
