@@ -16,7 +16,7 @@ public interface Messager extends MessageProvider {
      * @param sender  The entity to send the messages to.
      * @param args    arguments for String.format().
      */
-    void bad(MultiverseMessage message, CommandSender sender, Object... args);
+    void bad(Message message, CommandSender sender, Object... args);
 
     /**
      * Sends a message to the specified player with NO special prefix.
@@ -25,7 +25,7 @@ public interface Messager extends MessageProvider {
      * @param sender  The entity to send the messages to.
      * @param args    arguments for String.format().
      */
-    void normal(MultiverseMessage message, CommandSender sender, Object... args);
+    void normal(Message message, CommandSender sender, Object... args);
 
     /**
      * Sends a message to the specified player with the generic SUCCESS prefix.
@@ -34,7 +34,7 @@ public interface Messager extends MessageProvider {
      * @param sender  The entity to send the messages to.
      * @param args    arguments for String.format().
      */
-    void good(MultiverseMessage message, CommandSender sender, Object... args);
+    void good(Message message, CommandSender sender, Object... args);
 
     /**
      * Sends a message to the specified player with the generic INFO prefix.
@@ -43,7 +43,7 @@ public interface Messager extends MessageProvider {
      * @param sender  The entity to send the messages to.
      * @param args    arguments for String.format().
      */
-    void info(MultiverseMessage message, CommandSender sender, Object... args);
+    void info(Message message, CommandSender sender, Object... args);
 
     /**
      * Sends a message to the specified player with the generic HELP prefix.
@@ -52,7 +52,7 @@ public interface Messager extends MessageProvider {
      * @param sender  The entity to send the messages to.
      * @param args    arguments for String.format().
      */
-    void help(MultiverseMessage message, CommandSender sender, Object... args);
+    void help(Message message, CommandSender sender, Object... args);
 
     /**
      * Sends a message to a player that automatically takes words that are too long and puts them on a new line.

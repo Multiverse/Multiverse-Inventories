@@ -1,12 +1,9 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.MultiverseCore.api.MVPlugin;
-import com.onarandombox.multiverseinventories.config.MVIConfig;
-import com.onarandombox.multiverseinventories.data.MVIData;
+import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
-import com.onarandombox.multiverseinventories.profile.ProfileManager;
-import org.bukkit.command.CommandSender;
 
 import java.io.File;
 
@@ -27,9 +24,9 @@ public interface Inventories extends MVPlugin, Messaging {
     String getVersionInfo();
 
     /**
-     * @return the MVIConfig object which contains settings for this plugin.
+     * @return the Config object which contains settings for this plugin.
      */
-    MVIConfig getSettings();
+    InventoriesConfig getMVIConfig();
 
     /**
      * Nulls the config object and reloads a new one, also resetting the world groups in memory.
@@ -37,17 +34,9 @@ public interface Inventories extends MVPlugin, Messaging {
     void reloadConfig();
 
     /**
-     * @return the MVIData object which contains data for this plugin.
+     * @return the PlayerData object which contains data for this plugin.
      */
-    MVIData getData();
-
-    /**
-     * Runs a check for conflicts between groups and displays them to console and sender if not null.
-     *
-     * @param sender The sender to relay information to.  If null, info only displayed in console.
-     */
-    // TODO move to group manager.
-    void checkForGroupConflicts(CommandSender sender);
+    PlayerData getData();
 
     /**
      * @return The required protocol version of core.
@@ -62,7 +51,7 @@ public interface Inventories extends MVPlugin, Messaging {
     /**
      * @return The Profile manager for this plugin.
      */
-    ProfileManager getProfileManager();
+    WorldProfileManager getWorldManager();
 
     /**
      * Gets the server's root-folder as {@link File}.

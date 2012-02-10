@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.migration;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.migration.multiinv.MultiInvImporter;
 import com.onarandombox.multiverseinventories.migration.worldinventories.WorldInventoriesImporter;
 import com.onarandombox.multiverseinventories.util.MVILog;
@@ -14,10 +15,10 @@ public class ImportManager {
 
     private MultiInvImporter multiInvImporter = null;
     private WorldInventoriesImporter worldInventoriesImporter = null;
-    private MultiverseInventories plugin;
+    private Inventories inventories;
 
-    public ImportManager(MultiverseInventories plugin) {
-        this.plugin = plugin;
+    public ImportManager(MultiverseInventories inventories) {
+        this.inventories = inventories;
     }
 
     /**
@@ -26,7 +27,7 @@ public class ImportManager {
      * @param plugin Instance of MultiInv.
      */
     public void hookMultiInv(MultiInv plugin) {
-        this.multiInvImporter = new MultiInvImporter(this.plugin, plugin);
+        this.multiInvImporter = new MultiInvImporter(this.inventories, plugin);
         MVILog.info("Hooked MultiInv for importing!");
     }
 
@@ -36,7 +37,7 @@ public class ImportManager {
      * @param plugin Instance of WorldInventories.
      */
     public void hookWorldInventories(WorldInventories plugin) {
-        this.worldInventoriesImporter = new WorldInventoriesImporter(this.plugin, plugin);
+        this.worldInventoriesImporter = new WorldInventoriesImporter(this.inventories, plugin);
         MVILog.info("Hooked WorldInventories for importing!");
     }
 

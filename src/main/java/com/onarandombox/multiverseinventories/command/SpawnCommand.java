@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.WorldGroup;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
+import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -44,45 +44,45 @@ public class SpawnCommand extends InventoriesCommand {
         if (args.size() == 1) {
             MVIPerms perm = MVIPerms.COMMAND_SPAWN_OTHER;
             if (player != null && !perm.has(player)) {
-                this.getPlugin().getMessager().normal(MultiverseMessage.GENERIC_COMMAND_NO_PERMISSION, player,
+                this.getPlugin().getMessager().normal(Message.GENERIC_COMMAND_NO_PERMISSION, player,
                         perm.getPerm().getDescription(), perm.getPerm().getName());
                 return;
             }
             Player target = Bukkit.getPlayer(args.get(0));
             if (target != null) {
-                this.getPlugin().getMessager().normal(MultiverseMessage.TELEPORTING, target);
+                this.getPlugin().getMessager().normal(Message.TELEPORTING, target);
                 spawnAccurately(target);
 
                 if (player != null) {
-                    this.getPlugin().getMessager().normal(MultiverseMessage.TELEPORTED_BY, target,
+                    this.getPlugin().getMessager().normal(Message.TELEPORTED_BY, target,
                             ChatColor.YELLOW + player.getName());
                 } else {
-                    this.getPlugin().getMessager().normal(MultiverseMessage.TELEPORTED_BY, target,
+                    this.getPlugin().getMessager().normal(Message.TELEPORTED_BY, target,
                             ChatColor.LIGHT_PURPLE + this.getPlugin().getMessager()
-                                    .getMessage(MultiverseMessage.GENERIC_THE_CONSOLE));
+                                    .getMessage(Message.GENERIC_THE_CONSOLE));
                 }
             } else {
-                this.getPlugin().getMessager().normal(MultiverseMessage.GENERIC_NOT_LOGGED_IN, sender, args.get(0));
+                this.getPlugin().getMessager().normal(Message.GENERIC_NOT_LOGGED_IN, sender, args.get(0));
             }
         } else {
             MVIPerms perm = MVIPerms.COMMAND_SPAWN;
             if (player != null && !perm.has(player)) {
-                this.getPlugin().getMessager().normal(MultiverseMessage.GENERIC_COMMAND_NO_PERMISSION, player,
+                this.getPlugin().getMessager().normal(Message.GENERIC_COMMAND_NO_PERMISSION, player,
                         perm.getPerm().getDescription(), perm.getPerm().getName());
                 return;
             }
             if (player != null) {
-                this.getPlugin().getMessager().normal(MultiverseMessage.TELEPORTING, player);
+                this.getPlugin().getMessager().normal(Message.TELEPORTING, player);
                 spawnAccurately(player);
             } else {
-                this.getPlugin().getMessager().normal(MultiverseMessage.TELEPORT_CONSOLE_ERROR, sender);
+                this.getPlugin().getMessager().normal(Message.TELEPORT_CONSOLE_ERROR, sender);
             }
         }
     }
 
     private void spawnAccurately(Player player) {
         World world = null;
-        for (WorldGroup group : this.getPlugin().getGroupManager().getGroupsForWorld(player.getWorld().getName())) {
+        for (WorldGroupProfile group : this.getPlugin().getGroupManager().getGroupsForWorld(player.getWorld().getName())) {
             if (group.getSpawnWorld() != null) {
                 world = Bukkit.getWorld(group.getSpawnWorld());
                 if (world != null) {

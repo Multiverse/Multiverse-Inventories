@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
+import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -35,12 +35,12 @@ public class ImportCommand extends InventoriesCommand {
         } else if (args.get(0).equalsIgnoreCase("WorldInventories")) {
             importer = this.getPlugin().getImportManager().getWorldInventoriesImporter();
         } else {
-            this.getPlugin().getMessager().bad(MultiverseMessage.ERROR_PLUGIN_NOT_ENABLED,
+            this.getPlugin().getMessager().bad(Message.ERROR_PLUGIN_NOT_ENABLED,
                     sender, args.get(0));
             return;
         }
         if (importer == null) {
-            this.getPlugin().getMessager().bad(MultiverseMessage.ERROR_PLUGIN_NOT_ENABLED,
+            this.getPlugin().getMessager().bad(Message.ERROR_PLUGIN_NOT_ENABLED,
                     sender, args.get(0));
         } else {
             try {

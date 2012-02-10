@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.WorldGroup;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
-import com.onarandombox.multiverseinventories.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,23 +30,23 @@ public class InfoCommand extends InventoriesCommand {
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        WorldProfile worldProfile = this.getPlugin().getProfileManager().getWorldProfile(args.get(0));
-        this.getPlugin().getMessager().normal(MultiverseMessage.INFO_WORLD, sender, args.get(0));
+        WorldProfile worldProfile = this.getPlugin().getWorldManager().getWorldProfile(args.get(0));
+        this.getPlugin().getMessager().normal(Message.INFO_WORLD, sender, args.get(0));
         if (worldProfile != null && Bukkit.getWorld(worldProfile.getWorld()) != null) {
             this.worldInfo(sender, worldProfile);
         } else {
-            this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_WORLD_PROFILE, sender, args.get(0));
+            this.getPlugin().getMessager().normal(Message.ERROR_NO_WORLD_PROFILE, sender, args.get(0));
         }
-        WorldGroup worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(0));
-        this.getPlugin().getMessager().normal(MultiverseMessage.INFO_GROUP, sender, args.get(0));
+        WorldGroupProfile worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(0));
+        this.getPlugin().getMessager().normal(Message.INFO_GROUP, sender, args.get(0));
         if (worldGroup != null) {
             this.groupInfo(sender, worldGroup);
         } else {
-            this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_GROUP, sender, args.get(0));
+            this.getPlugin().getMessager().normal(Message.ERROR_NO_GROUP, sender, args.get(0));
         }
     }
 
-    private void groupInfo(CommandSender sender, WorldGroup worldGroup) {
+    private void groupInfo(CommandSender sender, WorldGroupProfile worldGroup) {
         StringBuilder worldsString = new StringBuilder();
         Set<String> worlds = worldGroup.getWorlds();
         if (worlds.isEmpty()) {
@@ -60,18 +60,18 @@ public class InfoCommand extends InventoriesCommand {
             }
         }
 
-        this.getPlugin().getMessager().normal(MultiverseMessage.INFO_GROUP_INFO,
+        this.getPlugin().getMessager().normal(Message.INFO_GROUP_INFO,
                 sender, worldsString, worldGroup.getShares().toString());
     }
 
     private void worldInfo(CommandSender sender, WorldProfile worldProfile) {
         StringBuilder groupsString = new StringBuilder();
-        List<WorldGroup> worldGroups = this.getPlugin().getGroupManager().getGroupsForWorld(worldProfile.getWorld());
+        List<WorldGroupProfile> worldGroups = this.getPlugin().getGroupManager().getGroupsForWorld(worldProfile.getWorld());
 
         if (worldGroups.isEmpty()) {
             groupsString.append("N/A");
         } else {
-            for (WorldGroup worldGroup : worldGroups) {
+            for (WorldGroupProfile worldGroup : worldGroups) {
                 if (!groupsString.toString().isEmpty()) {
                     groupsString.append(", ");
                 }
@@ -79,7 +79,7 @@ public class InfoCommand extends InventoriesCommand {
             }
         }
 
-        this.getPlugin().getMessager().normal(MultiverseMessage.INFO_WORLD_INFO,
+        this.getPlugin().getMessager().normal(Message.INFO_WORLD_INFO,
                 sender, groupsString.toString());
     }
 }

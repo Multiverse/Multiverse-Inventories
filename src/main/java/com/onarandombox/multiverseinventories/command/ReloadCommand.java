@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
+import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class ReloadCommand extends InventoriesCommand {
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
         this.getPlugin().reloadConfig();
-        this.getPlugin().getMessager().normal(MultiverseMessage.RELOAD_COMPLETE, sender);
+        this.getPlugin().getMessager().normal(Message.RELOAD_COMPLETE, sender);
     }
 }
 

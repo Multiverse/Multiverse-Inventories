@@ -1,13 +1,12 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
-import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.WorldGroup;
-import com.onarandombox.multiverseinventories.group.SimpleWorldGroup;
+import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.share.Sharable;
-import com.onarandombox.multiverseinventories.share.SimpleShares;
+import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.SimpleShares;
 import com.onarandombox.multiverseinventories.util.MVILog;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
@@ -29,10 +28,10 @@ import java.util.List;
 public class WorldInventoriesImporter implements DataImporter {
 
     private WorldInventories wiPlugin;
-    private MultiverseInventories plugin;
+    private Inventories inventories;
 
-    public WorldInventoriesImporter(MultiverseInventories plugin, WorldInventories wiPlugin) {
-        this.plugin = plugin;
+    public WorldInventoriesImporter(Inventories inventories, WorldInventories wiPlugin) {
+        this.inventories = inventories;
         this.wiPlugin = wiPlugin;
     }
 
@@ -71,9 +70,9 @@ public class WorldInventoriesImporter implements DataImporter {
             throw new MigrationException("No data to import from WorldInventories!");
         }
         if (!wiGroups.isEmpty()) {
-            WorldGroup defaultWorldGroup = this.plugin.getGroupManager().getDefaultGroup();
+            WorldGroupProfile defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
-                this.plugin.getGroupManager().removeGroup(defaultWorldGroup);
+                this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
                 MVILog.info("Removed automatically created world group in favor of imported groups.");
             }
         }
@@ -82,7 +81,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 MVILog.warning("Group '" + wiGroup.getName() + "' has no worlds.  It will not be imported!");
                 continue;
             }
-            WorldGroup newGroup = new SimpleWorldGroup(this.plugin, wiGroup.getName());
+            WorldGroupProfile newGroup = this.inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
             }
@@ -100,14 +99,14 @@ public class WorldInventoriesImporter implements DataImporter {
                 MVILog.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharable.INVENTORY, true);
             }
-            this.plugin.getGroupManager().addGroup(newGroup, true);
+            this.inventories.getGroupManager().addGroup(newGroup, true);
             MVILog.info("Imported group: " + wiGroup.getName());
         }
-        this.plugin.getSettings().save();
+        this.inventories.getMVIConfig().save();
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             MVILog.info("Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
-                WorldGroup worldGroup = this.plugin.getGroupManager().getGroup(wiGroup.getName());
+                WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
                 if (worldGroup == null) {
                     MVILog.warning("Could not import player data for group: " + wiGroup.getName());
                     continue;
@@ -129,7 +128,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 playerProfile.setLevel(wiStats.getLevel());
                 playerProfile.setExhaustion(wiStats.getExhaustion());
                 playerProfile.setFoodLevel(wiStats.getFoodLevel());
-                this.plugin.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
+                this.inventories.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
                 MVILog.info("Player's data imported successfully from group: " + wiGroup.getName());
             }
         }

@@ -2,8 +2,11 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.WorldProfileManager;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
@@ -12,23 +15,14 @@ import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
-import com.onarandombox.multiverseinventories.config.CommentedMVIConfig;
-import com.onarandombox.multiverseinventories.config.MVIConfig;
-import com.onarandombox.multiverseinventories.data.FlatfileMVIData;
-import com.onarandombox.multiverseinventories.data.MVIData;
-import com.onarandombox.multiverseinventories.group.GroupingConflict;
-import com.onarandombox.multiverseinventories.listener.MVICoreListener;
-import com.onarandombox.multiverseinventories.listener.MVIServerListener;
-import com.onarandombox.multiverseinventories.listener.RespawnListener;
-import com.onarandombox.multiverseinventories.listener.WorldChangeListener;
+import com.onarandombox.multiverseinventories.util.data.FlatfilePlayerData;
+import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
 import com.onarandombox.multiverseinventories.locale.Messager;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
-import com.onarandombox.multiverseinventories.locale.SimpleMessager;
+import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
-import com.onarandombox.multiverseinventories.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.util.MVIDebug;
 import com.onarandombox.multiverseinventories.util.MVILog;
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -43,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -53,20 +46,17 @@ import java.util.logging.Level;
 public class MultiverseInventories extends JavaPlugin implements Inventories {
 
     private final int requiresProtocol = 12;
-    private final WorldChangeListener worldChangeListener = new WorldChangeListener(this);
-    private final MVIServerListener serverListener = new MVIServerListener(this);
-    private final MVICoreListener coreListener = new MVICoreListener(this);
-    private final RespawnListener respawnListener = new RespawnListener(this);
+    private final InventoriesListener inventoriesListener = new InventoriesListener(this);
 
-    private Messager messager = new SimpleMessager(this);
+    private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
-    private ProfileManager profileManager = null;
+    private WorldProfileManager profileManager = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
-    private MVIConfig config = null;
-    private MVIData data = null;
+    private InventoriesConfig config = null;
+    private PlayerData data = null;
 
     private File serverFolder = new File(System.getProperty("user.dir"));
 
@@ -74,7 +64,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      * {@inheritDoc}
      */
     @Override
-    public final void onDisable() {
+    public void onDisable() {
         // Display disable message/version info
         MVILog.info("disabled.", true);
     }
@@ -83,7 +73,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      * {@inheritDoc}
      */
     @Override
-    public final void onEnable() {
+    public void onEnable() {
         MVILog.init(this);
         MVIPerms.register(this);
 
@@ -112,7 +102,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.reloadConfig();
 
         try {
-            this.getMessager().setLocale(new Locale(this.getSettings().getLocale()));
+            this.getMessager().setLocale(new Locale(this.getMVIConfig().getLocale()));
         } catch (IllegalArgumentException e) {
             MVILog.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -120,12 +110,12 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         }
 
         // Initialize data class
-        //this.getProfileManager().setWorldProfiles(this.getData().getWorldProfiles());
+        //this.getWorldManager().setWorldProfiles(this.getData().getWorldProfiles());
 
         this.getCore().incrementPluginCount();
 
         // Register Events
-        this.registerEvents();
+        Bukkit.getPluginManager().registerEvents(inventoriesListener, this);
 
         // Register Commands
         this.registerCommands();
@@ -135,15 +125,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
         // Display enable message/version info
         MVILog.info("enabled.", true);
-    }
-
-    private void registerEvents() {
-        final PluginManager pm = Bukkit.getPluginManager();
-        // Event registering goes here
-        pm.registerEvents(worldChangeListener, this);
-        pm.registerEvents(serverListener, this);
-        pm.registerEvents(coreListener, this);
-        pm.registerEvents(respawnListener, this);
     }
 
     private void registerCommands() {
@@ -251,8 +232,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
-        builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getSettings().isDebugging()));
-        builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getSettings().isFirstRun()));
+        builder.append(this.logAndAddToPasteBinBuffer("Debug Mode: " + this.getMVIConfig().isDebugging()));
+        builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));
         return builder.toString();
     }
@@ -266,14 +247,14 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      * {@inheritDoc}
      */
     @Override
-    public MVIConfig getSettings() {
+    public InventoriesConfig getMVIConfig() {
         if (this.config == null) {
             // Loads the configuration
             try {
-                this.config = new CommentedMVIConfig(this);
+                this.config = new CommentedInventoriesConfig(this);
                 MVILog.debug("Loaded config file!");
             } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
-                MVILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_CONFIG_LOAD));
+                MVILog.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
                 MVILog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
@@ -291,72 +272,37 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.groupManager = null;
         this.profileManager = null;
         // Set debug mode from config
-        MVILog.setDebugMode(this.getSettings().isDebugging());
+        MVILog.setDebugMode(this.getMVIConfig().isDebugging());
         // Get world groups from config
 
-        this.getGroupManager().setGroups(this.getSettings().getWorldGroups());
+        this.getGroupManager().setGroups(this.getMVIConfig().getWorldGroups());
         // Create initial World Group for first run IF NO GROUPS EXIST
-        if (this.getSettings().isFirstRun()) {
+        if (this.getMVIConfig().isFirstRun()) {
             MVILog.info("First run!");
             if (this.getGroupManager().getGroups().isEmpty()) {
                 this.getGroupManager().createDefaultGroup();
             }
         }
-        this.checkForGroupConflicts(null);
+        this.getGroupManager().checkForConflicts(null);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public MVIData getData() {
+    public PlayerData getData() {
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new FlatfileMVIData(this);
+                this.data = new FlatfilePlayerData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
-                MVILog.severe(this.getMessager().getMessage(MultiverseMessage.ERROR_DATA_LOAD));
+                MVILog.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
                 MVILog.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);
                 return null;
             }
         }
         return this.data;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void checkForGroupConflicts(CommandSender sender) {
-        String message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_CHECKING);
-        if (sender != null) {
-            this.getMessager().sendMessage(sender, message);
-        }
-        MVILog.info(message);
-        List<GroupingConflict> conflicts = this.getGroupManager().checkGroups();
-        for (GroupingConflict conflict : conflicts) {
-            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_RESULTS,
-                    conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),
-                    conflict.getConflictingShares().toString(), conflict.getWorldsString());
-            if (sender != null) {
-                this.getMessager().sendMessage(sender, message);
-            }
-            MVILog.info(message);
-        }
-        if (!conflicts.isEmpty()) {
-            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_FOUND);
-            if (sender != null) {
-                this.getMessager().sendMessage(sender, message);
-            }
-            MVILog.info(message);
-        } else {
-            message = this.getMessager().getMessage(MultiverseMessage.CONFLICT_NOT_FOUND);
-            if (sender != null) {
-                this.getMessager().sendMessage(sender, message);
-            }
-            MVILog.info(message);
-        }
     }
 
     /**
@@ -401,9 +347,9 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      * {@inheritDoc}
      */
     @Override
-    public ProfileManager getProfileManager() {
+    public WorldProfileManager getWorldManager() {
         if (this.profileManager == null) {
-            this.profileManager = new WeakProfileManager(this);
+            this.profileManager = new WeakWorldProfileManager(this);
         }
         return this.profileManager;
     }

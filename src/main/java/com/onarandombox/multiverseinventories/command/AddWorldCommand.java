@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.util.MVIPerms;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.WorldGroup;
-import com.onarandombox.multiverseinventories.locale.MultiverseMessage;
-import com.onarandombox.multiverseinventories.permission.MVIPerms;
+import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -32,22 +32,22 @@ public class AddWorldCommand extends InventoriesCommand {
     public void runCommand(CommandSender sender, List<String> args) {
         World world = Bukkit.getWorld(args.get(0));
         if (world == null) {
-            this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_WORLD, sender, args.get(0));
+            this.getPlugin().getMessager().normal(Message.ERROR_NO_WORLD, sender, args.get(0));
             return;
         }
-        WorldGroup worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(1));
+        WorldGroupProfile worldGroup = this.getPlugin().getGroupManager().getGroup(args.get(1));
         if (worldGroup == null) {
-            this.getPlugin().getMessager().normal(MultiverseMessage.ERROR_NO_GROUP, sender, args.get(1));
+            this.getPlugin().getMessager().normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
         if (worldGroup.containsWorld(world.getName())) {
-            this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ALREADY_EXISTS, sender, world.getName(),
+            this.getPlugin().getMessager().normal(Message.WORLD_ALREADY_EXISTS, sender, world.getName(),
                     worldGroup.getName());
             return;
         }
         worldGroup.addWorld(world);
-        this.getPlugin().getSettings().save();
-        this.getPlugin().getMessager().normal(MultiverseMessage.WORLD_ADDED, sender, world.getName(),
+        this.getPlugin().getMVIConfig().save();
+        this.getPlugin().getMessager().normal(Message.WORLD_ADDED, sender, world.getName(),
                 worldGroup.getName());
     }
 }
