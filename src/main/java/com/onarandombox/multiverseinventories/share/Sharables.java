@@ -13,11 +13,18 @@ import java.util.Set;
 
 public class Sharables implements Shares {
 
+    public static final Sharable INVENTORY = DefaultSharable.INVENTORY;
+    public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
+    public static final Sharable HEALTH = DefaultSharable.HEALTH;
+    public static final Sharable HUNGER = DefaultSharable.HUNGER;
+    public static final Sharable BED_SPAWN = DefaultSharable.BED_SPAWN;
+
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
     private static Map<String, Sharable> lookupMap = new HashMap<String, Sharable>();
 
     static {
         for (Sharable sharable : EnumSet.allOf(DefaultSharable.class)) {
+            allSharables.add(sharable);
             for (String name : sharable.getNames()) {
                 lookupMap.put(name.toLowerCase(), sharable);
             }
@@ -49,7 +56,9 @@ public class Sharables implements Shares {
     }
 
     public static Shares allOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
+        Shares shares = new Sharables(new LinkedHashSet<Sharable>(allSharables));
+        System.out.println("allOf(): " + shares);
+        return shares;
     }
 
     public static Shares noneOf() {
@@ -214,7 +223,7 @@ public class Sharables implements Shares {
      */
     @Override
     public boolean isSharing(Shares shares) {
-        boolean isSharing = this.equals(shares);
+        boolean isSharing = this.sharables.equals(shares);
         if (!isSharing) {
             for (Sharable sharable : shares) {
                 if (!this.isSharing(sharable)) {

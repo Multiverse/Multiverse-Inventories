@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 /**
  * Enum for specifying the different sharable things.
  */
-public enum DefaultSharable implements Sharable {
+enum DefaultSharable implements Sharable {
 
     /**
      * Sharing Inventory.

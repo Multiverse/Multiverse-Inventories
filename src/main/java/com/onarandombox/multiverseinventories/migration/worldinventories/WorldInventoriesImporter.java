@@ -5,7 +5,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.share.DefaultSharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.Group;
@@ -90,14 +89,14 @@ public class WorldInventoriesImporter implements DataImporter {
                 if (WorldInventories.doStats) {
                     newGroup.setShares(Sharables.allOf());
                 } else {
-                    newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
+                    newGroup.getShares().setSharing(Sharables.INVENTORY, true);
                 }
             } catch (Exception ignore) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
+                newGroup.getShares().setSharing(Sharables.INVENTORY, true);
             } catch (Error e) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(DefaultSharable.INVENTORY, true);
+                newGroup.getShares().setSharing(Sharables.INVENTORY, true);
             }
             this.inventories.getGroupManager().addGroup(newGroup, true);
             Logging.info("Imported group: " + wiGroup.getName());
