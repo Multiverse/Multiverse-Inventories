@@ -2,7 +2,9 @@ package com.onarandombox.multiverseinventories.migration.worldinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.share.Sharables;
@@ -13,13 +15,16 @@ import me.drayshak.WorldInventories.WIPlayerStats;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Handles the importing of data from WorldInventories.
@@ -78,10 +83,11 @@ public class WorldInventoriesImporter implements DataImporter {
             Logging.warning("Could not locate any WorldInventories groups to import from!");
             return;
         }
+
         for (Group wiGroup : wiGroups) {
             if (wiGroup.getWorlds().isEmpty()) {
-                Logging.warning("Group '" + wiGroup.getName() + "' has no worlds.  It will not be imported!");
-                continue;
+                Logging.warning("Group '" + wiGroup.getName() + "' has no worlds."
+                        + "  You may need to add these manually!");
             }
             WorldGroupProfile newGroup = this.inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
@@ -102,36 +108,33 @@ public class WorldInventoriesImporter implements DataImporter {
                 newGroup.getShares().setSharing(Sharables.INVENTORY, true);
             }
             this.inventories.getGroupManager().addGroup(newGroup, true);
-            Logging.info("Imported group: " + wiGroup.getName());
+            Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());
+        }
+        Set<WorldProfile> noGroupWorlds = new LinkedHashSet<WorldProfile>();
+        for (World world : Bukkit.getWorlds()) {
+            if (this.inventories.getGroupManager().getGroupsForWorld(world.getName()).isEmpty()) {
+                Logging.fine("Added ungrouped world for importing.");
+                WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(world.getName());
+                noGroupWorlds.add(worldProfile);
+            }
         }
         this.inventories.getMVIConfig().save();
-        for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
-            Logging.info("Processing WorldInventories data for player: " + player.getName());
+        OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
+        Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer" +
+                " this process will take.  Please be patient. :)  Your server will freeze for the duration.");
+        for (OfflinePlayer player : offlinePlayers) {
+            Logging.finer("Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
                 WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
                 if (worldGroup == null) {
-                    Logging.warning("Could not import player data for group: " + wiGroup.getName());
+                    Logging.finest("Could not import player data for WorldInventories group: " + wiGroup.getName()
+                            + " because there is no Multiverse-Inventories group by that name.");
                     continue;
                 }
-                WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
-                if (wiInventory == null) {
-                    continue;
-                }
-                WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
-                if (wiStats == null) {
-                    continue;
-                }
-                PlayerProfile playerProfile = worldGroup.getPlayerData(player);
-                playerProfile.setInventoryContents(wiInventory.getItems());
-                playerProfile.setArmorContents(wiInventory.getArmour());
-                playerProfile.setHealth(wiStats.getHealth());
-                playerProfile.setSaturation(wiStats.getSaturation());
-                playerProfile.setExp(wiStats.getExp());
-                playerProfile.setLevel(wiStats.getLevel());
-                playerProfile.setExhaustion(wiStats.getExhaustion());
-                playerProfile.setFoodLevel(wiStats.getFoodLevel());
-                this.inventories.getData().updatePlayerData(worldGroup.getDataName(), playerProfile);
-                Logging.info("Player's data imported successfully from group: " + wiGroup.getName());
+                this.transferData(player, wiGroup, worldGroup);
+            }
+            for (WorldProfile worldProfile : noGroupWorlds) {
+                this.transferData(player, null, worldProfile);
             }
         }
 
@@ -139,6 +142,25 @@ public class WorldInventoriesImporter implements DataImporter {
         Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
     }
 
+    private void transferData(OfflinePlayer player, Group wiGroup, ProfileContainer profileContainer) {
+        PlayerProfile playerProfile = profileContainer.getPlayerData(player);
+        WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
+        WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
+        if (wiInventory != null) {
+            playerProfile.setInventoryContents(wiInventory.getItems());
+            playerProfile.setArmorContents(wiInventory.getArmour());
+        }
+        if (wiStats != null) {
+            playerProfile.setHealth(wiStats.getHealth());
+            playerProfile.setSaturation(wiStats.getSaturation());
+            playerProfile.setExp(wiStats.getExp());
+            playerProfile.setLevel(wiStats.getLevel());
+            playerProfile.setExhaustion(wiStats.getExhaustion());
+            playerProfile.setFoodLevel(wiStats.getFoodLevel());
+        }
+        this.inventories.getData().updatePlayerData(profileContainer.getDataName(), playerProfile);
+        Logging.finest("Player's data imported successfully for group: " + profileContainer.getDataName());
+    }
 
     private File getFile(OfflinePlayer player, Group group, DataType dataType) {
         StringBuilder path = new StringBuilder();
