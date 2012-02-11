@@ -74,6 +74,9 @@ public class WorldInventoriesImporter implements DataImporter {
                 this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
                 Logging.info("Removed automatically created world group in favor of imported groups.");
             }
+        } else {
+            Logging.warning("Could not locate any WorldInventories groups to import from!");
+            return;
         }
         for (Group wiGroup : wiGroups) {
             if (wiGroup.getWorlds().isEmpty()) {
