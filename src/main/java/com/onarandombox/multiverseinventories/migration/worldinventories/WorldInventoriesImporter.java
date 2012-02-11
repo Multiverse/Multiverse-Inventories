@@ -139,30 +139,38 @@ public class WorldInventoriesImporter implements DataImporter {
         Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
     }
 
-    // Copied and modified from WorldInventories
-    private WIPlayerInventory loadPlayerInventory(OfflinePlayer player, Group group) {
-        WIPlayerInventory playerInventory = null;
-        FileInputStream fIS = null;
-        ObjectInputStream obIn = null;
 
-        String path = File.separator;
+    private File getFile(OfflinePlayer player, Group group, DataType dataType) {
+        StringBuilder path = new StringBuilder();
+        path.append(File.separator);
 
         // Use default group
         if (group == null) {
-            path += "default";
+            path.append("default");
         } else {
-            path += group.getName();
+            path.append(group.getName());
         }
+        path.insert(0, this.getWIPlugin().getDataFolder().getAbsolutePath());
+        path.append(File.separator).append(player.getName()).append(dataType.fileExtension);
 
-        path = this.getWIPlugin().getDataFolder().getAbsolutePath() + path;
-        File file = new File(path);
+        File file = new File(path.toString());
         if (!file.exists()) {
+            file = null;
+        }
+        return file;
+    }
+
+    // Copied and modified from WorldInventories
+    private WIPlayerInventory loadPlayerInventory(OfflinePlayer player, Group group) {
+        File file = this.getFile(player, group, DataType.INVENTORY);
+        if (file == null) {
             return null;
         }
-
-        path += File.separator + player.getName() + ".inventory";
+        WIPlayerInventory playerInventory = null;
+        FileInputStream fIS = null;
+        ObjectInputStream obIn = null;
         try {
-            fIS = new FileInputStream(path);
+            fIS = new FileInputStream(file);
             obIn = new ObjectInputStream(fIS);
             playerInventory = (WIPlayerInventory) obIn.readObject();
         } catch (Exception ignore) {
@@ -186,29 +194,15 @@ public class WorldInventoriesImporter implements DataImporter {
 
     // Copied and modified from WorldInventories
     private WIPlayerStats loadPlayerStats(OfflinePlayer player, Group group) {
+        File file = this.getFile(player, group, DataType.STATS);
+        if (file == null) {
+            return null;
+        }
         WIPlayerStats playerstats = null;
         FileInputStream fIS = null;
         ObjectInputStream obIn = null;
-
-        String path = File.separator;
-
-        // Use default group
-        if (group == null) {
-            path += "default";
-        } else {
-            path += group.getName();
-        }
-
-        path = this.getWIPlugin().getDataFolder().getAbsolutePath() + path;
-        File file = new File(path);
-        if (!file.exists()) {
-            return null;
-        }
-
-        path += File.separator + player.getName() + ".stats";
-
         try {
-            fIS = new FileInputStream(path);
+            fIS = new FileInputStream(file);
             obIn = new ObjectInputStream(fIS);
             playerstats = (WIPlayerStats) obIn.readObject();
         } catch (Exception ignore) {
@@ -228,6 +222,17 @@ public class WorldInventoriesImporter implements DataImporter {
         }
 
         return playerstats;
+    }
+
+    private static enum DataType {
+        INVENTORY(".inventory"),
+        STATS(".stats");
+
+        String fileExtension;
+
+        DataType(String fileExtension) {
+            this.fileExtension = fileExtension;
+        }
     }
 }
 
