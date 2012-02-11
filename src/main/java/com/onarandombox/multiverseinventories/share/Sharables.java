@@ -56,9 +56,7 @@ public class Sharables implements Shares {
     }
 
     public static Shares allOf() {
-        Shares shares = new Sharables(new LinkedHashSet<Sharable>(allSharables));
-        System.out.println("allOf(): " + shares);
-        return shares;
+        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
     }
 
     public static Shares noneOf() {
