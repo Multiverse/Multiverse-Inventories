@@ -24,4 +24,6 @@ public interface Sharable {
      * @param profile The profile whose values will be used to update the give player.
      */
     void updatePlayer(Player player, PlayerProfile profile);
+
+    String[] getNames();
 }

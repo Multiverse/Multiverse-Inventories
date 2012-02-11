@@ -1,24 +1,51 @@
 package com.onarandombox.multiverseinventories.share;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Sharables implements Shares {
 
-    private static Shares allSharables =
-            new Sharables(new LinkedHashSet<Sharable>(EnumSet.allOf(DefaultSharable.class)));
+    private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
+    private static Map<String, Sharable> lookupMap = new HashMap<String, Sharable>();
+
+    static {
+        for (Sharable sharable : EnumSet.allOf(DefaultSharable.class)) {
+            for (String name : sharable.getNames()) {
+                lookupMap.put(name.toLowerCase(), sharable);
+            }
+        }
+    }
 
     public static boolean register(Sharable sharable) {
-        return allSharables.add(sharable);
+        if (allSharables.add(sharable)) {
+            for (String name : sharable.getNames()) {
+                lookupMap.put(name.toLowerCase(), sharable);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Looks up a sharable by one of the acceptable names.
+     *
+     * @param name Name to look up by.
+     * @return Sharable by that name or null if none by that name.
+     */
+    public static Sharable lookup(String name) {
+        return lookupMap.get(name.toLowerCase());
     }
 
     public static Shares all() {
-        return allSharables;
+        return (Shares) Collections.unmodifiableSet(allSharables);
     }
 
     public static Shares allOf() {
@@ -43,7 +70,7 @@ public class Sharables implements Shares {
         Shares shares = noneOf();
         for (Object shareStringObj : sharesList) {
             String shareString = shareStringObj.toString();
-            Sharable sharable = DefaultSharable.lookup(shareString);
+            Sharable sharable = Sharables.lookup(shareString);
             if (sharable != null) {
                 shares.add(sharable);
             } else {

@@ -4,10 +4,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Enum for specifying the different sharable things.
  */
@@ -118,32 +114,18 @@ public enum DefaultSharable implements Sharable {
 
     private String[] names;
 
-    private static Map<String, DefaultSharable> lookup = new HashMap<String, DefaultSharable>();
-
-    static {
-        for (DefaultSharable sharable : EnumSet.allOf(DefaultSharable.class)) {
-            for (String name : sharable.getNames()) {
-                lookup.put(name, sharable);
-            }
-        }
-    }
-
     DefaultSharable(String... names) {
         this.names = names;
-    }
-
-    private String[] getNames() {
-        return this.names;
-    }
-
-    private void addLookup(String name) {
-        DefaultSharable.lookup.put(name, this);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    public String[] getNames() {
+        return this.names;
+    }
+
     public abstract void updateProfile(PlayerProfile profile, Player player);
 
     /**
@@ -155,17 +137,6 @@ public enum DefaultSharable implements Sharable {
     @Override
     public String toString() {
         return this.names[0];
-    }
-
-    /**
-     * TODO Move to {@link Sharables}
-     * Looks up a sharable by one of the acceptable names.
-     *
-     * @param name Name to look up by.
-     * @return Sharable by that name or null if none by that name.
-     */
-    public static Sharable lookup(String name) {
-        return DefaultSharable.lookup.get(name);
     }
 }
 
