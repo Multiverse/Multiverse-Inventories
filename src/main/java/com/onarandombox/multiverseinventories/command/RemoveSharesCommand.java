@@ -1,12 +1,13 @@
 package com.onarandombox.multiverseinventories.command;
 
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.share.DefaultSharable;
-import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.api.share.Shares;
-import com.onarandombox.multiverseinventories.api.share.SimpleShares;
+import com.onarandombox.multiverseinventories.share.DefaultSharable;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -41,19 +42,19 @@ public class RemoveSharesCommand extends InventoriesCommand {
     public void runCommand(CommandSender sender, List<String> args) {
         Shares newShares;
         if (args.get(0).contains("all") || args.get(0).contains("everything") || args.get(0).contains("*")) {
-            newShares = new SimpleShares(DefaultSharable.all());
+            newShares = Sharables.allOf();
         } else {
-            newShares = new SimpleShares();
+            newShares = Sharables.noneOf();
             String[] sharesString = args.get(0).split(",");
             for (String shareString : sharesString) {
-                DefaultSharable sharable = DefaultSharable.lookup(shareString);
+                Sharable sharable = DefaultSharable.lookup(shareString);
                 if (sharable == null) {
                     continue;
                 }
                 newShares.setSharing(sharable, true);
             }
         }
-        if (newShares.getSharables().isEmpty()) {
+        if (newShares.isEmpty()) {
             this.messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
             return;
         }
@@ -62,7 +63,7 @@ public class RemoveSharesCommand extends InventoriesCommand {
             this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
-        for (DefaultSharable sharable : newShares.getSharables()) {
+        for (Sharable sharable : newShares) {
             worldGroup.getShares().setSharing(sharable, false);
         }
         this.plugin.getMVIConfig().save();

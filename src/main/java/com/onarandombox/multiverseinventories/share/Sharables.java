@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.share;
+package com.onarandombox.multiverseinventories.share;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -8,12 +8,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class SharableSet implements Shares {
+public class Sharables implements Shares {
 
     private static Shares allSharables =
-            new SharableSet(new LinkedHashSet<ISharable>(EnumSet.allOf(DefaultSharable.class)));
+            new Sharables(new LinkedHashSet<Sharable>(EnumSet.allOf(DefaultSharable.class)));
 
-    public static boolean register(ISharable sharable) {
+    public static boolean register(Sharable sharable) {
         return allSharables.add(sharable);
     }
 
@@ -22,31 +22,49 @@ public class SharableSet implements Shares {
     }
 
     public static Shares allOf() {
-        return new SharableSet(new LinkedHashSet<ISharable>(allSharables));
+        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
     }
-    
+
     public static Shares noneOf() {
-        return new SharableSet(new LinkedHashSet<ISharable>(allSharables.size()));
+        return new Sharables(new LinkedHashSet<Sharable>(allSharables.size()));
     }
-    
+
     public static Shares complementOf(Shares shares) {
-        Set<ISharable> compliment = SharableSet.allOf();
+        Set<Sharable> compliment = Sharables.allOf();
         compliment.removeAll(shares);
-        return new SharableSet(compliment);
+        return new Sharables(compliment);
     }
-    
+
     public static Shares fromShares(Shares shares) {
-        return new SharableSet(shares);
+        return new Sharables(shares);
     }
 
-    private Set<ISharable> sharables;
+    public static Shares fromList(List sharesList) {
+        Shares shares = noneOf();
+        for (Object shareStringObj : sharesList) {
+            String shareString = shareStringObj.toString();
+            Sharable sharable = DefaultSharable.lookup(shareString);
+            if (sharable != null) {
+                shares.add(sharable);
+            } else {
+                if (shareString.equals("*") || shareString.equalsIgnoreCase("all")
+                        || shareString.equalsIgnoreCase("everything")) {
+                    shares = allOf();
+                    break;
+                }
+            }
+        }
+        return shares;
+    }
 
-    private SharableSet(Set<ISharable> sharableSet) {
+    private Set<Sharable> sharables;
+
+    private Sharables(Set<Sharable> sharableSet) {
         this.sharables = sharableSet;
     }
-    
-    private SharableSet(Shares shares) {
-        this.sharables = new LinkedHashSet<ISharable>(allSharables.size());
+
+    private Sharables(Shares shares) {
+        this.sharables = new LinkedHashSet<Sharable>(allSharables.size());
         this.sharables.addAll(shares);
     }
 
@@ -66,7 +84,7 @@ public class SharableSet implements Shares {
     }
 
     @Override
-    public Iterator<ISharable> iterator() {
+    public Iterator<Sharable> iterator() {
         return this.sharables.iterator();
     }
 
@@ -81,7 +99,7 @@ public class SharableSet implements Shares {
     }
 
     @Override
-    public boolean add(ISharable sharable) {
+    public boolean add(Sharable sharable) {
         return this.sharables.add(sharable);
     }
 
@@ -96,7 +114,7 @@ public class SharableSet implements Shares {
     }
 
     @Override
-    public boolean addAll(Collection<? extends ISharable> c) {
+    public boolean addAll(Collection<? extends Sharable> c) {
         return this.sharables.addAll(c);
     }
 
@@ -117,7 +135,7 @@ public class SharableSet implements Shares {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Shares && ((Shares)o).isSharing(this);
+        return o instanceof Shares && ((Shares) o).isSharing(this);
     }
 
     @Override
@@ -137,7 +155,7 @@ public class SharableSet implements Shares {
      * {@inheritDoc}
      */
     @Override
-    public void setSharing(ISharable sharable, boolean sharing) {
+    public void setSharing(Sharable sharable, boolean sharing) {
         if (sharing) {
             this.add(sharable);
         } else {
@@ -147,8 +165,8 @@ public class SharableSet implements Shares {
 
     @Override
     public Shares compare(Shares shares) {
-        Shares bothSharing = SharableSet.noneOf();
-        for (ISharable sharable : shares) {
+        Shares bothSharing = Sharables.noneOf();
+        for (Sharable sharable : shares) {
             if (this.contains(sharable)) {
                 bothSharing.add(sharable);
             }
@@ -160,7 +178,7 @@ public class SharableSet implements Shares {
      * {@inheritDoc}
      */
     @Override
-    public boolean isSharing(ISharable sharable) {
+    public boolean isSharing(Sharable sharable) {
         return this.contains(sharable);
     }
 
@@ -171,7 +189,7 @@ public class SharableSet implements Shares {
     public boolean isSharing(Shares shares) {
         boolean isSharing = this.equals(shares);
         if (!isSharing) {
-            for (ISharable sharable : shares) {
+            for (Sharable sharable : shares) {
                 if (!this.isSharing(sharable)) {
                     return false;
                 }
@@ -187,10 +205,10 @@ public class SharableSet implements Shares {
     @Override
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
-        if (this.isSharing(SharableSet.allOf())) {
+        if (this.isSharing(Sharables.allOf())) {
             list.add("*");
         } else {
-            for (ISharable sharable : this) {
+            for (Sharable sharable : this) {
                 list.add(sharable.toString());
             }
         }
@@ -200,7 +218,7 @@ public class SharableSet implements Shares {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        for (ISharable sharable : this) {
+        for (Sharable sharable : this) {
             if (!stringBuilder.toString().isEmpty()) {
                 stringBuilder.append(", ");
             }

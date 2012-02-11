@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.share;
+package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.Location;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * Enum for specifying the different sharable things.
  */
-public enum DefaultSharable implements ISharable {
+public enum DefaultSharable implements Sharable {
 
     /**
      * Sharing Inventory.
@@ -118,8 +118,6 @@ public enum DefaultSharable implements ISharable {
 
     private String[] names;
 
-    private static EnumSet<DefaultSharable> all = EnumSet.allOf(DefaultSharable.class);
-
     private static Map<String, DefaultSharable> lookup = new HashMap<String, DefaultSharable>();
 
     static {
@@ -160,20 +158,14 @@ public enum DefaultSharable implements ISharable {
     }
 
     /**
+     * TODO Move to {@link Sharables}
      * Looks up a sharable by one of the acceptable names.
      *
      * @param name Name to look up by.
      * @return Sharable by that name or null if none by that name.
      */
-    public static DefaultSharable lookup(String name) {
+    public static Sharable lookup(String name) {
         return DefaultSharable.lookup.get(name);
-    }
-
-    /**
-     * @return A set with all of the enum values.
-     */
-    static EnumSet<DefaultSharable> all() {
-        return all;
     }
 }
 

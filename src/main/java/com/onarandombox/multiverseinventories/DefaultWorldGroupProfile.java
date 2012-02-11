@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.share.Shares;
-import com.onarandombox.multiverseinventories.api.share.SimpleShares;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
@@ -27,7 +27,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     private boolean spawnForMV = false;
     private EventPriority spawnPriority = EventPriority.NORMAL;
     private HashSet<String> worlds = new HashSet<String>();
-    private Shares shares = new SimpleShares();
+    private Shares shares = Sharables.noneOf();
     //private HashMap<String, ItemBlacklist> itemBlacklist = new HashMap<String, ItemBlacklist>();
 
     public DefaultWorldGroupProfile(Inventories inventories, String name) {
@@ -55,7 +55,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         if (dataMap.containsKey("shares")) {
             Object sharesListObj = dataMap.get("shares");
             if (sharesListObj instanceof List) {
-                this.setShares(new SimpleShares((List) sharesListObj));
+                this.setShares(Sharables.fromList((List) sharesListObj));
             } else {
                 Logging.warning("Shares formatted incorrectly for group: " + name);
             }

@@ -5,9 +5,9 @@ import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.share.SharableSet;
-import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.command.CommandSender;
@@ -156,7 +156,7 @@ final class DefaultGroupManager implements GroupManager {
         Collection<MultiverseWorld> mvWorlds = this.inventories.getCore().getMVWorldManager().getMVWorlds();
         if (!mvWorlds.isEmpty()) {
             WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
-            worldGroup.setShares(SharableSet.allOf());
+            worldGroup.setShares(Sharables.allOf());
             for (MultiverseWorld mvWorld : mvWorlds) {
                 worldGroup.addWorld(mvWorld.getName());
             }
@@ -206,7 +206,7 @@ final class DefaultGroupManager implements GroupManager {
                             .compare(checkingGroup.getShares());
                     if (!conflictingShares.isEmpty()) {
                         conflicts.add(new DefaultGroupingConflict(checkingGroup, worldGroup,
-                                new SharableSet(conflictingShares)));
+                                Sharables.fromShares(conflictingShares)));
                     }
                 }
             }

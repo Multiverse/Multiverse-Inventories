@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
-import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
