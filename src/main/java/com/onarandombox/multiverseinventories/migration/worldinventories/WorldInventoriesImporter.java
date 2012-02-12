@@ -73,17 +73,46 @@ public class WorldInventoriesImporter implements DataImporter {
         if (wiGroups == null) {
             throw new MigrationException("No data to import from WorldInventories!");
         }
+
         if (!wiGroups.isEmpty()) {
             WorldGroupProfile defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
                 this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
                 Logging.info("Removed automatically created world group in favor of imported groups.");
             }
-        } else {
-            Logging.warning("Could not locate any WorldInventories groups to import from!");
-            return;
         }
 
+        this.createGroups(wiGroups);
+        Set<WorldProfile> noGroupWorlds = this.getWorldsWithoutGroups();
+        this.inventories.getMVIConfig().save();
+
+        OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
+        Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer" +
+                " this process will take.  Please be patient. :)  Your server will freeze for the duration.");
+        int playerCount = 0;
+        for (OfflinePlayer player : offlinePlayers) {
+            playerCount++;
+            Logging.finer("(" + playerCount + "/" + offlinePlayers.length
+                    + ")Processing WorldInventories data for player: " + player.getName());
+            for (Group wiGroup : wiGroups) {
+                WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
+                if (worldGroup == null) {
+                    Logging.finest("Could not import player data for WorldInventories group: " + wiGroup.getName()
+                            + " because there is no Multiverse-Inventories group by that name.");
+                    continue;
+                }
+                this.transferData(player, wiGroup, worldGroup);
+            }
+            for (WorldProfile worldProfile : noGroupWorlds) {
+                this.transferData(player, null, worldProfile);
+            }
+        }
+
+        Logging.info("Import from WorldInventories finished.  Disabling WorldInventories.");
+        Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
+    }
+
+    private void createGroups(List<Group> wiGroups) {
         for (Group wiGroup : wiGroups) {
             if (wiGroup.getWorlds().isEmpty()) {
                 Logging.warning("Group '" + wiGroup.getName() + "' has no worlds."
@@ -110,6 +139,9 @@ public class WorldInventoriesImporter implements DataImporter {
             this.inventories.getGroupManager().addGroup(newGroup, true);
             Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());
         }
+    }
+
+    private Set<WorldProfile> getWorldsWithoutGroups() {
         Set<WorldProfile> noGroupWorlds = new LinkedHashSet<WorldProfile>();
         for (World world : Bukkit.getWorlds()) {
             if (this.inventories.getGroupManager().getGroupsForWorld(world.getName()).isEmpty()) {
@@ -118,28 +150,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 noGroupWorlds.add(worldProfile);
             }
         }
-        this.inventories.getMVIConfig().save();
-        OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
-        Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer" +
-                " this process will take.  Please be patient. :)  Your server will freeze for the duration.");
-        for (OfflinePlayer player : offlinePlayers) {
-            Logging.finer("Processing WorldInventories data for player: " + player.getName());
-            for (Group wiGroup : wiGroups) {
-                WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
-                if (worldGroup == null) {
-                    Logging.finest("Could not import player data for WorldInventories group: " + wiGroup.getName()
-                            + " because there is no Multiverse-Inventories group by that name.");
-                    continue;
-                }
-                this.transferData(player, wiGroup, worldGroup);
-            }
-            for (WorldProfile worldProfile : noGroupWorlds) {
-                this.transferData(player, null, worldProfile);
-            }
-        }
-
-        Logging.info("Import from WorldInventories finished.  Disabling WorldInventories.");
-        Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
+        return noGroupWorlds;
     }
 
     private void transferData(OfflinePlayer player, Group wiGroup, ProfileContainer profileContainer) {
