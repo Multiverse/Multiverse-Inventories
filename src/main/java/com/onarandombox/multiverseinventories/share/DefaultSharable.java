@@ -126,6 +126,10 @@ enum DefaultSharable implements Sharable {
         return this.names;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public abstract void updateProfile(PlayerProfile profile, Player player);
 
     /**

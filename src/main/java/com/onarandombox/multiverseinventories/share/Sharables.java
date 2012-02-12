@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,7 +51,7 @@ public class Sharables implements Shares {
     }
 
     public static Shares all() {
-        return (Shares) Collections.unmodifiableSet(allSharables);
+        return allSharables;
     }
 
     public static Shares allOf() {
@@ -91,7 +90,7 @@ public class Sharables implements Shares {
         return shares;
     }
 
-    private Set<Sharable> sharables;
+    protected Set<Sharable> sharables;
 
     private Sharables(Set<Sharable> sharableSet) {
         this.sharables = sharableSet;

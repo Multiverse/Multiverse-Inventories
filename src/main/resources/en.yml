@@ -70,7 +70,7 @@ NOW_SHARING:
 
 # Spawn command
 TELEPORTING:
-- 'Teleporting to this group's spawn...'
+- 'Teleporting to this world group''s spawn...'
 TELEPORTED_BY:
 - 'You were teleported by: %1'
 TELEPORT_CONSOLE_ERROR:

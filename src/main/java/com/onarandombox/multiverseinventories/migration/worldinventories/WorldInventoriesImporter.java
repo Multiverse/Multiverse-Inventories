@@ -87,8 +87,8 @@ public class WorldInventoriesImporter implements DataImporter {
         this.inventories.getMVIConfig().save();
 
         OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
-        Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer" +
-                " this process will take.  Please be patient. :)  Your server will freeze for the duration.");
+        Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer"
+                + " this process will take.  Please be patient. :)  Your server will freeze for the duration.");
         int playerCount = 0;
         for (OfflinePlayer player : offlinePlayers) {
             playerCount++;
@@ -257,11 +257,11 @@ public class WorldInventoriesImporter implements DataImporter {
         return playerstats;
     }
 
-    private static enum DataType {
+    private enum DataType {
         INVENTORY(".inventory"),
         STATS(".stats");
 
-        String fileExtension;
+        private String fileExtension;
 
         DataType(String fileExtension) {
             this.fileExtension = fileExtension;

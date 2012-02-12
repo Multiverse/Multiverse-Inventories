@@ -2,11 +2,11 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
-import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.WorldProfileManager;
+import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.DebugCommand;
@@ -16,13 +16,14 @@ import com.onarandombox.multiverseinventories.command.ListCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
-import com.onarandombox.multiverseinventories.util.Logging;
-import com.onarandombox.multiverseinventories.util.data.FlatfilePlayerData;
-import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
-import com.onarandombox.multiverseinventories.locale.Messager;
+import com.onarandombox.multiverseinventories.command.SpawnCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
+import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
+import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
+import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
+import com.onarandombox.multiverseinventories.util.data.FlatfilePlayerData;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -137,6 +138,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.getCommandHandler().registerCommand(new AddSharesCommand(this));
         this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
         this.getCommandHandler().registerCommand(new DebugCommand(this));
+        this.getCommandHandler().registerCommand(new SpawnCommand(this));
         for (com.pneumaticraft.commandhandler.multiverse.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");

@@ -61,7 +61,7 @@ public enum Message {
     // AddShares Command
     NOW_SHARING("&6Group: &f%1 &6is now sharing: &f%2"),
     // Spawn Command
-    TELEPORTING("Teleporting to this group's spawn..."),
+    TELEPORTING("Teleporting to this world group's spawn..."),
     TELEPORTED_BY("You were teleported by: %1"),
     TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER"),
     // DebugCommand

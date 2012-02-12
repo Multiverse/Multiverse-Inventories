@@ -10,6 +10,7 @@ import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
@@ -62,6 +63,10 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         }
         if (dataMap.containsKey("spawn")) {
             Object spawnPropsObj = dataMap.get("spawn");
+            if (spawnPropsObj instanceof ConfigurationSection) {
+                // Le sigh, bukkit.
+                spawnPropsObj = ((ConfigurationSection) spawnPropsObj).getValues(true);
+            }
             if (spawnPropsObj instanceof Map) {
                 Map spawnProps = (Map) spawnPropsObj;
                 if (spawnProps.containsKey("world")) {
