@@ -236,7 +236,12 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             }
             builder.append(worldsString[i]);
         }
-        builder.append("], Shares: [").append(this.getShares().toString()).append("]}");
+        builder.append("], Shares: [").append(this.getShares().toString()).append("]");
+        if (this.getSpawnWorld() != null) {
+            builder.append(", Spawn World: ").append(this.getSpawnWorld());
+            builder.append(", Spawn Priority: ").append(this.getSpawnPriority().toString());
+        }
+        builder.append("}");
         return builder.toString();
     }
 

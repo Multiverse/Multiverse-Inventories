@@ -238,16 +238,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
         for (WorldGroupProfile group : this.getGroupManager().getGroups()) {
-            StringBuilder groupBuilder = new StringBuilder();
-            groupBuilder.append(group.getName()).append(": {");
-            groupBuilder.append("Worlds: [").append(group.getWorlds().toString()).append("]");
-            groupBuilder.append(", Shares: [").append(group.getShares().toString()).append("]");
-            if (group.getSpawnWorld() != null) {
-                groupBuilder.append(", Spawn World: ").append(group.getSpawnWorld());
-                groupBuilder.append(", Spawn Priority: ").append(group.getSpawnPriority().toString());
-            }
-            groupBuilder.append("}");
-            builder.append(this.logAndAddToPasteBinBuffer(groupBuilder.toString()));
+            builder.append(this.logAndAddToPasteBinBuffer(group.toString()));
         }
         return builder.toString();
     }
