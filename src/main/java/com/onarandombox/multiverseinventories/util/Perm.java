@@ -148,8 +148,8 @@ public enum Perm {
             hasBypass = player.hasPermission(bypassNode);
         }
         if (hasBypass) {
-            Logging.fine("Player: " + player + " in World: " + player.getWorld().getName() + " has permission: "
-                    + bypassNode + "!");
+            Logging.fine("Player: " + player.getName() + " in World: " + player.getWorld().getName()
+                    + " has permission: " + bypassNode + "!");
         }
         return hasBypass;
     }
