@@ -120,6 +120,8 @@ public enum Perm {
      */
     public String getBypassNode(String finalNode, GroupManager groupManager) {
         String bypassNode = this.getNode() + finalNode;
+        Logging.finer("Checking node " + bypassNode + "...");
+
         if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
             if (Bukkit.getWorld(finalNode) != null
                     || (groupManager != null && groupManager.getGroup(finalNode) != null)) {
@@ -139,16 +141,17 @@ public enum Perm {
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name, GroupManager groupManager) {
-        boolean hasBypass = player.hasPermission(this.getBypassNode(name, groupManager))
-                || player.hasPermission(this.getBypassNode("*", groupManager));
+        String bypassNode = this.getBypassNode(name, groupManager);
+        boolean hasBypass = player.hasPermission(bypassNode);
+        if (!hasBypass) {
+            bypassNode = this.getBypassNode("*", groupManager);
+            hasBypass = player.hasPermission(bypassNode);
+        }
         if (hasBypass) {
-            Logging.fine(this.getBypassMessage(player, name));
+            Logging.fine("Player: " + player + " in World: " + player.getWorld().getName() + " has permission: "
+                    + bypassNode + "!");
         }
         return hasBypass;
-    }
-
-    private String getBypassMessage(Player player, String name) {
-        return "";
     }
 
     /**
