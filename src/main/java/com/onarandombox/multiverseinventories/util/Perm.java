@@ -123,7 +123,7 @@ public enum Perm {
         Logging.finer("Checking node " + bypassNode + "...");
 
         if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
-            if (Bukkit.getWorld(finalNode) != null
+            if (finalNode.equals("*") || Bukkit.getWorld(finalNode) != null
                     || (groupManager != null && groupManager.getGroup(finalNode) != null)) {
                 Bukkit.getPluginManager().addPermission(new Permission(bypassNode, PermissionDefault.FALSE));
             }
