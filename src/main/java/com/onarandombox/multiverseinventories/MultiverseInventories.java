@@ -7,6 +7,7 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.DebugCommand;
@@ -235,7 +236,19 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
                 + this.getDescription().getVersion()));
         builder.append(this.logAndAddToPasteBinBuffer("Debug Level: " + this.getMVIConfig().getGlobalDebug()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
-        builder.append(this.logAndAddToPasteBinBuffer("Groups: " + this.getGroupManager().getGroups().toString()));
+        builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
+        for (WorldGroupProfile group : this.getGroupManager().getGroups()) {
+            StringBuilder groupBuilder = new StringBuilder();
+            groupBuilder.append(group.getName()).append(": {");
+            groupBuilder.append("Worlds: [").append(group.getWorlds().toString()).append("]");
+            groupBuilder.append(", Shares: [").append(group.getShares().toString()).append("]");
+            if (group.getSpawnWorld() != null) {
+                groupBuilder.append(", Spawn World: ").append(group.getSpawnWorld());
+                groupBuilder.append(", Spawn Priority: ").append(group.getSpawnPriority().toString());
+            }
+            groupBuilder.append("}");
+            builder.append(this.logAndAddToPasteBinBuffer(groupBuilder.toString()));
+        }
         return builder.toString();
     }
 
