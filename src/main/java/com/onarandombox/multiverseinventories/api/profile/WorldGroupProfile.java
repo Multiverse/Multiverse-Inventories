@@ -116,21 +116,6 @@ public interface WorldGroupProfile extends ProfileContainer {
     void setSpawnWorld(String worldName);
 
     /**
-     * @return True if the world specified in this group as the group spawn will be the
-     *         the world the user goes to when using /mvspawn.
-     */
-    boolean isOverridingMVSpawn();
-
-    /**
-     * This will set whether the group's spawn location will be used when a user uses
-     * /mvspawn.
-     *
-     * @param override Set to true to use this group's spawn location when a user uses
-     *                 /mvspawn.
-     */
-    void setOverridingMVSpawn(boolean override);
-
-    /**
      * @return The priority for the respawn event that this spawn will act on.
      */
     EventPriority getSpawnPriority();

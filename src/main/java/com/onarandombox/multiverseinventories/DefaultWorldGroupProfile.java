@@ -25,7 +25,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
 
     private String name = "";
     private String spawnWorld = null;
-    private boolean spawnForMV = false;
     private EventPriority spawnPriority = EventPriority.NORMAL;
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = Sharables.noneOf();
@@ -72,10 +71,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                 if (spawnProps.containsKey("world")) {
                     this.setSpawnWorld(spawnProps.get("world").toString());
                 }
-                if (spawnProps.containsKey("override_mv_spawn")) {
-                    this.setOverridingMVSpawn(Boolean.valueOf(
-                            spawnProps.get("override_mv_spawn").toString()));
-                }
                 if (spawnProps.containsKey("priority")) {
                     EventPriority priority = EventPriority.valueOf(
                             spawnProps.get("priority").toString().toUpperCase());
@@ -108,7 +103,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         Map<String, Object> spawnProps = new LinkedHashMap<String, Object>();
         if (this.getSpawnWorld() != null) {
             spawnProps.put("world", this.getSpawnWorld());
-            spawnProps.put("override_mv_spawn", this.isOverridingMVSpawn());
             spawnProps.put("priority", this.getSpawnPriority().toString());
             results.put("spawn", spawnProps);
         }
@@ -260,22 +254,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     @Override
     public void setSpawnWorld(String worldName) {
         this.spawnWorld = worldName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isOverridingMVSpawn() {
-        return this.spawnForMV;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setOverridingMVSpawn(boolean override) {
-        this.spawnForMV = override;
     }
 
     /**
