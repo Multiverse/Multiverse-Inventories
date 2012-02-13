@@ -96,21 +96,38 @@ enum DefaultSharable implements Sharable {
             player.setBedSpawnLocation(loc);
         }
     },
-    /** TODO: add when there's bukkit api for this.
+    /**
      * Sharing Effects.
      */
-    /*
-    EFFECTS("effects", "fx", "potions") {
+    EFFECTS("effects", "fx") {
         @Override
-        public void updateProfile(PlayerProfile player, Player player) {
-            // NO API FOR EFFECTS AS OF YET
+        public void updateProfile(PlayerProfile profile, Player player) {
+
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile player) {
-            // NO API FOR EFFECTS AS OF YET
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            
         }
-    },*/;
+    },
+    /**
+     * Sharing Effects.
+     */
+    POTIONS("potions", "pots") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+
+        }
+    };
+
+    //TODO:
+    //player.setCompassTarget();
+
 
     private String[] names;
 

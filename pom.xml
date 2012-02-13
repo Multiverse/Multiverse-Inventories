@@ -134,6 +134,16 @@ and adjust the build number accordingly -->
         </plugins>
     </build>
     <dependencies>
+        <!-- Start of Bukkit Dependency -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>Bukkit</artifactId>
+            <version>1.1-R4-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of Bukkit Dependency -->
+
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
@@ -163,6 +173,7 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of WorldInventories Dependency -->
+
         <!-- Start of Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>
