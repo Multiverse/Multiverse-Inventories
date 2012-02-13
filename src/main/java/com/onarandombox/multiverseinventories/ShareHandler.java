@@ -105,8 +105,7 @@ final class ShareHandler {
         this.addFromProfile(fromWorldProfile, Sharables.allOf(),
                 fromWorldProfile.getPlayerData(this.getPlayer()));
 
-        if (Perm.BYPASS_WORLD.hasBypass(this.getPlayer(),
-                this.getToWorld().getName(), this.inventories.getGroupManager())) {
+        if (Perm.BYPASS_WORLD.hasBypass(this.getPlayer(), this.getToWorld().getName())) {
             this.hasBypass = true;
             completeSharing();
             return;
@@ -136,8 +135,7 @@ final class ShareHandler {
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroupProfile toWorldGroup : toWorldGroups) {
-                if (Perm.BYPASS_GROUP.hasBypass(this.getPlayer(),
-                        toWorldGroup.getName(), this.inventories.getGroupManager())) {
+                if (Perm.BYPASS_GROUP.hasBypass(this.getPlayer(), toWorldGroup.getName())) {
                     this.hasBypass = true;
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());

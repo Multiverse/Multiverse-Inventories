@@ -115,20 +115,18 @@ public enum Perm {
 
     /**
      * @param finalNode    String to add to the bypass prefix.
-     * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return The full permission node for bypass.
      */
-    public String getBypassNode(String finalNode, GroupManager groupManager) {
+    public Permission getBypassPermission(String finalNode) {
         String bypassNode = this.getNode() + finalNode;
         Logging.finer("Checking node " + bypassNode + "...");
 
-        if (Bukkit.getPluginManager().getPermission(bypassNode) == null) {
-            if (finalNode.equals("*") || Bukkit.getWorld(finalNode) != null
-                    || (groupManager != null && groupManager.getGroup(finalNode) != null)) {
-                Bukkit.getPluginManager().addPermission(new Permission(bypassNode, PermissionDefault.FALSE));
-            }
+        Permission permission = Bukkit.getPluginManager().getPermission(bypassNode);
+        if (permission == null) {
+            permission = new Permission(bypassNode, PermissionDefault.FALSE);
+            Bukkit.getPluginManager().addPermission(permission);
         }
-        return bypassNode;
+        return permission;
     }
 
     /**
@@ -137,19 +135,19 @@ public enum Perm {
      *
      * @param player       Player to check permission for.
      * @param name         Name of object to bypass.
-     * @param groupManager The GroupManager for Multiverse-Inventories.
      * @return True if player is allowed to bypass.
      */
-    public boolean hasBypass(Player player, String name, GroupManager groupManager) {
-        String bypassNode = this.getBypassNode(name, groupManager);
-        boolean hasBypass = player.hasPermission(bypassNode);
+    public boolean hasBypass(Player player, String name) {
+        Permission bypassPerm = this.getBypassPermission(name);
+        boolean hasBypass = player.hasPermission(bypassPerm);
         if (!hasBypass) {
-            bypassNode = this.getBypassNode("*", groupManager);
-            hasBypass = player.hasPermission(bypassNode);
+            bypassPerm = this.getBypassPermission("*");
+            hasBypass = player.hasPermission(bypassPerm);
         }
         if (hasBypass) {
             Logging.fine("Player: " + player.getName() + " in World: " + player.getWorld().getName()
-                    + " has permission: " + bypassNode + "!");
+                    + " has permission: " + bypassPerm.getName() + "(Default: "
+                    + bypassPerm.getDefault().toString() + ")!");
         }
         return hasBypass;
     }
