@@ -1,5 +1,10 @@
 package com.onarandombox.multiverseinventories.api;
 
+import com.onarandombox.multiverseinventories.util.Logging;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+
 /**
  * This class handles the formatting of strings for data i/o.
  */
@@ -66,6 +71,22 @@ public class DataStrings {
      */
     public static final String PLAYER_SATURATION = "sa";
     /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_FALL_DISTANCE = "fd";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_FIRE_TICKS = "ft";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_REMAINING_AIR = "ra";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_MAX_AIR = "ma";
+    /**
      * Location x identifier.
      */
     public static final String LOCATION_X = "x";
@@ -113,6 +134,44 @@ public class DataStrings {
      */
     public static String createEntry(Object key, Object value) {
         return key + VALUE_DELIMITER + value;
+    }
+
+    /**
+     * @param locArray Parses these values and creates Location.
+     * @return New location object or null if no location could be created.
+     */
+    public static Location parseLocation(String[] locArray) {
+        World world = null;
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        float pitch = 0;
+        float yaw = 0;
+        try {
+            for (String stat : locArray) {
+                String[] statValues = DataStrings.splitEntry(stat);
+                if (statValues[0].equals(DataStrings.LOCATION_X)) {
+                    x = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Y)) {
+                    y = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Z)) {
+                    z = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_WORLD)) {
+                    world = Bukkit.getWorld(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_PITCH)) {
+                    yaw = Float.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_YAW)) {
+                    pitch = Float.valueOf(statValues[1]);
+                }
+            }
+        } catch (Exception e) {
+            Logging.fine("Could not parse location: " + locArray.toString());
+            return null;
+        }
+        if (world == null) {
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
     }
 }
 

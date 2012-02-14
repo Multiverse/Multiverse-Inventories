@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.util.data;
+package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.util.Logging;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
  */
-class ItemWrapper {
+public class ItemWrapper {
 
     private ItemStack item;
 

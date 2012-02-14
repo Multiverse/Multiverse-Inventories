@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.api.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,7 +9,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * @author dumptruckman
+ * Permissions enum for Multiverse-Inventories.
  */
 public enum Perm {
     /**

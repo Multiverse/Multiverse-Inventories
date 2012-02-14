@@ -3,7 +3,9 @@ package com.onarandombox.multiverseinventories.share;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 
-public interface Sharable {
+import java.util.Map;
+
+public interface Sharable<P extends PlayerProfile> {
 
     /**
      * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
@@ -13,7 +15,7 @@ public interface Sharable {
      *                with the values of the player.
      * @param player  The player whose values will be used to update the given profile.
      */
-    void updateProfile(PlayerProfile profile, Player player);
+    void updateProfile(P profile, Player player);
 
     /**
      * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
@@ -23,7 +25,11 @@ public interface Sharable {
      *                with the values of the given profile.
      * @param profile The profile whose values will be used to update the give player.
      */
-    void updatePlayer(Player player, PlayerProfile profile);
+    void updatePlayer(Player player, P profile);
 
     String[] getNames();
+    
+    void addToMap(P profile, Map<String, Object> playerData);
+    
+    void addToProfile(Map<String, Object> playerData, P profile);
 }

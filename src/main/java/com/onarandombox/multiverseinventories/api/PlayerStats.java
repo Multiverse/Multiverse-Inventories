@@ -41,6 +41,23 @@ public class PlayerStats {
      * Default saturation value.
      */
     public static final float SATURATION = 5F;
+    /**
+     * Default fall distance value.
+     */
+    public static final float FALL_DISTANCE = 0F;
+    /**
+     * Default fire ticks value.
+     */
+    public static final int FIRE_TICKS = 0;
+    /**
+     * Default remaining air value.
+     */
+    public static final int REMAINING_AIR = 300;
+    /**
+     * Default maximum air value.
+     */
+    public static final int MAXIMUM_AIR = 300;
+
 
     private PlayerStats() {
         throw new AssertionError();

@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.util.data;
+package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
@@ -13,9 +13,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Implementation of PlayerData.
+ * A flat file implementation of PlayerData.
  */
-public class FlatfilePlayerData implements PlayerData {
+class FlatfilePlayerData implements PlayerData {
 
     private static final String YML = ".yml";
     private File worldFolder = null;

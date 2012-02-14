@@ -60,7 +60,7 @@ public interface PlayerProfile {
      *
      * @param health New health for Profile.
      */
-    void setHealth(Integer health);
+    void setHealth(int health);
 
     /**
      * @return The exp of this Profile.
@@ -72,7 +72,7 @@ public interface PlayerProfile {
      *
      * @param exp New exp for Profile.
      */
-    void setExp(Float exp);
+    void setExp(float exp);
 
     /**
      * @return The total exp of this Profile.
@@ -84,7 +84,7 @@ public interface PlayerProfile {
      *
      * @param totalExperience exp New total exp for Profile.
      */
-    void setTotalExperience(Integer totalExperience);
+    void setTotalExperience(int totalExperience);
 
     /**
      * @return The level of this Profile.
@@ -96,7 +96,7 @@ public interface PlayerProfile {
      *
      * @param level New level for Profile.
      */
-    void setLevel(Integer level);
+    void setLevel(int level);
 
     /**
      * @return The food level of this Profile.
@@ -108,7 +108,7 @@ public interface PlayerProfile {
      *
      * @param foodLevel New food level for Profile.
      */
-    void setFoodLevel(Integer foodLevel);
+    void setFoodLevel(int foodLevel);
 
     /**
      * @return The exhaustion of this Profile.
@@ -120,7 +120,7 @@ public interface PlayerProfile {
      *
      * @param exhaustion New exhaustion for Profile.
      */
-    void setExhaustion(Float exhaustion);
+    void setExhaustion(float exhaustion);
 
     /**
      * @return The saturation of this Profile.
@@ -132,7 +132,7 @@ public interface PlayerProfile {
      *
      * @param saturation New saturation for Profile.
      */
-    void setSaturation(Float saturation);
+    void setSaturation(float saturation);
 
     /**
      * @return The bed spawn location of this Profile.
@@ -145,5 +145,21 @@ public interface PlayerProfile {
      * @param location New bed spawn location for Profile.
      */
     void setBedSpawnLocation(Location location);
+    
+    Float getFallDistance();
+    
+    void setFallDistance(float fallDistance);
+    
+    Integer getFireTicks();
+    
+    void setFireTicks(int fireTicks);
+    
+    Integer getRemainingAir();
+
+    void setRemainingAir(int remainingAir);
+    
+    Integer getMaximumAir();
+
+    void setMaximumAir(int maximumAir);
 }
 
