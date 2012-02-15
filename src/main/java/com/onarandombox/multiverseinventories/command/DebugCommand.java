@@ -32,6 +32,7 @@ public class DebugCommand extends InventoriesCommand {
         if (args.size() == 1) {
             if (args.get(0).equalsIgnoreCase("off")) {
                 this.plugin.getMVIConfig().setGlobalDebug(0);
+                this.plugin.getMVIConfig().save();
             } else {
                 try {
                     int debugLevel = Integer.parseInt(args.get(0));
@@ -39,6 +40,7 @@ public class DebugCommand extends InventoriesCommand {
                         throw new NumberFormatException();
                     }
                     this.plugin.getMVIConfig().setGlobalDebug(debugLevel);
+                    this.plugin.getMVIConfig().save();
                 } catch (NumberFormatException e) {
                     messager.bad(Message.INVALID_DEBUG, sender);
                 }
