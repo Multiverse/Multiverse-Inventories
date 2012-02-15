@@ -196,6 +196,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             return null;
         }
         Set<String> groupNames = groupsSection.getKeys(false);
+        Logging.finer("Loading groups: " + groupNames.toString());
         List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>(groupNames.size());
         for (String groupName : groupNames) {
             Logging.finer("Attempting to load group: " + groupName + "...");
