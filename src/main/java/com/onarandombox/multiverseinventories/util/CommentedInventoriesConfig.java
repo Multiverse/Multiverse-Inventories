@@ -4,6 +4,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -138,6 +139,8 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
                 if (path.getDefault() != null) {
                     Logging.fine("Config: Defaulting '" + path.getPath() + "' to " + path.getDefault());
                     this.getConfig().set(path.getPath(), path.getDefault());
+                } else {
+                    this.getConfig().createSection(path.getPath());
                 }
             }
         }
