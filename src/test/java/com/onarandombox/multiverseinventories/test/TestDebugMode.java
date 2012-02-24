@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import junit.framework.Assert;
 
@@ -34,7 +35,7 @@ import com.onarandombox.MultiverseCore.api.Core;
 import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ MultiverseCore.class })
+@PrepareForTest({ MultiverseInventories.class })
 public class TestDebugMode {
     TestInstanceCreator creator;
     Server mockServer;
