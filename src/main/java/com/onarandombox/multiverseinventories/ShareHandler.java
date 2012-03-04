@@ -121,15 +121,15 @@ final class ShareHandler {
                         Sharables.allOf(), profile);
             } else {
                 if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
-                    Shares sharing = Sharables.complementOf(fromWorldGroup.getShares());
-                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(sharing), profile);
+                    //Shares sharing = Sharables.complementOf(fromWorldGroup.getShares());
+                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
                 }
             }
         }
         if (fromWorldGroups.isEmpty()) {
             Logging.finer("No groups for fromWorld.");
         }
-
+        Shares sharesToUpdate = Sharables.noneOf();
         List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
                 .getGroupsForWorld(this.getToWorld().getName());
         if (!toWorldGroups.isEmpty()) {
@@ -140,23 +140,27 @@ final class ShareHandler {
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(this.getPlayer());
                     if (!toWorldGroup.containsWorld(this.getFromWorld().getName())) {
+                        Shares sharesToAdd = Sharables.allOf();
+                        sharesToUpdate.addAll(sharesToAdd);
                         this.addToProfile(toWorldGroup,
-                                Sharables.allOf(), profile);
+                                sharesToAdd, profile);
                     } else {
                         if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
-                            Shares shares = Sharables.complementOf(toWorldGroup.getShares());
-                            this.addToProfile(toWorldGroup,
-                                    Sharables.fromShares(shares), profile);
+                            Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
+                            sharesToUpdate.addAll(sharesToAdd);
+                            this.addToProfile(toWorldGroup, sharesToAdd, profile);
                         }
                     }
                 }
             }
-        } else {
+        }
+        if (!sharesToUpdate.isSharing(Sharables.all())) {
+            sharesToUpdate = Sharables.complementOf(sharesToUpdate);
             // Get world we need to load from.
             Logging.finer("No groups for toWorld.");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
                     .getWorldProfile(this.getToWorld().getName());
-            this.addToProfile(toWorldProfile, Sharables.allOf(),
+            this.addToProfile(toWorldProfile, sharesToUpdate,
                     toWorldProfile.getPlayerData(this.getPlayer()));
         }
 
