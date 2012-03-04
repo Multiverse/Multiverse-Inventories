@@ -3,7 +3,6 @@ package com.onarandombox.multiverseinventories.command;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.Perm;
@@ -40,11 +39,11 @@ public class AddSharesCommand extends InventoriesCommand {
             newShares = Sharables.noneOf();
             String[] sharesString = args.get(0).split(",");
             for (String shareString : sharesString) {
-                Sharable sharable = Sharables.lookup(shareString);
-                if (sharable == null) {
+                Shares shares = Sharables.lookup(shareString);
+                if (shares == null) {
                     continue;
                 }
-                newShares.setSharing(sharable, true);
+                newShares.setSharing(shares, true);
             }
         }
         if (newShares.isEmpty()) {

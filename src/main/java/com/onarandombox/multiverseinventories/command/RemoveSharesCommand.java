@@ -46,11 +46,11 @@ public class RemoveSharesCommand extends InventoriesCommand {
             newShares = Sharables.noneOf();
             String[] sharesString = args.get(0).split(",");
             for (String shareString : sharesString) {
-                Sharable sharable = Sharables.lookup(shareString);
-                if (sharable == null) {
+                Shares shares = Sharables.lookup(shareString);
+                if (shares == null) {
                     continue;
                 }
-                newShares.setSharing(sharable, true);
+                newShares.setSharing(shares, true);
             }
         }
         if (newShares.isEmpty()) {

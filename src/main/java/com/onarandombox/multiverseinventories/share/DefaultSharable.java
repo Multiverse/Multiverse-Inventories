@@ -30,7 +30,7 @@ enum DefaultSharable implements Sharable {
     /**
      * Sharing Health.
      */
-    HEALTH("health", "hp") {
+    HEALTH("health", "hp", "stats") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
             profile.setHealth(player.getHealth());

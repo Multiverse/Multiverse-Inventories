@@ -13,28 +13,31 @@ import java.util.Set;
 
 public class Sharables implements Shares {
 
-    public static final Shares ALL_INVENTORY = from(DefaultSharable.INVENTORY).lock();
+    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY).lock();
     public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
     public static final Sharable HEALTH = DefaultSharable.HEALTH;
     public static final Sharable HUNGER = DefaultSharable.HUNGER;
     public static final Sharable BED_SPAWN = DefaultSharable.BED_SPAWN;
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
-    private static Map<String, Sharable> lookupMap = new HashMap<String, Sharable>();
+    private static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
 
     static {
         for (Sharable sharable : EnumSet.allOf(DefaultSharable.class)) {
-            allSharables.add(sharable);
-            for (String name : sharable.getNames()) {
-                lookupMap.put(name.toLowerCase(), sharable);
-            }
+            register(sharable);
         }
     }
 
     public static boolean register(Sharable sharable) {
         if (allSharables.add(sharable)) {
             for (String name : sharable.getNames()) {
-                lookupMap.put(name.toLowerCase(), sharable);
+                String key = name.toLowerCase();
+                Shares shares = lookupMap.get(key);
+                if (shares == null) {
+                    shares = noneOf();
+                    lookupMap.put(key, shares);
+                }
+                shares.add(sharable);
             }
             return true;
         }
@@ -47,7 +50,7 @@ public class Sharables implements Shares {
      * @param name Name to look up by.
      * @return Sharable by that name or null if none by that name.
      */
-    public static Sharable lookup(String name) {
+    public static Shares lookup(String name) {
         return lookupMap.get(name.toLowerCase());
     }
 
@@ -79,7 +82,7 @@ public class Sharables implements Shares {
         return shares;
     }
 
-    public static Shares from(Sharable... sharables) {
+    public static Shares fromSharables(Sharable... sharables) {
         Shares shares = noneOf();
         shares.addAll(Arrays.asList(sharables));
         return shares;
@@ -89,9 +92,9 @@ public class Sharables implements Shares {
         Shares shares = noneOf();
         for (Object shareStringObj : sharesList) {
             String shareString = shareStringObj.toString();
-            Sharable sharable = Sharables.lookup(shareString);
-            if (sharable != null) {
-                shares.add(sharable);
+            Shares sharables = Sharables.lookup(shareString);
+            if (sharables != null) {
+                shares.mergeShares(sharables);
             } else {
                 if (shareString.equals("*") || shareString.equalsIgnoreCase("all")
                         || shareString.equalsIgnoreCase("everything")) {
