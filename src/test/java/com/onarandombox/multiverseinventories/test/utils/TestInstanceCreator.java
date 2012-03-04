@@ -62,6 +62,7 @@ public class TestInstanceCreator {
 
     public boolean setUp() {
         try {
+            FileUtils.deleteFolder(serverDirectory);
             invDirectory.mkdirs();
             Assert.assertTrue(invDirectory.exists());
 
@@ -275,7 +276,6 @@ public class TestInstanceCreator {
             return false;
         }
 
-        FileUtils.deleteFolder(serverDirectory);
         MockWorldFactory.clearWorlds();
 
         return true;
