@@ -13,14 +13,14 @@ import java.util.Set;
 
 public class Sharables implements Shares {
 
-    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY).lock();
+    private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
+    private static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
+
+    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY, DefaultSharable.INVENTORY).lock();
     public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
     public static final Sharable HEALTH = DefaultSharable.HEALTH;
     public static final Sharable HUNGER = DefaultSharable.HUNGER;
     public static final Sharable BED_SPAWN = DefaultSharable.BED_SPAWN;
-
-    private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
-    private static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
 
     static {
         for (Sharable sharable : EnumSet.allOf(DefaultSharable.class)) {

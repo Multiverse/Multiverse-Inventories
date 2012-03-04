@@ -12,17 +12,26 @@ enum DefaultSharable implements Sharable {
     /**
      * Sharing Inventory.
      */
-    INVENTORY("inventory", "inv") {
+    INVENTORY("inventory_contents", "inventory", "inv") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
             profile.setInventoryContents(player.getInventory().getContents());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            //MinecraftTools.fillWithAir(player.getInventory().getContents());
+            player.getInventory().setContents(profile.getInventoryContents());
+        }
+    },
+    ARMOR("armor_contents", "armor", "inventory", "inv") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
             profile.setArmorContents(player.getInventory().getArmorContents());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.getInventory().clear();
-            player.getInventory().setContents(profile.getInventoryContents());
             player.getInventory().setArmorContents(profile.getArmorContents());
 
         }
