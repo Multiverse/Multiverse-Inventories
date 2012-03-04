@@ -7,35 +7,31 @@
 
 package com.onarandombox.multiverseinventories.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.File;
-
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
 import junit.framework.Assert;
-
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.Core;
-import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
+import java.io.File;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ MultiverseInventories.class })
+@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
 public class TestDebugMode {
     TestInstanceCreator creator;
     Server mockServer;
@@ -78,7 +74,7 @@ public class TestDebugMode {
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] debugArgs = new String[] { "debug", "3" };
+        String[] debugArgs = new String[]{"debug", "3"};
         plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());

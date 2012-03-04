@@ -7,22 +7,14 @@
 
 package com.onarandombox.multiverseinventories.test.utils;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
+import com.onarandombox.MultiverseCore.utils.FileUtils;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import junit.framework.Assert;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -39,9 +31,23 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.MockGateway;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.utils.FileUtils;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
@@ -59,6 +65,8 @@ public class TestInstanceCreator {
             invDirectory.mkdirs();
             Assert.assertTrue(invDirectory.exists());
 
+            MockGateway.MOCK_STANDARD_METHODS = false;
+
             plugin = PowerMockito.spy(new MultiverseInventories());
             core = PowerMockito.spy(new MultiverseCore());
 
@@ -68,18 +76,19 @@ public class TestInstanceCreator {
             doReturn(coreDirectory).when(core).getDataFolder();
 
             // Return a fake PDF file.
-            PluginDescriptionFile pdf = new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
-                    "com.onarandombox.multiverseinventories.MultiverseInventories");
+            PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
+                    "com.onarandombox.multiverseinventories.MultiverseInventories"));
             doReturn(pdf).when(plugin).getDescription();
             doReturn(true).when(plugin).isEnabled();
-            PluginDescriptionFile pdfCore = new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
-                    "com.onarandombox.MultiverseCore.MultiverseCore");
+            PluginDescriptionFile pdfCore = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
+                    "com.onarandombox.MultiverseCore.MultiverseCore"));
+            when(pdfCore.getAuthors()).thenReturn(new ArrayList<String>());
             doReturn(pdfCore).when(core).getDescription();
             doReturn(true).when(core).isEnabled();
             plugin.setServerFolder(serverDirectory);
 
             // Add Core to the list of loaded plugins
-            JavaPlugin[] plugins = new JavaPlugin[] { plugin, core };
+            JavaPlugin[] plugins = new JavaPlugin[]{plugin, core};
 
             // Mock the Plugin Manager
             PluginManager mockPluginManager = PowerMockito.mock(PluginManager.class);
@@ -162,7 +171,8 @@ public class TestInstanceCreator {
                             }
                             arg.run();
                             return null;
-                        }});
+                        }
+                    });
             when(mockScheduler.scheduleSyncDelayedTask(any(Plugin.class), any(Runnable.class))).
                     thenAnswer(new Answer<Integer>() {
                         public Integer answer(InvocationOnMock invocation) throws Throwable {
@@ -174,7 +184,8 @@ public class TestInstanceCreator {
                             }
                             arg.run();
                             return null;
-                        }});
+                        }
+                    });
             when(mockServer.getScheduler()).thenReturn(mockScheduler);
 
             // Set server
@@ -214,7 +225,8 @@ public class TestInstanceCreator {
                 public Void answer(InvocationOnMock invocation) throws Throwable {
                     commandSenderLogger.info(ChatColor.stripColor((String) invocation.getArguments()[0]));
                     return null;
-                }}).when(commandSender).sendMessage(anyString());
+                }
+            }).when(commandSender).sendMessage(anyString());
             when(commandSender.getServer()).thenReturn(mockServer);
             when(commandSender.getName()).thenReturn("MockCommandSender");
             when(commandSender.isPermissionSet(anyString())).thenReturn(true);
