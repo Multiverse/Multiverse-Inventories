@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Set;
 
 public class Sharables implements Shares {
 
-    public static final Sharable INVENTORY = DefaultSharable.INVENTORY;
+    public static final Shares INVENTORY = from(DefaultSharable.INVENTORY);
     public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
     public static final Sharable HEALTH = DefaultSharable.HEALTH;
     public static final Sharable HUNGER = DefaultSharable.HUNGER;
@@ -70,6 +71,18 @@ public class Sharables implements Shares {
 
     public static Shares fromShares(Shares shares) {
         return new Sharables(shares);
+    }
+
+    public static Shares fromCollection(Collection<Sharable> sharesCollection) {
+        Shares shares = noneOf();
+        shares.addAll(sharesCollection);
+        return shares;
+    }
+
+    public static Shares from(Sharable... sharables) {
+        Shares shares = noneOf();
+        shares.addAll(Arrays.asList(sharables));
+        return shares;
     }
 
     public static Shares fromList(List sharesList) {
@@ -193,6 +206,20 @@ public class Sharables implements Shares {
             this.add(sharable);
         } else {
             this.remove(sharable);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setSharing(Shares sharables, boolean sharing) {
+        for (Sharable sharable : sharables) {
+            if (sharing) {
+                this.add(sharable);
+            } else {
+                this.remove(sharable);
+            }
         }
     }
 
