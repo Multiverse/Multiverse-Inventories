@@ -127,14 +127,14 @@ public class WorldInventoriesImporter implements DataImporter {
                 if (WorldInventories.doStats) {
                     newGroup.setShares(Sharables.allOf());
                 } else {
-                    newGroup.getShares().setSharing(Sharables.INVENTORY, true);
+                    newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
                 }
             } catch (Exception ignore) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(Sharables.INVENTORY, true);
+                newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
             } catch (Error e) {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
-                newGroup.getShares().setSharing(Sharables.INVENTORY, true);
+                newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
             }
             this.inventories.getGroupManager().addGroup(newGroup, true);
             Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());

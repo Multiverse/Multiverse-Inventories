@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class Sharables implements Shares {
 
-    public static final Shares INVENTORY = from(DefaultSharable.INVENTORY);
+    public static final Shares ALL_INVENTORY = from(DefaultSharable.INVENTORY).lock();
     public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
     public static final Sharable HEALTH = DefaultSharable.HEALTH;
     public static final Sharable HUNGER = DefaultSharable.HUNGER;
@@ -104,6 +104,7 @@ public class Sharables implements Shares {
     }
 
     protected Set<Sharable> sharables;
+    private boolean isLocked = false;
 
     private Sharables(Set<Sharable> sharableSet) {
         this.sharables = sharableSet;
@@ -146,11 +147,17 @@ public class Sharables implements Shares {
 
     @Override
     public boolean add(Sharable sharable) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         return this.sharables.add(sharable);
     }
 
     @Override
     public boolean remove(Object o) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         return this.sharables.remove(o);
     }
 
@@ -161,21 +168,33 @@ public class Sharables implements Shares {
 
     @Override
     public boolean addAll(Collection<? extends Sharable> c) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         return this.sharables.addAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         return this.sharables.retainAll(c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         return this.sharables.removeAll(c);
     }
 
     @Override
     public void clear() {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         this.sharables.clear();
     }
 
@@ -194,6 +213,9 @@ public class Sharables implements Shares {
      */
     @Override
     public void mergeShares(Shares newShares) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         this.addAll(newShares);
     }
 
@@ -202,6 +224,9 @@ public class Sharables implements Shares {
      */
     @Override
     public void setSharing(Sharable sharable, boolean sharing) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         if (sharing) {
             this.add(sharable);
         } else {
@@ -214,6 +239,9 @@ public class Sharables implements Shares {
      */
     @Override
     public void setSharing(Shares sharables, boolean sharing) {
+        if (isLocked) {
+            throw new IllegalStateException("Shares are locked!");
+        }
         for (Sharable sharable : sharables) {
             if (sharing) {
                 this.add(sharable);
@@ -287,5 +315,12 @@ public class Sharables implements Shares {
         return stringBuilder.toString();
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Shares lock() {
+        this.isLocked = true;
+        return this;
+    }
 }
