@@ -16,10 +16,13 @@ public class Sharables implements Shares {
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
     private static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
 
-    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY, DefaultSharable.INVENTORY).lock();
-    public static final Sharable EXPERIENCE = DefaultSharable.EXPERIENCE;
-    public static final Sharable HEALTH = DefaultSharable.HEALTH;
-    public static final Sharable HUNGER = DefaultSharable.HUNGER;
+    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY,
+            DefaultSharable.INVENTORY).lock();
+    public static final Shares ALL_EXPERIENCE = fromSharables(DefaultSharable.EXPERIENCE,
+            DefaultSharable.TOTAL_EXPERIENCE, DefaultSharable.LEVEL).lock();
+    public static final Shares HEALTH = fromSharables(DefaultSharable.HP).lock();
+    public static final Shares HUNGER = fromSharables(DefaultSharable.FOOD_LEVEL,
+            DefaultSharable.SATURATION, DefaultSharable.EXHAUSTION).lock();
     public static final Sharable BED_SPAWN = DefaultSharable.BED_SPAWN;
 
     static {

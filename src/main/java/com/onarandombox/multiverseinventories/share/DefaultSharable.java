@@ -20,7 +20,6 @@ enum DefaultSharable implements Sharable {
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            //MinecraftTools.fillWithAir(player.getInventory().getContents());
             player.getInventory().setContents(profile.getInventoryContents());
         }
     },
@@ -39,7 +38,7 @@ enum DefaultSharable implements Sharable {
     /**
      * Sharing Health.
      */
-    HEALTH("health", "hp", "stats") {
+    HP("health", "hp", "hitpoints", "hit_points") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
             profile.setHealth(player.getHealth());
@@ -54,36 +53,84 @@ enum DefaultSharable implements Sharable {
     /**
      * Sharing Experience.
      */
-    EXPERIENCE("experience", "exp", "xp") {
+    EXPERIENCE("exp", "experience", "xp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
             profile.setExp(player.getExp());
-            profile.setLevel(player.getLevel());
-            profile.setTotalExperience(player.getTotalExperience());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
             player.setExp(profile.getExp());
+        }
+    },
+    /**
+     * Sharing Experience.
+     */
+    LEVEL("level", "experience", "lvl") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setLevel(player.getLevel());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
             player.setLevel(profile.getLevel());
+        }
+    },
+    /**
+     * Sharing Experience.
+     */
+    TOTAL_EXPERIENCE("total_exp", "experience", "total_xp", "totalxp") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setTotalExperience(player.getTotalExperience());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
             player.setTotalExperience(profile.getTotalExperience());
         }
     },
     /**
      * Sharing Hunger.
      */
-    HUNGER("hunger", "food") {
+    FOOD_LEVEL("food_level", "food", "hunger") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
             profile.setFoodLevel(player.getFoodLevel());
-            profile.setExhaustion(player.getExhaustion());
-            profile.setSaturation(player.getSaturation());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
             player.setFoodLevel(profile.getFoodLevel());
+        }
+    },
+    /**
+     * Sharing Hunger.
+     */
+    EXHAUSTION("exhaustion", "hunger", "exhaust", "exh") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setExhaustion(player.getExhaustion());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
             player.setExhaustion(profile.getExhaustion());
+        }
+    },
+    /**
+     * Sharing Hunger.
+     */
+    SATURATION("saturation", "hunger", "sat") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setSaturation(player.getSaturation());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
             player.setSaturation(profile.getSaturation());
         }
     },

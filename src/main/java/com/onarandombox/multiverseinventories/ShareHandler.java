@@ -121,7 +121,6 @@ final class ShareHandler {
                         Sharables.allOf(), profile);
             } else {
                 if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
-                    //Shares sharing = Sharables.complementOf(fromWorldGroup.getShares());
                     this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
                 }
             }
@@ -154,6 +153,7 @@ final class ShareHandler {
                 }
             }
         }
+        // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
         if (!sharesToUpdate.isSharing(Sharables.all())) {
             sharesToUpdate = Sharables.complementOf(sharesToUpdate);
             // Get world we need to load from.
