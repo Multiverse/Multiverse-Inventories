@@ -1,6 +1,8 @@
 package com.onarandombox.multiverseinventories.test.utils;
 
+import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.util.data.ItemWrapper;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
@@ -23,22 +25,22 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public ItemStack getHelmet() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return armorContents[0];
     }
 
     @Override
     public ItemStack getChestplate() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return armorContents[1];
     }
 
     @Override
     public ItemStack getLeggings() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return armorContents[2];
     }
 
     @Override
     public ItemStack getBoots() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return armorContents[3];
     }
 
     @Override
@@ -48,22 +50,22 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public void setHelmet(ItemStack itemStack) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.armorContents[0] = itemStack;
     }
 
     @Override
     public void setChestplate(ItemStack itemStack) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.armorContents[1] = itemStack;
     }
 
     @Override
     public void setLeggings(ItemStack itemStack) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.armorContents[2] = itemStack;
     }
 
     @Override
     public void setBoots(ItemStack itemStack) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.armorContents[3] = itemStack;
     }
 
     @Override
@@ -88,7 +90,7 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public int getSize() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return inventoryContents.length + armorContents.length;
     }
 
     @Override
@@ -98,12 +100,24 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public ItemStack getItem(int i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if (i >= 0 && i < PlayerStats.INVENTORY_SIZE) {
+            return inventoryContents[i];
+        } else if (i >= PlayerStats.INVENTORY_SIZE && i < PlayerStats.INVENTORY_SIZE + PlayerStats.ARMOR_SIZE) {
+            return armorContents[i - PlayerStats.INVENTORY_SIZE];
+        } else {
+            throw new ArrayIndexOutOfBoundsException();
+        }
     }
 
     @Override
     public void setItem(int i, ItemStack itemStack) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if (i >= 0 && i < PlayerStats.INVENTORY_SIZE) {
+            inventoryContents[i] = itemStack;
+        } else if (i >= PlayerStats.INVENTORY_SIZE && i < PlayerStats.INVENTORY_SIZE + PlayerStats.ARMOR_SIZE) {
+            armorContents[i - PlayerStats.INVENTORY_SIZE] = itemStack;
+        } else {
+            throw new ArrayIndexOutOfBoundsException();
+        }
     }
 
     @Override
@@ -234,5 +248,36 @@ public class MockPlayerInventory implements PlayerInventory {
     @Override
     public ListIterator<ItemStack> iterator() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        boolean first = true;
+        for (Integer i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
+            if (this.getContents()[i] != null && this.getContents()[i].getTypeId() != 0) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(DataStrings.ITEM_DELIMITER);
+                }
+                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getContents()[i]).toString()));
+            }
+        }
+        StringBuilder finalString = new StringBuilder();
+        finalString.append("{ \"inventoryContents\" : \"").append(builder.toString()).append("\"").append(", \"armorContents\" : \"");
+        builder = new StringBuilder();
+        first = true;
+        for (Integer i = 0; i < PlayerStats.ARMOR_SIZE; i++) {
+            if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
+                if (first) {
+                    first = false;
+                } else {
+                    builder.append(DataStrings.ITEM_DELIMITER);
+                }
+                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getArmorContents()[i]).toString()));
+            }
+        }
+        finalString.append(builder.toString()).append("\" }");
+        return finalString.toString();
     }
 }
