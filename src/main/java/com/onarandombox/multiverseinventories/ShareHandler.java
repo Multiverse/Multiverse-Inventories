@@ -165,7 +165,6 @@ final class ShareHandler {
             sharesToUpdate = Sharables.allOf();
         }
         if (!sharesToUpdate.isSharing(Sharables.all())) {
-            System.out.println(sharesToUpdate + " VS " + Sharables.all());
             sharesToUpdate = Sharables.complementOf(sharesToUpdate);
             // Get world we need to load from.
             Logging.finer("No groups for toWorld.");
