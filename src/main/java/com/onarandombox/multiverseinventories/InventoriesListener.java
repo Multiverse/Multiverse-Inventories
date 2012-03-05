@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * PlayerListener for MultiverseInventories.
  */
-public final class InventoriesListener implements Listener {
+public class InventoriesListener implements Listener {
 
     private Inventories inventories;
     private List<WorldGroupProfile> currentGroups;

@@ -8,19 +8,25 @@
 package com.onarandombox.multiverseinventories.test.utils;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.Core;
 import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
+import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.util.Logging;
 import junit.framework.Assert;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -32,11 +38,16 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.MockGateway;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,11 +60,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@PrepareForTest({InventoriesListener.class})
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
+    private Map<String, Player> players = new HashMap<String, Player>();
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -62,6 +75,8 @@ public class TestInstanceCreator {
 
     public boolean setUp() {
         try {
+            System.out.println("deleting folders");
+            FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
             invDirectory.mkdirs();
             Assert.assertTrue(invDirectory.exists());
@@ -79,7 +94,9 @@ public class TestInstanceCreator {
             // Return a fake PDF file.
             PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
                     "com.onarandombox.multiverseinventories.MultiverseInventories"));
+            when(pdf.getAuthors()).thenReturn(new ArrayList<String>());
             doReturn(pdf).when(plugin).getDescription();
+            doReturn(core).when(plugin).getCore();
             doReturn(true).when(plugin).isEnabled();
             PluginDescriptionFile pdfCore = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
                     "com.onarandombox.MultiverseCore.MultiverseCore"));
@@ -102,12 +119,19 @@ public class TestInstanceCreator {
             File worldNormalFile = new File(plugin.getServerFolder(), "world");
             Util.log("Creating world-folder: " + worldNormalFile.getAbsolutePath());
             worldNormalFile.mkdirs();
+            MockWorldFactory.makeNewMockWorld("world", Environment.NORMAL, WorldType.NORMAL);
             File worldNetherFile = new File(plugin.getServerFolder(), "world_nether");
             Util.log("Creating world-folder: " + worldNetherFile.getAbsolutePath());
             worldNetherFile.mkdirs();
+            MockWorldFactory.makeNewMockWorld("world_nether", Environment.NETHER, WorldType.NORMAL);
             File worldSkylandsFile = new File(plugin.getServerFolder(), "world_the_end");
             Util.log("Creating world-folder: " + worldSkylandsFile.getAbsolutePath());
             worldSkylandsFile.mkdirs();
+            MockWorldFactory.makeNewMockWorld("world_the_end", Environment.THE_END, WorldType.NORMAL);
+            File world2File = new File(plugin.getServerFolder(), "world2");
+            Util.log("Creating world-folder: " + world2File.getAbsolutePath());
+            world2File.mkdirs();
+            MockWorldFactory.makeNewMockWorld("world2", Environment.NORMAL, WorldType.NORMAL);
 
             // Initialize the Mock server.
             mockServer = mock(Server.class);
@@ -117,6 +141,25 @@ public class TestInstanceCreator {
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
             when(plugin.getServer()).thenReturn(mockServer);
             when(core.getServer()).thenReturn(mockServer);
+            when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
+            Answer<Player> playerAnswer = new Answer<Player>() {
+                public Player answer(InvocationOnMock invocation) throws Throwable {
+                    String arg;
+                    try {
+                        arg = (String) invocation.getArguments()[0];
+                    } catch (Exception e) {
+                        return null;
+                    }
+                    Player player = players.get(arg);
+                    if (player == null) {
+                        player = new MockPlayer(arg, mockServer);
+                        players.put(arg, player);
+                    }
+                    return player;
+                }
+            };
+            when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
+            when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
 
             // Give the server some worlds
             when(mockServer.getWorld(anyString())).thenAnswer(new Answer<World>() {
@@ -137,7 +180,7 @@ public class TestInstanceCreator {
                 }
             });
 
-            when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
+
 
             when(mockServer.createWorld(Matchers.isA(WorldCreator.class))).thenAnswer(
                     new Answer<World>() {
@@ -188,6 +231,17 @@ public class TestInstanceCreator {
                         }
                     });
             when(mockServer.getScheduler()).thenReturn(mockScheduler);
+
+            // Set InventoriesListener
+            InventoriesListener il = PowerMockito.spy(new InventoriesListener(plugin));
+            Field inventoriesListenerField = MultiverseInventories.class.getDeclaredField("inventoriesListener");
+            inventoriesListenerField.setAccessible(true);
+            inventoriesListenerField.set(plugin, il);
+
+            // Set Core
+            Field coreField = MultiverseInventories.class.getDeclaredField("core");
+            coreField.setAccessible(true);
+            coreField.set(plugin, core);
 
             // Set server
             Field serverfield = JavaPlugin.class.getDeclaredField("server");
@@ -277,6 +331,13 @@ public class TestInstanceCreator {
         }
 
         MockWorldFactory.clearWorlds();
+
+        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
+        inventories.onDisable();
+        plugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
+        MultiverseCore core = (MultiverseCore) plugin;
+        core.onDisable();
 
         return true;
     }
