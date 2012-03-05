@@ -69,6 +69,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     public void onDisable() {
         // Display disable message/version info
         Logging.info("disabled.", true);
+        Logging.close();
     }
 
     /**

@@ -95,7 +95,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (String itemString : inventoryArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
-                ItemWrapper itemWrapper = new ItemWrapper(itemValues[1]);
+                ItemWrapper itemWrapper = ItemWrapper.wrap(itemValues[1]);
                 invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
                 //Logging.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
             } catch (Exception e) {
@@ -116,7 +116,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (String itemString : armorArray) {
             String[] itemValues = DataStrings.splitEntry(itemString);
             try {
-                armContents[Integer.valueOf(itemValues[0])] = new ItemWrapper(itemValues[1]).getItem();
+                armContents[Integer.valueOf(itemValues[0])] = ItemWrapper.wrap(itemValues[1]).getItem();
             } catch (Exception e) {
                 if (!itemString.isEmpty()) {
                     Logging.fine("Could not parse armor string: " + itemString);
@@ -213,7 +213,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                 } else {
                     builder.append(DataStrings.ITEM_DELIMITER);
                 }
-                builder.append(DataStrings.createEntry(i, new ItemWrapper(this.getInventoryContents()[i]).toString()));
+                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getInventoryContents()[i]).toString()));
             }
         }
         playerData.put("inventoryContents", builder.toString());
@@ -227,7 +227,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                 } else {
                     builder.append(DataStrings.ITEM_DELIMITER);
                 }
-                builder.append(DataStrings.createEntry(i, new ItemWrapper(this.getArmorContents()[i]).toString()));
+                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getArmorContents()[i]).toString()));
             }
         }
         playerData.put("armorContents", builder.toString());

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
-public class TestDebugMode {
+public class TestCommands {
     TestInstanceCreator creator;
     Server mockServer;
     CommandSender mockCommandSender;
@@ -51,7 +51,7 @@ public class TestDebugMode {
     }
 
     @Test
-    public void testEnableDebugMode() {
+    public void testDebugReload() {
         // Pull a core instance from the server.
         Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
         Inventories inventories = (Inventories) plugin;
@@ -78,5 +78,32 @@ public class TestDebugMode {
         plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+
+        // Send the debug command.
+        String[] reloadArgs = new String[] { "reload" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", reloadArgs);
+
+        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+    }
+
+    @Test
+    public void testInfoCommand() {
+        // Pull a core instance from the server.
+        Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
+        Inventories inventories = (Inventories) plugin;
+
+        // Make sure Core is not null
+        assertNotNull(plugin);
+
+        // Make sure Core is enabled
+        assertTrue(plugin.isEnabled());
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        // Send the debug command.
+        String[] debugArgs = new String[]{"info", "default"};
+        plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
     }
 }

@@ -11,15 +11,23 @@ import java.util.Map;
 /**
  * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
  */
-class ItemWrapper {
+public class ItemWrapper {
 
     private ItemStack item;
+    
+    public static ItemWrapper wrap(ItemStack item) {
+        return new ItemWrapper(item);
+    }
+    
+    public static ItemWrapper wrap(String itemString) {
+        return new ItemWrapper(itemString);
+    }
 
-    public ItemWrapper(ItemStack item) {
+    private ItemWrapper(ItemStack item) {
         this.item = item;
     }
 
-    public ItemWrapper(String itemString) {
+    private ItemWrapper(String itemString) {
         int type = 0;
         short damage = 0;
         int amount = 1;

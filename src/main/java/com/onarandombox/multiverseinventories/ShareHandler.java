@@ -130,7 +130,7 @@ final class ShareHandler {
         }
         Shares sharesToUpdate = Sharables.noneOf();
         List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
-                .getGroupsForWorld(this.getToWorld().getName());
+                .getGroupsForWorld(this.getToWorld().getName());;
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroupProfile toWorldGroup : toWorldGroups) {
@@ -148,10 +148,20 @@ final class ShareHandler {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
                             sharesToUpdate.addAll(sharesToAdd);
                             this.addToProfile(toWorldGroup, sharesToAdd, profile);
+                        } else {
+                            sharesToUpdate = Sharables.allOf();
                         }
                     }
                 }
             }
+        } else {
+            // Get world we need to load from.
+            Logging.finer("No groups for toWorld.");
+            WorldProfile toWorldProfile = this.inventories.getWorldManager()
+                    .getWorldProfile(this.getToWorld().getName());
+            this.addToProfile(toWorldProfile, Sharables.allOf(),
+                    toWorldProfile.getPlayerData(this.getPlayer()));
+            sharesToUpdate = Sharables.allOf();
         }
         // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
         if (!sharesToUpdate.isSharing(Sharables.all())) {

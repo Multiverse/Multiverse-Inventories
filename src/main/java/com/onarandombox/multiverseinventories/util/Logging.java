@@ -35,6 +35,10 @@ public class Logging {
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
     }
+    
+    public static void close() {
+        debugLog.close();
+    }
 
     /**
      * Prepares the log for use.
