@@ -50,7 +50,6 @@ public class RemoveWorldCommand extends InventoriesCommand {
             return;
         }
         worldGroup.removeWorld(world);
-        this.plugin.getMVIConfig().save();
         this.messager.normal(Message.WORLD_REMOVED, sender, world.getName(),
                 worldGroup.getName());
     }
