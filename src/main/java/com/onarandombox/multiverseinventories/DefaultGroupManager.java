@@ -23,7 +23,6 @@ import java.util.Map;
  */
 final class DefaultGroupManager implements GroupManager {
 
-    private HashMap<String, List<WorldGroupProfile>> worldGroupsMap = new HashMap<String, List<WorldGroupProfile>>();
     private HashMap<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
     private Inventories inventories;
 
@@ -54,21 +53,13 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public List<WorldGroupProfile> getGroupsForWorld(String worldName) {
-        List<WorldGroupProfile> worldGroups = this.getWorldGroups().get(worldName);
-        if (worldGroups == null) {
-            worldGroups = new ArrayList<WorldGroupProfile>();
-            this.getWorldGroups().put(worldName, worldGroups);
+        List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>();
+        for (WorldGroupProfile worldGroup : this.getGroupNames().values()) {
+            if (worldGroup.containsWorld(worldName)) {
+                worldGroups.add(worldGroup);
+            }
         }
         return worldGroups;
-    }
-
-    /**
-     * Retrieves all of the World Groups mapped to each world.
-     *
-     * @return Map of World -> World Groups
-     */
-    protected HashMap<String, List<WorldGroupProfile>> getWorldGroups() {
-        return this.worldGroupsMap;
     }
 
     /**
@@ -86,14 +77,6 @@ final class DefaultGroupManager implements GroupManager {
     @Override
     public void addGroup(WorldGroupProfile worldGroup, boolean persist) {
         this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
-        for (String worldName : worldGroup.getWorlds()) {
-            List<WorldGroupProfile> worldGroupsForWorld = this.getWorldGroups().get(worldName);
-            if (worldGroupsForWorld == null) {
-                worldGroupsForWorld = new ArrayList<WorldGroupProfile>();
-                this.getWorldGroups().put(worldName, worldGroupsForWorld);
-            }
-            worldGroupsForWorld.add(worldGroup);
-        }
         this.inventories.getMVIConfig().updateWorldGroup(worldGroup);
         if (persist) {
             this.inventories.getMVIConfig().save();
@@ -106,12 +89,6 @@ final class DefaultGroupManager implements GroupManager {
     @Override
     public void removeGroup(WorldGroupProfile worldGroup) {
         this.getGroupNames().remove(worldGroup.getName().toLowerCase());
-        for (String worldName : worldGroup.getWorlds()) {
-            List<WorldGroupProfile> worldGroupsForWorld = this.getWorldGroups().get(worldName);
-            if (worldGroupsForWorld != null) {
-                worldGroupsForWorld.remove(worldGroup);
-            }
-        }
         this.inventories.getMVIConfig().removeWorldGroup(worldGroup);
         this.inventories.getMVIConfig().save();
     }
