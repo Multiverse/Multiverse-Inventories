@@ -34,4 +34,6 @@ public interface Sharable<T> {
      * @return The names of this Sharable for setting as shared in the config.
      */
     String[] getNames();
+
+    ProfileEntry getProfileEntry();
 }

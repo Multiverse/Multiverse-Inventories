@@ -1,8 +1,13 @@
 package com.onarandombox.multiverseinventories.share;
 
+import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -14,22 +19,187 @@ import java.util.Set;
 public class Sharables implements Shares {
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
-    private static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
+    static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
 
-    public static final Shares ALL_INVENTORY = fromSharables(DefaultSharable.INVENTORY,
-            DefaultSharable.INVENTORY).lock();
-    public static final Shares ALL_EXPERIENCE = fromSharables(DefaultSharable.EXPERIENCE,
-            DefaultSharable.TOTAL_EXPERIENCE, DefaultSharable.LEVEL).lock();
-    public static final Shares HEALTH = fromSharables(DefaultSharable.HP).lock();
-    public static final Shares HUNGER = fromSharables(DefaultSharable.FOOD_LEVEL,
-            DefaultSharable.SATURATION, DefaultSharable.EXHAUSTION).lock();
-    public static final Sharable BED_SPAWN = DefaultSharable.BED_SPAWN;
-
-    static {
-        for (Sharable sharable : EnumSet.allOf(DefaultSharable.class)) {
-            register(sharable);
+    /**
+     * Sharing Inventory.
+     */
+    static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>("inventory_contents",
+            new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setInventoryContents(player.getInventory().getContents());
         }
-    }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.getInventory().setContents(profile.getInventoryContents());
+        }
+    };
+
+    /**
+     * Sharing Armor.
+     */
+    static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>("armor_contents",
+            new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setArmorContents(player.getInventory().getArmorContents());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.getInventory().setArmorContents(profile.getArmorContents());
+
+        }
+    };
+
+    /**
+     * Sharing Health.
+     */
+    static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>("health",
+            new ProfileEntry(true, DataStrings.PLAYER_HEALTH), "hp", "hitpoints", "hit_points") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setHealth(player.getHealth());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setHealth(profile.getHealth());
+        }
+    };
+
+    /**
+     * Sharing Experience.
+     */
+    static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>("exp",
+            new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE), "xp") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setExp(player.getExp());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setExp(profile.getExp());
+        }
+    };
+
+    /**
+     * Sharing Experience.
+     */
+    static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>("level",
+            new ProfileEntry(true, DataStrings.PLAYER_LEVEL), "lvl") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setLevel(player.getLevel());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setLevel(profile.getLevel());
+        }
+    };
+
+    /**
+     * Sharing Experience.
+     */
+    static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>("total_exp",
+            new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE), "total_xp", "totalxp") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setTotalExperience(player.getTotalExperience());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setTotalExperience(profile.getTotalExperience());
+        }
+    };
+
+    /**
+     * Sharing Hunger.
+     */
+    static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>("food_level",
+            new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL), "food") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setFoodLevel(player.getFoodLevel());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setFoodLevel(profile.getFoodLevel());
+        }
+    };
+
+    /**
+     * Sharing Hunger.
+     */
+    static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>("exhaustion",
+            new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION), "exhaust", "exh") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setExhaustion(player.getExhaustion());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setExhaustion(profile.getExhaustion());
+        }
+    };
+
+    /**
+     * Sharing Hunger.
+     */
+    static final Sharable<Float> SATURATION = new AbstractSharable<Float>("saturation",
+            new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "sat") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setSaturation(player.getSaturation());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            player.setSaturation(profile.getSaturation());
+        }
+    };
+
+    /**
+     * Sharing Bed Spawn.
+     */
+    static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>("bed_spawn",
+            new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "bedspawn", "bed", "beds") {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.setBedSpawnLocation(player.getBedSpawnLocation());
+        }
+
+        @Override
+        public void updatePlayer(Player player, PlayerProfile profile) {
+            Location loc = profile.getBedSpawnLocation();
+            if (loc == null) {
+                loc = player.getWorld().getSpawnLocation();
+            }
+            player.setBedSpawnLocation(loc);
+        }
+    };
+
+    public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
+            fromSharables(INVENTORY, ARMOR), "inv");
+
+    public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
+            fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
+
+    public static final SharableGroup HUNGER = new SharableGroup("hunger",
+            fromSharables(FOOD_LEVEL, SATURATION, EXHAUSTION));
+
+    public static final SharableGroup STATS = new SharableGroup("stats",
+            fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
+
+    public static final SharableGroup ALL_DEFAULT = new SharableGroup("*", fromSharables(HEALTH,
+            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "all");
 
     public static boolean register(Sharable sharable) {
         if (allSharables.add(sharable)) {
@@ -110,7 +280,6 @@ public class Sharables implements Shares {
     }
 
     protected Set<Sharable> sharables;
-    private boolean isLocked = false;
 
     private Sharables(Set<Sharable> sharableSet) {
         this.sharables = sharableSet;
@@ -153,17 +322,11 @@ public class Sharables implements Shares {
 
     @Override
     public boolean add(Sharable sharable) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         return this.sharables.add(sharable);
     }
 
     @Override
     public boolean remove(Object o) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         return this.sharables.remove(o);
     }
 
@@ -174,33 +337,21 @@ public class Sharables implements Shares {
 
     @Override
     public boolean addAll(Collection<? extends Sharable> c) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         return this.sharables.addAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         return this.sharables.retainAll(c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         return this.sharables.removeAll(c);
     }
 
     @Override
     public void clear() {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         this.sharables.clear();
     }
 
@@ -219,9 +370,6 @@ public class Sharables implements Shares {
      */
     @Override
     public void mergeShares(Shares newShares) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         this.addAll(newShares);
     }
 
@@ -230,9 +378,6 @@ public class Sharables implements Shares {
      */
     @Override
     public void setSharing(Sharable sharable, boolean sharing) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         if (sharing) {
             this.add(sharable);
         } else {
@@ -245,9 +390,6 @@ public class Sharables implements Shares {
      */
     @Override
     public void setSharing(Shares sharables, boolean sharing) {
-        if (isLocked) {
-            throw new IllegalStateException("Shares are locked!");
-        }
         for (Sharable sharable : sharables) {
             if (sharing) {
                 this.add(sharable);
@@ -319,14 +461,5 @@ public class Sharables implements Shares {
             stringBuilder.append(sharable);
         }
         return stringBuilder.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Shares lock() {
-        this.isLocked = true;
-        return this;
     }
 }

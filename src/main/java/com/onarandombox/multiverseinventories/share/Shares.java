@@ -52,11 +52,5 @@ public interface Shares extends Cloneable, Iterable<Sharable>, Collection<Sharab
      * @return These shares as a string list.
      */
     List<String> toStringList();
-
-    /**
-     * Locks the Shares set, making it immutable.  Any methods which alter the set will throw an
-     * {@link IllegalStateException}
-     */
-    Shares lock();
 }
 

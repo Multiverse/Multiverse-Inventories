@@ -38,6 +38,22 @@ public class DataStrings {
      */
     public static final String ITEM_ENCHANTS = "e";
     /**
+     * Player stats identifier.
+     */
+    public static final String PLAYER_STATS = "stats";
+    /**
+     * Player inventory contents identifier.
+     */
+    public static final String PLAYER_INVENTORY_CONTENTS = "inventoryContents";
+    /**
+     * Player armor contents identifier.
+     */
+    public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
+    /**
+     * Player bed spawn location identifier.
+     */
+    public static final String PLAYER_BED_SPAWN_LOCATION = "bedSpawnLocation";
+    /**
      * Player health identifier.
      */
     public static final String PLAYER_HEALTH = "hp";
