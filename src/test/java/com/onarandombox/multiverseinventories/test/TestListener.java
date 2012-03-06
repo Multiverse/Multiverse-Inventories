@@ -1,11 +1,14 @@
 package com.onarandombox.multiverseinventories.test;
 
+import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
 import junit.framework.Assert;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
-public class TestWorldChange {
+public class TestListener {
     TestInstanceCreator creator;
     Server mockServer;
     CommandSender mockCommandSender;
@@ -64,6 +67,19 @@ public class TestWorldChange {
     @After
     public void tearDown() throws Exception {
         creator.tearDown();
+    }
+
+    public void changeWorld(Player player, String fromWorld, String toWorld) {
+        Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
+        player.teleport(location);
+        Assert.assertEquals(location, player.getLocation());
+        listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
+    }
+
+    public void addToInventory(PlayerInventory inventory, Map<Integer, ItemStack> items) {
+        for (Map.Entry<Integer, ItemStack> invEntry : items.entrySet()) {
+            inventory.setItem(invEntry.getKey(), invEntry.getValue());
+        }
     }
 
     @Test
@@ -109,17 +125,45 @@ public class TestWorldChange {
 
         Assert.assertNotSame(originalInventory, newInventory);
     }
-    
-    public void changeWorld(Player player, String fromWorld, String toWorld) {
-        Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
-        player.teleport(location);
-        Assert.assertEquals(location, player.getLocation());
-        listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
-    }
-    
-    public void addToInventory(PlayerInventory inventory, Map<Integer, ItemStack> items) {
-        for (Map.Entry<Integer, ItemStack> invEntry : items.entrySet()) {
-            inventory.setItem(invEntry.getKey(), invEntry.getValue());
-        }
+
+    @Test
+    public void testWorldReset() {
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        // Assert debug mode is off
+        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+
+        // Send the debug command.
+        String[] cmdArgs = new String[]{"debug", "3"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // remove world2 from default group
+        cmdArgs = new String[]{"rmworld", "world2", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Player player = inventories.getServer().getPlayer("dumptruckman");
+
+        
+        changeWorld(player, "world", "world2");
+        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
+        fillerItems.put(3, new ItemStack(Material.BOW, 1));
+        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
+        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        addToInventory(player.getInventory(), fillerItems);
+        String originalInventory = player.getInventory().toString();
+        
+        changeWorld(player, "world2", "world");
+        String newInventory = player.getInventory().toString();
+        
+        Assert.assertNotSame(originalInventory, newInventory);
+
+        listener.worldReset(new MVAResetFinishedEvent("world2"));
+        changeWorld(player, "world", "world2");
+        String inventoryAfterReset = player.getInventory().toString();
+
+        Assert.assertEquals(newInventory, inventoryAfterReset);
     }
 }

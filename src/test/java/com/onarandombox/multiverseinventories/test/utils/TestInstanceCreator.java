@@ -20,6 +20,7 @@ import com.onarandombox.multiverseinventories.util.Logging;
 import junit.framework.Assert;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.World.Environment;
@@ -66,7 +67,7 @@ public class TestInstanceCreator {
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
-    private Map<String, Player> players = new HashMap<String, Player>();
+    public Map<String, Player> players = new HashMap<String, Player>();
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -160,6 +161,11 @@ public class TestInstanceCreator {
             };
             when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
+            when(mockServer.getOfflinePlayers()).thenAnswer(new Answer<OfflinePlayer[]>() {
+                public OfflinePlayer[] answer(InvocationOnMock invocation) throws Throwable {
+                    return players.values().toArray(new Player[players.values().size()]);
+                }
+            });
 
             // Give the server some worlds
             when(mockServer.getWorld(anyString())).thenAnswer(new Answer<World>() {

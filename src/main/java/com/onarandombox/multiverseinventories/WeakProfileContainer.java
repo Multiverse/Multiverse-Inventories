@@ -84,5 +84,14 @@ abstract class WeakProfileContainer implements ProfileContainer {
     public void addPlayerData(PlayerProfile playerProfile) {
         this.getPlayerData().put(playerProfile.getPlayer(), playerProfile);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removePlayerData(OfflinePlayer player) {
+        this.getPlayerData().remove(player);
+        this.getData().removePlayerData(this.type, this.getDataName(), player.getName());
+    }
 }
 
