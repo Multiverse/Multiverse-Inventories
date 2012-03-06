@@ -5,10 +5,8 @@ import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
 import junit.framework.Assert;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
-public class TestListener {
+public class TestResetWorld {
     TestInstanceCreator creator;
     Server mockServer;
     CommandSender mockCommandSender;
@@ -83,50 +80,6 @@ public class TestListener {
     }
 
     @Test
-    public void testWorldChange() {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        // Assert debug mode is off
-        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
-
-        // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-
-        // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-
-        // Verify removal
-        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-
-        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
-
-        Player player = inventories.getServer().getPlayer("dumptruckman");
-
-        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
-        fillerItems.put(3, new ItemStack(Material.BOW, 1));
-        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
-        addToInventory(player.getInventory(), fillerItems);
-        String originalInventory = player.getInventory().toString();
-
-        changeWorld(player, "world", "world_nether");
-
-        String newInventory = player.getInventory().toString();
-        Assert.assertEquals(originalInventory, newInventory);
-
-        changeWorld(player, "world_nether", "world2");
-
-        Assert.assertNotSame(originalInventory, newInventory);
-    }
-
-    @Test
     public void testWorldReset() {
 
         // Initialize a fake command
@@ -146,7 +99,7 @@ public class TestListener {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        
+
         changeWorld(player, "world", "world2");
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
@@ -154,10 +107,10 @@ public class TestListener {
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
-        
+
         changeWorld(player, "world2", "world");
         String newInventory = player.getInventory().toString();
-        
+
         Assert.assertNotSame(originalInventory, newInventory);
 
         listener.worldReset(new MVAResetFinishedEvent("world2"));
