@@ -35,9 +35,11 @@ public class Logging {
         NAME = pdf.getName();
         VERSION = pdf.getVersion();
     }
-    
+
     public static void close() {
-        debugLog.close();
+        if (debugLog != null) {
+            debugLog.close();
+        }
     }
 
     /**
@@ -74,7 +76,7 @@ public class Logging {
     /**
      * Adds the plugin's debug name to the message.
      *
-     * @param message     Log message
+     * @param message Log message
      * @return Modified message
      */
     public static String getDebugString(String message) {
