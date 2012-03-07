@@ -1,5 +1,13 @@
 package com.onarandombox.multiverseinventories.api;
 
+import com.onarandombox.multiverseinventories.util.Logging;
+import com.onarandombox.multiverseinventories.util.MinecraftTools;
+import com.onarandombox.multiverseinventories.util.data.ItemWrapper;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
+
 /**
  * This class handles the formatting of strings for data i/o.
  */
@@ -129,6 +137,98 @@ public class DataStrings {
      */
     public static String createEntry(Object key, Object value) {
         return key + VALUE_DELIMITER + value;
+    }
+
+
+
+    /**
+     * @param locString Parses this string and creates Location.
+     * @return New location object or null if no location could be created.
+     */
+    public static Location parseLocation(String locString) {
+        String[] locArray = locString.split(DataStrings.GENERAL_DELIMITER);
+        World world = null;
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        float pitch = 0;
+        float yaw = 0;
+        try {
+            for (String stat : locArray) {
+                String[] statValues = DataStrings.splitEntry(stat);
+                if (statValues[0].equals(DataStrings.LOCATION_X)) {
+                    x = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Y)) {
+                    y = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_Z)) {
+                    z = Double.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_WORLD)) {
+                    world = Bukkit.getWorld(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_PITCH)) {
+                    yaw = Float.valueOf(statValues[1]);
+                } else if (statValues[0].equals(DataStrings.LOCATION_YAW)) {
+                    pitch = Float.valueOf(statValues[1]);
+                }
+            }
+        } catch (Exception e) {
+            Logging.fine("Could not parse location: " + locString);
+            return null;
+        }
+        if (world == null) {
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
+    /**
+     * @param inventoryString An inventory in string for to be parsed into an ItemStack array.
+     */
+    public static ItemStack[] parseInventory(String inventoryString, int inventorySize) {
+        String[] inventoryArray = inventoryString.split(DataStrings.ITEM_DELIMITER);
+        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[inventorySize]);
+        for (String itemString : inventoryArray) {
+            String[] itemValues = DataStrings.splitEntry(itemString);
+            try {
+                ItemWrapper itemWrapper = ItemWrapper.wrap(itemValues[1]);
+                invContents[Integer.valueOf(itemValues[0])] = itemWrapper.getItem();
+                //Logging.debug("ItemString '" + itemString + "' unwrapped as: " + itemWrapper.getItem().toString());
+            } catch (Exception e) {
+                if (!itemString.isEmpty()) {
+                    Logging.fine("Could not parse item string: " + itemString);
+                    Logging.fine(e.getMessage());
+                }
+            }
+        }
+        return invContents;
+    }
+    
+    public static String valueOf(ItemStack[] items) {
+        StringBuilder builder = new StringBuilder();
+        for (Integer i = 0; i < items.length; i++) {
+            if (items[i] != null && items[i].getTypeId() != 0) {
+                if (!builder.toString().isEmpty()) {
+                    builder.append(DataStrings.ITEM_DELIMITER);
+                }
+                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(items[i]).toString()));
+            }
+        }
+        return builder.toString();
+    }
+    
+    public static String valueOf(Location location) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, location.getWorld().getName()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_X, location.getX()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_Y, location.getY()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_Z, location.getZ()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_PITCH, location.getPitch()));
+        builder.append(DataStrings.GENERAL_DELIMITER);
+        builder.append(DataStrings.createEntry(DataStrings.LOCATION_YAW, location.getYaw()));
+        return builder.toString();
     }
 }
 

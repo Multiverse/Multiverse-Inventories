@@ -126,14 +126,14 @@ public class MultiInvImporter implements DataImporter {
         }
         MIInventoryInterface inventoryInterface =
                 playerFileLoader.getInventory(GameMode.SURVIVAL.toString());
-        playerProfile.setInventoryContents(inventoryInterface.getInventoryContents());
-        playerProfile.setArmorContents(inventoryInterface.getArmorContents());
-        playerProfile.setHealth(playerFileLoader.getHealth());
-        playerProfile.setSaturation(playerFileLoader.getSaturation());
-        playerProfile.setExp(playerFileLoader.getExperience());
-        playerProfile.setLevel(playerFileLoader.getLevel());
-        playerProfile.setTotalExperience(playerFileLoader.getTotalExperience());
-        playerProfile.setFoodLevel(playerFileLoader.getHunger());
+        playerProfile.set(Sharables.INVENTORY, inventoryInterface.getInventoryContents());
+        playerProfile.set(Sharables.ARMOR, inventoryInterface.getArmorContents());
+        playerProfile.set(Sharables.HEALTH, playerFileLoader.getHealth());
+        playerProfile.set(Sharables.SATURATION, playerFileLoader.getSaturation());
+        playerProfile.set(Sharables.EXPERIENCE, playerFileLoader.getExperience());
+        playerProfile.set(Sharables.TOTAL_EXPERIENCE, playerFileLoader.getTotalExperience());
+        playerProfile.set(Sharables.LEVEL, playerFileLoader.getLevel());
+        playerProfile.set(Sharables.FOOD_LEVEL, playerFileLoader.getHunger());
         this.inventories.getData().updatePlayerData(dataName, playerProfile);
     }
 

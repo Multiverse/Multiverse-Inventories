@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -24,165 +25,301 @@ public class Sharables implements Shares {
     /**
      * Sharing Inventory.
      */
-    public static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>("inventory_contents",
-            new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
+    public static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>(ItemStack[].class,
+            "inventory_contents", new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setInventoryContents(player.getInventory().getContents());
+            profile.set(this, player.getInventory().getContents());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.getInventory().setContents(profile.getInventoryContents());
+            ItemStack[] value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.getInventory().setContents(profile.get(this));
+        }
+
+        @Override
+        public ItemStack[] deserialize(String string) {
+            return DataStrings.parseInventory(string, PlayerStats.INVENTORY_SIZE);
+        }
+
+        @Override
+        public String serialize(ItemStack[] items) {
+            return DataStrings.valueOf(items);
         }
     };
 
     /**
      * Sharing Armor.
      */
-    public static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>("armor_contents",
-            new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
+    public static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>(ItemStack[].class,
+            "armor_contents", new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setArmorContents(player.getInventory().getArmorContents());
+            profile.set(this, player.getInventory().getArmorContents());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.getInventory().setArmorContents(profile.getArmorContents());
+            ItemStack[] value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.getInventory().setArmorContents(profile.get(this));
+        }
 
+        @Override
+        public ItemStack[] deserialize(String string) {
+            return DataStrings.parseInventory(string, PlayerStats.ARMOR_SIZE);
+        }
+
+        @Override
+        public String serialize(ItemStack[] items) {
+            return DataStrings.valueOf(items);
         }
     };
 
     /**
      * Sharing Health.
      */
-    public static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>("health",
+    public static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>(Integer.class, "health",
             new ProfileEntry(true, DataStrings.PLAYER_HEALTH), "hp", "hitpoints", "hit_points") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setHealth(player.getHealth());
+            profile.set(this, player.getHealth());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setHealth(profile.getHealth());
+            Integer value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setHealth(profile.get(this));
+        }
+
+        @Override
+        public Integer deserialize(String string) {
+
+            return Integer.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Integer value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>("exp",
+    public static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>(Float.class, "exp",
             new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE), "xp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setExp(player.getExp());
+            profile.set(this, player.getExp());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setExp(profile.getExp());
+            Float value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setExp(profile.get(this));
+        }
+
+        @Override
+        public Float deserialize(String string) {
+            return Float.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Float value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>("level",
+    public static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>(Integer.class, "level",
             new ProfileEntry(true, DataStrings.PLAYER_LEVEL), "lvl") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setLevel(player.getLevel());
+            profile.set(this, player.getLevel());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setLevel(profile.getLevel());
+            Integer value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setLevel(profile.get(this));
+        }
+
+        @Override
+        public Integer deserialize(String string) {
+            return Integer.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Integer value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>("total_exp",
+    public static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>(Integer.class, "total_exp",
             new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE), "total_xp", "totalxp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setTotalExperience(player.getTotalExperience());
+            profile.set(this, player.getTotalExperience());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setTotalExperience(profile.getTotalExperience());
+            Integer value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setTotalExperience(profile.get(this));
+        }
+
+        @Override
+        public Integer deserialize(String string) {
+            return Integer.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Integer value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>("food_level",
+    public static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>(Integer.class, "food_level",
             new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL), "food") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setFoodLevel(player.getFoodLevel());
+            profile.set(this, player.getFoodLevel());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setFoodLevel(profile.getFoodLevel());
+            Integer value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setFoodLevel(profile.get(this));
+        }
+
+        @Override
+        public Integer deserialize(String string) {
+            return Integer.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Integer value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>("exhaustion",
+    public static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>(Float.class, "exhaustion",
             new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION), "exhaust", "exh") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setExhaustion(player.getExhaustion());
+            profile.set(this, player.getExhaustion());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setExhaustion(profile.getExhaustion());
+            Float value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setExhaustion(profile.get(this));
+        }
+
+        @Override
+        public Float deserialize(String string) {
+            return Float.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Float value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> SATURATION = new AbstractSharable<Float>("saturation",
+    public static final Sharable<Float> SATURATION = new AbstractSharable<Float>(Float.class, "saturation",
             new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "sat") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setSaturation(player.getSaturation());
+            profile.set(this, player.getSaturation());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            player.setSaturation(profile.getSaturation());
+            Float value = profile.get(this);
+            if (value == null) {
+                return;
+            }
+            player.setSaturation(profile.get(this));
+        }
+
+        @Override
+        public Float deserialize(String string) {
+            return Float.valueOf(string);
+        }
+
+        @Override
+        public String serialize(Float value) {
+            return value.toString();
         }
     };
 
     /**
      * Sharing Bed Spawn.
      */
-    public static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>("bed_spawn",
-            new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "bedspawn", "bed", "beds") {
+    public static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>(Location.class, "bed_spawn",
+            new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), "bedspawn", "bed", "beds", "bedspawns") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.setBedSpawnLocation(player.getBedSpawnLocation());
+            profile.set(this, player.getBedSpawnLocation());
         }
 
         @Override
         public void updatePlayer(Player player, PlayerProfile profile) {
-            Location loc = profile.getBedSpawnLocation();
+            Location loc = profile.get(this);
             if (loc == null) {
                 loc = player.getWorld().getSpawnLocation();
             }
             player.setBedSpawnLocation(loc);
+        }
+
+        @Override
+        public Location deserialize(String string) {
+            return DataStrings.parseLocation(string);
+        }
+
+        @Override
+        public String serialize(Location value) {
+            return DataStrings.valueOf(value);
         }
     };
 
@@ -204,6 +341,7 @@ public class Sharables implements Shares {
 
     public static boolean register(Sharable sharable) {
         if (allSharables.add(sharable)) {
+            ProfileEntry.register(sharable);
             for (String name : sharable.getNames()) {
                 String key = name.toLowerCase();
                 Shares shares = lookupMap.get(key);

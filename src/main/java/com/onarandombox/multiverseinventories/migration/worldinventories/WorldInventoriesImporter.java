@@ -158,16 +158,16 @@ public class WorldInventoriesImporter implements DataImporter {
         WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
         WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
         if (wiInventory != null) {
-            playerProfile.setInventoryContents(wiInventory.getItems());
-            playerProfile.setArmorContents(wiInventory.getArmour());
+            playerProfile.set(Sharables.INVENTORY, wiInventory.getItems());
+            playerProfile.set(Sharables.ARMOR, wiInventory.getArmour());
         }
         if (wiStats != null) {
-            playerProfile.setHealth(wiStats.getHealth());
-            playerProfile.setSaturation(wiStats.getSaturation());
-            playerProfile.setExp(wiStats.getExp());
-            playerProfile.setLevel(wiStats.getLevel());
-            playerProfile.setExhaustion(wiStats.getExhaustion());
-            playerProfile.setFoodLevel(wiStats.getFoodLevel());
+            playerProfile.set(Sharables.HEALTH, wiStats.getHealth());
+            playerProfile.set(Sharables.SATURATION, wiStats.getSaturation());
+            playerProfile.set(Sharables.EXPERIENCE, wiStats.getExp());
+            playerProfile.set(Sharables.LEVEL, wiStats.getLevel());
+            playerProfile.set(Sharables.EXHAUSTION, wiStats.getExhaustion());
+            playerProfile.set(Sharables.FOOD_LEVEL, wiStats.getFoodLevel());
         }
         this.inventories.getData().updatePlayerData(profileContainer.getDataName(), playerProfile);
         Logging.finest("Player's data imported successfully for group: " + profileContainer.getDataName());
