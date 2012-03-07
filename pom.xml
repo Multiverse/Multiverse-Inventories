@@ -143,15 +143,6 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
-        <!-- Start of Multiverse Adventure Dependency -->
-        <dependency>
-            <groupId>com.onarandombox.multiverseadventure</groupId>
-            <artifactId>Multiverse-Adventure</artifactId>
-            <version>2.4</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <!-- End of Multiverse Adventure Dependency -->
         <!-- Start of Bukkit Dependency -->
         <dependency>
             <groupId>org.bukkit</groupId>
@@ -161,6 +152,15 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of Bukkit Dependency -->
+        <!-- Start of Multiverse Adventure Dependency -->
+        <dependency>
+            <groupId>com.onarandombox.multiverseadventure</groupId>
+            <artifactId>Multiverse-Adventure</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of Multiverse Adventure Dependency -->
         <!-- Start of MultiInv Dependency -->
         <dependency>
             <groupId>uk.co.tggl.pluckerpluck</groupId>
