@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories;
+package com.onarandombox.multiverseinventories.api.share;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
@@ -6,10 +6,10 @@ import com.onarandombox.multiverseinventories.share.Shares;
 /**
  * Simple interface for groups that are going to be saved/loaded.
  */
-interface PersistingProfile {
+public interface PersistingProfile {
 
     /**
-     * @return The name used in the plugin's data to identify this the underlying player.
+     * @return The name used in the plugin's data to identify this the underlying profile.
      */
     String getDataName();
 
@@ -21,7 +21,7 @@ interface PersistingProfile {
     Shares getShares();
 
     /**
-     * @return The player for the world/groups that will be saved/loaded for.
+     * @return The player profile for the world/group that will be saved/loaded for.
      */
     PlayerProfile getProfile();
 }
