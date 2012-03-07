@@ -46,6 +46,7 @@ public class AddWorldCommand extends InventoriesCommand {
             return;
         }
         worldGroup.addWorld(world);
+        this.plugin.getMVIConfig().updateWorldGroup(worldGroup);
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.WORLD_ADDED, sender, world.getName(),
                 worldGroup.getName());

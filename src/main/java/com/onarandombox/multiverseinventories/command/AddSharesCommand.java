@@ -56,6 +56,7 @@ public class AddSharesCommand extends InventoriesCommand {
             return;
         }
         worldGroup.getShares().mergeShares(newShares);
+        this.plugin.getMVIConfig().updateWorldGroup(worldGroup);
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());
