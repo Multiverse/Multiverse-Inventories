@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories.api.profile;
 
 import org.bukkit.OfflinePlayer;
 
+import java.util.Set;
+
 /**
  * An interface for classes containing PlayerProfiles.
  */
@@ -19,6 +21,13 @@ public interface ProfileContainer {
      * @param playerProfile Player player to add.
      */
     void addPlayerData(PlayerProfile playerProfile);
+
+    /**
+     * Removes the profile data for a given player in this world/group.
+     *
+     * @param player Player to remove data for.
+     */
+    void removePlayerData(OfflinePlayer player);
 
     /**
      * @return The name to use to look up Data.

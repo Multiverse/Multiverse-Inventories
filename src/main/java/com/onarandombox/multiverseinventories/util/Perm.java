@@ -86,7 +86,9 @@ public enum Perm {
         private String getBypassMessage(Player player, String name) {
             return "Player: " + player.getName() + " has bypass perms for world: " + name;
         }
-    };
+    },
+    BYPASS_ALL(new Permission("mvinv.bypass.*", "Allows bypassing all of your groups/worlds and constantly use "
+            + "the same inventory", PermissionDefault.FALSE));
 
     private Permission perm = null;
     private String permNode = "";
@@ -124,6 +126,15 @@ public enum Perm {
         Permission permission = Bukkit.getPluginManager().getPermission(bypassNode);
         if (permission == null) {
             permission = new Permission(bypassNode, PermissionDefault.FALSE);
+            switch (this) {
+                case BYPASS_GROUP:
+                    permission.addParent(BYPASS_GROUP_ALL.getPermission(), true);
+                    break;
+                case BYPASS_WORLD:
+                    permission.addParent(BYPASS_WORLD_ALL.getPermission(), true);
+                    break;
+                default:
+            }
             Bukkit.getPluginManager().addPermission(permission);
         }
         return permission;
@@ -140,10 +151,6 @@ public enum Perm {
     public boolean hasBypass(Player player, String name) {
         Permission bypassPerm = this.getBypassPermission(name);
         boolean hasBypass = player.hasPermission(bypassPerm);
-        if (!hasBypass) {
-            bypassPerm = this.getBypassPermission("*");
-            hasBypass = player.hasPermission(bypassPerm);
-        }
         if (hasBypass) {
             Logging.fine("Player: " + player.getName() + " in World: " + player.getWorld().getName()
                     + " has permission: " + bypassPerm.getName() + "(Default: "
@@ -168,6 +175,8 @@ public enum Perm {
      * @param plugin Plugin to register permissions to.
      */
     public static void register(JavaPlugin plugin) {
+        BYPASS_WORLD_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);
+        BYPASS_GROUP_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);
         PluginManager pm = plugin.getServer().getPluginManager();
         for (Perm perm : Perm.values()) {
             if (perm.getPermission() != null) {

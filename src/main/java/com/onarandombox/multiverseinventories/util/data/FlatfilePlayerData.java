@@ -133,5 +133,11 @@ public class FlatfilePlayerData implements PlayerData {
         }
         return new DefaultPlayerProfile(type, playerName, section.getValues(true));
     }
+
+    @Override
+    public boolean removePlayerData(ProfileType type, String dataName, String playerName) {
+        File playerFile = this.getPlayerFile(type, dataName, playerName);
+        return playerFile.delete();
+    }
 }
 
