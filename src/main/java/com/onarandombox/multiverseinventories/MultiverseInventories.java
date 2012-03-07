@@ -49,6 +49,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
     private final int requiresProtocol = 12;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
+    private final AdventureListener adventureListener = new AdventureListener(this);
 
     private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
@@ -118,6 +119,9 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
         // Register Events
         Bukkit.getPluginManager().registerEvents(inventoriesListener, this);
+        if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
+            Bukkit.getPluginManager().registerEvents(adventureListener, this);
+        }
 
         // Register Commands
         this.registerCommands();

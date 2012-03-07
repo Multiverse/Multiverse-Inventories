@@ -5,14 +5,9 @@ import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
 import com.onarandombox.multiverseinventories.util.Logging;
-import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
 import me.drayshak.WorldInventories.WorldInventories;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -217,14 +212,6 @@ public class InventoriesListener implements Listener {
         if (event.getRespawnLocation().equals(this.spawnLoc)) {
             event.getPlayer().setCompassTarget(this.spawnLoc);
         }
-    }
-
-    public void worldReset(MVAResetFinishedEvent event) {
-        WorldProfile worldProfile = inventories.getWorldManager().getWorldProfile(event.getWorld());
-        for (OfflinePlayer player : inventories.getServer().getOfflinePlayers()) {
-            worldProfile.removePlayerData(player);
-        }
-        Logging.info("Removed all inventories for Multiverse-Adventure world.");
     }
 }
 

@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.test;
 
 import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
+import com.onarandombox.multiverseinventories.AdventureListener;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
@@ -40,6 +41,7 @@ public class TestResetWorld {
     CommandSender mockCommandSender;
     MultiverseInventories inventories;
     InventoriesListener listener;
+    AdventureListener aListener;
 
     @Before
     public void setUp() throws Exception {
@@ -55,6 +57,9 @@ public class TestResetWorld {
         Field field = MultiverseInventories.class.getDeclaredField("inventoriesListener");
         field.setAccessible(true);
         listener = (InventoriesListener) field.get(inventories);
+        field = MultiverseInventories.class.getDeclaredField("adventureListener");
+        field.setAccessible(true);
+        aListener = (AdventureListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
 
@@ -113,7 +118,7 @@ public class TestResetWorld {
 
         Assert.assertNotSame(originalInventory, newInventory);
 
-        listener.worldReset(new MVAResetFinishedEvent("world2"));
+        aListener.worldReset(new MVAResetFinishedEvent("world2"));
         changeWorld(player, "world", "world2");
         String inventoryAfterReset = player.getInventory().toString();
 
