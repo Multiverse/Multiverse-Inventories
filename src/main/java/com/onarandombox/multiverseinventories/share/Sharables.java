@@ -24,7 +24,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Inventory.
      */
-    static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>("inventory_contents",
+    public static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>("inventory_contents",
             new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -40,7 +40,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Armor.
      */
-    static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>("armor_contents",
+    public static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>("armor_contents",
             new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -57,7 +57,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Health.
      */
-    static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>("health",
+    public static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>("health",
             new ProfileEntry(true, DataStrings.PLAYER_HEALTH), "hp", "hitpoints", "hit_points") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -73,7 +73,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>("exp",
+    public static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>("exp",
             new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE), "xp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -89,7 +89,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>("level",
+    public static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>("level",
             new ProfileEntry(true, DataStrings.PLAYER_LEVEL), "lvl") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -105,7 +105,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>("total_exp",
+    public static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>("total_exp",
             new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE), "total_xp", "totalxp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -121,7 +121,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>("food_level",
+    public static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>("food_level",
             new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL), "food") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -137,7 +137,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>("exhaustion",
+    public static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>("exhaustion",
             new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION), "exhaust", "exh") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -153,7 +153,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    static final Sharable<Float> SATURATION = new AbstractSharable<Float>("saturation",
+    public static final Sharable<Float> SATURATION = new AbstractSharable<Float>("saturation",
             new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "sat") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -169,7 +169,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Bed Spawn.
      */
-    static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>("bed_spawn",
+    public static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>("bed_spawn",
             new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "bedspawn", "bed", "beds") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -187,7 +187,7 @@ public class Sharables implements Shares {
     };
 
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
-            fromSharables(INVENTORY, ARMOR), "inv");
+            fromSharables(INVENTORY, ARMOR), "inv", "inventories");
 
     public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
             fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
@@ -198,8 +198,9 @@ public class Sharables implements Shares {
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
 
-    public static final SharableGroup ALL_DEFAULT = new SharableGroup("*", fromSharables(HEALTH,
-            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "all");
+    public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH,
+            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "*",
+            "everything");
 
     public static boolean register(Sharable sharable) {
         if (allSharables.add(sharable)) {
@@ -442,7 +443,7 @@ public class Sharables implements Shares {
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
         if (this.isSharing(Sharables.allOf())) {
-            list.add("*");
+            list.add("all");
         } else {
             for (Sharable sharable : this) {
                 list.add(sharable.toString());
