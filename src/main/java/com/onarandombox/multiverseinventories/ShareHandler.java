@@ -183,7 +183,7 @@ final class ShareHandler {
             sharable.updatePlayer(event.getPlayer(), profile.getProfile());
         }
         Logging.finest("Updating " + profile.getShares().toString() + " for "
-                + profile.getProfile().getPlayer().getName() + "for "
+                + profile.getProfile().getPlayer().getName() + " for "
                 + profile.getProfile().getType() + ":" + profile.getDataName());
     }
 }

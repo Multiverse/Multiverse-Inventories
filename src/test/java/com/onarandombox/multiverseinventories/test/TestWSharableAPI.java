@@ -98,7 +98,8 @@ public class TestWSharableAPI {
             public void updatePlayer(Player player, PlayerProfile profile) {
                 Integer value = profile.get(this);
                 if (value == null) {
-                    return;
+                    // Specify default value
+                    value = 0;
                 }
                 player.setMaximumNoDamageTicks(value);
             }
@@ -143,15 +144,26 @@ public class TestWSharableAPI {
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         addToInventory(player.getInventory(), fillerItems);
+        player.setMaximumNoDamageTicks(10);
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
-
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(0, player.getMaximumNoDamageTicks());
+
+        changeWorld(player, "world_nether", "world");
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
+        // add custom share to default group
+        cmdArgs = new String[]{"adds", "custom", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world", "world_nether");
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
 
         changeWorld(player, "world_nether", "world2");
-
+        Assert.assertEquals(0, player.getMaximumNoDamageTicks());
         Assert.assertNotSame(originalInventory, newInventory);
     }
 

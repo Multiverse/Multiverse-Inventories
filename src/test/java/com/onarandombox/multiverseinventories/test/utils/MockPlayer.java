@@ -64,6 +64,8 @@ public class MockPlayer implements Player {
     int food_level = PlayerStats.FOOD_LEVEL;
     int health = PlayerStats.HEALTH;
     
+    int max_no_damage_ticks = 0;
+    
     PlayerInventory inventory = new MockPlayerInventory();
     
     public MockPlayer(String name, Server server) {
@@ -185,6 +187,16 @@ public class MockPlayer implements Player {
     @Override
     public void setHealth(int i) {
         this.health = i;
+    }
+
+    @Override
+    public int getMaximumNoDamageTicks() {
+        return this.max_no_damage_ticks;
+    }
+
+    @Override
+    public void setMaximumNoDamageTicks(int i) {
+        this.max_no_damage_ticks = i;
     }
 
     @Override
@@ -699,16 +711,6 @@ public class MockPlayer implements Player {
 
     @Override
     public void damage(int i, Entity entity) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int getMaximumNoDamageTicks() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setMaximumNoDamageTicks(int i) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
