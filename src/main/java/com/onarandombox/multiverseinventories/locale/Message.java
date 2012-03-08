@@ -31,7 +31,7 @@ public enum Message {
     ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
     ERROR_NO_GROUP("&6There is no group with the name: &f%1"),
     ERROR_NO_WORLD("&6There is no world with the name: &f%1"),
-    ERROR_NO_WORLD_PROFILE("&6There is no world player for the world: &f%1"),
+    ERROR_NO_WORLD_PROFILE("&6There is no world profile for the world: &f%1"),
     ERROR_PLUGIN_NOT_ENABLED("&f%1 &6is not enabled so you may not import data from it!"),
     ERROR_UNSUPPORTED_IMPORT("&6Sorry, ''&f%1&6'' is not supported for importing."),
     ERROR_NO_SHARES_SPECIFIED("&cYou did not specify any valid shares!"),

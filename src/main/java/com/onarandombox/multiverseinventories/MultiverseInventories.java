@@ -21,6 +21,7 @@ import com.onarandombox.multiverseinventories.command.SpawnCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
@@ -128,6 +129,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
         // Hook plugins that can be imported from
         this.hookImportables();
+
+        Sharables.init(this);
 
         // Display enable message/version info
         Logging.info("enabled.", true);

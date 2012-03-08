@@ -115,6 +115,8 @@ public class TestWSharableAPI {
             }
         };
 
+        Assert.assertTrue(Sharables.all().contains(CUSTOM));
+
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
@@ -151,15 +153,6 @@ public class TestWSharableAPI {
         changeWorld(player, "world", "world_nether");
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
-        Assert.assertEquals(0, player.getMaximumNoDamageTicks());
-
-        changeWorld(player, "world_nether", "world");
-        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
-        // add custom share to default group
-        cmdArgs = new String[]{"adds", "custom", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-
-        changeWorld(player, "world", "world_nether");
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
 
         changeWorld(player, "world_nether", "world2");

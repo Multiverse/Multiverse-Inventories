@@ -1,8 +1,10 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +23,14 @@ public class Sharables implements Shares {
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
     static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
+    
+    private static Inventories inventories = null;
+    
+    public static void init(Inventories inventories) {
+        if (Sharables.inventories == null) {
+            Sharables.inventories = inventories;
+        }
+    }
 
     /**
      * Sharing Inventory.
@@ -340,6 +350,16 @@ public class Sharables implements Shares {
             "everything");
 
     public static boolean register(Sharable sharable) {
+        if (!allSharables.contains(sharable)) {
+            if (inventories != null) {
+                for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
+                    if (group.getShares().isSharing(Sharables.all())) {
+                        group.getShares().setSharing(sharable, true);
+
+                    }
+                }
+            }
+        }
         if (allSharables.add(sharable)) {
             ProfileEntry.register(sharable);
             for (String name : sharable.getNames()) {
