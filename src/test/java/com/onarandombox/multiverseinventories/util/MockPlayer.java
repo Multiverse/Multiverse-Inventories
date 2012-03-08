@@ -1,8 +1,7 @@
-package com.onarandombox.multiverseinventories.test.utils;
+package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import org.bukkit.Achievement;
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
@@ -23,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;

@@ -5,7 +5,7 @@
  * with this project.                                                         *
  ******************************************************************************/
 
-package com.onarandombox.multiverseinventories.test.utils;
+package com.onarandombox.multiverseinventories.util;
 
 import static org.mockito.Mockito.*;
 

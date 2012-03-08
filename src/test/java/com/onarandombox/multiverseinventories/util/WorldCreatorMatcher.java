@@ -5,7 +5,7 @@
  * with this project.                                                         *
  ******************************************************************************/
 
-package com.onarandombox.multiverseinventories.test.utils;
+package com.onarandombox.multiverseinventories.util;
 
 import org.bukkit.WorldCreator;
 import org.mockito.ArgumentMatcher;

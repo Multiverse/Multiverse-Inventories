@@ -15,13 +15,13 @@ import java.io.IOException;
 /**
  * Implementation of PlayerData.
  */
-public class FlatfilePlayerData implements PlayerData {
+public class FlatFilePlayerData implements PlayerData {
 
     private static final String YML = ".yml";
     private File worldFolder = null;
     private File groupFolder = null;
 
-    public FlatfilePlayerData(JavaPlugin plugin) throws IOException {
+    public FlatFilePlayerData(JavaPlugin plugin) throws IOException {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -65,7 +65,7 @@ public class FlatfilePlayerData implements PlayerData {
         return folder;
     }
 
-    private File getPlayerFile(ProfileType type, String dataName, String playerName) {
+    File getPlayerFile(ProfileType type, String dataName, String playerName) {
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
         if (!playerFile.exists()) {
             try {

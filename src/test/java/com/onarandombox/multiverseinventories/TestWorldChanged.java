@@ -1,15 +1,19 @@
-package com.onarandombox.multiverseinventories.test;
+package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.InventoriesListener;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.share.Sharables;
-import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
+import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
+import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
 import junit.framework.Assert;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,6 +27,8 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -182,7 +188,27 @@ public class TestWorldChanged {
         Assert.assertEquals(originalInventory, newInventory);
 
         changeWorld(player, "world_nether", "world2");
+        newInventory = player.getInventory().toString();
 
         Assert.assertNotSame(originalInventory, newInventory);
+
+        FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
+        File playerFile = dataHelper.getPlayerFile(ProfileType.GROUP, "default", "dumptruckman");
+        FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+        playerConfig.set(DataStrings.PLAYER_INVENTORY_CONTENTS, "");
+        playerConfig.set(DataStrings.PLAYER_ARMOR_CONTENTS, "");
+        try {
+            playerConfig.save(playerFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world2", "world");
+        
+        originalInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
     }
 }

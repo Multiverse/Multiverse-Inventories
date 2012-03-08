@@ -5,11 +5,10 @@
  * with this project.                                                         *
  ******************************************************************************/
 
-package com.onarandombox.multiverseinventories.test;
+package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
+import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Server;
 import org.bukkit.command.Command;

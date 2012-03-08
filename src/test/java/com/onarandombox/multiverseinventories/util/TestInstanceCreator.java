@@ -5,10 +5,9 @@
  * with this project.                                                         *
  ******************************************************************************/
 
-package com.onarandombox.multiverseinventories.test.utils;
+package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.Core;
 import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
@@ -16,7 +15,6 @@ import com.onarandombox.MultiverseCore.utils.FileUtils;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.util.Logging;
 import junit.framework.Assert;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,10 +43,8 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.test.utils;
+package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;

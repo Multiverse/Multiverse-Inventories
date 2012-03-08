@@ -1,10 +1,11 @@
-package com.onarandombox.multiverseinventories.test;
+package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
-import com.onarandombox.multiverseinventories.AdventureListener;
-import com.onarandombox.multiverseinventories.InventoriesListener;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.test.utils.TestInstanceCreator;
+import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.share.AbstractSharable;
+import com.onarandombox.multiverseinventories.share.ProfileEntry;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,14 +35,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, AdventureListener.class})
-public class TestResetWorld {
+@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
+public class TestWSharableAPI {
     TestInstanceCreator creator;
     Server mockServer;
     CommandSender mockCommandSender;
     MultiverseInventories inventories;
     InventoriesListener listener;
-    AdventureListener aListener;
 
     @Before
     public void setUp() throws Exception {
@@ -54,11 +54,7 @@ public class TestResetWorld {
         // Make sure Core is not null
         assertNotNull(plugin);
         inventories = (MultiverseInventories) plugin;
-        Field field = MultiverseInventories.class.getDeclaredField("adventureListener");
-        field.setAccessible(true);
-        aListener = new AdventureListener(inventories);
-        field.set(inventories, aListener);
-        field = MultiverseInventories.class.getDeclaredField("inventoriesListener");
+        Field field = MultiverseInventories.class.getDeclaredField("inventoriesListener");
         field.setAccessible(true);
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
@@ -86,7 +82,37 @@ public class TestResetWorld {
     }
 
     @Test
-    public void testWorldReset() {
+    public void testSharableAPI() {
+
+        Sharable<Integer> CUSTOM = new AbstractSharable<Integer>(Integer.class, "custom",
+                new ProfileEntry(false, "custom")) {
+            @Override
+            public void updateProfile(PlayerProfile profile, Player player) {
+                profile.set(this, player.getMaximumNoDamageTicks());
+            }
+
+            @Override
+            public void updatePlayer(Player player, PlayerProfile profile) {
+                Integer value = profile.get(this);
+                if (value == null) {
+                    // Specify default value
+                    value = 0;
+                }
+                player.setMaximumNoDamageTicks(value);
+            }
+
+            @Override
+            public Integer deserialize(String string) {
+                return Integer.valueOf(string);
+            }
+
+            @Override
+            public String serialize(Integer value) {
+                return value.toString();
+            }
+        };
+
+        Assert.assertTrue(Sharables.all().contains(CUSTOM));
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
@@ -103,25 +129,32 @@ public class TestResetWorld {
         cmdArgs = new String[]{"rmworld", "world2", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
+        // Verify removal
+        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        cmdArgs = new String[]{"info", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        changeWorld(player, "world", "world2");
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         addToInventory(player.getInventory(), fillerItems);
+        player.setMaximumNoDamageTicks(10);
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();
 
-        changeWorld(player, "world2", "world");
+        changeWorld(player, "world", "world_nether");
         String newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
 
+        changeWorld(player, "world_nether", "world2");
+        Assert.assertEquals(0, player.getMaximumNoDamageTicks());
         Assert.assertNotSame(originalInventory, newInventory);
-
-        aListener.worldReset(new MVAResetFinishedEvent("world2"));
-        changeWorld(player, "world", "world2");
-        String inventoryAfterReset = player.getInventory().toString();
-
-        Assert.assertEquals(newInventory, inventoryAfterReset);
     }
+
 }

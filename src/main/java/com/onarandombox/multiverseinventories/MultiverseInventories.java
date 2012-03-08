@@ -25,7 +25,7 @@ import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
-import com.onarandombox.multiverseinventories.util.data.FlatfilePlayerData;
+import com.onarandombox.multiverseinventories.util.data.FlatFilePlayerData;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -305,7 +305,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new FlatfilePlayerData(this);
+                this.data = new FlatFilePlayerData(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
                 Logging.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
                 Logging.severe(e.getMessage());

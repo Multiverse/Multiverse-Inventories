@@ -42,6 +42,8 @@ class DefaultPlayerProfile implements PlayerProfile {
     public DefaultPlayerProfile(ProfileType type, OfflinePlayer player) {
         this.type = type;
         this.player = player;
+        armorContents = MinecraftTools.fillWithAir(armorContents);
+        inventoryContents = MinecraftTools.fillWithAir(inventoryContents);
     }
 
     public DefaultPlayerProfile(ProfileType type, String playerName, Map<String, Object> playerData) {
@@ -50,11 +52,19 @@ class DefaultPlayerProfile implements PlayerProfile {
             if (key.equalsIgnoreCase("stats")) {
                 this.parsePlayerStats(playerData.get(key).toString());
             } else {
+                if (playerData.get(key) == null) {
+                    Logging.fine("Player data '" + key + "' is null for: " + playerName);
+                    continue;
+                }
                 try {
-                    Sharable sharable = ProfileEntry.lookup(true, key);
+                    Sharable sharable = ProfileEntry.lookup(false, key);
+                    if (sharable == null) {
+                        Logging.fine("Player fileTag '" + key + "' is unrecognized!");
+                        continue;
+                    }
                     this.data.put(sharable, sharable.deserialize(playerData.get(key).toString()));
                 } catch (Exception e) {
-                    Logging.fine("Could not parse stat: '" + key + "' with value:" + playerData.get(key).toString());
+                    Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key).toString() + "'");
                     Logging.fine(e.getMessage());
                 }
             }
