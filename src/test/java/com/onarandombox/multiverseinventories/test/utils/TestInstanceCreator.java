@@ -76,7 +76,6 @@ public class TestInstanceCreator {
 
     public boolean setUp() {
         try {
-            System.out.println("deleting folders");
             FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
             invDirectory.mkdirs();

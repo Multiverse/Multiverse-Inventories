@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class})
+@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, AdventureListener.class})
 public class TestResetWorld {
     TestInstanceCreator creator;
     Server mockServer;
@@ -54,12 +54,13 @@ public class TestResetWorld {
         // Make sure Core is not null
         assertNotNull(plugin);
         inventories = (MultiverseInventories) plugin;
-        Field field = MultiverseInventories.class.getDeclaredField("inventoriesListener");
+        Field field = MultiverseInventories.class.getDeclaredField("adventureListener");
+        field.setAccessible(true);
+        aListener = new AdventureListener(inventories);
+        field.set(inventories, aListener);
+        field = MultiverseInventories.class.getDeclaredField("inventoriesListener");
         field.setAccessible(true);
         listener = (InventoriesListener) field.get(inventories);
-        field = MultiverseInventories.class.getDeclaredField("adventureListener");
-        field.setAccessible(true);
-        aListener = (AdventureListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
 
@@ -103,7 +104,6 @@ public class TestResetWorld {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
-
 
         changeWorld(player, "world", "world2");
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
