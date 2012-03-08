@@ -70,5 +70,15 @@ public interface InventoriesConfig {
      * Convenience method for saving the config to disk.
      */
     void save();
+
+    /**
+     * @return True if we should check for bypass permissions.
+     */
+    boolean isUsingBypass();
+
+    /**
+     * @param useBypass Whether or not to check for bypass permissions.
+     */
+    void setUsingBypass(boolean useBypass);
 }
 

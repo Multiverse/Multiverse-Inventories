@@ -39,6 +39,10 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          */
         FIRST_RUN("settings.first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
         /**
+         * First Run flag config path, default and comments.
+         */
+        USE_BYPASS("settings.use_bypass", false, "# If this is set to true, it will enable bypass permissions (Check the wiki for more info.)"),
+        /**
          * Groups section path and comments.  No simple default for this.
          */
         GROUPS("groups", null, "# This is where you configure your world groups",
@@ -237,6 +241,22 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void setFirstRun(boolean firstRun) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isUsingBypass() {
+        return this.getBoolean(Path.USE_BYPASS);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setUsingBypass(boolean useBypass) {
+        this.getConfig().set(Path.USE_BYPASS.getPath(), useBypass);
     }
 
     /**

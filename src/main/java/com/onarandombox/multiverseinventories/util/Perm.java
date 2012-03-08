@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.api.Inventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -149,6 +150,9 @@ public enum Perm {
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name) {
+        if (inventories != null && !inventories.getMVIConfig().isUsingBypass()) {
+            return false;
+        }
         Permission bypassPerm = this.getBypassPermission(name);
         boolean hasBypass = player.hasPermission(bypassPerm);
         if (hasBypass) {
@@ -168,13 +172,16 @@ public enum Perm {
     public boolean has(CommandSender sender) {
         return sender.hasPermission(perm);
     }
+    
+    private static Inventories inventories = null;
 
     /**
      * Registers all Permission to the plugin.
      *
      * @param plugin Plugin to register permissions to.
      */
-    public static void register(JavaPlugin plugin) {
+    public static void register(Inventories plugin) {
+        inventories = plugin;
         BYPASS_WORLD_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);
         BYPASS_GROUP_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);
         PluginManager pm = plugin.getServer().getPluginManager();
