@@ -42,10 +42,16 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             throw new DeserializationException("No worlds specified for world group: " + name);
         }
         Object worldListObj = dataMap.get("worlds");
+        if (worldListObj == null) {
+            throw new DeserializationException("World list empty for world group: " + name);
+        }
         if (!(worldListObj instanceof List)) {
             throw new DeserializationException("World list formatted incorrectly for world group: " + name);
         }
         for (Object worldNameObj : (List) worldListObj) {
+            if (worldNameObj == null) {
+                throw new DeserializationException("Error with a world listed in group: " + name);
+            }
             this.addWorld(worldNameObj.toString(), false);
             World world = Bukkit.getWorld(worldNameObj.toString());
             if (world == null) {
