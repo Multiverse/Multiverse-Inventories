@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -153,7 +152,7 @@ public class TestWorldChanged {
         // add inventory shares (inv and armor) to default group
         cmdArgs = new String[]{"addshares", "inventory", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        
+
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
@@ -207,8 +206,8 @@ public class TestWorldChanged {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         changeWorld(player, "world2", "world");
-        
-        originalInventory = player.getInventory().toString();
+
+        newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
     }
 }
