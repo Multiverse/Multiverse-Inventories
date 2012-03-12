@@ -36,7 +36,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Inventory.
      */
-    public static final Sharable<ItemStack[]> INVENTORY = new AbstractSharable<ItemStack[]>(ItemStack[].class,
+    public static final Sharable<ItemStack[]> INVENTORY = new SerializableSharable<ItemStack[]>(ItemStack[].class,
             "inventory_contents", new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -56,12 +56,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public ItemStack[] deserialize(String string) {
-            return DataStrings.parseInventory(string, PlayerStats.INVENTORY_SIZE);
+        public ItemStack[] deserialize(Object obj) {
+            return DataStrings.parseInventory(obj.toString(), PlayerStats.INVENTORY_SIZE);
         }
 
         @Override
-        public String serialize(ItemStack[] items) {
+        public Object serialize(ItemStack[] items) {
             return DataStrings.valueOf(items);
         }
     };
@@ -69,7 +69,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Armor.
      */
-    public static final Sharable<ItemStack[]> ARMOR = new AbstractSharable<ItemStack[]>(ItemStack[].class,
+    public static final Sharable<ItemStack[]> ARMOR = new SerializableSharable<ItemStack[]>(ItemStack[].class,
             "armor_contents", new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -89,12 +89,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public ItemStack[] deserialize(String string) {
-            return DataStrings.parseInventory(string, PlayerStats.ARMOR_SIZE);
+        public ItemStack[] deserialize(Object obj) {
+            return DataStrings.parseInventory(obj.toString(), PlayerStats.ARMOR_SIZE);
         }
 
         @Override
-        public String serialize(ItemStack[] items) {
+        public Object serialize(ItemStack[] items) {
             return DataStrings.valueOf(items);
         }
     };
@@ -102,7 +102,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Health.
      */
-    public static final Sharable<Integer> HEALTH = new AbstractSharable<Integer>(Integer.class, "health",
+    public static final Sharable<Integer> HEALTH = new SerializableSharable<Integer>(Integer.class, "health",
             new ProfileEntry(true, DataStrings.PLAYER_HEALTH), "hp", "hitpoints", "hit_points") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -121,13 +121,13 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Integer deserialize(String string) {
+        public Integer deserialize(Object obj) {
 
-            return Integer.valueOf(string);
+            return Integer.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Integer value) {
+        public Object serialize(Integer value) {
             return value.toString();
         }
     };
@@ -135,7 +135,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Float> EXPERIENCE = new AbstractSharable<Float>(Float.class, "exp",
+    public static final Sharable<Float> EXPERIENCE = new SerializableSharable<Float>(Float.class, "exp",
             new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE), "xp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -154,12 +154,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Float deserialize(String string) {
-            return Float.valueOf(string);
+        public Float deserialize(Object obj) {
+            return Float.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Float value) {
+        public Object serialize(Float value) {
             return value.toString();
         }
     };
@@ -167,7 +167,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> LEVEL = new AbstractSharable<Integer>(Integer.class, "level",
+    public static final Sharable<Integer> LEVEL = new SerializableSharable<Integer>(Integer.class, "level",
             new ProfileEntry(true, DataStrings.PLAYER_LEVEL), "lvl") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -186,12 +186,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Integer deserialize(String string) {
-            return Integer.valueOf(string);
+        public Integer deserialize(Object obj) {
+            return Integer.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Integer value) {
+        public Object serialize(Integer value) {
             return value.toString();
         }
     };
@@ -199,7 +199,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> TOTAL_EXPERIENCE = new AbstractSharable<Integer>(Integer.class, "total_exp",
+    public static final Sharable<Integer> TOTAL_EXPERIENCE = new SerializableSharable<Integer>(Integer.class, "total_exp",
             new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE), "total_xp", "totalxp") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -218,12 +218,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Integer deserialize(String string) {
-            return Integer.valueOf(string);
+        public Integer deserialize(Object obj) {
+            return Integer.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Integer value) {
+        public Object serialize(Integer value) {
             return value.toString();
         }
     };
@@ -231,7 +231,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Integer> FOOD_LEVEL = new AbstractSharable<Integer>(Integer.class, "food_level",
+    public static final Sharable<Integer> FOOD_LEVEL = new SerializableSharable<Integer>(Integer.class, "food_level",
             new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL), "food") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -250,12 +250,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Integer deserialize(String string) {
-            return Integer.valueOf(string);
+        public Integer deserialize(Object obj) {
+            return Integer.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Integer value) {
+        public Object serialize(Integer value) {
             return value.toString();
         }
     };
@@ -263,7 +263,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> EXHAUSTION = new AbstractSharable<Float>(Float.class, "exhaustion",
+    public static final Sharable<Float> EXHAUSTION = new SerializableSharable<Float>(Float.class, "exhaustion",
             new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION), "exhaust", "exh") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -282,12 +282,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Float deserialize(String string) {
-            return Float.valueOf(string);
+        public Float deserialize(Object obj) {
+            return Float.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Float value) {
+        public Object serialize(Float value) {
             return value.toString();
         }
     };
@@ -295,7 +295,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> SATURATION = new AbstractSharable<Float>(Float.class, "saturation",
+    public static final Sharable<Float> SATURATION = new SerializableSharable<Float>(Float.class, "saturation",
             new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "sat") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -314,12 +314,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Float deserialize(String string) {
-            return Float.valueOf(string);
+        public Float deserialize(Object obj) {
+            return Float.valueOf(obj.toString());
         }
 
         @Override
-        public String serialize(Float value) {
+        public Object serialize(Float value) {
             return value.toString();
         }
     };
@@ -327,7 +327,7 @@ public class Sharables implements Shares {
     /**
      * Sharing Bed Spawn.
      */
-    public static final Sharable<Location> BED_SPAWN = new AbstractSharable<Location>(Location.class, "bed_spawn",
+    public static final Sharable<Location> BED_SPAWN = new SerializableSharable<Location>(Location.class, "bed_spawn",
             new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), "bedspawn", "bed", "beds", "bedspawns") {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
@@ -346,12 +346,12 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public Location deserialize(String string) {
-            return DataStrings.parseLocation(string);
+        public Location deserialize(Object obj) {
+            return DataStrings.parseLocation(obj.toString());
         }
 
         @Override
-        public String serialize(Location value) {
+        public Object serialize(Location value) {
             return DataStrings.valueOf(value);
         }
     };
@@ -384,7 +384,6 @@ public class Sharables implements Shares {
             }
         }
         if (allSharables.add(sharable)) {
-            ProfileEntry.register(sharable);
             for (String name : sharable.getNames()) {
                 String key = name.toLowerCase();
                 Shares shares = lookupMap.get(key);

@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.share.AbstractSharable;
+import com.onarandombox.multiverseinventories.share.SerializableSharable;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
@@ -84,7 +84,7 @@ public class TestWSharableAPI {
     @Test
     public void testSharableAPI() {
 
-        Sharable<Integer> CUSTOM = new AbstractSharable<Integer>(Integer.class, "custom",
+        Sharable<Integer> CUSTOM = new SerializableSharable<Integer>(Integer.class, "custom",
                 new ProfileEntry(false, "custom")) {
             @Override
             public void updateProfile(PlayerProfile profile, Player player) {
@@ -102,15 +102,30 @@ public class TestWSharableAPI {
                 player.setMaximumNoDamageTicks(value);
                 return true;
             }
+        };
 
+        Sharable<Map> CUSTOM_MAP = new SerializableSharable<Map>(Map.class, "custom_map",
+                new ProfileEntry(false, "custom_map")) {
             @Override
-            public Integer deserialize(String string) {
-                return Integer.valueOf(string);
+            public void updateProfile(PlayerProfile profile, Player player) {
+                Map<String, Object> data = new HashMap<String, Object>();
+                data.put("maxNoDamageTick", player.getMaximumNoDamageTicks());
+                data.put("displayName", player.getDisplayName());
+                profile.set(this, data);
             }
 
             @Override
-            public String serialize(Integer value) {
-                return value.toString();
+            public boolean updatePlayer(Player player, PlayerProfile profile) {
+                Map<String, Object> data = profile.get(this);
+                if (data == null) {
+                    // Specify default value
+                    player.setMaximumNoDamageTicks(0);
+                    player.setDisplayName("poop");
+                    return false;
+                }
+                player.setMaximumNoDamageTicks((Integer) data.get("maxNoDamageTick"));
+                player.setDisplayName(data.get("displayName").toString());
+                return true;
             }
         };
 

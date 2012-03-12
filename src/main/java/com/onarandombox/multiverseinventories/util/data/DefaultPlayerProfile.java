@@ -6,6 +6,7 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.SerializableSharable;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
@@ -58,7 +59,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                     continue;
                 }
                 try {
-                    Sharable sharable = ProfileEntry.lookup(false, key);
+                    SerializableSharable sharable = ProfileEntry.lookup(false, key);
                     if (sharable == null) {
                         Logging.fine("Player fileTag '" + key + "' is unrecognized!");
                         continue;
@@ -81,7 +82,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (String stat : statsArray) {
             try {
                 String[] statValues = DataStrings.splitEntry(stat);
-                Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
+                SerializableSharable sharable = ProfileEntry.lookup(true, statValues[0]);
                 this.data.put(sharable, sharable.deserialize(statValues[1]));
             } catch (Exception e) {
                 if (!stat.isEmpty()) {
@@ -101,19 +102,19 @@ class DefaultPlayerProfile implements PlayerProfile {
         StringBuilder statBuilder = new StringBuilder();
         for (Map.Entry<Sharable, Object> entry : this.data.entrySet()) {
             if (entry.getValue() != null) {
-                if (entry.getKey().getProfileEntry() == null) {
-                    // This would mean the sharable is not intended for saving in profile files.
+                if (!(entry.getKey() instanceof SerializableSharable)) {
                     continue;
                 }
-                if (entry.getKey().getProfileEntry().isStat()) {
+                SerializableSharable sharable = (SerializableSharable) entry.getKey();
+                if (sharable.getProfileEntry().isStat()) {
                     if (!statBuilder.toString().isEmpty()) {
                         statBuilder.append(DataStrings.GENERAL_DELIMITER);
                     }
-                    statBuilder.append(DataStrings.createEntry(entry.getKey().getProfileEntry().getFileTag(),
-                            entry.getKey().serialize(entry.getValue())));
+                    statBuilder.append(DataStrings.createEntry(sharable.getProfileEntry().getFileTag(),
+                            sharable.serialize(entry.getValue())));
                 } else {
 
-                    playerData.put(entry.getKey().getProfileEntry().getFileTag(), entry.getKey().serialize(entry.getValue()));
+                    playerData.put(sharable.getProfileEntry().getFileTag(), sharable.serialize(entry.getValue()));
                 }
             }
         }

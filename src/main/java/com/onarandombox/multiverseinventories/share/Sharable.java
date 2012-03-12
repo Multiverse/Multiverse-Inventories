@@ -36,11 +36,9 @@ public interface Sharable<T> {
      */
     String[] getNames();
 
-    ProfileEntry getProfileEntry();
-
     Class<T> getType();
 
-    T deserialize(String string);
+    //T deserialize(Object obj);
 
-    String serialize(T t);
+    //Object serialize(T t);
 }

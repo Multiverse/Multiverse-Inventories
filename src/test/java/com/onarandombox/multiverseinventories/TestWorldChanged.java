@@ -150,12 +150,13 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"rmshares", "all", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
         // add inventory shares (inv and armor) to default group
-        cmdArgs = new String[]{"addshares", "inventory", "default"};
+        cmdArgs = new String[]{"addshares", "inventory,saturation", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));
 
         // Reload to ensure things are saving to config.yml
         cmdArgs = new String[]{"reload"};
@@ -164,6 +165,7 @@ public class TestWorldChanged {
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
@@ -178,6 +180,8 @@ public class TestWorldChanged {
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        float satTest = 0.349F;
+        player.setSaturation(satTest);
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
 
@@ -185,17 +189,34 @@ public class TestWorldChanged {
 
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(satTest, player.getSaturation());
 
         changeWorld(player, "world_nether", "world2");
         newInventory = player.getInventory().toString();
 
         Assert.assertNotSame(originalInventory, newInventory);
+        Assert.assertNotSame(satTest, player.getSaturation());
+
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world2", "world");
+
+        newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(satTest, player.getSaturation());
+
+        changeWorld(player, "world_nether", "world2");
+        originalInventory = player.getInventory().toString();
+
+        Assert.assertNotSame(originalInventory, newInventory);
+        Assert.assertNotSame(satTest, player.getSaturation());
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
         File playerFile = dataHelper.getPlayerFile(ProfileType.GROUP, "default", "dumptruckman");
         FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-        playerConfig.set(DataStrings.PLAYER_INVENTORY_CONTENTS, "");
-        playerConfig.set(DataStrings.PLAYER_ARMOR_CONTENTS, "");
+        playerConfig.set("playerData." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
+        playerConfig.set("playerData." + DataStrings.PLAYER_ARMOR_CONTENTS, "");
         try {
             playerConfig.save(playerFile);
         } catch (IOException e) {

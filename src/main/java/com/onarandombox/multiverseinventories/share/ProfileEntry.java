@@ -5,8 +5,8 @@ import java.util.Map;
 
 public class ProfileEntry {
 
-    private static final Map<String, Sharable> statsMap = new HashMap<String, Sharable>();
-    private static final Map<String, Sharable> othersMap = new HashMap<String, Sharable>();
+    private static final Map<String, SerializableSharable> statsMap = new HashMap<String, SerializableSharable>();
+    private static final Map<String, SerializableSharable> othersMap = new HashMap<String, SerializableSharable>();
 
     private boolean isStat;
     private String fileTag;
@@ -24,7 +24,7 @@ public class ProfileEntry {
         return this.fileTag;
     }
 
-    static void register(Sharable sharable) {
+    static void register(SerializableSharable sharable) {
         ProfileEntry entry = sharable.getProfileEntry();
         if (entry == null) {
             // This would mean the sharable is not intended for saving in profile files.
@@ -37,7 +37,7 @@ public class ProfileEntry {
         }
     }
 
-    public static Sharable lookup(boolean stat, String fileTag) {
+    public static SerializableSharable lookup(boolean stat, String fileTag) {
         if (stat) {
             return statsMap.get(fileTag);
         } else {
