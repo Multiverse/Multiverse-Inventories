@@ -5,7 +5,6 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.OfflinePlayer;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -20,6 +19,9 @@ public class AdventureListener implements Listener {
         this.inventories = inventories;
     }
 
+    /**
+     * @param event The Multiverse-Adventure event to handle when a world has finished resetting.
+     */
     @EventHandler
     public void worldReset(MVAResetFinishedEvent event) {
         WorldProfile worldProfile = inventories.getWorldManager().getWorldProfile(event.getWorld());
