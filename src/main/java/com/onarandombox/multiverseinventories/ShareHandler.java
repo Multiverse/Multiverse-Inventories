@@ -1,11 +1,11 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
@@ -16,7 +16,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -127,7 +126,7 @@ final class ShareHandler {
         if (!sharesToUpdate.isSharing(Sharables.all())) {
             sharesToUpdate = Sharables.complementOf(sharesToUpdate);
             // Get world we need to load from.
-            Logging.finer("No groups for toWorld.");
+            Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
                     .getWorldProfile(event.getToWorld().getName());
             this.addToProfile(toWorldProfile, sharesToUpdate,
@@ -172,19 +171,38 @@ final class ShareHandler {
         for (Sharable sharable : profile.getShares()) {
             sharable.updateProfile(profile.getProfile(), event.getPlayer());
         }
-        Logging.finest("Persisting: " + profile.getShares().toString() + " to "
+        Logging.finest("Persisted: " + profile.getShares().toString() + " to "
                 + profile.getProfile().getType() + ":" + profile.getDataName()
                 + " for player " + profile.getProfile().getPlayer().getName());
         this.inventories.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
     }
 
     private void updatePlayer(PersistingProfile profile) {
+        StringBuilder defaulted = new StringBuilder();
+        StringBuilder loaded = new StringBuilder();
         for (Sharable sharable : profile.getShares()) {
-            sharable.updatePlayer(event.getPlayer(), profile.getProfile());
+            if (sharable.updatePlayer(event.getPlayer(), profile.getProfile())) {
+                if (!loaded.toString().isEmpty()) {
+                    loaded.append(", ");
+                }
+                loaded.append(sharable.getNames()[0]);
+            } else {
+                if (!defaulted.toString().isEmpty()) {
+                    defaulted.append(", ");
+                }
+                defaulted.append(sharable.getNames()[0]);
+            }
         }
-        Logging.finest("Updating " + profile.getShares().toString() + " for "
-                + profile.getProfile().getPlayer().getName() + " for "
-                + profile.getProfile().getType() + ":" + profile.getDataName());
+        if (!loaded.toString().isEmpty()) {
+            Logging.finest("Updated: " + loaded.toString() + " for "
+                    + profile.getProfile().getPlayer().getName() + " for "
+                    + profile.getProfile().getType() + ":" + profile.getDataName());
+        }
+        if (!defaulted.toString().isEmpty()) {
+            Logging.finest("Defaulted: " + defaulted.toString() + " for "
+                    + profile.getProfile().getPlayer().getName() + " for "
+                    + profile.getProfile().getType() + ":" + profile.getDataName());
+        }
     }
 }
 
