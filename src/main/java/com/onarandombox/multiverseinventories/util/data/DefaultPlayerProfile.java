@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories.util.data;
 
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.util.Logging;
@@ -11,7 +11,6 @@ import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -100,6 +99,10 @@ class DefaultPlayerProfile implements PlayerProfile {
         StringBuilder statBuilder = new StringBuilder();
         for (Map.Entry<Sharable, Object> entry : this.data.entrySet()) {
             if (entry.getValue() != null) {
+                if (entry.getKey().getProfileEntry() == null) {
+                    // This would mean the sharable is not intended for saving in profile files.
+                    continue;
+                }
                 if (entry.getKey().getProfileEntry().isStat()) {
                     if (!statBuilder.toString().isEmpty()) {
                         statBuilder.append(DataStrings.GENERAL_DELIMITER);
