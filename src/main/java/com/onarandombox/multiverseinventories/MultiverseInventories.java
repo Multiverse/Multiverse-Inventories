@@ -266,7 +266,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             try {
                 this.config = new CommentedInventoriesConfig(this);
                 Logging.fine("Loaded config file!");
-            } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
+            } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
                 Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
                 Logging.severe(e.getMessage());
                 Bukkit.getPluginManager().disablePlugin(this);

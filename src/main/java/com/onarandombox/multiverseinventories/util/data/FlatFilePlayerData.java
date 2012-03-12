@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.util.data;
 
+import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
@@ -41,7 +42,7 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     private FileConfiguration getConfigHandle(File file) {
-        return YamlConfiguration.loadConfiguration(file);
+        return EnhancedConfiguration.loadConfiguration(file);
     }
 
     private File getFolder(ProfileType type, String folderName) {

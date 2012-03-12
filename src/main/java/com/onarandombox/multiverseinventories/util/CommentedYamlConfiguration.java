@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.util;
 
+import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,20 +15,23 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Configuration wrapper class that allows for comments to be applied to the config paths.
  */
-public class CommentedYamlConfiguration {
+class CommentedYamlConfiguration {
 
     private HashMap<String, String> comments;
     private File file;
     private FileConfiguration config = null;
+    private boolean doComments;
 
-    public CommentedYamlConfiguration(File file) {
+    public CommentedYamlConfiguration(File file, boolean doComments) {
         super();
         comments = new HashMap<String, String>();
         this.file = file;
+        this.doComments = doComments;
     }
 
     /**
@@ -36,8 +39,8 @@ public class CommentedYamlConfiguration {
      *
      * @throws Exception If anything goes wrong while loading this Configuration object into memory.
      */
-    public void load() throws Exception {
-        config = YamlConfiguration.loadConfiguration(file);
+    public void load() {
+        config = EnhancedConfiguration.loadConfiguration(file);
     }
 
     /**
@@ -54,14 +57,16 @@ public class CommentedYamlConfiguration {
      * @return True if succesful.
      */
     public boolean save() {
-
         boolean saved = true;
-
         // Save the config just like normal
         try {
             config.save(file);
         } catch (Exception e) {
             saved = false;
+        }
+
+        if (!doComments) {
+            return saved;
         }
 
         // if there's comments to add and it saved fine, we need to add comments
@@ -70,10 +75,10 @@ public class CommentedYamlConfiguration {
             String[] yamlContents =
                     this.convertFileToString(file).split("[" + System.getProperty("line.separator") + "]");
 
-            // This will hold the newly formatted line
-            String newContents = "";
+            // This will hold the entire newly formatted config
+            StringBuilder newContents = new StringBuilder(config.options().header()).append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
             // This holds the current path the lines are at in the config
-            String currentPath = "";
+            StringBuilder currentPath = new StringBuilder();
             // This tells if the specified path has already been commented
             boolean commentedPath = false;
             // This flags if the line is a node or unknown text.
@@ -84,9 +89,8 @@ public class CommentedYamlConfiguration {
             // TODO find a better solution here?
             // This will cause the first line to be ignored.
             boolean firstLine = true;
-
             // Loop through the config lines
-            for (String line : yamlContents) {
+            for (final String line : yamlContents) {
                 if (firstLine) {
                     firstLine = false;
                     if (line.startsWith("#")) {
@@ -107,8 +111,8 @@ public class CommentedYamlConfiguration {
                         index = line.length() - 1;
                     }
                     // If currentPath is empty, store the node name as the currentPath. (this is only on the first iteration, i think)
-                    if (currentPath.isEmpty()) {
-                        currentPath = line.substring(0, index);
+                    if (currentPath.toString().isEmpty()) {
+                        currentPath = new StringBuilder(line.substring(0, index));
                     } else {
                         // Calculate the whitespace preceding the node name
                         int whiteSpace = 0;
@@ -122,26 +126,25 @@ public class CommentedYamlConfiguration {
                         // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
                         if (whiteSpace / 2 > depth) {
                             // Path is deeper.  Add a . and the node name
-                            currentPath += "." + line.substring(whiteSpace, index);
+                            currentPath.append(".").append(line.substring(whiteSpace, index));
                             depth++;
                         } else if (whiteSpace / 2 < depth) {
                             // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
                             int newDepth = whiteSpace / 2;
                             for (int i = 0; i < depth - newDepth; i++) {
-                                currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
+                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
                             }
                             // Grab the index of the final period
                             int lastIndex = currentPath.lastIndexOf(".");
                             if (lastIndex < 0) {
                                 // if there isn't a final period, set the current path to nothing because we're at root
-                                currentPath = "";
+                                currentPath = new StringBuilder();
                             } else {
                                 // If there is a final period, replace everything after it with nothing
-                                currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
-                                currentPath += ".";
+                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
                             // Add the new node name to the path
-                            currentPath += line.substring(whiteSpace, index);
+                            currentPath.append(line.substring(whiteSpace, index));
                             // Reset the depth
                             depth = newDepth;
                         } else {
@@ -149,38 +152,43 @@ public class CommentedYamlConfiguration {
                             int lastIndex = currentPath.lastIndexOf(".");
                             if (lastIndex < 0) {
                                 // if there isn't a final period, set the current path to nothing because we're at root
-                                currentPath = "";
+                                currentPath = new StringBuilder();
                             } else {
                                 // If there is a final period, replace everything after it with nothing
-                                currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
-                                currentPath += ".";
+                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
                             //currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
-                            currentPath += line.substring(whiteSpace, index);
+                            currentPath.append(line.substring(whiteSpace, index));
                         }
                     }
                 } else {
                     node = false;
                 }
-
+                StringBuilder newLine = new StringBuilder(line);
                 if (node) {
                     String comment = null;
                     if (!commentedPath) {
                         // If there's a comment for the current path, retrieve it and flag that path as already commented
-                        comment = comments.get(currentPath);
+                        comment = comments.get(currentPath.toString());
                     }
-                    if (comment != null) {
+                    if (comment != null && !comment.isEmpty()) {
                         // Add the comment to the beginning of the current line
-                        line = comment + System.getProperty("line.separator") + line + System.getProperty("line.separator");
+                        newLine.insert(0, System.getProperty("line.separator")).insert(0, comment);
                         comment = null;
                         commentedPath = true;
-                    } else {
-                        // Add a new line as it is a node, but has no comment
-                        line += System.getProperty("line.separator");
                     }
+                    /* Old code for removing uncommented lines.
+                     * May need reworking.
+                    if (comment != null || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
+                        // Add the (modified) line to the total config String
+                        // This modified version will not write the config if a comment is not present
+                        newContents += line + System.getProperty("line.separator");
+                    }
+                    */
                 }
+                newLine.append(System.getProperty("line.separator"));
                 // Add the (modified) line to the total config String
-                newContents += line + ((!node) ? System.getProperty("line.separator") : "");
+                newContents.append(newLine.toString());
             }
             /*
              * Due to a bukkit bug we need to strip any extra new lines from the
@@ -191,10 +199,9 @@ public class CommentedYamlConfiguration {
                 newContents = newContents.replaceFirst(System.getProperty("line.separator"), "");
             }
             */
-
             try {
                 // Write the string to the config file
-                this.stringToFile(newContents, file);
+                this.stringToFile(newContents.toString(), file);
             } catch (IOException e) {
                 saved = false;
             }
@@ -208,7 +215,7 @@ public class CommentedYamlConfiguration {
      * @param path         Configuration path to add comment.
      * @param commentLines Comments to add.  One String per line.
      */
-    public void addComment(String path, String... commentLines) {
+    public void addComment(String path, List<String> commentLines) {
         StringBuilder commentstring = new StringBuilder();
         String leadingSpaces = "";
         for (int n = 0; n < path.length(); n++) {
@@ -257,8 +264,7 @@ public class CommentedYamlConfiguration {
                 if (is != null) {
                     try {
                         is.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (IOException ignore) {
                     }
                 }
             }
@@ -274,7 +280,7 @@ public class CommentedYamlConfiguration {
      * @param source String to write.
      * @param file   File to write to.
      * @return True on success.
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private boolean stringToFile(String source, File file) throws IOException {
         OutputStreamWriter out = null;
@@ -284,13 +290,18 @@ public class CommentedYamlConfiguration {
             source.replaceAll("\n", System.getProperty("line.separator"));
 
             out.write(source);
+            out.close();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         } finally {
             if (out != null) {
-                out.close();
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -131,6 +131,32 @@ and adjust the build number accordingly -->
                     <configLocation>${project.basedir}/config/mv_checks.xml</configLocation>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.feildmaster.lib.configuration:ConfigurationLib</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.feildmaster.lib.configuration</pattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.util</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -143,6 +169,15 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of Bukkit Dependency -->
+        <!-- Start of ConfigurationLib Dependency -->
+        <dependency>
+            <groupId>com.feildmaster.lib.configuration</groupId>
+            <artifactId>ConfigurationLib</artifactId>
+            <version>1.1.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of ConfigurationLib Dependency -->
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>

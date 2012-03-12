@@ -7,7 +7,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -60,12 +62,12 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
 
         private String path;
         private Object def;
-        private String[] comments;
+        private List<String> comments;
 
         Path(String path, Object def, String... comments) {
             this.path = path;
             this.def = def;
-            this.comments = comments;
+            this.comments = Arrays.asList(comments);
         }
 
         /**
@@ -91,21 +93,15 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          *
          * @return The comments for a config path.
          */
-        private String[] getComments() {
-            if (this.comments != null) {
-                return this.comments;
-            }
-
-            String[] emptyComments = new String[1];
-            emptyComments[0] = "";
-            return emptyComments;
+        private List<String> getComments() {
+            return this.comments;
         }
     }
 
     private CommentedYamlConfiguration config;
     private MultiverseInventories plugin;
 
-    public CommentedInventoriesConfig(MultiverseInventories plugin) throws Exception {
+    public CommentedInventoriesConfig(MultiverseInventories plugin) throws IOException {
         this.plugin = plugin;
         // Make the data folders
         if (plugin.getDataFolder().mkdirs()) {
@@ -120,11 +116,13 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         }
 
         // Load the configuration file into memory
-        config = new CommentedYamlConfiguration(configFile);
+        config = new CommentedYamlConfiguration(configFile, true);
         config.load();
 
         // Sets defaults config values
         this.setDefaults();
+        
+        config.getConfig().options().header("# Multiverse-Inventories Settings/Groups");
 
         // Saves the configuration from memory to file
         config.save();
