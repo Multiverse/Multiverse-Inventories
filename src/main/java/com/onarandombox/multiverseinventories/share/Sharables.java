@@ -5,6 +5,7 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -23,9 +24,9 @@ public class Sharables implements Shares {
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
     static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
-    
+
     private static Inventories inventories = null;
-    
+
     public static void init(Inventories inventories) {
         if (Sharables.inventories == null) {
             Sharables.inventories = inventories;
@@ -43,12 +44,15 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             ItemStack[] value = profile.get(this);
             if (value == null) {
-                return;
+                player.getInventory().setContents(
+                        MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]));
+                return false;
             }
-            player.getInventory().setContents(profile.get(this));
+            player.getInventory().setContents(value);
+            return true;
         }
 
         @Override
@@ -73,12 +77,15 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             ItemStack[] value = profile.get(this);
             if (value == null) {
-                return;
+                player.getInventory().setArmorContents(
+                        MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]));
+                return false;
             }
-            player.getInventory().setArmorContents(profile.get(this));
+            player.getInventory().setArmorContents(value);
+            return true;
         }
 
         @Override
@@ -103,12 +110,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Integer value = profile.get(this);
             if (value == null) {
-                return;
+                player.setHealth(PlayerStats.HEALTH);
+                return false;
             }
-            player.setHealth(profile.get(this));
+            player.setHealth(value);
+            return true;
         }
 
         @Override
@@ -134,12 +143,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Float value = profile.get(this);
             if (value == null) {
-                return;
+                player.setExp(PlayerStats.EXPERIENCE);
+                return false;
             }
-            player.setExp(profile.get(this));
+            player.setExp(value);
+            return true;
         }
 
         @Override
@@ -164,12 +175,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Integer value = profile.get(this);
             if (value == null) {
-                return;
+                player.setLevel(PlayerStats.LEVEL);
+                return false;
             }
-            player.setLevel(profile.get(this));
+            player.setLevel(value);
+            return true;
         }
 
         @Override
@@ -194,12 +207,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Integer value = profile.get(this);
             if (value == null) {
-                return;
+                player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
+                return false;
             }
-            player.setTotalExperience(profile.get(this));
+            player.setTotalExperience(value);
+            return true;
         }
 
         @Override
@@ -224,12 +239,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Integer value = profile.get(this);
             if (value == null) {
-                return;
+                player.setFoodLevel(PlayerStats.FOOD_LEVEL);
+                return false;
             }
-            player.setFoodLevel(profile.get(this));
+            player.setFoodLevel(value);
+            return true;
         }
 
         @Override
@@ -254,12 +271,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Float value = profile.get(this);
             if (value == null) {
-                return;
+                player.setExhaustion(PlayerStats.EXHAUSTION);
+                return false;
             }
-            player.setExhaustion(profile.get(this));
+            player.setExhaustion(value);
+            return true;
         }
 
         @Override
@@ -284,12 +303,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Float value = profile.get(this);
             if (value == null) {
-                return;
+                player.setSaturation(PlayerStats.SATURATION);
+                return false;
             }
-            player.setSaturation(profile.get(this));
+            player.setSaturation(value);
+            return true;
         }
 
         @Override
@@ -314,12 +335,14 @@ public class Sharables implements Shares {
         }
 
         @Override
-        public void updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
             Location loc = profile.get(this);
             if (loc == null) {
-                loc = player.getWorld().getSpawnLocation();
+                player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
+                return false;
             }
             player.setBedSpawnLocation(loc);
+            return true;
         }
 
         @Override

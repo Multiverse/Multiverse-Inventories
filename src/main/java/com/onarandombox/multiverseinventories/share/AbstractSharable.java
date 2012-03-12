@@ -22,7 +22,7 @@ public abstract class AbstractSharable<T> implements Sharable<T> {
     public abstract void updateProfile(PlayerProfile profile, Player player);
 
     @Override
-    public abstract void updatePlayer(Player player, PlayerProfile profile);
+    public abstract boolean updatePlayer(Player player, PlayerProfile profile);
 
     /**
      * @return The names of this Sharable for setting as shared in the config.

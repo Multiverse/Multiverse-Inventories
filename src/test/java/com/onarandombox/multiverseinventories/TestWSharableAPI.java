@@ -92,13 +92,15 @@ public class TestWSharableAPI {
             }
 
             @Override
-            public void updatePlayer(Player player, PlayerProfile profile) {
+            public boolean updatePlayer(Player player, PlayerProfile profile) {
                 Integer value = profile.get(this);
                 if (value == null) {
                     // Specify default value
-                    value = 0;
+                    player.setMaximumNoDamageTicks(0);
+                    return false;
                 }
                 player.setMaximumNoDamageTicks(value);
+                return true;
             }
 
             @Override

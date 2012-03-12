@@ -27,8 +27,9 @@ public interface Sharable<T> {
      * @param player  Updates the data of this player according to the Sharable
      *                with the values of the given profile.
      * @param profile The profile whose values will be used to update the give player.
+     * @return True if player was updated from existing profile.  False if default was used (new profile).
      */
-    void updatePlayer(Player player, PlayerProfile profile);
+    boolean updatePlayer(Player player, PlayerProfile profile);
 
     /**
      * @return The names of this Sharable for setting as shared in the config.
@@ -36,10 +37,10 @@ public interface Sharable<T> {
     String[] getNames();
 
     ProfileEntry getProfileEntry();
-    
+
     Class<T> getType();
 
     T deserialize(String string);
-    
+
     String serialize(T t);
 }
