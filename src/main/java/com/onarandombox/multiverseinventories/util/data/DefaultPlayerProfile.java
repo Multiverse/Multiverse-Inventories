@@ -134,7 +134,7 @@ class DefaultPlayerProfile implements PlayerProfile {
      */
     @Override
     public String getContainerName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.containerName;
     }
 
     /**

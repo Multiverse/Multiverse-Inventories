@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.util.data;
 
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -131,7 +131,7 @@ public class FlatFilePlayerData implements PlayerData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new DefaultPlayerProfile(type, playerName, section.getValues(true));
+        return new DefaultPlayerProfile(type, dataName, playerName, section.getValues(true));
     }
 
     @Override
