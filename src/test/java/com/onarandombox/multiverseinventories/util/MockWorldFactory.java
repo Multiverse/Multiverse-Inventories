@@ -12,6 +12,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import org.mockito.stubbing.Answer;
 
 public class MockWorldFactory {
 
-    private static final Map<String, World> createdWorlds = new HashMap<String, World>();
+    private static final Map<String, World> createdWorlds = new LinkedHashMap<String, World>();
 
     private MockWorldFactory() {
     }
@@ -145,13 +146,16 @@ public class MockWorldFactory {
     }
 
     public static List<World> getWorlds() {
+        return new ArrayList<World>(createdWorlds.values());
         // we have to invert the order!
+        /*
         ArrayList<World> myList = new ArrayList<World>(createdWorlds.values());
         List<World> retList = new ArrayList<World>();
         for (int i = (myList.size() - 1); i >= 0; i--) {
             retList.add(myList.get(i));
         }
         return retList;
+        */
     }
 
     public static void clearWorlds() {

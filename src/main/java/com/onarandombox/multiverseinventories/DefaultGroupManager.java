@@ -10,6 +10,8 @@ import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import com.onarandombox.multiverseinventories.util.Logging;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -130,21 +132,28 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public void createDefaultGroup() {
-        Collection<MultiverseWorld> mvWorlds = this.inventories.getCore().getMVWorldManager().getMVWorlds();
-        if (!mvWorlds.isEmpty()) {
-            WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
-            worldGroup.setShares(Sharables.allOf());
-            for (MultiverseWorld mvWorld : mvWorlds) {
-                worldGroup.addWorld(mvWorld.getName());
-            }
-            this.addGroup(worldGroup, false);
-            this.inventories.getMVIConfig().setFirstRun(false);
-            this.inventories.getMVIConfig().save();
-            Logging.info("Created a default group for you containing all of your MV Worlds!");
-        } else {
-            Logging.info("Could not configure a starter group due to no worlds being loaded into Multiverse-Core.");
-            Logging.info("Will attempt again at next start up.");
+        if (this.getDefaultGroup() != null) {
+            return;
         }
+        World defaultWorld = Bukkit.getWorlds().get(0);
+        World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
+        World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
+        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
+        worldGroup.setShares(Sharables.allOf());
+        worldGroup.addWorld(defaultWorld);
+        StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
+        if (defaultNether != null) {
+            worldGroup.addWorld(defaultNether);
+            worlds.append(", ").append(defaultNether.getName());
+        }
+        if (defaultEnd != null) {
+            worldGroup.addWorld(defaultEnd);
+            worlds.append(", ").append(defaultEnd.getName());
+        }
+        this.addGroup(worldGroup, false);
+        this.inventories.getMVIConfig().setFirstRun(false);
+        this.inventories.getMVIConfig().save();
+        Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
     }
 
     /**
