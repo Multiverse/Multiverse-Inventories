@@ -37,16 +37,18 @@ class DefaultPlayerProfile implements PlayerProfile {
 
     private OfflinePlayer player;
     private ProfileType type;
+    private String containerName;
 
-    public DefaultPlayerProfile(ProfileType type, OfflinePlayer player) {
+    public DefaultPlayerProfile(ProfileType type, String containerName, OfflinePlayer player) {
         this.type = type;
+        this.containerName = containerName;
         this.player = player;
         armorContents = MinecraftTools.fillWithAir(armorContents);
         inventoryContents = MinecraftTools.fillWithAir(inventoryContents);
     }
 
-    public DefaultPlayerProfile(ProfileType type, String playerName, Map<String, Object> playerData) {
-        this(type, Bukkit.getOfflinePlayer(playerName));
+    public DefaultPlayerProfile(ProfileType type, String containerName, String playerName, Map<String, Object> playerData) {
+        this(type, containerName, Bukkit.getOfflinePlayer(playerName));
         for (String key : playerData.keySet()) {
             if (key.equalsIgnoreCase("stats")) {
                 this.parsePlayerStats(playerData.get(key).toString());
@@ -125,6 +127,14 @@ class DefaultPlayerProfile implements PlayerProfile {
     @Override
     public ProfileType getType() {
         return this.type;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getContainerName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     /**

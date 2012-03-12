@@ -1,9 +1,7 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
 import com.onarandombox.multiverseinventories.share.Sharable;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -18,17 +16,22 @@ public interface PlayerProfile {
     Map<String, Object> serialize();
 
     /**
-     * @return The type of player.
+     * @return The type of profile.
      */
     ProfileType getType();
 
     /**
-     * @return the Player associated with this player.
+     * @return The name of the container, world or group, containing this profile.
+     */
+    String getContainerName();
+
+    /**
+     * @return the Player associated with this profile.
      */
     OfflinePlayer getPlayer();
-    
+
     <T> T get(Sharable<T> sharable);
-    
+
     <T> void set(Sharable<T> sharable, T value);
 }
 
