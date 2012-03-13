@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
+import com.fernferret.allpay.multiverse.GenericBank;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
@@ -269,6 +270,30 @@ public class Sharables implements Shares {
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
+    /**
+     * Sharing Economy.
+     */
+    public static final Sharable<Double> ECONOMY = new Sharable.Builder<Double>("economy", Double.class,
+            new SharableHandler<Double>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(ECONOMY, inventories.getCore().getBank().getBalance(player, -1));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Double money = profile.get(ECONOMY);
+                    GenericBank bank = inventories.getCore().getBank();
+                    bank.take(player, bank.getBalance(player, -1), -1);
+                    if (money == null) {
+                        return false;
+                    }
+                    bank.give(player, money, -1);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(false, "balance")).optional(true)
+            .altName("money").altName("econ").altName("cash").altName("balance").build();
+
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
             fromSharables(INVENTORY, ARMOR), "inv", "inventories");
 
@@ -281,7 +306,7 @@ public class Sharables implements Shares {
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
 
-    public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH,
+    public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "*",
             "everything");
 
