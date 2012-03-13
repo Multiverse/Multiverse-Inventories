@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.share.SerializableSharable;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.SharableHandler;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
@@ -81,53 +81,53 @@ public class TestWSharableAPI {
         }
     }
 
+    public final static Sharable<Integer> CUSTOM = new Sharable.Builder<Integer>("custom", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(CUSTOM, player.getMaximumNoDamageTicks());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(CUSTOM);
+                    if (value == null) {
+                        // Specify default value
+                        player.setMaximumNoDamageTicks(0);
+                        return false;
+                    }
+                    player.setMaximumNoDamageTicks(value);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, "custom")).build();
+
+    public final static Sharable<Map> CUSTOM_MAP = new Sharable.Builder<Map>("custom_map", Map.class,
+            new SharableHandler<Map>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Map<String, Object> data = new HashMap<String, Object>();
+                    data.put("maxNoDamageTick", player.getMaximumNoDamageTicks());
+                    data.put("displayName", player.getDisplayName());
+                    profile.set(CUSTOM_MAP, data);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Map<String, Object> data = profile.get(CUSTOM_MAP);
+                    if (data == null) {
+                        // Specify default value
+                        player.setMaximumNoDamageTicks(0);
+                        player.setDisplayName("poop");
+                        return false;
+                    }
+                    player.setMaximumNoDamageTicks((Integer) data.get("maxNoDamageTick"));
+                    player.setDisplayName(data.get("displayName").toString());
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, "custom_map")).build();
+
     @Test
     public void testSharableAPI() {
-
-        Sharable<Integer> CUSTOM = new SerializableSharable<Integer>(Integer.class, "custom",
-                new ProfileEntry(false, "custom")) {
-            @Override
-            public void updateProfile(PlayerProfile profile, Player player) {
-                profile.set(this, player.getMaximumNoDamageTicks());
-            }
-
-            @Override
-            public boolean updatePlayer(Player player, PlayerProfile profile) {
-                Integer value = profile.get(this);
-                if (value == null) {
-                    // Specify default value
-                    player.setMaximumNoDamageTicks(0);
-                    return false;
-                }
-                player.setMaximumNoDamageTicks(value);
-                return true;
-            }
-        };
-
-        Sharable<Map> CUSTOM_MAP = new SerializableSharable<Map>(Map.class, "custom_map",
-                new ProfileEntry(false, "custom_map")) {
-            @Override
-            public void updateProfile(PlayerProfile profile, Player player) {
-                Map<String, Object> data = new HashMap<String, Object>();
-                data.put("maxNoDamageTick", player.getMaximumNoDamageTicks());
-                data.put("displayName", player.getDisplayName());
-                profile.set(this, data);
-            }
-
-            @Override
-            public boolean updatePlayer(Player player, PlayerProfile profile) {
-                Map<String, Object> data = profile.get(this);
-                if (data == null) {
-                    // Specify default value
-                    player.setMaximumNoDamageTicks(0);
-                    player.setDisplayName("poop");
-                    return false;
-                }
-                player.setMaximumNoDamageTicks((Integer) data.get("maxNoDamageTick"));
-                player.setDisplayName(data.get("displayName").toString());
-                return true;
-            }
-        };
 
         Assert.assertTrue(Sharables.all().contains(CUSTOM));
 

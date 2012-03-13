@@ -169,7 +169,7 @@ final class ShareHandler {
 
     private void updateProfile(PersistingProfile profile) {
         for (Sharable sharable : profile.getShares()) {
-            sharable.updateProfile(profile.getProfile(), event.getPlayer());
+            sharable.getHandler().updateProfile(profile.getProfile(), event.getPlayer());
         }
         Logging.finest("Persisted: " + profile.getShares().toString() + " to "
                 + profile.getProfile().getType() + ":" + profile.getDataName()
@@ -181,7 +181,7 @@ final class ShareHandler {
         StringBuilder defaulted = new StringBuilder();
         StringBuilder loaded = new StringBuilder();
         for (Sharable sharable : profile.getShares()) {
-            if (sharable.updatePlayer(event.getPlayer(), profile.getProfile())) {
+            if (sharable.getHandler().updatePlayer(event.getPlayer(), profile.getProfile())) {
                 if (!loaded.toString().isEmpty()) {
                     loaded.append(", ");
                 }

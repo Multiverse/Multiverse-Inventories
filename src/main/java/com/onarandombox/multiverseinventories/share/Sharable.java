@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import org.bukkit.entity.Player;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An interface for any attribute that can be shared between worlds in a world group.
@@ -11,34 +11,68 @@ import org.bukkit.entity.Player;
 public interface Sharable<T> {
 
     /**
-     * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
-     * the {@link PlayerProfile} based on the data contained in the {@link Player}
-     *
-     * @param profile Updates the data of this profile according to the Sharable
-     *                with the values of the player.
-     * @param player  The player whose values will be used to update the given profile.
-     */
-    void updateProfile(PlayerProfile profile, Player player);
-
-    /**
-     * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
-     * the {@link Player} based on the data contained in the {@link PlayerProfile}
-     *
-     * @param player  Updates the data of this player according to the Sharable
-     *                with the values of the given profile.
-     * @param profile The profile whose values will be used to update the give player.
-     * @return True if player was updated from existing profile.  False if default was used (new profile).
-     */
-    boolean updatePlayer(Player player, PlayerProfile profile);
-
-    /**
      * @return The names of this Sharable for setting as shared in the config.
      */
     String[] getNames();
 
+    SharableHandler<T> getHandler();
+
+    SharableSerializer<T> getSerializer();
+
+    ProfileEntry getProfileEntry();
+
     Class<T> getType();
 
-    //T deserialize(Object obj);
+    boolean isOptional();
 
-    //Object serialize(T t);
+    class Builder<T> {
+
+        private List<String> names = new ArrayList<String>();
+        private ProfileEntry profileEntry = null;
+        private SharableHandler<T> handler;
+        private SharableSerializer<T> serializer = null;
+        private boolean optional = false;
+        private Class<T> type;
+
+        public Builder(String name, Class<T> type, SharableHandler<T> handler) {
+            this.names.add(name);
+            this.handler = handler;
+            this.type = type;
+        }
+
+        public Builder<T> optional(boolean optional) {
+            this.optional = optional;
+            return this;
+        }
+
+        public Builder<T> altName(String name) {
+            this.names.add(name);
+            return this;
+        }
+
+        public Builder<T> stringSerializer(ProfileEntry entry) throws IllegalArgumentException {
+            this.serializer = new DefaultStringSerializer<T>(this.type);
+            this.profileEntry = entry;
+            return this;
+        }
+
+        public Builder<T> serializer(ProfileEntry entry) {
+            this.serializer = new DefaultSerializer<T>(this.type);
+            this.profileEntry = entry;
+            return this;
+        }
+
+        public Builder<T> serializer(ProfileEntry entry, SharableSerializer<T> serializer) {
+            this.serializer = serializer;
+            this.profileEntry = entry;
+            return this;
+        }
+
+        public Sharable<T> build() {
+            Sharable<T> sharable = new DefaultSharable<T>(names.toArray(new String[names.size()]), type,
+                    handler, serializer, profileEntry, optional);
+            ProfileEntry.register(sharable);
+            return sharable;
+        }
+    }
 }

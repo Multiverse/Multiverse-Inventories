@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The Sharables class is where all the default Sharable instances are located as constants as well as a factory class
+ * for generating Shares.
+ */
 public class Sharables implements Shares {
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
@@ -36,325 +40,234 @@ public class Sharables implements Shares {
     /**
      * Sharing Inventory.
      */
-    public static final Sharable<ItemStack[]> INVENTORY = new SerializableSharable<ItemStack[]>(ItemStack[].class,
-            "inventory_contents", new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS)) {
+    public static final Sharable<ItemStack[]> INVENTORY = new Sharable.Builder<ItemStack[]>("inventory_contents",
+            ItemStack[].class, new SharableHandler<ItemStack[]>() {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getInventory().getContents());
+            profile.set(INVENTORY, player.getInventory().getContents());
         }
 
         @Override
         public boolean updatePlayer(Player player, PlayerProfile profile) {
-            ItemStack[] value = profile.get(this);
+            ItemStack[] value = profile.get(INVENTORY);
             if (value == null) {
-                player.getInventory().setContents(
-                        MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]));
+                player.getInventory().setContents(MinecraftTools.fillWithAir(
+                        new ItemStack[PlayerStats.INVENTORY_SIZE]));
                 return false;
             }
             player.getInventory().setContents(value);
             return true;
         }
-
-        @Override
-        public ItemStack[] deserialize(Object obj) {
-            return DataStrings.parseInventory(obj.toString(), PlayerStats.INVENTORY_SIZE);
-        }
-
-        @Override
-        public Object serialize(ItemStack[] items) {
-            return DataStrings.valueOf(items);
-        }
-    };
+    }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
+            new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
 
     /**
      * Sharing Armor.
      */
-    public static final Sharable<ItemStack[]> ARMOR = new SerializableSharable<ItemStack[]>(ItemStack[].class,
-            "armor_contents", new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS), "armor") {
+    public static final Sharable<ItemStack[]> ARMOR = new Sharable.Builder<ItemStack[]>("armor_contents",
+            ItemStack[].class, new SharableHandler<ItemStack[]>() {
         @Override
         public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getInventory().getArmorContents());
+            profile.set(ARMOR, player.getInventory().getArmorContents());
         }
 
         @Override
         public boolean updatePlayer(Player player, PlayerProfile profile) {
-            ItemStack[] value = profile.get(this);
+            ItemStack[] value = profile.get(ARMOR);
             if (value == null) {
-                player.getInventory().setArmorContents(
-                        MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]));
+                player.getInventory().setArmorContents(MinecraftTools.fillWithAir(
+                        new ItemStack[PlayerStats.ARMOR_SIZE]));
                 return false;
             }
             player.getInventory().setArmorContents(value);
             return true;
         }
-
-        @Override
-        public ItemStack[] deserialize(Object obj) {
-            return DataStrings.parseInventory(obj.toString(), PlayerStats.ARMOR_SIZE);
-        }
-
-        @Override
-        public Object serialize(ItemStack[] items) {
-            return DataStrings.valueOf(items);
-        }
-    };
+    }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
+            new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
 
     /**
      * Sharing Health.
      */
-    public static final Sharable<Integer> HEALTH = new SerializableSharable<Integer>(Integer.class, "health",
-            new ProfileEntry(true, DataStrings.PLAYER_HEALTH), "hp", "hitpoints", "hit_points") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getHealth());
-        }
+    public static final Sharable<Integer> HEALTH = new Sharable.Builder<Integer>("hit_points", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(HEALTH, player.getHealth());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Integer value = profile.get(this);
-            if (value == null) {
-                player.setHealth(PlayerStats.HEALTH);
-                return false;
-            }
-            player.setHealth(value);
-            return true;
-        }
-
-        @Override
-        public Integer deserialize(Object obj) {
-
-            return Integer.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Integer value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(HEALTH);
+                    if (value == null) {
+                        player.setHealth(PlayerStats.HEALTH);
+                        return false;
+                    }
+                    player.setHealth(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
+            .altName("health").altName("hp").altName("hitpoints").build();
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Float> EXPERIENCE = new SerializableSharable<Float>(Float.class, "exp",
-            new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE), "xp") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getExp());
-        }
+    public static final Sharable<Float> EXPERIENCE = new Sharable.Builder<Float>("exp", Float.class,
+            new SharableHandler<Float>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(EXPERIENCE, player.getExp());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Float value = profile.get(this);
-            if (value == null) {
-                player.setExp(PlayerStats.EXPERIENCE);
-                return false;
-            }
-            player.setExp(value);
-            return true;
-        }
-
-        @Override
-        public Float deserialize(Object obj) {
-            return Float.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Float value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Float value = profile.get(EXPERIENCE);
+                    if (value == null) {
+                        player.setExp(PlayerStats.EXPERIENCE);
+                        return false;
+                    }
+                    player.setExp(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE))
+            .altName("xp").build();
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> LEVEL = new SerializableSharable<Integer>(Integer.class, "level",
-            new ProfileEntry(true, DataStrings.PLAYER_LEVEL), "lvl") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getLevel());
-        }
+    public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("level", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(LEVEL, player.getLevel());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Integer value = profile.get(this);
-            if (value == null) {
-                player.setLevel(PlayerStats.LEVEL);
-                return false;
-            }
-            player.setLevel(value);
-            return true;
-        }
-
-        @Override
-        public Integer deserialize(Object obj) {
-            return Integer.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Integer value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(LEVEL);
+                    if (value == null) {
+                        player.setLevel(PlayerStats.LEVEL);
+                        return false;
+                    }
+                    player.setLevel(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL))
+            .altName("lvl").build();
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> TOTAL_EXPERIENCE = new SerializableSharable<Integer>(Integer.class, "total_exp",
-            new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE), "total_xp", "totalxp") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getTotalExperience());
-        }
+    public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_exp", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(TOTAL_EXPERIENCE, player.getTotalExperience());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Integer value = profile.get(this);
-            if (value == null) {
-                player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
-                return false;
-            }
-            player.setTotalExperience(value);
-            return true;
-        }
-
-        @Override
-        public Integer deserialize(Object obj) {
-            return Integer.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Integer value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(TOTAL_EXPERIENCE);
+                    if (value == null) {
+                        player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
+                        return false;
+                    }
+                    player.setTotalExperience(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE))
+            .altName("total_xp").altName("totalxp").build();
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Integer> FOOD_LEVEL = new SerializableSharable<Integer>(Integer.class, "food_level",
-            new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL), "food") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getFoodLevel());
-        }
+    public static final Sharable<Integer> FOOD_LEVEL = new Sharable.Builder<Integer>("food_level", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(FOOD_LEVEL, player.getFoodLevel());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Integer value = profile.get(this);
-            if (value == null) {
-                player.setFoodLevel(PlayerStats.FOOD_LEVEL);
-                return false;
-            }
-            player.setFoodLevel(value);
-            return true;
-        }
-
-        @Override
-        public Integer deserialize(Object obj) {
-            return Integer.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Integer value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(FOOD_LEVEL);
+                    if (value == null) {
+                        player.setFoodLevel(PlayerStats.FOOD_LEVEL);
+                        return false;
+                    }
+                    player.setFoodLevel(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL))
+            .altName("food").build();
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> EXHAUSTION = new SerializableSharable<Float>(Float.class, "exhaustion",
-            new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION), "exhaust", "exh") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getExhaustion());
-        }
+    public static final Sharable<Float> EXHAUSTION = new Sharable.Builder<Float>("exhaustion", Float.class,
+            new SharableHandler<Float>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(EXHAUSTION, player.getExhaustion());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Float value = profile.get(this);
-            if (value == null) {
-                player.setExhaustion(PlayerStats.EXHAUSTION);
-                return false;
-            }
-            player.setExhaustion(value);
-            return true;
-        }
-
-        @Override
-        public Float deserialize(Object obj) {
-            return Float.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Float value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Float value = profile.get(EXHAUSTION);
+                    if (value == null) {
+                        player.setExhaustion(PlayerStats.EXHAUSTION);
+                        return false;
+                    }
+                    player.setExhaustion(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION))
+            .altName("exhaust").altName("exh").build();
 
     /**
      * Sharing Hunger.
      */
-    public static final Sharable<Float> SATURATION = new SerializableSharable<Float>(Float.class, "saturation",
-            new ProfileEntry(true, DataStrings.PLAYER_SATURATION), "sat") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getSaturation());
-        }
+    public static final Sharable<Float> SATURATION = new Sharable.Builder<Float>("saturation", Float.class,
+            new SharableHandler<Float>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(SATURATION, player.getSaturation());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Float value = profile.get(this);
-            if (value == null) {
-                player.setSaturation(PlayerStats.SATURATION);
-                return false;
-            }
-            player.setSaturation(value);
-            return true;
-        }
-
-        @Override
-        public Float deserialize(Object obj) {
-            return Float.valueOf(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Float value) {
-            return value.toString();
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Float value = profile.get(SATURATION);
+                    if (value == null) {
+                        player.setSaturation(PlayerStats.SATURATION);
+                        return false;
+                    }
+                    player.setSaturation(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_SATURATION))
+            .altName("sat").build();
 
     /**
      * Sharing Bed Spawn.
      */
-    public static final Sharable<Location> BED_SPAWN = new SerializableSharable<Location>(Location.class, "bed_spawn",
-            new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), "bedspawn", "bed", "beds", "bedspawns") {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(this, player.getBedSpawnLocation());
-        }
+    public static final Sharable<Location> BED_SPAWN = new Sharable.Builder<Location>("bed_spawn", Location.class,
+            new SharableHandler<Location>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(BED_SPAWN, player.getBedSpawnLocation());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            Location loc = profile.get(this);
-            if (loc == null) {
-                player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
-                return false;
-            }
-            player.setBedSpawnLocation(loc);
-            return true;
-        }
-
-        @Override
-        public Location deserialize(Object obj) {
-            return DataStrings.parseLocation(obj.toString());
-        }
-
-        @Override
-        public Object serialize(Location value) {
-            return DataStrings.valueOf(value);
-        }
-    };
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Location loc = profile.get(BED_SPAWN);
+                    if (loc == null) {
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
+                        return false;
+                    }
+                    player.setBedSpawnLocation(loc);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
+            .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
             fromSharables(INVENTORY, ARMOR), "inv", "inventories");
@@ -372,8 +285,10 @@ public class Sharables implements Shares {
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "*",
             "everything");
 
+
     public static boolean register(Sharable sharable) {
         if (!allSharables.contains(sharable)) {
+            // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
             if (inventories != null) {
                 for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
                     if (group.getShares().isSharing(Sharables.all())) {

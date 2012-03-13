@@ -126,6 +126,14 @@ public class TestWorldChanged {
         changeWorld(player, "world_nether", "world2");
 
         Assert.assertNotSame(originalInventory, newInventory);
+
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world2", "world");
+
+        newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
     }
 
     @Test

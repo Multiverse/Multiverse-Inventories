@@ -6,7 +6,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
-import com.onarandombox.multiverseinventories.share.SerializableSharable;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
@@ -59,12 +58,12 @@ class DefaultPlayerProfile implements PlayerProfile {
                     continue;
                 }
                 try {
-                    SerializableSharable sharable = ProfileEntry.lookup(false, key);
+                    Sharable sharable = ProfileEntry.lookup(false, key);
                     if (sharable == null) {
                         Logging.fine("Player fileTag '" + key + "' is unrecognized!");
                         continue;
                     }
-                    this.data.put(sharable, sharable.deserialize(playerData.get(key).toString()));
+                    this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key).toString()));
                 } catch (Exception e) {
                     Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key).toString() + "'");
                     Logging.fine(e.getMessage());
@@ -82,13 +81,15 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (String stat : statsArray) {
             try {
                 String[] statValues = DataStrings.splitEntry(stat);
-                SerializableSharable sharable = ProfileEntry.lookup(true, statValues[0]);
-                this.data.put(sharable, sharable.deserialize(statValues[1]));
+                Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
+                this.data.put(sharable, sharable.getSerializer().deserialize(statValues[1]));
             } catch (Exception e) {
                 if (!stat.isEmpty()) {
                     Logging.fine("Could not parse stat: '" + stat + "'");
                     Logging.fine(e.getMessage());
+
                 }
+                e.printStackTrace();
             }
         }
     }
@@ -102,19 +103,19 @@ class DefaultPlayerProfile implements PlayerProfile {
         StringBuilder statBuilder = new StringBuilder();
         for (Map.Entry<Sharable, Object> entry : this.data.entrySet()) {
             if (entry.getValue() != null) {
-                if (!(entry.getKey() instanceof SerializableSharable)) {
+                if (entry.getKey().getSerializer() == null) {
                     continue;
                 }
-                SerializableSharable sharable = (SerializableSharable) entry.getKey();
+                Sharable sharable = entry.getKey();
                 if (sharable.getProfileEntry().isStat()) {
                     if (!statBuilder.toString().isEmpty()) {
                         statBuilder.append(DataStrings.GENERAL_DELIMITER);
                     }
                     statBuilder.append(DataStrings.createEntry(sharable.getProfileEntry().getFileTag(),
-                            sharable.serialize(entry.getValue())));
+                            sharable.getSerializer().serialize(entry.getValue())));
                 } else {
-
-                    playerData.put(sharable.getProfileEntry().getFileTag(), sharable.serialize(entry.getValue()));
+                    playerData.put(sharable.getProfileEntry().getFileTag(),
+                            sharable.getSerializer().serialize(entry.getValue()));
                 }
             }
         }
