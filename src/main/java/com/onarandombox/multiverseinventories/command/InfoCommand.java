@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
-import com.onarandombox.multiverseinventories.util.Perm;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
+import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -59,9 +59,8 @@ public class InfoCommand extends InventoriesCommand {
                 worldsString.append(world);
             }
         }
-
         this.messager.normal(Message.INFO_GROUP_INFO,
-                sender, worldsString, worldGroup.getShares().toString());
+                sender, worldsString, worldGroup.getShares().toString(), worldGroup.getNegativeShares().toString());
     }
 
     private void worldInfo(CommandSender sender, WorldProfile worldProfile) {

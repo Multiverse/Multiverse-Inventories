@@ -70,7 +70,7 @@ public class MultiInvImporter implements DataImporter {
             WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(groupEntry.getValue());
             if (worldGroup == null) {
                 worldGroup = this.inventories.getGroupManager().newEmptyGroup(groupEntry.getValue());
-                worldGroup.setShares(Sharables.allOf());
+                worldGroup.getShares().mergeShares(Sharables.allNormal());
                 Logging.info("Importing group: " + groupEntry.getValue());
                 this.inventories.getGroupManager().addGroup(worldGroup, false);
             }

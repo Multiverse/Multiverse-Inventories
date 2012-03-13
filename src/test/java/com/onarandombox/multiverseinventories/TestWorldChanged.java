@@ -137,6 +137,98 @@ public class TestWorldChanged {
     }
 
     @Test
+    public void testNegativeSharables() {
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        // Assert debug mode is off
+        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+
+        // Send the debug command.
+        String[] cmdArgs = new String[]{"debug", "3"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // remove world2 from default group
+        cmdArgs = new String[]{"rmworld", "world2", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // add inventory shares (inv and armor) to default group
+        cmdArgs = new String[]{"addshares", "-saturation", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
+
+        // Reload to ensure things are saving to config.yml
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
+
+        // Verify removal
+        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        cmdArgs = new String[]{"info", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+
+        Player player = inventories.getServer().getPlayer("dumptruckman");
+
+        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
+        fillerItems.put(3, new ItemStack(Material.BOW, 1));
+        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
+        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        float satTest = 0.349F;
+        player.setSaturation(satTest);
+        int hpTest = 13;
+        player.setHealth(hpTest);
+        addToInventory(player.getInventory(), fillerItems);
+        String originalInventory = player.getInventory().toString();
+
+        changeWorld(player, "world", "world_nether");
+
+        String newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertNotSame(satTest, player.getSaturation());
+        Assert.assertEquals(hpTest, player.getHealth());
+
+        changeWorld(player, "world_nether", "world2");
+        newInventory = player.getInventory().toString();
+
+        Assert.assertNotSame(originalInventory, newInventory);
+        Assert.assertNotSame(satTest, player.getSaturation());
+        Assert.assertNotSame(hpTest, player.getHealth());
+
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world2", "world");
+
+        newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(satTest, player.getSaturation());
+        Assert.assertEquals(hpTest, player.getHealth());
+
+        changeWorld(player, "world", "world2");
+        newInventory = player.getInventory().toString();
+
+        Assert.assertNotSame(originalInventory, newInventory);
+        Assert.assertNotSame(satTest, player.getSaturation());
+        Assert.assertNotSame(hpTest, player.getHealth());
+
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        changeWorld(player, "world2", "world");
+
+        newInventory = player.getInventory().toString();
+        Assert.assertEquals(originalInventory, newInventory);
+    }
+
+    @Test
     public void testGroupedSharesWorldChange() {
 
         // Initialize a fake command
@@ -161,7 +253,7 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"addshares", "inventory,saturation", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));
@@ -170,7 +262,7 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));

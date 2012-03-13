@@ -80,18 +80,13 @@ public interface WorldGroupProfile extends ProfileContainer {
     HashSet<String> getWorlds();
 
     /**
-     * Sets the shares for this World Group.
-     *
-     * @param shares The new Shares for this World Group.
-     */
-    void setShares(Shares shares);
-
-    /**
      * Retrieves the shares for this World Group.
      *
      * @return The shares for this World Group.
      */
     Shares getShares();
+    
+    Shares getNegativeShares();
 
     /**
      * @return A map containing all the world group data to be saved to disk.

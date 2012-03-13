@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
@@ -15,7 +14,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +137,7 @@ final class DefaultGroupManager implements GroupManager {
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
         WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
-        worldGroup.setShares(Sharables.allOf());
+        worldGroup.getShares().mergeShares(Sharables.allNormal());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
         if (defaultNether != null) {

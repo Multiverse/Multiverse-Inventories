@@ -42,6 +42,7 @@ INFO_GROUP:
 INFO_GROUP_INFO:
 - '&6Worlds:&f %1'
 - '&bShares:&f %2'
+- '&bNegative Shares:&f %3'
 
 # List Command
 LIST_GROUPS:
@@ -66,7 +67,7 @@ WORLD_NOT_IN_GROUP:
 
 # Add/remove shares command
 NOW_SHARING:
-- '&6Group: &f%1 &6is now sharing: &f%2'
+- '&6Group: &f%1 &6is now sharing: &f%2 &6and NOT sharing: &f%3'
 
 # Spawn command
 TELEPORTING:

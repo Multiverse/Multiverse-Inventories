@@ -39,6 +39,18 @@ final class ShareHandler {
      * @param profile   The player player that will need data saved to.
      */
     public void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+        if (!Sharables.optional().isEmpty()) {
+            Logging.finer("Adding optional shares to " + profile.getType() + ":" + container.getDataName());
+            shares.mergeShares(Sharables.allOptional());
+        }
+        if (container instanceof WorldGroupProfile) {
+            WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
+            if (!worldGroupProfile.getNegativeShares().isEmpty()) {
+                Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
+                        + ") shares for " + profile.getType() + ":" + container.getDataName());
+                shares.removeAll(worldGroupProfile.getNegativeShares());
+            }
+        }
         event.getFromProfiles().add(new DefaultPersistingProfile(container.getDataName(), shares, profile));
     }
 
@@ -48,6 +60,18 @@ final class ShareHandler {
      * @param profile   The player player that will need data loaded from.
      */
     public void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+        if (!Sharables.optional().isEmpty()) {
+            Logging.finer("Adding optional shares to " + profile.getType() + ":" + container.getDataName());
+            shares.mergeShares(Sharables.allOptional());
+        }
+        if (container instanceof WorldGroupProfile) {
+            WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
+            if (!worldGroupProfile.getNegativeShares().isEmpty()) {
+                Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
+                        + ") shares for " + profile.getType() + ":" + container.getDataName());
+                shares.removeAll(((WorldGroupProfile) container).getNegativeShares());
+            }
+        }
         event.getToProfiles().add(new DefaultPersistingProfile(container.getDataName(), shares, profile));
     }
 
@@ -61,7 +85,7 @@ final class ShareHandler {
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.inventories.getWorldManager()
                 .getWorldProfile(event.getFromWorld().getName());
-        this.addFromProfile(fromWorldProfile, Sharables.allOf(),
+        this.addFromProfile(fromWorldProfile, Sharables.allNormal(),
                 fromWorldProfile.getPlayerData(event.getPlayer()));
 
         if (Perm.BYPASS_WORLD.hasBypass(event.getPlayer(), event.getToWorld().getName())) {
@@ -77,9 +101,9 @@ final class ShareHandler {
             PlayerProfile profile = fromWorldGroup.getPlayerData(event.getPlayer());
             if (!fromWorldGroup.containsWorld(event.getToWorld().getName())) {
                 this.addFromProfile(fromWorldGroup,
-                        Sharables.allOf(), profile);
+                        Sharables.allNormal(), profile);
             } else {
-                if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
+                if (!fromWorldGroup.getShares().isSharing(Sharables.normal()) || !fromWorldGroup.getNegativeShares().isEmpty()) {
                     this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
                 }
             }
@@ -88,6 +112,7 @@ final class ShareHandler {
             Logging.finer("No groups for fromWorld.");
         }
         Shares sharesToUpdate = Sharables.noneOf();
+        //Shares optionalSharesToUpdate = Sharables.noneOptional();
         List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
                 .getGroupsForWorld(event.getToWorld().getName());
         if (!toWorldGroups.isEmpty()) {
@@ -98,15 +123,15 @@ final class ShareHandler {
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(event.getPlayer());
                     if (!toWorldGroup.containsWorld(event.getFromWorld().getName())) {
-                        Shares sharesToAdd = Sharables.allOf();
-                        sharesToUpdate.addAll(sharesToAdd);
+                        Shares sharesToAdd = Sharables.allNormal();
                         this.addToProfile(toWorldGroup,
                                 sharesToAdd, profile);
+                        sharesToUpdate.addAll(sharesToAdd);
                     } else {
-                        if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
+                        if (!toWorldGroup.getShares().isSharing(Sharables.normal()) || !toWorldGroup.getNegativeShares().isEmpty()) {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                            sharesToUpdate.addAll(sharesToAdd);
                             this.addToProfile(toWorldGroup, sharesToAdd, profile);
+                            sharesToUpdate.addAll(sharesToAdd);
                         } else {
                             sharesToUpdate = Sharables.allOf();
                         }
@@ -118,13 +143,15 @@ final class ShareHandler {
             Logging.finer("No groups for toWorld.");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
                     .getWorldProfile(event.getToWorld().getName());
-            this.addToProfile(toWorldProfile, Sharables.allOf(),
+            this.addToProfile(toWorldProfile, Sharables.allNormal(),
                     toWorldProfile.getPlayerData(event.getPlayer()));
-            sharesToUpdate = Sharables.allOf();
+            sharesToUpdate = Sharables.allNormal();
         }
+
         // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
-        if (!sharesToUpdate.isSharing(Sharables.all())) {
-            sharesToUpdate = Sharables.complementOf(sharesToUpdate);
+        if (!sharesToUpdate.isSharing(Sharables.normal()) || !sharesToUpdate.isSharing(Sharables.optional())) {
+            sharesToUpdate = Sharables.complimentOf(sharesToUpdate);
+            
             // Get world we need to load from.
             Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()

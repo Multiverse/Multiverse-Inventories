@@ -47,7 +47,7 @@ public enum Message {
     INFO_WORLD("&b===[ Info for world: &6%1&b ]==="),
     INFO_WORLD_INFO("&6Groups:&f %1"),
     INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
-    INFO_GROUP_INFO("&6Worlds:&f %1", "&bShares:&f %2"),
+    INFO_GROUP_INFO("&6Worlds:&f %1", "&bShares:&f %2", "&bNegative Shares:&f %3"),
     // List Command
     LIST_GROUPS("&b===[ Group List ]===", "&6Groups:&f %1"),
     // Reload Command
@@ -59,7 +59,7 @@ public enum Message {
     WORLD_REMOVED("&6World:&f %1 &6removed from Group: &f%2"),
     WORLD_NOT_IN_GROUP("&6World:&f %1 &6is not part of Group: &f%2"),
     // AddShares Command
-    NOW_SHARING("&6Group: &f%1 &6is now sharing: &f%2"),
+    NOW_SHARING("&6Group: &f%1 &6is now sharing: &f%2 &6and NOT sharing: &f%3"),
     // Spawn Command
     TELEPORTING("Teleporting to this world group's spawn..."),
     TELEPORTED_BY("You were teleported by: %1"),

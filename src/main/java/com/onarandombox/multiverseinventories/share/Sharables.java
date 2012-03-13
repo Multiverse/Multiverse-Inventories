@@ -27,6 +27,7 @@ import java.util.Set;
 public class Sharables implements Shares {
 
     private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
+    private static Shares optionalSharables = new Sharables(new LinkedHashSet<Sharable>());
     static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
 
     private static Inventories inventories = null;
@@ -286,31 +287,47 @@ public class Sharables implements Shares {
             "everything");
 
 
-    public static boolean register(Sharable sharable) {
-        if (!allSharables.contains(sharable)) {
-            // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
-            if (inventories != null) {
-                for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
-                    if (group.getShares().isSharing(Sharables.all())) {
-                        group.getShares().setSharing(sharable, true);
+    static boolean register(Sharable sharable) {
+        if (sharable.isOptional()) {
+            if (optionalSharables.add(sharable)) {
+                for (String name : sharable.getNames()) {
+                    String key = name.toLowerCase();
+                    Shares shares = lookupMap.get(key);
+                    if (shares == null) {
+                        shares = noneOf();
+                        lookupMap.put(key, shares);
+                    }
+                    shares.add(sharable);
+                }
+                return true;
+            }
+            return false;
+        } else {
+            if (!allSharables.contains(sharable)) {
+                // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
+                if (inventories != null) {
+                    for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
+                        if (group.getShares().isSharing(Sharables.normal())) {
+                            group.getShares().setSharing(sharable, true);
 
+                        }
                     }
                 }
             }
-        }
-        if (allSharables.add(sharable)) {
-            for (String name : sharable.getNames()) {
-                String key = name.toLowerCase();
-                Shares shares = lookupMap.get(key);
-                if (shares == null) {
-                    shares = noneOf();
-                    lookupMap.put(key, shares);
+            if (allSharables.add(sharable)) {
+                for (String name : sharable.getNames()) {
+                    String key = name.toLowerCase();
+                    Shares shares = lookupMap.get(key);
+                    if (shares == null) {
+                        shares = noneOf();
+                        lookupMap.put(key, shares);
+                    }
+                    shares.add(sharable);
                 }
-                shares.add(sharable);
+                return true;
             }
-            return true;
+            return false;
         }
-        return false;
     }
 
     /**
@@ -323,20 +340,47 @@ public class Sharables implements Shares {
         return lookupMap.get(name.toLowerCase());
     }
 
-    public static Shares all() {
+    public static Shares normal() {
         return allSharables;
+    }
+    
+    public static Shares optional() {
+        return optionalSharables;
+    }
+
+    public static Shares allNormal() {
+        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
+    }
+    
+    public static Shares allOptional() {
+        return new Sharables(new LinkedHashSet<Sharable>(optionalSharables));
     }
 
     public static Shares allOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
+        Set<Sharable> normal = new LinkedHashSet<Sharable>(allSharables);
+        normal.addAll(optionalSharables);
+        return new Sharables(normal);
     }
 
     public static Shares noneOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(allSharables.size()));
+        return new Sharables(new LinkedHashSet<Sharable>(allSharables.size() + optionalSharables.size()));
     }
 
-    public static Shares complementOf(Shares shares) {
-        Set<Sharable> compliment = Sharables.allOf();
+    public static Shares complementOfAll(Shares shares) {
+        Set<Sharable> compliment = Sharables.allNormal();
+        compliment.removeAll(shares);
+        return new Sharables(compliment);
+    }
+    
+    public static Shares complementOfOptional(Shares shares) {
+        Set<Sharable> compliment = Sharables.allOptional();
+        compliment.removeAll(shares);
+        return new Sharables(compliment);
+    }
+
+    public static Shares complimentOf(Shares shares) {
+        Set<Sharable> compliment = Sharables.allNormal();
+        compliment.addAll(Sharables.allOptional());
         compliment.removeAll(shares);
         return new Sharables(compliment);
     }
@@ -356,6 +400,28 @@ public class Sharables implements Shares {
         shares.addAll(Arrays.asList(sharables));
         return shares;
     }
+    
+    public static Shares negativeFromList(List sharesList) {
+        Shares shares = noneOf();
+        for (Object shareStringObj : sharesList) {
+            String shareString = shareStringObj.toString();
+            if (!shareString.startsWith("-") || shareString.length() <= 1) {
+                continue;
+            }
+            shareString = shareString.substring(1);
+            Shares sharables = Sharables.lookup(shareString);
+            if (sharables != null) {
+                shares.mergeShares(sharables);
+            } else {
+                if (shareString.equals("*") || shareString.equalsIgnoreCase("all")
+                        || shareString.equalsIgnoreCase("everything")) {
+                    shares = allNormal();
+                    break;
+                }
+            }
+        }
+        return shares;
+    }
 
     public static Shares fromList(List sharesList) {
         Shares shares = noneOf();
@@ -367,7 +433,7 @@ public class Sharables implements Shares {
             } else {
                 if (shareString.equals("*") || shareString.equalsIgnoreCase("all")
                         || shareString.equalsIgnoreCase("everything")) {
-                    shares = allOf();
+                    shares = allNormal();
                     break;
                 }
             }
@@ -537,7 +603,7 @@ public class Sharables implements Shares {
     @Override
     public List<String> toStringList() {
         List<String> list = new LinkedList<String>();
-        if (this.isSharing(Sharables.allOf())) {
+        if (this.isSharing(Sharables.allNormal())) {
             list.add("all");
         } else {
             for (Sharable sharable : this) {

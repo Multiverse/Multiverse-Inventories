@@ -63,6 +63,7 @@ public class MockPlayer implements Player {
     int health = PlayerStats.HEALTH;
     
     int max_no_damage_ticks = 0;
+    int max_air = 20;
     
     PlayerInventory inventory = new MockPlayerInventory();
     
@@ -214,12 +215,12 @@ public class MockPlayer implements Player {
 
     @Override
     public int getMaximumAir() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return max_air;
     }
 
     @Override
     public void setMaximumAir(int i) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        this.max_air = i;
     }
 
     @Override

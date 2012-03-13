@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SharableHandler;
@@ -100,6 +101,25 @@ public class TestWSharableAPI {
                     return true;
                 }
             }).serializer(new ProfileEntry(false, "custom")).build();
+    public final static Sharable<Integer> OPTIONAL = new Sharable.Builder<Integer>("optional", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(CUSTOM, player.getMaximumAir());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(CUSTOM);
+                    if (value == null) {
+                        // Specify default value
+                        player.setMaximumAir(20);
+                        return false;
+                    }
+                    player.setMaximumAir(value);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, "optional")).optional(true).build();
 
     public final static Sharable<Map> CUSTOM_MAP = new Sharable.Builder<Map>("custom_map", Map.class,
             new SharableHandler<Map>() {
@@ -129,7 +149,10 @@ public class TestWSharableAPI {
     @Test
     public void testSharableAPI() {
 
-        Assert.assertTrue(Sharables.all().contains(CUSTOM));
+        Assert.assertTrue(Sharables.normal().contains(CUSTOM));
+        Assert.assertFalse(Sharables.normal().contains(OPTIONAL));
+        Assert.assertTrue(Sharables.optional().contains(OPTIONAL));
+        Assert.assertFalse(Sharables.optional().contains(CUSTOM));
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
@@ -142,9 +165,11 @@ public class TestWSharableAPI {
         String[] cmdArgs = new String[]{"debug", "3"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
+        newGroup.getShares().mergeShares(Sharables.allNormal());
+        newGroup.addWorld("world2");
+        newGroup.getNegativeShares().add(OPTIONAL);
+        inventories.getGroupManager().addGroup(newGroup, true);
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
@@ -154,6 +179,11 @@ public class TestWSharableAPI {
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
+        //changeWorld(player, "world", "world2");
+        //changeWorld(player, "world2", "world");
+
+        cmdArgs = new String[]{"addshare", "-optional", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
@@ -161,6 +191,8 @@ public class TestWSharableAPI {
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         addToInventory(player.getInventory(), fillerItems);
         player.setMaximumNoDamageTicks(10);
+        int airTest = 10;
+        player.setMaximumAir(airTest);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();
 
@@ -168,10 +200,16 @@ public class TestWSharableAPI {
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
+        Assert.assertNotSame(airTest, player.getMaximumAir());
 
         changeWorld(player, "world_nether", "world2");
         Assert.assertEquals(0, player.getMaximumNoDamageTicks());
         Assert.assertNotSame(originalInventory, newInventory);
+        Assert.assertNotSame(airTest, player.getMaximumAir());
+        changeWorld(player, "world2", "world");
+        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
+        Assert.assertEquals(originalInventory, newInventory);
+        Assert.assertEquals(airTest, player.getMaximumAir());
     }
 
 }
