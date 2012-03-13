@@ -144,7 +144,7 @@ and adjust the build number accordingly -->
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>com.feildmaster.lib.configuration:ConfigurationLib</include>
+                                    <include>com.feildmaster.lib:EnhancedConfiguration</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
