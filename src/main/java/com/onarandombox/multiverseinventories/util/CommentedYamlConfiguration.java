@@ -36,8 +36,6 @@ class CommentedYamlConfiguration {
 
     /**
      * Loads this Configuration object into memory.
-     *
-     * @throws Exception If anything goes wrong while loading this Configuration object into memory.
      */
     public void load() {
         config = EnhancedConfiguration.loadConfiguration(file);
@@ -64,19 +62,17 @@ class CommentedYamlConfiguration {
         } catch (Exception e) {
             saved = false;
         }
-
         if (!doComments) {
             return saved;
         }
-
         // if there's comments to add and it saved fine, we need to add comments
         if (!comments.isEmpty() && saved) {
             // String array of each line in the config file
             String[] yamlContents =
                     this.convertFileToString(file).split("[" + System.getProperty("line.separator") + "]");
-
             // This will hold the entire newly formatted config
-            StringBuilder newContents = new StringBuilder(config.options().header()).append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
+            StringBuilder newContents = new StringBuilder(config.options().header())
+                    .append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
             // This holds the current path the lines are at in the config
             StringBuilder currentPath = new StringBuilder();
             // This tells if the specified path has already been commented

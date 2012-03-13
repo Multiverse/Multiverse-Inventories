@@ -36,6 +36,9 @@ public class Logging {
         VERSION = pdf.getVersion();
     }
 
+    /**
+     * Safely closes the debug log file handle.
+     */
     public static void close() {
         if (debugLog != null) {
             debugLog.close();

@@ -6,6 +6,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+/**
+ * This Sharable serializer attempts to deserialize the string form of objects passed to it through use of
+ * T.valueOf(String). Likewise, it serializes data simply by calling Object.toString() on the value passed in.
+ *
+ * @param <T> The type of data this serializer serializes.  This class MUST have a static valueOf(String) method that
+ *           returns it's type.
+ */
 class DefaultStringSerializer<T> implements SharableSerializer<T> {
 
     private Method valueOfMethod;

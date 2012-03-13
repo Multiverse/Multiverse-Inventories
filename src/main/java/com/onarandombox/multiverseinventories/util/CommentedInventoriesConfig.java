@@ -129,7 +129,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
 
         // Sets defaults config values
         this.setDefaults();
-        
+
         config.getConfig().options().header("# Multiverse-Inventories Settings/Groups");
 
         // Saves the configuration from memory to file
@@ -265,7 +265,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     }
 
     private Shares optionalSharables = null;
-    
+
     @Override
     public Shares getOptionalShares() {
         if (this.optionalSharables == null) {

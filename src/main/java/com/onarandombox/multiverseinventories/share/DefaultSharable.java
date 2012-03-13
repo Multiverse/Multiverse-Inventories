@@ -1,10 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 /**
- * An abstract class used to define a value that can be shared between worlds and world groups in
- * Multiverse-Inventories.  By extending this class and implementing it's abstract methods you will have a way to
- * alter a player's data based on what Multiverse-Inventories world/world group they are in.  This does not
- * automatically persist any data.
+ * A class used to define a value that can be shared between worlds and world groups in Multiverse-Inventories.
  *
  * @param <T> The type of data this Sharable represents.
  */
@@ -36,6 +33,10 @@ class DefaultSharable<T> implements Sharable<T> {
         return names;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Class<T> getType() {
         return this.type;
     }

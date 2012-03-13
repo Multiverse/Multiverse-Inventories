@@ -68,10 +68,16 @@ public interface InventoriesConfig {
     void setFirstRun(boolean firstRun);
 
     /**
-     * Convenience method for saving the config to disk.
+     * Saves the configuration file to disk.
      */
     void save();
 
+    /**
+     * @return A list of optional {@link com.onarandombox.multiverseinventories.share.Sharable}s to be treated as
+     * regular {@link com.onarandombox.multiverseinventories.share.Sharable}s throughout the code.
+     * A {@link com.onarandombox.multiverseinventories.share.Sharable} marked as optional is ignored if it is not
+     * contained in this list.
+     */
     Shares getOptionalShares();
 
     /**

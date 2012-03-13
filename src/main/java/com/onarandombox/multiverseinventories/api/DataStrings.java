@@ -198,6 +198,8 @@ public class DataStrings {
 
     /**
      * @param inventoryString An inventory in string for to be parsed into an ItemStack array.
+     * @param inventorySize The number of item slots in the inventory.
+     * @return an ItemStack array containing the inventory contents parsed from inventoryString.
      */
     public static ItemStack[] parseInventory(String inventoryString, int inventorySize) {
         String[] inventoryArray = inventoryString.split(DataStrings.ITEM_DELIMITER);
@@ -217,7 +219,13 @@ public class DataStrings {
         }
         return invContents;
     }
-    
+
+    /**
+     * Converts an ItemStack array into a String for easy persistence.
+     *
+     * @param items The items you wish to "string-i-tize".
+     * @return A string representation of an inventory.
+     */
     public static String valueOf(ItemStack[] items) {
         StringBuilder builder = new StringBuilder();
         for (Integer i = 0; i < items.length; i++) {
@@ -230,7 +238,13 @@ public class DataStrings {
         }
         return builder.toString();
     }
-    
+
+    /**
+     * Converts a {@link Location} into a String for easy persistence.
+     *
+     * @param location The location you wish to "string-i-tize".
+     * @return A String representation of a {@link Location}
+     */
     public static String valueOf(Location location) {
         StringBuilder builder = new StringBuilder();
         builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, location.getWorld().getName()));
