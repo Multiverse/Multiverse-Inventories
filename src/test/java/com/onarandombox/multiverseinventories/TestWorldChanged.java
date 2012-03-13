@@ -158,14 +158,14 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"addshares", "-saturation", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
 
         // Reload to ensure things are saving to config.yml
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
 
         // Verify removal
@@ -253,7 +253,7 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"addshares", "inventory,saturation", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));
@@ -262,7 +262,7 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.normal()));
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.ARMOR));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));

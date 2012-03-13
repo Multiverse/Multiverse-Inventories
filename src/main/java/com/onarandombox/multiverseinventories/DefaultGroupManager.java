@@ -137,7 +137,7 @@ final class DefaultGroupManager implements GroupManager {
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
         WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
-        worldGroup.getShares().mergeShares(Sharables.allNormal());
+        worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
         if (defaultNether != null) {

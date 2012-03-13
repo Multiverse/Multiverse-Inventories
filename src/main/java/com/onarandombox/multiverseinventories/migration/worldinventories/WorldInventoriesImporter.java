@@ -125,7 +125,7 @@ public class WorldInventoriesImporter implements DataImporter {
 
             try {
                 if (WorldInventories.doStats) {
-                    newGroup.getShares().mergeShares(Sharables.allNormal());
+                    newGroup.getShares().mergeShares(Sharables.allOf());
                 } else {
                     newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
                 }

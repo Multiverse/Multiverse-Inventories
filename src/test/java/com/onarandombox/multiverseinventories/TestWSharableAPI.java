@@ -149,10 +149,8 @@ public class TestWSharableAPI {
     @Test
     public void testSharableAPI() {
 
-        Assert.assertTrue(Sharables.normal().contains(CUSTOM));
-        Assert.assertFalse(Sharables.normal().contains(OPTIONAL));
-        Assert.assertTrue(Sharables.optional().contains(OPTIONAL));
-        Assert.assertFalse(Sharables.optional().contains(CUSTOM));
+        Assert.assertTrue(Sharables.all().contains(CUSTOM));
+        Assert.assertTrue(Sharables.all().contains(OPTIONAL));
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
@@ -166,7 +164,7 @@ public class TestWSharableAPI {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
-        newGroup.getShares().mergeShares(Sharables.allNormal());
+        newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         newGroup.getNegativeShares().add(OPTIONAL);
         inventories.getGroupManager().addGroup(newGroup, true);
@@ -182,8 +180,8 @@ public class TestWSharableAPI {
         //changeWorld(player, "world", "world2");
         //changeWorld(player, "world2", "world");
 
-        cmdArgs = new String[]{"addshare", "-optional", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        //cmdArgs = new String[]{"addshare", "-optional", "default"};
+        //inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
@@ -200,12 +198,12 @@ public class TestWSharableAPI {
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
-        Assert.assertNotSame(airTest, player.getMaximumAir());
+        Assert.assertEquals(airTest, player.getMaximumAir());
 
         changeWorld(player, "world_nether", "world2");
         Assert.assertEquals(0, player.getMaximumNoDamageTicks());
         Assert.assertNotSame(originalInventory, newInventory);
-        Assert.assertNotSame(airTest, player.getMaximumAir());
+        Assert.assertEquals(airTest, player.getMaximumAir());
         changeWorld(player, "world2", "world");
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         Assert.assertEquals(originalInventory, newInventory);

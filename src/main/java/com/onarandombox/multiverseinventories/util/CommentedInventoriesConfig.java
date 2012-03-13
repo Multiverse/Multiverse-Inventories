@@ -3,6 +3,8 @@ package com.onarandombox.multiverseinventories.util;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -43,6 +45,12 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          * First Run flag config path, default and comments.
          */
         USE_BYPASS("settings.use_bypass", false, "# If this is set to true, it will enable bypass permissions (Check the wiki for more info.)"),
+        /**
+         * First Run flag config path, default and comments.
+         */
+        OPTIONAL_SHARES("shares.use_optionals", new ArrayList<String>(),
+                "# You must specify optional shares you wish to use here or they will be ignored.",
+                "# The only built in optional share is \"economy\""),
         /**
          * Groups section path and comments.  No simple default for this.
          */
@@ -256,6 +264,16 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         this.getConfig().set(Path.USE_BYPASS.getPath(), useBypass);
     }
 
+    private Shares optionalSharables = null;
+    
+    @Override
+    public Shares getOptionalShares() {
+        if (this.optionalSharables == null) {
+            this.optionalSharables = Sharables.fromList(this.getConfig().getList(Path.OPTIONAL_SHARES.getPath()));
+        }
+        return this.optionalSharables;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -279,6 +297,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void save() {
+        this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.getOptionalShares().toStringList());
         this.config.save();
     }
 }

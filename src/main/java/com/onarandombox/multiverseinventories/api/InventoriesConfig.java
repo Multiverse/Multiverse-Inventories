@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.share.Shares;
 
 import java.util.List;
 
@@ -70,6 +71,8 @@ public interface InventoriesConfig {
      * Convenience method for saving the config to disk.
      */
     void save();
+
+    Shares getOptionalShares();
 
     /**
      * @return True if we should check for bypass permissions.

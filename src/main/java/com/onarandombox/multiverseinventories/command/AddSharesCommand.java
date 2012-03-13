@@ -35,10 +35,10 @@ public class AddSharesCommand extends InventoriesCommand {
         Shares newShares;
         Shares negativeShares;
         if (args.get(0).contains("all") || args.get(0).contains("everything") || args.get(0).contains("*")) {
-            newShares = Sharables.allNormal();
+            newShares = Sharables.allOf();
             negativeShares = Sharables.noneOf();
         } else if (args.get(0).contains("-all") || args.get(0).contains("-everything") || args.get(0).contains("-*")) {
-            negativeShares = Sharables.allNormal();
+            negativeShares = Sharables.allOf();
             newShares = Sharables.noneOf();
         } else {
             negativeShares = Sharables.noneOf();
