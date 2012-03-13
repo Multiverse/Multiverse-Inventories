@@ -90,6 +90,22 @@ public class DataStrings {
      */
     public static final String PLAYER_SATURATION = "sa";
     /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_FALL_DISTANCE = "fd";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_FIRE_TICKS = "ft";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_REMAINING_AIR = "ra";
+    /**
+     * Player saturation identifier.
+     */
+    public static final String PLAYER_MAX_AIR = "ma";
+    /**
      * Location x identifier.
      */
     public static final String LOCATION_X = "x";

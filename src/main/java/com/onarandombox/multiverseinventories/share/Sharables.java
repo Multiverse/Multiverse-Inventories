@@ -110,6 +110,97 @@ public class Sharables implements Shares {
             .altName("health").altName("hp").altName("hitpoints").build();
 
     /**
+     * Sharing Health.
+     */
+    public static final Sharable<Integer> REMAINING_AIR = new Sharable.Builder<Integer>("remaining_air", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(REMAINING_AIR, player.getRemainingAir());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(REMAINING_AIR);
+                    if (value == null) {
+                        player.setRemainingAir(PlayerStats.REMAINING_AIR);
+                        return false;
+                    }
+                    player.setRemainingAir(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
+
+    /**
+     * Sharing Health.
+     */
+    public static final Sharable<Integer> MAXIMUM_AIR = new Sharable.Builder<Integer>("maximum_air", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(MAXIMUM_AIR, player.getMaximumAir());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(MAXIMUM_AIR);
+                    if (value == null) {
+                        player.setMaximumAir(PlayerStats.MAXIMUM_AIR);
+                        return false;
+                    }
+                    player.setMaximumAir(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_AIR)).build();
+
+    /**
+     * Sharing Health.
+     */
+    public static final Sharable<Float> FALL_DISTANCE = new Sharable.Builder<Float>("fall_distance", Float.class,
+            new SharableHandler<Float>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(FALL_DISTANCE, player.getFallDistance());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Float value = profile.get(FALL_DISTANCE);
+                    if (value == null) {
+                        player.setFallDistance(PlayerStats.FALL_DISTANCE);
+                        return false;
+                    }
+                    player.setFallDistance(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FALL_DISTANCE))
+            .altName("falling").build();
+
+    /**
+     * Sharing Health.
+     */
+    public static final Sharable<Integer> FIRE_TICKS = new Sharable.Builder<Integer>("fire_ticks", Integer.class,
+            new SharableHandler<Integer>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(FIRE_TICKS, player.getFireTicks());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Integer value = profile.get(FIRE_TICKS);
+                    if (value == null) {
+                        player.setFireTicks(PlayerStats.FIRE_TICKS);
+                        return false;
+                    }
+                    player.setFireTicks(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FIRE_TICKS))
+            .altName("fire").altName("burning").build();
+
+
+    /**
      * Sharing Experience.
      */
     public static final Sharable<Float> EXPERIENCE = new Sharable.Builder<Float>("exp", Float.class,
@@ -300,14 +391,22 @@ public class Sharables implements Shares {
     public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
             fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
 
+    public static final SharableGroup AIR = new SharableGroup("air",
+            fromSharables(FOOD_LEVEL, SATURATION, EXHAUSTION), "breath");
+
     public static final SharableGroup HUNGER = new SharableGroup("hunger",
             fromSharables(FOOD_LEVEL, SATURATION, EXHAUSTION));
 
+    public static final SharableGroup ALL_HEALTH = new SharableGroup("health",
+            fromSharables(HEALTH, REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
+
     public static final SharableGroup STATS = new SharableGroup("stats",
-            fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
+            fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
+                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
 
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
-            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN), "*",
+            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS), "*",
             "everything");
 
 
