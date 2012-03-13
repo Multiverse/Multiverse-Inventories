@@ -105,7 +105,7 @@ public class TestWSharableAPI {
             new SharableHandler<Integer>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(CUSTOM, player.getMaximumAir());
+                    profile.set(CUSTOM, player.getLastDamage());
                 }
 
                 @Override
@@ -113,10 +113,10 @@ public class TestWSharableAPI {
                     Integer value = profile.get(CUSTOM);
                     if (value == null) {
                         // Specify default value
-                        player.setMaximumAir(20);
+                        player.setLastDamage(0);
                         return false;
                     }
-                    player.setMaximumAir(value);
+                    player.setLastDamage(value);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, "optional")).optional(true).build();
@@ -189,8 +189,8 @@ public class TestWSharableAPI {
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         addToInventory(player.getInventory(), fillerItems);
         player.setMaximumNoDamageTicks(10);
-        int airTest = 10;
-        player.setMaximumAir(airTest);
+        int lastDamage = 10;
+        player.setLastDamage(lastDamage);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();
 
@@ -198,16 +198,16 @@ public class TestWSharableAPI {
         String newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
-        Assert.assertEquals(airTest, player.getMaximumAir());
+        Assert.assertEquals(lastDamage, player.getLastDamage());
 
         changeWorld(player, "world_nether", "world2");
         Assert.assertEquals(0, player.getMaximumNoDamageTicks());
         Assert.assertNotSame(originalInventory, newInventory);
-        Assert.assertEquals(airTest, player.getMaximumAir());
+        Assert.assertEquals(lastDamage, player.getLastDamage());
         changeWorld(player, "world2", "world");
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         Assert.assertEquals(originalInventory, newInventory);
-        Assert.assertEquals(airTest, player.getMaximumAir());
+        Assert.assertEquals(lastDamage, player.getLastDamage());
     }
 
 }

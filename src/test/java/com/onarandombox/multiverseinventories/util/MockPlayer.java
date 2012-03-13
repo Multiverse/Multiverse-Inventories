@@ -64,6 +64,7 @@ public class MockPlayer implements Player {
     
     int max_no_damage_ticks = 0;
     int max_air = 20;
+    int last_damage = 0;
     
     PlayerInventory inventory = new MockPlayerInventory();
     
@@ -196,6 +197,16 @@ public class MockPlayer implements Player {
     @Override
     public void setMaximumNoDamageTicks(int i) {
         this.max_no_damage_ticks = i;
+    }
+
+    @Override
+    public int getLastDamage() {
+        return this.last_damage;
+    }
+
+    @Override
+    public void setLastDamage(int i) {
+        this.last_damage = i;
     }
 
     @Override
@@ -710,16 +721,6 @@ public class MockPlayer implements Player {
 
     @Override
     public void damage(int i, Entity entity) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int getLastDamage() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setLastDamage(int i) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
