@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 
 import java.util.ArrayList;
 import java.util.List;

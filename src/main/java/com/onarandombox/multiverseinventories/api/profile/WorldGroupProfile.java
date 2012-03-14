@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
-import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
@@ -85,7 +85,13 @@ public interface WorldGroupProfile extends ProfileContainer {
      * @return The shares for this World Group.
      */
     Shares getShares();
-    
+
+    /**
+     * Retrieves the negated shares for this World Group.  Elements in this Shares set may be found in
+     * {@link #getShares()}.  Their presence here means that the copies in {@link #getShares()} will be ignored.
+     *
+     * @return The negated shares for this World Group.
+     */
     Shares getNegativeShares();
 
     /**

@@ -6,10 +6,10 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
+import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
-import com.onarandombox.multiverseinventories.share.Sharable;
-import com.onarandombox.multiverseinventories.share.Sharables;
-import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
@@ -143,7 +143,7 @@ final class ShareHandler {
         // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
         if (!sharesToUpdate.isSharing(Sharables.all())) {
             sharesToUpdate = Sharables.complimentOf(sharesToUpdate);
-            
+
             // Get world we need to load from.
             Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()

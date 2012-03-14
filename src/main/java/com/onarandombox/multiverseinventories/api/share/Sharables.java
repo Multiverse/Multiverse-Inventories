@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 import com.fernferret.allpay.multiverse.GenericBank;
 import com.onarandombox.multiverseinventories.api.DataStrings;
@@ -25,13 +25,22 @@ import java.util.Set;
  * The Sharables class is where all the default Sharable instances are located as constants as well as a factory class
  * for generating Shares.
  */
-public class Sharables implements Shares {
+public final class Sharables implements Shares {
 
-    private static Shares allSharables = new Sharables(new LinkedHashSet<Sharable>());
-    static Map<String, Shares> lookupMap = new HashMap<String, Shares>();
+    private static final Shares ALL_SHARABLES = new Sharables(new LinkedHashSet<Sharable>());
+
+    /**
+     * The map used to lookup a Sharable or set of Sharables by their name.
+     */
+    static final Map<String, Shares> LOOKUP_MAP = new HashMap<String, Shares>();
 
     private static Inventories inventories = null;
 
+    /**
+     * Initialize this class with the instance of Inventories.
+     *
+     * @param inventories the instance of Inventories.
+     */
     public static void init(Inventories inventories) {
         if (Sharables.inventories == null) {
             Sharables.inventories = inventories;
@@ -43,48 +52,48 @@ public class Sharables implements Shares {
      */
     public static final Sharable<ItemStack[]> INVENTORY = new Sharable.Builder<ItemStack[]>("inventory_contents",
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(INVENTORY, player.getInventory().getContents());
-        }
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(INVENTORY, player.getInventory().getContents());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            ItemStack[] value = profile.get(INVENTORY);
-            if (value == null) {
-                player.getInventory().setContents(MinecraftTools.fillWithAir(
-                        new ItemStack[PlayerStats.INVENTORY_SIZE]));
-                return false;
-            }
-            player.getInventory().setContents(value);
-            return true;
-        }
-    }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
-            new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    ItemStack[] value = profile.get(INVENTORY);
+                    if (value == null) {
+                        player.getInventory().setContents(MinecraftTools.fillWithAir(
+                                new ItemStack[PlayerStats.INVENTORY_SIZE]));
+                        return false;
+                    }
+                    player.getInventory().setContents(value);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
+                    new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
 
     /**
      * Sharing Armor.
      */
     public static final Sharable<ItemStack[]> ARMOR = new Sharable.Builder<ItemStack[]>("armor_contents",
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
-        @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
-            profile.set(ARMOR, player.getInventory().getArmorContents());
-        }
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(ARMOR, player.getInventory().getArmorContents());
+                }
 
-        @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
-            ItemStack[] value = profile.get(ARMOR);
-            if (value == null) {
-                player.getInventory().setArmorContents(MinecraftTools.fillWithAir(
-                        new ItemStack[PlayerStats.ARMOR_SIZE]));
-                return false;
-            }
-            player.getInventory().setArmorContents(value);
-            return true;
-        }
-    }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
-            new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    ItemStack[] value = profile.get(ARMOR);
+                    if (value == null) {
+                        player.getInventory().setArmorContents(MinecraftTools.fillWithAir(
+                                new ItemStack[PlayerStats.ARMOR_SIZE]));
+                        return false;
+                    }
+                    player.getInventory().setArmorContents(value);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
+                    new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
 
     /**
      * Sharing Health.
@@ -382,36 +391,65 @@ public class Sharables implements Shares {
                     bank.setBalance(player, -1, money);
                     return true;
                 }
-            }).stringSerializer(new ProfileEntry(false, "balance")).optional(true)
+            }).stringSerializer(new ProfileEntry(false, "balance")).optional()
             .altName("money").altName("econ").altName("cash").altName("balance").build();
 
+    /**
+     * Grouping for inventory sharables.
+     */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
             fromSharables(INVENTORY, ARMOR), "inv", "inventories");
 
+    /**
+     * Grouping for experience sharables.
+     */
     public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
             fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
 
+    /**
+     * Grouping for air/breath related sharables.
+     */
     public static final SharableGroup AIR = new SharableGroup("air",
-            fromSharables(FOOD_LEVEL, SATURATION, EXHAUSTION), "breath");
+            fromSharables(REMAINING_AIR, MAXIMUM_AIR), "breath");
 
+    /**
+     * Grouping for hunger related sharables.
+     */
     public static final SharableGroup HUNGER = new SharableGroup("hunger",
             fromSharables(FOOD_LEVEL, SATURATION, EXHAUSTION));
 
+    /**
+     * Grouping for player health related sharables.
+     */
     public static final SharableGroup ALL_HEALTH = new SharableGroup("health",
             fromSharables(HEALTH, REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
 
+    /**
+     * Grouping for player stat related sharables not including inventory.
+     */
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
                     REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
 
+    /**
+     * Grouping for ALL default sharables.
+     * TODO: make this really mean all, including 3rd party.
+     */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
             MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS), "*",
             "everything");
 
 
+    /**
+     * Registers a Sharable, which is required for it to function properly.  This method is called automatically when
+     * using the {@link Sharable.Builder} class and should not be called manually.
+     *
+     * @param sharable The sharable to register.
+     * @return True if the sharable is not already registered.
+     */
     static boolean register(Sharable sharable) {
-        if (!allSharables.contains(sharable)) {
+        if (!ALL_SHARABLES.contains(sharable)) {
             // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
             if (inventories != null) {
                 for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
@@ -422,13 +460,13 @@ public class Sharables implements Shares {
                 }
             }
         }
-        if (allSharables.add(sharable)) {
+        if (ALL_SHARABLES.add(sharable)) {
             for (String name : sharable.getNames()) {
                 String key = name.toLowerCase();
-                Shares shares = lookupMap.get(key);
+                Shares shares = LOOKUP_MAP.get(key);
                 if (shares == null) {
                     shares = noneOf();
-                    lookupMap.put(key, shares);
+                    LOOKUP_MAP.put(key, shares);
                 }
                 shares.add(sharable);
             }
@@ -444,43 +482,83 @@ public class Sharables implements Shares {
      * @return Sharable by that name or null if none by that name.
      */
     public static Shares lookup(String name) {
-        return lookupMap.get(name.toLowerCase());
+        return LOOKUP_MAP.get(name.toLowerCase());
     }
 
+    /**
+     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s.  This is NOT to be modified and
+     * serves only as a reference.  For a version you can do what you want with, see {@link #allOf()}.
+     */
     public static Shares all() {
-        return allSharables;
+        return ALL_SHARABLES;
     }
 
+    /**
+     * @return A new {@link Shares} instance containing ALL registered {@link Sharable}s for your own devices.
+     */
     public static Shares allOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(allSharables));
+        return new Sharables(new LinkedHashSet<Sharable>(ALL_SHARABLES));
     }
 
+    /**
+     * @return A new empty {@link Shares} instance for your own devices.
+     */
     public static Shares noneOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(allSharables.size()));
+        return new Sharables(new LinkedHashSet<Sharable>(ALL_SHARABLES.size()));
     }
 
+    /**
+     * @param shares Shares to compare against.
+     * @return A new {@link Shares} instance containing all {@link Sharable}s present in {@link #all()} that are NOT
+     * contained in the shares argument.
+     */
     public static Shares complimentOf(Shares shares) {
         Set<Sharable> compliment = Sharables.allOf();
         compliment.removeAll(shares);
         return new Sharables(compliment);
     }
 
+    /**
+     * Creates a new instance of {@link Shares} containing all Sharables contained in shares.
+     *
+     * @param shares Shares instance to effectively copy.
+     * @return A new Shares instance containing all Sharables in shares.
+     */
     public static Shares fromShares(Shares shares) {
         return new Sharables(shares);
     }
 
+    /**
+     * Creates a new instance of {@link Shares} containing all Sharables contained in sharesCollection.
+     *
+     * @param sharesCollection A collection of Sharables to effectively copy.
+     * @return A new Shares instance containing all Sharables in sharesCollection.
+     */
     public static Shares fromCollection(Collection<Sharable> sharesCollection) {
         Shares shares = noneOf();
         shares.addAll(sharesCollection);
         return shares;
     }
 
+    /**
+     * Creates a new instance of {@link Shares} containing the listed {@link Sharable}s.
+     *
+     * @param sharables Sharables to fill new Shares with.
+     * @return A new Shares instance containing all Sharables passed in.
+     */
     public static Shares fromSharables(Sharable... sharables) {
         Shares shares = noneOf();
         shares.addAll(Arrays.asList(sharables));
         return shares;
     }
 
+    /**
+     * Creates a new instance of {@link Shares} containing all shares negated in the given list.
+     *
+     * @param sharesList A list whose elements are to be strings which will be parsed with {@link #lookup(String)} if
+     *                   they start with "-" indicating they are "negated" shares.
+     * @return A new instance of {@link Shares} containing all shares negated in the given list.
+     */
     public static Shares negativeFromList(List sharesList) {
         Shares shares = noneOf();
         for (Object shareStringObj : sharesList) {
@@ -503,6 +581,13 @@ public class Sharables implements Shares {
         return shares;
     }
 
+    /**
+     * Creates a new instance of {@link Shares} containing all shares not negated in the given list.
+     *
+     * @param sharesList A list whose elements are to be strings which will be parsed with {@link #lookup(String)} if
+     *                   they do not start with "-" indicating they are normal shares.
+     * @return A new instance of {@link Shares} containing all shares non-negated in the given list.
+     */
     public static Shares fromList(List sharesList) {
         Shares shares = noneOf();
         for (Object shareStringObj : sharesList) {
@@ -521,14 +606,14 @@ public class Sharables implements Shares {
         return shares;
     }
 
-    protected Set<Sharable> sharables;
+    private Set<Sharable> sharables;
 
     private Sharables(Set<Sharable> sharableSet) {
         this.sharables = sharableSet;
     }
 
     private Sharables(Shares shares) {
-        this.sharables = new LinkedHashSet<Sharable>(allSharables.size());
+        this.sharables = new LinkedHashSet<Sharable>(ALL_SHARABLES.size());
         this.sharables.addAll(shares);
     }
 

@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 import java.util.HashMap;
 import java.util.Map;

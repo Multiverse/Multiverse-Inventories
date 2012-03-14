@@ -5,9 +5,9 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
@@ -257,6 +257,9 @@ public class WorldInventoriesImporter implements DataImporter {
         return playerstats;
     }
 
+    /**
+     * Indicates the type of data we're importing for.
+     */
     private enum DataType {
         INVENTORY(".inventory"),
         STATS(".stats");

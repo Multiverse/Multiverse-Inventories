@@ -1,10 +1,14 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * This class represents a grouping of Sharable objects for the sole purpose of being able to use one keyword in
+ * group setups to indicate multiple {@link Sharable}s.
+ */
 public final class SharableGroup implements Shares {
 
     private String[] names;
@@ -16,10 +20,14 @@ public final class SharableGroup implements Shares {
         System.arraycopy(alternateNames, 0, this.names, 1, alternateNames.length);
         this.shares = shares;
         for (String lookupName : this.names) {
-            Sharables.lookupMap.put(lookupName, this);
+            Sharables.LOOKUP_MAP.put(lookupName, this);
         }
     }
 
+    /**
+     * @return The names of this SharableGroup for setting as shared in the config.
+     * All names in this array may be used to set a group as sharing this SharableGroup.
+     */
     public String[] getNames() {
         return this.names;
     }

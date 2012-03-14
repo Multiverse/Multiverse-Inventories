@@ -2,10 +2,10 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.share.ProfileEntry;
-import com.onarandombox.multiverseinventories.share.Sharable;
-import com.onarandombox.multiverseinventories.share.SharableHandler;
-import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.ProfileEntry;
+import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.SharableHandler;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;
@@ -100,7 +100,7 @@ public class TestWSharableAPI {
                     player.setMaximumNoDamageTicks(value);
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, "custom")).build();
+            }).defaultSerializer(new ProfileEntry(false, "custom")).build();
     public final static Sharable<Integer> OPTIONAL = new Sharable.Builder<Integer>("optional", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
@@ -119,7 +119,7 @@ public class TestWSharableAPI {
                     player.setLastDamage(value);
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, "optional")).optional(true).build();
+            }).defaultSerializer(new ProfileEntry(false, "optional")).optional().build();
 
     public final static Sharable<Map> CUSTOM_MAP = new Sharable.Builder<Map>("custom_map", Map.class,
             new SharableHandler<Map>() {
@@ -144,7 +144,7 @@ public class TestWSharableAPI {
                     player.setDisplayName(data.get("displayName").toString());
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, "custom_map")).build();
+            }).defaultSerializer(new ProfileEntry(false, "custom_map")).build();
 
     @Test
     public void testSharableAPI() {

@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 
 /**
  * Simple implementation of PersistingProfile.

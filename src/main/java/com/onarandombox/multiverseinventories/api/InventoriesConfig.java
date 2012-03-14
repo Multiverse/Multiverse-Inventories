@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.share.Shares;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 
 import java.util.List;
 
@@ -73,9 +73,9 @@ public interface InventoriesConfig {
     void save();
 
     /**
-     * @return A list of optional {@link com.onarandombox.multiverseinventories.share.Sharable}s to be treated as
-     * regular {@link com.onarandombox.multiverseinventories.share.Sharable}s throughout the code.
-     * A {@link com.onarandombox.multiverseinventories.share.Sharable} marked as optional is ignored if it is not
+     * @return A list of optional {@link com.onarandombox.multiverseinventories.api.share.Sharable}s to be treated as
+     * regular {@link com.onarandombox.multiverseinventories.api.share.Sharable}s throughout the code.
+     * A {@link com.onarandombox.multiverseinventories.api.share.Sharable} marked as optional is ignored if it is not
      * contained in this list.
      */
     Shares getOptionalShares();

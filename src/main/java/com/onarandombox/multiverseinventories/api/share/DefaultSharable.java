@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 /**
  * A class used to define a value that can be shared between worlds and world groups in Multiverse-Inventories.

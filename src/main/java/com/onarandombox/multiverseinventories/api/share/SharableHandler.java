@@ -1,8 +1,14 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 
+/**
+ * This class is used to handle the transition of data from a player profile to a player and vice versa, typically
+ * when changing worlds.
+ *
+ * @param <T> The type of data the {@link Sharable} this belongs to represents.
+ */
 public interface SharableHandler<T> {
 
     /**

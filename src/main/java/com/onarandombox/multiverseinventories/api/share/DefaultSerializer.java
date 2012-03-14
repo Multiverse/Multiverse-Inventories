@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.share;
+package com.onarandombox.multiverseinventories.api.share;
 
 /**
  * The default Sharable serializer.  It performs no special tasks on the objects being sent to persistence, they are
