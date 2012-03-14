@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -8,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author dumptruckman
@@ -88,6 +86,9 @@ public enum Perm {
             return "Player: " + player.getName() + " has bypass perms for world: " + name;
         }
     },
+    /**
+     * Permissions for bypassing all world/groups inventory handling.
+     */
     BYPASS_ALL(new Permission("mvinv.bypass.*", "Allows bypassing all of your groups/worlds and constantly use "
             + "the same inventory", PermissionDefault.FALSE));
 
@@ -117,7 +118,7 @@ public enum Perm {
     }
 
     /**
-     * @param finalNode    String to add to the bypass prefix.
+     * @param finalNode String to add to the bypass prefix.
      * @return The full permission node for bypass.
      */
     public Permission getBypassPermission(String finalNode) {
@@ -145,8 +146,8 @@ public enum Perm {
      * Checks if a player has permission to bypass something which requires a name of an object to be bypassed.
      * A World name for example.
      *
-     * @param player       Player to check permission for.
-     * @param name         Name of object to bypass.
+     * @param player Player to check permission for.
+     * @param name   Name of object to bypass.
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name) {
@@ -172,7 +173,7 @@ public enum Perm {
     public boolean has(CommandSender sender) {
         return sender.hasPermission(perm);
     }
-    
+
     private static Inventories inventories = null;
 
     /**

@@ -65,6 +65,14 @@ public class FlatFilePlayerData implements PlayerData {
         return folder;
     }
 
+    /**
+     * Retrieves the yaml data file for a player based on a given world/group name.
+     *
+     * @param type       Indicates whether data is for group or world.
+     * @param dataName   The name of the group or world.
+     * @param playerName The name of the player.
+     * @return The yaml data file for a player.
+     */
     File getPlayerFile(ProfileType type, String dataName, String playerName) {
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
         if (!playerFile.exists()) {
@@ -75,7 +83,6 @@ public class FlatFilePlayerData implements PlayerData {
                 Logging.severe("Your data may not be saved!");
                 Logging.severe(e.getMessage());
             }
-
         }
         return playerFile;
     }

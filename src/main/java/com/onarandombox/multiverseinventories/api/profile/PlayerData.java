@@ -1,7 +1,5 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
-import org.bukkit.OfflinePlayer;
-
 /**
  * Interface for interacting with the persisted data of this plugin.
  */

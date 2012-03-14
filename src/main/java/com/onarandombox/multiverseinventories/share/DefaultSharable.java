@@ -5,7 +5,7 @@ package com.onarandombox.multiverseinventories.share;
  *
  * @param <T> The type of data this Sharable represents.
  */
-class DefaultSharable<T> implements Sharable<T> {
+final class DefaultSharable<T> implements Sharable<T> {
 
     private String[] names;
     private SharableHandler<T> handler;
@@ -29,7 +29,7 @@ class DefaultSharable<T> implements Sharable<T> {
      * {@inheritDoc}
      */
     @Override
-    public final String[] getNames() {
+    public String[] getNames() {
         return names;
     }
 

@@ -2,8 +2,6 @@ package com.onarandombox.multiverseinventories.api.profile;
 
 import org.bukkit.OfflinePlayer;
 
-import java.util.Set;
-
 /**
  * An interface for classes containing PlayerProfiles.
  */

@@ -11,9 +11,9 @@ import java.lang.reflect.Modifier;
  * T.valueOf(String). Likewise, it serializes data simply by calling Object.toString() on the value passed in.
  *
  * @param <T> The type of data this serializer serializes.  This class MUST have a static valueOf(String) method that
- *           returns it's type.
+ *            returns it's type.
  */
-class DefaultStringSerializer<T> implements SharableSerializer<T> {
+final class DefaultStringSerializer<T> implements SharableSerializer<T> {
 
     private Method valueOfMethod;
     private Class<T> clazz;
