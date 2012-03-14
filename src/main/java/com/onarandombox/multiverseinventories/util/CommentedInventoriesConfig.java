@@ -297,7 +297,9 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void save() {
-        this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.getOptionalShares().toStringList());
+        if (this.optionalSharables != null) {
+            this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.optionalSharables.toStringList());
+        }
         this.config.save();
     }
 }
