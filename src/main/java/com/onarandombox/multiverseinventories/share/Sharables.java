@@ -375,11 +375,11 @@ public class Sharables implements Shares {
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Double money = profile.get(ECONOMY);
                     GenericBank bank = inventories.getCore().getBank();
-                    bank.take(player, bank.getBalance(player, -1), -1);
                     if (money == null) {
+                        bank.setBalance(player, -1, 0);
                         return false;
                     }
-                    bank.give(player, money, -1);
+                    bank.setBalance(player, -1, money);
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(false, "balance")).optional(true)
@@ -480,7 +480,7 @@ public class Sharables implements Shares {
         shares.addAll(Arrays.asList(sharables));
         return shares;
     }
-    
+
     public static Shares negativeFromList(List sharesList) {
         Shares shares = noneOf();
         for (Object shareStringObj : sharesList) {
