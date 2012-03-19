@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 
 import java.util.Map;
 import java.util.WeakHashMap;

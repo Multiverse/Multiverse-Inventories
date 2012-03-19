@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 

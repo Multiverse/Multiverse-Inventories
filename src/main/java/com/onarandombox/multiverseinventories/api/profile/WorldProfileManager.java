@@ -1,6 +1,4 @@
-package com.onarandombox.multiverseinventories.api;
-
-import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+package com.onarandombox.multiverseinventories.api.profile;
 
 /**
  * Manager class for manipulating the profiles of this plugin that are contained in memory.
