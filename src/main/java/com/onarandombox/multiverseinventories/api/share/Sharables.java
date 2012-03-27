@@ -63,9 +63,11 @@ public final class Sharables implements Shares {
                     if (value == null) {
                         player.getInventory().setContents(MinecraftTools.fillWithAir(
                                 new ItemStack[PlayerStats.INVENTORY_SIZE]));
+                        player.updateInventory();
                         return false;
                     }
                     player.getInventory().setContents(value);
+                    player.updateInventory();
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
@@ -87,9 +89,11 @@ public final class Sharables implements Shares {
                     if (value == null) {
                         player.getInventory().setArmorContents(MinecraftTools.fillWithAir(
                                 new ItemStack[PlayerStats.ARMOR_SIZE]));
+                        player.updateInventory();
                         return false;
                     }
                     player.getInventory().setArmorContents(value);
+                    player.updateInventory();
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
