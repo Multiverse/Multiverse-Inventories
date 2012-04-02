@@ -58,7 +58,8 @@ public interface GroupManager {
 
     /**
      * Creates a new empty world group.  Please note if you do not add worlds to this group it will
-     * not persist very well.
+     * not persist very well.  This does not automatically persist the new group.  It must bed added via
+     * {@link #addGroup(com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile, boolean)}
      *
      * @param name A name for the new group.
      * @return The newly created WorldGroupProfile.
@@ -68,7 +69,7 @@ public interface GroupManager {
     /**
      * Creates a new world group filled with the data provided in dataMap.
      *
-     * @param name A name for the new group.
+     * @param name    A name for the new group.
      * @param dataMap A map of the data that pertains to this world group.
      * @return The newly created WorldGroupProfile.
      * @throws DeserializationException If the dataMap is not formatted correctly.

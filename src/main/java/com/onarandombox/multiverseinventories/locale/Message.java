@@ -43,12 +43,25 @@ public enum Message {
     CONFLICT_NOT_FOUND("No group conflicts found!"),
 
     //// Commands
+    NON_CONVERSABLE("You are not allowed to access conversations (remote console?)"),
+    INVALID_OPTION("That is not a valid option!"),
     // Info Command
     INFO_ZERO_ARG("You may only use the no argument version of this command in game!"),
     INFO_WORLD("&b===[ Info for world: &6%1&b ]==="),
     INFO_WORLD_INFO("&6Groups:&f %1"),
     INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
     INFO_GROUP_INFO("&6Worlds:&f %1", "&bShares:&f %2", "&bNegative Shares:&f %3"),
+    // Group Command
+    GROUP_CONTROL_PROMPT("&6What would you like to do? &fCreate &6or &f Delete"),
+    GROUP_CREATE_PROMPT("&6Please name your new group: "),
+    GROUP_DELETE_PROMPT("&6Delete which group?"),
+    GROUP_SPECIFY_WORLDS_PROMPT("&6Enter the name of a world to add to group &f%1&6 or enter &f@&6 to continue: "),
+    GROUP_SPECIFY_SHARES_PROMPT("&6Enter &fall&6 or a specific share to add to group &f%1&6 or enter &f@&6 to finish group creation: "),
+    GROUP_INVALID_NAME("&6That name is not valid!  May only contain letters, numbers, and underscores."),
+    GROUP_EXISTS("&6That group already exists! (&f%1&6)"),
+    GROUP_REMOVED("&6Removed group: %f%1"),
+    GROUP_NO_WORLDS("&6You may not make a group with no worlds, please start over!"),
+    GROUP_CREATED("&6You created a new group!"),
     // List Command
     LIST_GROUPS("&b===[ Group List ]===", "&6Groups:&f %1"),
     // Reload Command

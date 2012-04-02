@@ -29,6 +29,11 @@ public enum Perm {
      */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
     /**
+     * Permission for /mvinv group.
+     */
+    COMMAND_GROUP(new Permission("multiverse.inventories.group", "Begins a conversation about groups.",
+            PermissionDefault.OP)),
+    /**
      * Permission for /mvinv addworld.
      */
     COMMAND_ADDWORLD(new Permission("multiverse.inventories.addworld", "Adds a world to a world group",
@@ -44,7 +49,7 @@ public enum Perm {
     COMMAND_ADDSHARES(new Permission("multiverse.inventories.addshares", "Adds share(s) to a world group",
             PermissionDefault.OP)),
     /**
-     * Permission for /mvinv addshare.
+     * Permission for /mvinv rmshare.
      */
     COMMAND_RMSHARES(new Permission("multiverse.inventories.removeshares", "Removes share(s) from a world group",
             PermissionDefault.OP)),
