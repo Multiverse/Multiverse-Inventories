@@ -14,6 +14,7 @@ import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
+import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
@@ -41,6 +42,7 @@ import org.bukkit.util.Vector;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +63,8 @@ public class MockPlayer implements Player {
     float saturation = PlayerStats.SATURATION;
     int food_level = PlayerStats.FOOD_LEVEL;
     int health = PlayerStats.HEALTH;
+    
+    Collection<PotionEffect> potionEffects = new LinkedList<PotionEffect>();
     
     int max_no_damage_ticks = 0;
     int max_air = 20;
@@ -261,7 +265,7 @@ public class MockPlayer implements Player {
 
     @Override
     public Collection<PotionEffect> getActivePotionEffects() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.potionEffects;
     }
 
     @Override
@@ -705,15 +709,27 @@ public class MockPlayer implements Player {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    @Override
+    public boolean isFlying() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setFlying(boolean b) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void abandonConversation(Conversation conversation, ConversationAbandonedEvent conversationAbandonedEvent) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isBlocking() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     @Override
     public void damage(int i) {
         //To change body of implemented methods use File | Settings | File Templates.

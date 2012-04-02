@@ -10,6 +10,7 @@ import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -399,6 +400,35 @@ public final class Sharables implements Shares {
             .altName("money").altName("econ").altName("cash").altName("balance").build();
 
     /**
+     * Sharing Potions.
+     */
+    public static final Sharable<PotionEffect[]> POTIONS = new Sharable.Builder<PotionEffect[]>("potion_effects", PotionEffect[].class,
+            new SharableHandler<PotionEffect[]>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
+                    profile.set(POTIONS, potionEffects.toArray(new PotionEffect[potionEffects.size()]));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    PotionEffect[] effects = profile.get(POTIONS);
+                    Iterator<PotionEffect> it = player.getActivePotionEffects().iterator();
+                    while (it.hasNext()) {
+                        player.removePotionEffect(it.next().getType());
+                    }
+                    if (effects == null) {
+                        return false;
+                    }
+                    for (PotionEffect effect : effects) {
+                        player.addPotionEffect(effect);
+                    }
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, "potions"), new PotionEffectSerializer())
+            .altName("potion").altName("potions").build();
+
+    /**
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
@@ -433,7 +463,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
-                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
+                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS));
 
     /**
      * Grouping for ALL default sharables.
@@ -441,7 +471,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS), "*",
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS), "*",
             "everything");
 
 

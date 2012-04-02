@@ -7,6 +7,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class handles the formatting of strings for data i/o.
@@ -129,6 +134,18 @@ public class DataStrings {
      * Location yaw identifier.
      */
     public static final String LOCATION_YAW = "ya";
+    /**
+     * Potion type identifier.
+     */
+    public static final String POTION_TYPE = "pt";
+    /**
+     * Potion duration identifier.
+     */
+    public static final String POTION_DURATION = "pd";
+    /**
+     * Potion amplifier identifier.
+     */
+    public static final String POTION_AMPLIFIER = "pa";
 
     private DataStrings() {
         throw new AssertionError();
@@ -197,7 +214,7 @@ public class DataStrings {
     }
 
     /**
-     * @param inventoryString An inventory in string for to be parsed into an ItemStack array.
+     * @param inventoryString An inventory in string form to be parsed into an ItemStack array.
      * @param inventorySize The number of item slots in the inventory.
      * @return an ItemStack array containing the inventory contents parsed from inventoryString.
      */
@@ -218,6 +235,41 @@ public class DataStrings {
             }
         }
         return invContents;
+    }
+
+    /**
+     * @param potionsString A player's potion effects in string form to be parsed into Collection<PotionEffect>.
+     * @return a collection of potion effects parsed from potionsString.
+     */
+    public static PotionEffect[] parsePotionEffects(String potionsString) {
+        List<PotionEffect> potionEffectList = new LinkedList<PotionEffect>();
+        String[] potionsArray = potionsString.split(DataStrings.GENERAL_DELIMITER);
+        for (String potionString : potionsArray) {
+            String[] potionArray = potionString.split(DataStrings.SECONDARY_DELIMITER);
+            int type = -1;
+            int duration = -1;
+            int amplifier = -1;
+            for (String entryString : potionArray) {
+                try {
+                    String[] potionValue = DataStrings.splitEntry(entryString);
+                    if (potionValue[0].equals(POTION_TYPE)) {
+                        type = Integer.valueOf(potionValue[1]);
+                    } else if (potionValue[0].equals(POTION_DURATION)) {
+                        duration = Integer.valueOf(potionValue[1]);
+                    } else if (potionValue[0].equals(POTION_AMPLIFIER)) {
+                        amplifier = Integer.valueOf(potionValue[1]);
+                    }
+                } catch (Exception ignore) { }
+            }
+            if (type == -1 || duration == -1 || amplifier == -1) {
+                if (!potionString.isEmpty()) {
+                    Logging.fine("Could not potion effect string: " + potionString);
+                }
+            } else {
+                potionEffectList.add(new PotionEffect(PotionEffectType.getById(type), duration, amplifier));
+            }
+        }
+        return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
     }
 
     /**
@@ -258,6 +310,27 @@ public class DataStrings {
         builder.append(DataStrings.createEntry(DataStrings.LOCATION_PITCH, location.getPitch()));
         builder.append(DataStrings.GENERAL_DELIMITER);
         builder.append(DataStrings.createEntry(DataStrings.LOCATION_YAW, location.getYaw()));
+        return builder.toString();
+    }
+
+    /**
+     * Converts a Collection of {@link PotionEffect} into a String for easy persistence.
+     *
+     * @param potionEffects The potion effects you wish to "string-i-tize".
+     * @return A String representation of a Collection<{@link PotionEffect}>
+     */
+    public static String valueOf(PotionEffect[] potionEffects) {
+        StringBuilder builder = new StringBuilder();
+        for (PotionEffect potion : potionEffects) {
+            if (!builder.toString().isEmpty()) {
+                builder.append(DataStrings.GENERAL_DELIMITER);
+            }
+            builder.append(DataStrings.createEntry(DataStrings.POTION_TYPE, potion.getType().getId()));
+            builder.append(DataStrings.SECONDARY_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.POTION_DURATION, potion.getDuration()));
+            builder.append(DataStrings.SECONDARY_DELIMITER);
+            builder.append(DataStrings.createEntry(DataStrings.POTION_AMPLIFIER, potion.getAmplifier()));
+        }
         return builder.toString();
     }
 }

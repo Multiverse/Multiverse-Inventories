@@ -249,7 +249,22 @@ public class MockPlayerInventory implements PlayerInventory {
     public ListIterator<ItemStack> iterator() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-    
+
+    @Override
+    public int getMaxStackSize() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setMaxStackSize(int i) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public ListIterator<ItemStack> iterator(int i) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String toString() {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
