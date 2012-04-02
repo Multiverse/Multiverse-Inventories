@@ -44,6 +44,7 @@ public enum Message {
 
     //// Commands
     // Info Command
+    INFO_ZERO_ARG("You may only use the no argument version of this command in game!"),
     INFO_WORLD("&b===[ Info for world: &6%1&b ]==="),
     INFO_WORLD_INFO("&6Groups:&f %1"),
     INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
