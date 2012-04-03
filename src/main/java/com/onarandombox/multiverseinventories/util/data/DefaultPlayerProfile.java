@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories.util.data;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.util.Logging;
@@ -36,10 +36,10 @@ class DefaultPlayerProfile implements PlayerProfile {
     private Location bedSpawnLocation = null;
 
     private OfflinePlayer player;
-    private ProfileType type;
+    private ContainerType type;
     private String containerName;
 
-    public DefaultPlayerProfile(ProfileType type, String containerName, OfflinePlayer player) {
+    public DefaultPlayerProfile(ContainerType type, String containerName, OfflinePlayer player) {
         this.type = type;
         this.containerName = containerName;
         this.player = player;
@@ -47,7 +47,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         inventoryContents = MinecraftTools.fillWithAir(inventoryContents);
     }
 
-    public DefaultPlayerProfile(ProfileType type, String containerName, String playerName, Map<String, Object> playerData) {
+    public DefaultPlayerProfile(ContainerType type, String containerName, String playerName, Map<String, Object> playerData) {
         this(type, containerName, Bukkit.getOfflinePlayer(playerName));
         for (String key : playerData.keySet()) {
             if (key.equalsIgnoreCase("stats")) {
@@ -127,7 +127,7 @@ class DefaultPlayerProfile implements PlayerProfile {
      * {@inheritDoc}
      */
     @Override
-    public ProfileType getType() {
+    public ContainerType getType() {
         return this.type;
     }
 

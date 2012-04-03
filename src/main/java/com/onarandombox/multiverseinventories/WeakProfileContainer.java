@@ -2,10 +2,10 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.OfflinePlayer;
@@ -20,9 +20,9 @@ abstract class WeakProfileContainer implements ProfileContainer {
 
     private Map<OfflinePlayer, PlayerProfile> playerData = new WeakHashMap<OfflinePlayer, PlayerProfile>();
     private Inventories inventories;
-    private ProfileType type;
+    private ContainerType type;
 
-    public WeakProfileContainer(Inventories inventories, ProfileType type) {
+    public WeakProfileContainer(Inventories inventories, ContainerType type) {
         this.inventories = inventories;
         this.type = type;
     }

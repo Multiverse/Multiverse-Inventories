@@ -18,7 +18,7 @@ public interface PlayerProfile {
     /**
      * @return The type of profile.
      */
-    ProfileType getType();
+    ContainerType getType();
 
     /**
      * @return The name of the container, world or group, containing this profile.

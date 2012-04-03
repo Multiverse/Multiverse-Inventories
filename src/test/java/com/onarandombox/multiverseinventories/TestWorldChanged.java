@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
@@ -313,7 +313,7 @@ public class TestWorldChanged {
         Assert.assertNotSame(satTest, player.getSaturation());
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
-        File playerFile = dataHelper.getPlayerFile(ProfileType.GROUP, "default", "dumptruckman");
+        File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
         FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
         playerConfig.set("playerData." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
         playerConfig.set("playerData." + DataStrings.PLAYER_ARMOR_CONTENTS, "");

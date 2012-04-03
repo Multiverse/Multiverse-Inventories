@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -32,7 +32,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     private Shares negativeShares = Sharables.noneOf();
 
     public DefaultWorldGroupProfile(Inventories inventories, String name) {
-        super(inventories, ProfileType.GROUP);
+        super(inventories, ContainerType.GROUP);
         this.name = name;
     }
 

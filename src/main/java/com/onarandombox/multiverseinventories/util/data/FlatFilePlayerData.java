@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories.util.data;
 
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -44,7 +44,7 @@ public class FlatFilePlayerData implements PlayerData {
         return EnhancedConfiguration.loadConfiguration(file);
     }
 
-    private File getFolder(ProfileType type, String folderName) {
+    private File getFolder(ContainerType type, String folderName) {
         File folder;
         switch (type) {
             case GROUP:
@@ -73,7 +73,7 @@ public class FlatFilePlayerData implements PlayerData {
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
      */
-    File getPlayerFile(ProfileType type, String dataName, String playerName) {
+    File getPlayerFile(ContainerType type, String dataName, String playerName) {
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
         if (!playerFile.exists()) {
             try {
@@ -131,7 +131,7 @@ public class FlatFilePlayerData implements PlayerData {
      * {@inheritDoc}
      */
     @Override
-    public PlayerProfile getPlayerData(ProfileType type, String dataName, String playerName) {
+    public PlayerProfile getPlayerData(ContainerType type, String dataName, String playerName) {
         File playerFile = this.getPlayerFile(type, dataName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
@@ -142,7 +142,7 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     @Override
-    public boolean removePlayerData(ProfileType type, String dataName, String playerName) {
+    public boolean removePlayerData(ContainerType type, String dataName, String playerName) {
         File playerFile = this.getPlayerFile(type, dataName, playerName);
         return playerFile.delete();
     }

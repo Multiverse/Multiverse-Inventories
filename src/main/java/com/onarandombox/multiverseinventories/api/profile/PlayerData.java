@@ -23,7 +23,7 @@ public interface PlayerData {
      * @return The player as returned from data.  If no data was found, a new PlayerProfile will be
      *         created.
      */
-    PlayerProfile getPlayerData(ProfileType type, String dataName, String playerName);
+    PlayerProfile getPlayerData(ContainerType type, String dataName, String playerName);
 
     /**
      * Removes the persisted data for a player for a specific world profile.
@@ -33,6 +33,6 @@ public interface PlayerData {
      * @param playerName The name of the player whose data is being removed.
      * @return True if successfully removed.
      */
-    boolean removePlayerData(ProfileType type, String dataName, String playerName);
+    boolean removePlayerData(ContainerType type, String dataName, String playerName);
 }
 

@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
@@ -90,7 +90,7 @@ public class MultiInvImporter implements DataImporter {
                 }
                 Logging.info("Processing MultiInv data for player: " + player.getName()
                         + " for group: " + groupName);
-                mergeData(player, playerFileLoader, groupName, ProfileType.GROUP);
+                mergeData(player, playerFileLoader, groupName, ContainerType.GROUP);
             }
             for (World world : Bukkit.getWorlds()) {
                 String worldName = world.getName();
@@ -101,7 +101,7 @@ public class MultiInvImporter implements DataImporter {
                 }
                 Logging.info("Processing MultiInv data for player: " + player.getName()
                         + " for world only: " + worldName);
-                mergeData(player, playerFileLoader, worldName, ProfileType.WORLD);
+                mergeData(player, playerFileLoader, worldName, ContainerType.WORLD);
             }
         }
 
@@ -110,9 +110,9 @@ public class MultiInvImporter implements DataImporter {
     }
 
     private void mergeData(OfflinePlayer player, MIPlayerFileLoader playerFileLoader,
-                           String dataName, ProfileType type) {
+                           String dataName, ContainerType type) {
         PlayerProfile playerProfile;
-        if (type.equals(ProfileType.GROUP)) {
+        if (type.equals(ContainerType.GROUP)) {
             WorldGroupProfile group = this.inventories.getGroupManager()
                     .getGroup(dataName);
             if (group == null) {

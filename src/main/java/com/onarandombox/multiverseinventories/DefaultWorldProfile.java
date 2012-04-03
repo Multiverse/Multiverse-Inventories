@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -14,7 +14,7 @@ final class DefaultWorldProfile extends WeakProfileContainer implements WorldPro
     private String worldName;
 
     public DefaultWorldProfile(Inventories inventories, String worldName) {
-        super(inventories, ProfileType.WORLD);
+        super(inventories, ContainerType.WORLD);
         this.worldName = worldName;
     }
 

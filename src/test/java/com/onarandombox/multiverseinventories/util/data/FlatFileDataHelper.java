@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.util.data;
 
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 
 import java.io.File;
 
@@ -16,7 +16,7 @@ public class FlatFileDataHelper {
         this.data = (FlatFilePlayerData) data;
     }
 
-    public File getPlayerFile(ProfileType type, String dataName, String playerName) {
+    public File getPlayerFile(ContainerType type, String dataName, String playerName) {
         return data.getPlayerFile(type, dataName, playerName);
     }
 }
