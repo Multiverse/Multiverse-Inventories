@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
@@ -50,9 +51,16 @@ public interface Inventories extends MVPlugin, Messaging {
     GroupManager getGroupManager();
 
     /**
-     * @return The Profile manager for this plugin.
+     * @return The World/Group Profile manager for this plugin.
+     * This is where you find access to individual player data.
      */
     WorldProfileManager getWorldManager();
+
+    /**
+     * @return The Profile manager for this plugin.  This is where you find access to the different profile types
+     * such as creative and survival.
+     */
+    ProfileManager getProfileManager();
 
     /**
      * Gets the server's root-folder as {@link File}.

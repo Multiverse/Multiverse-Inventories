@@ -6,6 +6,7 @@ import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -56,7 +57,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
     private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
-    private WorldProfileManager profileManager = null;
+    private WorldProfileManager worldProfileManager = null;
+    private ProfileManager profileManager = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
@@ -287,6 +289,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     public void reloadConfig() {
         this.config = null;
         this.groupManager = null;
+        this.worldProfileManager = null;
         this.profileManager = null;
 
         // Get world groups from config
@@ -363,8 +366,19 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public WorldProfileManager getWorldManager() {
+        if (this.worldProfileManager == null) {
+            this.worldProfileManager = new WeakWorldProfileManager(this);
+        }
+        return this.worldProfileManager;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProfileManager getProfileManager() {
         if (this.profileManager == null) {
-            this.profileManager = new WeakWorldProfileManager(this);
+            this.profileManager = new DefaultProfileManager(this);
         }
         return this.profileManager;
     }
