@@ -84,12 +84,9 @@ class DefaultPlayerProfile implements PlayerProfile {
                 Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
                 this.data.put(sharable, sharable.getSerializer().deserialize(statValues[1]));
             } catch (Exception e) {
-                if (!stat.isEmpty()) {
-                    Logging.fine("Could not parse stat: '" + stat + "'");
-                    Logging.fine(e.getMessage());
-
-                }
-                e.printStackTrace();
+                Logging.warning("Could not parse stat: '" + stat + "' for player '" + getPlayer().getName() + "' for "
+                        + getType() + " '" + getContainerName() + "'");
+                Logging.warning("Exception: " + e.getClass() + " Message: " + e.getMessage());
             }
         }
     }
