@@ -5,6 +5,8 @@ import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Location;
@@ -15,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
@@ -113,6 +116,29 @@ public class InventoriesListener implements Listener {
         }
 
         new ShareHandler(this.inventories, player, fromWorld, toWorld).handleSharing();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerTeleport(PlayerTeleportEvent event) {
+        if (event.isCancelled()
+                || event.getFrom().getWorld().equals(event.getTo().getWorld())
+                || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+            return;
+        }
+        String fromWorldName = event.getFrom().getWorld().getName();
+        String toWorldName = event.getTo().getWorld().getName();
+        WorldProfile fromWorldProfile = this.inventories.getWorldManager().getWorldProfile(fromWorldName);
+        fromWorldProfile.getPlayerData(event.getPlayer()).set(Sharables.LAST_LOCATION, event.getFrom());
+        List<WorldGroupProfile> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
+        for (WorldGroupProfile fromGroup : fromGroups) {
+            if (fromGroup.containsWorld(toWorldName)) {
+                if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
+                    fromGroup.getPlayerData(event.getPlayer()).set(Sharables.LAST_LOCATION, event.getFrom());
+                }
+            } else {
+                fromGroup.getPlayerData(event.getPlayer()).set(Sharables.LAST_LOCATION, event.getFrom());
+            }
+        }
     }
 
     /**

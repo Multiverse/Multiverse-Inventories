@@ -376,6 +376,28 @@ public final class Sharables implements Shares {
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     /**
+     * Sharing Bed Spawn.
+     */
+    public static final Sharable<Location> LAST_LOCATION = new Sharable.Builder<Location>("last_location", Location.class,
+            new SharableHandler<Location>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    //profile.set(LAST_LOCATION, player.getLocation());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Location loc = profile.get(LAST_LOCATION);
+                    if (loc == null) {
+                        return false;
+                    }
+                    player.teleport(loc);
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
+            .altName("loc").altName("location").altName("pos").altName("position").optional().build();
+
+    /**
      * Sharing Economy.
      */
     public static final Sharable<Double> ECONOMY = new Sharable.Builder<Double>("economy", Double.class,
@@ -471,7 +493,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS), "*",
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION), "*",
             "everything");
 
 
