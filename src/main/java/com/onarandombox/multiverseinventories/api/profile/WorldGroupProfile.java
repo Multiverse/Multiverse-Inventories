@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
+import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
@@ -78,6 +79,16 @@ public interface WorldGroupProfile extends ProfileContainer {
      * @return The worlds of this World Group.
      */
     HashSet<String> getWorlds();
+
+    /**
+     * Checks if this group is sharing sharable.  This will check both shares and negative shares of the group.
+     * This is the preferred method for checking if a group shares something as shares may contain ALL shares while
+     * ones indicated in negative shares means those aren't actually shared.
+     *
+     * @param sharable Sharable to check if sharing.
+     * @return true is the sharable is shared for this group.
+     */
+    boolean isSharing(Sharable sharable);
 
     /**
      * Retrieves the shares for this World Group.

@@ -207,6 +207,11 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         this.shares = shares;
     }
 
+    @Override
+    public boolean isSharing(Sharable sharable) {
+        return getShares().isSharing(sharable) && !getNegativeShares().isSharing(sharable);
+    }
+
     /**
      * {@inheritDoc}
      */
