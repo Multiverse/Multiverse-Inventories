@@ -8,6 +8,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Server;
@@ -102,7 +103,36 @@ public class TestCommands {
         when(mockCommand.getName()).thenReturn("mvinv");
 
         // Send the debug command.
-        String[] debugArgs = new String[]{"info", "default"};
+        String[] debugArgs = new String[]{ "info", "default"};
         plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
+    }
+
+    @Test
+    public void testToggleCommand() {
+        // Pull a core instance from the server.
+        Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
+        Inventories inventories = (Inventories) plugin;
+
+        // Make sure Core is not null
+        assertNotNull(plugin);
+
+        // Make sure Core is enabled
+        assertTrue(plugin.isEnabled());
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        // Send the debug command.
+        String[] cmdArgs = new String[]{ "toggle", "economy" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        cmdArgs = new String[]{ "reload" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        cmdArgs = new String[]{ "toggle", "economy" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
     }
 }

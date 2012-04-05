@@ -80,7 +80,11 @@ public enum Message {
     TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER"),
     // DebugCommand
     INVALID_DEBUG("&fInvalid debug level.  Please use number 0-3.  &b(3 being many many messages!)"),
-    DEBUG_SET("Debug mode is %1");
+    DEBUG_SET("Debug mode is %1"),
+    // Toggle Command
+    NOW_USING_OPTIONAL("&f%1 &6will now be considered when player's change world."),
+    NOW_NOT_USING_OPTIONAL("&f%1 &6will no longer be considered when player's change world."),
+    NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 

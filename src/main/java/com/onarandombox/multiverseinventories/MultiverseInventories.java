@@ -20,6 +20,7 @@ import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.command.SpawnCommand;
+import com.onarandombox.multiverseinventories.command.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
@@ -150,6 +151,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.getCommandHandler().registerCommand(new DebugCommand(this));
         this.getCommandHandler().registerCommand(new SpawnCommand(this));
         this.getCommandHandler().registerCommand(new GroupCommand(this));
+        this.getCommandHandler().registerCommand(new ToggleCommand(this));
         for (com.pneumaticraft.commandhandler.multiverse.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");
