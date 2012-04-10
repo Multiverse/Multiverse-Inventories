@@ -159,7 +159,13 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public WorldGroupProfile getDefaultGroup() {
-        return this.getGroupNames().get("default");
+        WorldGroupProfile group = this.getGroupNames().get("default");
+        if (group == null) {
+            group = newEmptyGroup("default");
+            group.getShares().setSharing(Sharables.allOf(), true);
+            this.addGroup(group, true);
+        }
+        return group;
     }
 
     /**

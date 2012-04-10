@@ -82,7 +82,7 @@ public interface GroupManager {
     void createDefaultGroup();
 
     /**
-     * @return The default world group or null if non-existent.
+     * @return The default world group which may be empty.
      */
     WorldGroupProfile getDefaultGroup();
 
