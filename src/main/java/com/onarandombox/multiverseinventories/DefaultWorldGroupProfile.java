@@ -39,24 +39,26 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     public DefaultWorldGroupProfile(Inventories inventories, String name,
                                     Map<String, Object> dataMap) throws DeserializationException {
         this(inventories, name);
-        if (!dataMap.containsKey("worlds")) {
-            throw new DeserializationException("No worlds specified for world group: " + name);
-        }
-        Object worldListObj = dataMap.get("worlds");
-        if (worldListObj == null) {
-            throw new DeserializationException("World list empty for world group: " + name);
-        }
-        if (!(worldListObj instanceof List)) {
-            throw new DeserializationException("World list formatted incorrectly for world group: " + name);
-        }
-        for (Object worldNameObj : (List) worldListObj) {
-            if (worldNameObj == null) {
-                throw new DeserializationException("Error with a world listed in group: " + name);
-            }
-            this.addWorld(worldNameObj.toString(), false);
-            World world = Bukkit.getWorld(worldNameObj.toString());
-            if (world == null) {
-                Logging.warning("World: " + worldNameObj.toString() + " is not loaded.");
+        if (dataMap.containsKey("worlds")) {
+            Object worldListObj = dataMap.get("worlds");
+            if (worldListObj == null) {
+                Logging.fine("No worlds for group: " + name);
+            } else {
+                if (!(worldListObj instanceof List)) {
+                    Logging.fine("World list formatted incorrectly for world group: " + name);
+                } else {
+                    for (Object worldNameObj : (List) worldListObj) {
+                        if (worldNameObj == null) {
+                            Logging.fine("Error with a world listed in group: " + name);
+                            continue;
+                        }
+                        this.addWorld(worldNameObj.toString(), false);
+                        World world = Bukkit.getWorld(worldNameObj.toString());
+                        if (world == null) {
+                            Logging.warning("World: " + worldNameObj.toString() + " is not loaded.");
+                        }
+                    }
+                }
             }
         }
         if (dataMap.containsKey("shares")) {

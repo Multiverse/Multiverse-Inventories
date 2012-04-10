@@ -135,4 +135,34 @@ public class TestCommands {
         plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
         Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
     }
+
+    @Test
+    public void testGroupNoWorlds() {
+        // Pull a core instance from the server.
+        Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
+        Inventories inventories = (Inventories) plugin;
+
+        // Make sure Core is not null
+        assertNotNull(plugin);
+
+        // Make sure Core is enabled
+        assertTrue(plugin.isEnabled());
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        String[] cmdArgs = new String[]{ "rmworld", "world", "default" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        cmdArgs = new String[]{ "rmworld", "world_nether", "default" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        cmdArgs = new String[]{ "rmworld", "world_the_end", "default" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        cmdArgs = new String[]{ "reload" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        cmdArgs = new String[]{ "info", "default" };
+        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+    }
 }
