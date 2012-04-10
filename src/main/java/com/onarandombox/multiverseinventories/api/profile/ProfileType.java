@@ -3,9 +3,9 @@ package com.onarandombox.multiverseinventories.api.profile;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 /**
- * This class represents how a Profile is set up in the config file.
+ * This class represents the configuration for a type of profile used with multiple profiles per world/group.
  */
-public interface ProfileConfig {
+public interface ProfileType {
 
     /**
      * @return The name of the profile.
