@@ -45,6 +45,11 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          * First Run flag config path, default and comments.
          */
         USE_BYPASS("settings.use_bypass", false, "# If this is set to true, it will enable bypass permissions (Check the wiki for more info.)"),
+
+        /**
+         * Whether or not to make ungrouped worlds use the default group.
+         */
+        DEFAULT_UNGROUPED_WORLDS("settings.default_ungrouped_worlds", false, "# If set to true, any world not listed in a group will automatically use the settings for the default group!"),
         /**
          * First Run flag config path, default and comments.
          */
@@ -66,7 +71,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
                 "# In this example, world1 and world2 will share everything sharable.",
                 "# When things are shared this means they are the SAME for each world listed in the group.",
                 "# Options for shares: inventory, exp, health, hunger, beds",
-                "# Worlds not listed in a group will have a separate personal inventory/stats/bed.");
+                "# Worlds not listed in a group will have a separate personal inventory/stats/bed UNLESS default_ungrouped_worlds is true");
 
         private String path;
         private Object def;
@@ -272,6 +277,16 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             this.optionalSharables = Sharables.fromList(this.getConfig().getList(Path.OPTIONAL_SHARES.getPath()));
         }
         return this.optionalSharables;
+    }
+
+    @Override
+    public boolean isDefaultingUngroupedWorlds() {
+        return this.getBoolean(Path.DEFAULT_UNGROUPED_WORLDS);
+    }
+
+    @Override
+    public void setDefaultingUngroupedWorlds(boolean useDefaultGroup) {
+        this.getConfig().set(Path.FIRST_RUN.getPath(), useDefaultGroup);
     }
 
     /**

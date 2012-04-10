@@ -59,6 +59,10 @@ final class DefaultGroupManager implements GroupManager {
                 worldGroups.add(worldGroup);
             }
         }
+        if (worldGroups.isEmpty() && this.inventories.getMVIConfig().isDefaultingUngroupedWorlds()) {
+            Logging.finer("Returning default group for world: " + worldName);
+            worldGroups.add(getDefaultGroup());
+        }
         return worldGroups;
     }
 
@@ -130,7 +134,7 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public void createDefaultGroup() {
-        if (this.getDefaultGroup() != null) {
+        if (this.getGroup("default") != null) {
             return;
         }
         World defaultWorld = Bukkit.getWorlds().get(0);

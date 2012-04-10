@@ -68,6 +68,16 @@ public interface InventoriesConfig {
     void setFirstRun(boolean firstRun);
 
     /**
+     * @return true if worlds with no group should be considered part of the default group.
+     */
+    boolean isDefaultingUngroupedWorlds();
+
+    /**
+     * @param useDefaultGroup Set this to true to use the default group for ungrouped worlds.
+     */
+    void setDefaultingUngroupedWorlds(boolean useDefaultGroup);
+
+    /**
      * Saves the configuration file to disk.
      */
     void save();
