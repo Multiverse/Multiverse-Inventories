@@ -93,7 +93,7 @@ final class ShareHandler {
             PlayerProfile profile = fromWorldGroup.getPlayerData(event.getPlayer());
             if (!fromWorldGroup.containsWorld(event.getToWorld().getName())) {
                 this.addFromProfile(fromWorldGroup,
-                        Sharables.allOf(), profile);
+                        Sharables.fromShares(fromWorldGroup.getShares()), profile);
             } else {
                 if (!fromWorldGroup.getShares().isSharing(Sharables.all()) || !fromWorldGroup.getNegativeShares().isEmpty()) {
                     this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
@@ -115,7 +115,7 @@ final class ShareHandler {
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(event.getPlayer());
                     if (!toWorldGroup.containsWorld(event.getFromWorld().getName())) {
-                        Shares sharesToAdd = Sharables.allOf();
+                        Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
                         this.addToProfile(toWorldGroup,
                                 sharesToAdd, profile);
                         sharesToUpdate.addAll(sharesToAdd);
