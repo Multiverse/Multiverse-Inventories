@@ -217,7 +217,7 @@ public final class Sharables implements Shares {
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Float> EXPERIENCE = new Sharable.Builder<Float>("exp", Float.class,
+    public static final Sharable<Float> EXPERIENCE = new Sharable.Builder<Float>("xp", Float.class,
             new SharableHandler<Float>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
@@ -234,13 +234,12 @@ public final class Sharables implements Shares {
                     player.setExp(value);
                     return true;
                 }
-            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE))
-            .altName("xp").build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("level", Integer.class,
+    public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("lvl", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
@@ -257,13 +256,12 @@ public final class Sharables implements Shares {
                     player.setLevel(value);
                     return true;
                 }
-            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL))
-            .altName("lvl").build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
 
     /**
      * Sharing Experience.
      */
-    public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_exp", Integer.class,
+    public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_xp", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
@@ -280,8 +278,7 @@ public final class Sharables implements Shares {
                     player.setTotalExperience(value);
                     return true;
                 }
-            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE))
-            .altName("total_xp").altName("totalxp").build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE)).build();
 
     /**
      * Sharing Hunger.
@@ -460,7 +457,7 @@ public final class Sharables implements Shares {
      * Grouping for experience sharables.
      */
     public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
-            fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL));
+            fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL), "exp", "level");
 
     /**
      * Grouping for air/breath related sharables.
