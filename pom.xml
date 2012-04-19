@@ -109,13 +109,13 @@ and adjust the build number accordingly -->
                 <configuration>
                     <parallel>methods</parallel>
                     <threadCount>10</threadCount>
-                    <excludes>
+                    <!--<excludes>
                         <exclude>**/TestCommands.java</exclude>
                         <exclude>**/TestPerformance.java</exclude>
                         <exclude>**/TestResetWorld.java</exclude>
                         <exclude>**/TestWorldChanged.java</exclude>
                         <exclude>**/TestWSharableAPI.java</exclude>
-                    </excludes>
+                    </excludes>-->
                 </configuration>
                 <dependencies>
                     <dependency>
