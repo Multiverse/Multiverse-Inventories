@@ -52,7 +52,7 @@ public enum Message {
     INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
     INFO_GROUP_INFO("&6Worlds:&f %1", "&bShares:&f %2", "&bNegative Shares:&f %3"),
     // Group Command
-    GROUP_CONTROL_PROMPT("&6What would you like to do? &fCreate &6or &f Delete"),
+    GROUP_CONTROL_PROMPT("&6What would you like to do? &fCreate &6or &f Delete&6.  Enter &f##&6 at any time to cancel."),
     GROUP_CREATE_PROMPT("&6Please name your new group: "),
     GROUP_DELETE_PROMPT("&6Delete which group?"),
     GROUP_SPECIFY_WORLDS_PROMPT("&6Enter the name of a world to add to group &f%1&6 or enter &f@&6 to continue: "),

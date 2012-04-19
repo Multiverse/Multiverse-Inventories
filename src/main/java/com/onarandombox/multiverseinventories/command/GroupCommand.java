@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationContext;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 
 import java.util.List;
@@ -39,8 +40,12 @@ public class GroupCommand extends InventoriesCommand {
             this.messager.normal(Message.NON_CONVERSABLE, sender);
             return;
         }
+
         Conversable conversable = (Conversable) sender;
-        Conversation conversation = new Conversation(this.plugin, conversable, new GroupControlPrompt(sender));
+        Conversation conversation = new ConversationFactory(this.plugin)
+                .withFirstPrompt(new GroupControlPrompt(sender))
+                .withEscapeSequence("##")
+                .withModality(false).buildConversation(conversable);
         conversation.begin();
     }
 
