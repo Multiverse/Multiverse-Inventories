@@ -5,8 +5,8 @@ import com.onarandombox.multiverseinventories.api.share.Shares;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains all the information related to a World Group as defined in the plugin's config.yml
@@ -78,7 +78,7 @@ public interface WorldGroupProfile extends ProfileContainer {
      *
      * @return The worlds of this World Group.
      */
-    HashSet<String> getWorlds();
+    Set<String> getWorlds();
 
     /**
      * Checks if this group is sharing sharable.  This will check both shares and negative shares of the group.

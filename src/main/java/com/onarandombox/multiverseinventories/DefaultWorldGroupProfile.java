@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of WorldGroupProfile.
@@ -201,7 +202,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
      * {@inheritDoc}
      */
     @Override
-    public HashSet<String> getWorlds() {
+    public Set<String> getWorlds() {
         return this.worlds;
     }
 
