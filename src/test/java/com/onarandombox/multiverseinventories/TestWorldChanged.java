@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
@@ -330,5 +331,36 @@ public class TestWorldChanged {
 
         newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
+    }
+
+    @Test
+    public void testGroupingConflictChecker() {
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        // remove world2 from default group
+        String[] cmdArgs = new String[]{"rmworld", "world2", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        WorldGroupProfile group = inventories.getGroupManager().newEmptyGroup("test");
+        group.addWorld("world");
+        group.addWorld("world_nether");
+        group.addWorld("world_the_end");
+        group.addWorld("world2");
+        group.getShares().setSharing(Sharables.allOf(), true);
+        inventories.getGroupManager().addGroup(group, true);
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        Assert.assertTrue(inventories.getGroupManager().checkGroups().isEmpty());
+
+        cmdArgs = new String[]{"rmworld", "world_the_end", "test"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertFalse(inventories.getGroupManager().checkGroups().isEmpty());
+
     }
 }

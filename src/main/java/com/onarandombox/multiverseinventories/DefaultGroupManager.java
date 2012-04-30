@@ -199,6 +199,10 @@ final class DefaultGroupManager implements GroupManager {
                     Shares conflictingShares = worldGroup.getShares()
                             .compare(checkingGroup.getShares());
                     if (!conflictingShares.isEmpty()) {
+                        if (checkingGroup.getWorlds().containsAll(worldGroup.getWorlds())
+                                || worldGroup.getWorlds().containsAll(checkingGroup.getWorlds())) {
+                            continue;
+                        }
                         conflicts.add(new DefaultGroupingConflict(checkingGroup, worldGroup,
                                 Sharables.fromShares(conflictingShares)));
                     }
