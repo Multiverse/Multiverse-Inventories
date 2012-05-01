@@ -201,9 +201,9 @@ and adjust the build number accordingly -->
         <!-- End of Multiverse Adventure Dependency -->
         <!-- Start of MultiInv Dependency -->
         <dependency>
-            <groupId>uk.co.tggl.pluckerpluck</groupId>
+            <groupId>uk.co</groupId>
             <artifactId>MultiInv</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.6-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
