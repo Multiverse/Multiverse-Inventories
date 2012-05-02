@@ -179,6 +179,12 @@ and adjust the build number accordingly -->
             <version>1.1.3</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of ConfigurationLib Dependency -->
         <!-- Start of Multiverse Core Dependency -->
@@ -188,6 +194,12 @@ and adjust the build number accordingly -->
             <version>2.4</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
         <!-- Start of Multiverse Adventure Dependency -->
@@ -197,6 +209,16 @@ and adjust the build number accordingly -->
             <version>2.4</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.onarandombox.multiverseportals</groupId>
+                    <artifactId>Multiverse-Portals</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of Multiverse Adventure Dependency -->
         <!-- Start of MultiInv Dependency -->
@@ -206,6 +228,12 @@ and adjust the build number accordingly -->
             <version>3.0.6-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.getspout</groupId>
+                    <artifactId>spoutplugin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of MultiInv Dependency -->
         <!-- Start of WorldInventories Dependency -->
