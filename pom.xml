@@ -203,7 +203,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>uk.co</groupId>
             <artifactId>MultiInv</artifactId>
-            <version>3.0.6-SNAPSHOT</version>
+            <version>3.0.6</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
