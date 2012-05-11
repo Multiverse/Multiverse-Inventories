@@ -6,7 +6,8 @@ import org.bukkit.OfflinePlayer;
 import java.util.Map;
 
 /**
- * Interface for a PlayerProfile which controls all the world specific data for a player.
+ * Interface for a PlayerProfile which controls all the world/group specific data for a player.
+ * This represents what is saved/loaded to/from persistence.
  */
 public interface PlayerProfile {
 
