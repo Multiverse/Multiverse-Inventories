@@ -3,7 +3,9 @@ package com.onarandombox.multiverseinventories.api.profile;
 import org.bukkit.OfflinePlayer;
 
 /**
- * An interface for classes containing PlayerProfiles.
+ * An interface for classes containing PlayerProfiles.  This describes where to retrieve a player's
+ * data from persistence via {@link #getDataName()} and allows data to be retrieved, added and removed
+ * via the other methods.
  */
 public interface ProfileContainer {
 
