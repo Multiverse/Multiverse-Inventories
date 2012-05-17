@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.DataStrings.ItemWrapper;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
-import com.onarandombox.multiverseinventories.util.data.ItemWrapper;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
