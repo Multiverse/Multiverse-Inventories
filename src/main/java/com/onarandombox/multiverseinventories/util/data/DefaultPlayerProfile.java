@@ -9,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 
@@ -26,14 +25,6 @@ class DefaultPlayerProfile implements PlayerProfile {
 
     private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
     private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
-    private Integer health = PlayerStats.HEALTH;
-    private Float exp = PlayerStats.EXPERIENCE;
-    private Integer totalExperience = PlayerStats.TOTAL_EXPERIENCE;
-    private Integer level = PlayerStats.LEVEL;
-    private Integer foodLevel = PlayerStats.FOOD_LEVEL;
-    private Float exhaustion = PlayerStats.EXHAUSTION;
-    private Float saturation = PlayerStats.SATURATION;
-    private Location bedSpawnLocation = null;
 
     private OfflinePlayer player;
     private ContainerType type;
@@ -50,7 +41,7 @@ class DefaultPlayerProfile implements PlayerProfile {
     public DefaultPlayerProfile(ContainerType type, String containerName, String playerName, Map<String, Object> playerData) {
         this(type, containerName, Bukkit.getOfflinePlayer(playerName));
         for (String key : playerData.keySet()) {
-            if (key.equalsIgnoreCase("stats")) {
+            if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
                 this.parsePlayerStats(playerData.get(key).toString());
             } else {
                 if (playerData.get(key) == null) {
@@ -116,7 +107,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                 }
             }
         }
-        playerData.put("stats", statBuilder.toString());
+        playerData.put(DataStrings.PLAYER_STATS, statBuilder.toString());
         return playerData;
     }
 
