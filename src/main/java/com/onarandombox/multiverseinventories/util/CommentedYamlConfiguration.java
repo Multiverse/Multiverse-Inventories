@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * A Configuration wrapper class that allows for comments to be applied to the config paths.
  */
-class CommentedYamlConfiguration {
+public final class CommentedYamlConfiguration {
 
     private HashMap<String, String> comments;
     private File file;
@@ -71,8 +71,14 @@ class CommentedYamlConfiguration {
             String[] yamlContents =
                     this.convertFileToString(file).split("[" + System.getProperty("line.separator") + "]");
             // This will hold the entire newly formatted config
-            StringBuilder newContents = new StringBuilder(config.options().header())
-                    .append(System.getProperty("line.separator")).append(System.getProperty("line.separator"));
+            StringBuilder newContents = new StringBuilder();
+            String initialContents = config.options().header();
+            if (initialContents == null) {
+                initialContents = "";
+            }
+            newContents.append(initialContents)
+                    .append(System.getProperty("line.separator"))
+                    .append(System.getProperty("line.separator"));
             // This holds the current path the lines are at in the config
             StringBuilder currentPath = new StringBuilder();
             // This tells if the specified path has already been commented

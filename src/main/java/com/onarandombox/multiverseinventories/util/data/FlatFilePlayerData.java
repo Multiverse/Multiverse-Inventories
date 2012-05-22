@@ -11,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implementation of PlayerData.
@@ -138,13 +140,26 @@ public class FlatFilePlayerData implements PlayerData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new DefaultPlayerProfile(type, dataName, playerName, section.getValues(true));
+        return new DefaultPlayerProfile(type, dataName, playerName, convertSection(section));
     }
 
     @Override
     public boolean removePlayerData(ContainerType type, String dataName, String playerName) {
         File playerFile = this.getPlayerFile(type, dataName, playerName);
         return playerFile.delete();
+    }
+
+    private Map<String, Object> convertSection(ConfigurationSection section) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        for (String key : section.getKeys(false)) {
+            Object obj = section.get(key);
+            if (obj instanceof ConfigurationSection) {
+                resultMap.put(key, convertSection((ConfigurationSection) obj));
+            } else {
+                resultMap.put(key, obj);
+            }
+        }
+        return resultMap;
     }
 }
 

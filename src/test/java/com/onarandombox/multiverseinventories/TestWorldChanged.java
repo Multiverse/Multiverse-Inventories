@@ -286,6 +286,7 @@ public class TestWorldChanged {
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
 
+        // Changing to world within same group, nothing should change.
         changeWorld(player, "world", "world_nether");
 
         String newInventory = player.getInventory().toString();
@@ -316,8 +317,8 @@ public class TestWorldChanged {
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
         File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
         FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-        playerConfig.set("playerData." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
-        playerConfig.set("playerData." + DataStrings.PLAYER_ARMOR_CONTENTS, "");
+        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
+        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_ARMOR_CONTENTS, "");
         try {
             playerConfig.save(playerFile);
         } catch (IOException e) {

@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
+import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 /**
@@ -7,15 +8,14 @@ import com.onarandombox.multiverseinventories.api.share.Shares;
  */
 public interface ProfileType {
 
-    /**
-     * @return The name of the profile.
-     */
-    String getName();
+    ProfileType DEFAULT = new DefaultProfileType("default_profile", Sharables.allOf());
+
+    ProfileType CREATIVE = new DefaultProfileType("creative_mode", Sharables.allOf());
 
     /**
-     * @return The title for the section within a player profile file.
+     * @return The name of the profile.  The default profile type will return a blank string.
      */
-    String getProfilePath();
+    String getName();
 
     /**
      * @return The {@link com.onarandombox.multiverseinventories.api.share.Sharable}s this Profile will handle.

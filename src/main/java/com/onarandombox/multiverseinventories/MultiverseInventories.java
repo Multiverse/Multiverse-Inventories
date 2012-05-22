@@ -7,6 +7,8 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
+import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
+import com.onarandombox.multiverseinventories.api.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -59,6 +61,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     private GroupManager groupManager = null;
     private WorldProfileManager worldProfileManager = null;
     private ProfileManager profileManager = null;
+    private ProfileTypeManager profileTypeManager = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
@@ -116,6 +119,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        this.getProfileTypeManager();
 
         // Initialize data class
         //this.getWorldManager().setWorldProfiles(this.getData().getWorldProfiles());
@@ -291,7 +296,10 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.groupManager = null;
         this.worldProfileManager = null;
         this.profileManager = null;
+        this.profileTypeManager = null;
 
+        ProfileTypes.resetProfileTypes();
+        this.getProfileTypeManager();
         // Get world groups from config
         this.getGroupManager().setGroups(this.getMVIConfig().getWorldGroups());
         // Create initial World Group for first run IF NO GROUPS EXIST
@@ -400,6 +408,17 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             throw new IllegalArgumentException("That's not a folder!");
 
         this.serverFolder = newServerFolder;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ProfileTypeManager getProfileTypeManager() {
+        if (this.profileTypeManager == null) {
+            this.profileTypeManager = new DefaultProfileTypeManager(new File(this.getDataFolder(), "profiles.yml"));
+        }
+        return profileTypeManager;
     }
 }
 
