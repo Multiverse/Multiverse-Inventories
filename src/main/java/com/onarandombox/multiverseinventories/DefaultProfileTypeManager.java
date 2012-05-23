@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class DefaultProfileTypeManager extends ProfileTypeManager {
+class DefaultProfileTypeManager implements ProfileTypeManager {
 
     private CommentedYamlConfiguration profileConfig;
 
@@ -60,7 +60,12 @@ class DefaultProfileTypeManager extends ProfileTypeManager {
         saveProfileTypes();
     }
 
-    public void saveProfileTypes() {
+    @Override
+    public ProfileType lookupType(String name) {
+        return ProfileTypes.lookupType(name, false);
+    }
+
+    private void saveProfileTypes() {
         Collection<ProfileType> profileTypes = ProfileTypes.getProfileTypes();
         Map<String, Object> toSave = new HashMap<String, Object>(profileTypes.size());
         for (ProfileType profileType : profileTypes) {
