@@ -8,7 +8,6 @@ import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
-import com.onarandombox.multiverseinventories.api.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.share.Sharables;

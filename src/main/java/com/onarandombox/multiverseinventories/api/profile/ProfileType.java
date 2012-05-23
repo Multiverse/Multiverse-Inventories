@@ -1,16 +1,11 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
-import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 /**
  * This class represents the configuration for a type of profile used with multiple profiles per world/group.
  */
 public interface ProfileType {
-
-    ProfileType DEFAULT = new DefaultProfileType("default_profile", Sharables.allOf());
-
-    ProfileType CREATIVE = new DefaultProfileType("creative_mode", Sharables.allOf());
 
     /**
      * @return The name of the profile.  The default profile type will return a blank string.

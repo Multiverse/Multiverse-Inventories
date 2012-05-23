@@ -1,5 +1,6 @@
-package com.onarandombox.multiverseinventories.api.profile;
+package com.onarandombox.multiverseinventories;
 
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 class DefaultProfileType implements ProfileType {
