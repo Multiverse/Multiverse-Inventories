@@ -112,6 +112,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     }
 
     private CommentedYamlConfiguration config;
+    private CommentedYamlConfiguration groupsConfig;
     private MultiverseInventories plugin;
 
     public CommentedInventoriesConfig(MultiverseInventories plugin) throws IOException {
@@ -132,15 +133,43 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         config = new CommentedYamlConfiguration(configFile, true);
         config.load();
 
+        // Check if the group config file exists.  If not, create it and migrate group data.
+        boolean migrateGroups = false;
+        File groupConfigFile = new File(plugin.getDataFolder(), "groups.yml");
+        if (!groupConfigFile.exists()) {
+            Logging.fine("Created groups file.");
+            groupConfigFile.createNewFile();
+            migrateGroups = true;
+        }
+
+        // Load the configuration file into memory
+        groupsConfig = new CommentedYamlConfiguration(groupConfigFile, true);
+        groupsConfig.load();
+
+        if (migrateGroups) {
+            migrateGroups();
+        }
+
         // Sets defaults config values
         this.setDefaults();
 
-        config.getConfig().options().header("# Multiverse-Inventories Settings/Groups");
+        config.getConfig().options().header("# Multiverse-Inventories Settings");
+        groupsConfig.getConfig().options().header("# Multiverse-Inventories Groups");
 
         // Saves the configuration from memory to file
+        groupsConfig.save();
         config.save();
 
         Logging.setDebugMode(this.getGlobalDebug());
+    }
+
+    private void migrateGroups() {
+        ConfigurationSection section = config.getConfig().getConfigurationSection("groups");
+        if (section != null) {
+            groupsConfig.getConfig().set("groups", section);
+            config.getConfig().set("groups", null);
+            Logging.fine("Migrated groups to groups.yml");
+        }
     }
 
     /**
@@ -148,6 +177,9 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     private void setDefaults() {
         for (CommentedInventoriesConfig.Path path : CommentedInventoriesConfig.Path.values()) {
+            if (path == Path.GROUPS) {
+                continue;
+            }
             config.addComment(path.getPath(), path.getComments());
             if (this.getConfig().get(path.getPath()) == null) {
                 if (path.getDefault() != null) {
@@ -157,6 +189,10 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
                     this.getConfig().createSection(path.getPath());
                 }
             }
+        }
+        groupsConfig.addComment(Path.GROUPS.getPath(), Path.GROUPS.getComments());
+        if (groupsConfig.getConfig().get(Path.GROUPS.getPath()) == null) {
+            this.getConfig().createSection(Path.GROUPS.getPath());
         }
     }
 
@@ -174,6 +210,10 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
 
     private FileConfiguration getConfig() {
         return this.config.getConfig();
+    }
+
+    private FileConfiguration getGroupsConfig() {
+        return this.groupsConfig.getConfig();
     }
 
     /**
@@ -207,7 +247,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public List<WorldGroupProfile> getWorldGroups() {
         Logging.finer("Getting world groups from config file");
-        ConfigurationSection groupsSection = this.getConfig().getConfigurationSection("groups");
+        ConfigurationSection groupsSection = this.getGroupsConfig().getConfigurationSection("groups");
         if (groupsSection == null) {
             Logging.finer("Could not find a 'groups' section in config!");
             return null;
@@ -220,7 +260,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             WorldGroupProfile worldGroup;
             try {
                 ConfigurationSection groupSection =
-                        this.getConfig().getConfigurationSection("groups." + groupName);
+                        this.getGroupsConfig().getConfigurationSection("groups." + groupName);
                 if (groupSection == null) {
                     Logging.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
@@ -295,7 +335,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void updateWorldGroup(WorldGroupProfile worldGroup) {
         Logging.finer("Updating group in config: " + worldGroup.getName());
-        this.getConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
+        this.getGroupsConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
     }
 
     /**
@@ -304,7 +344,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void removeWorldGroup(WorldGroupProfile worldGroup) {
         Logging.finer("Removing group from config: " + worldGroup.getName());
-        this.getConfig().set("groups." + worldGroup.getName(), null);
+        this.getGroupsConfig().set("groups." + worldGroup.getName(), null);
     }
 
     /**
@@ -316,6 +356,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.optionalSharables.toStringList());
         }
         this.config.save();
+        this.groupsConfig.save();
     }
 }
 
