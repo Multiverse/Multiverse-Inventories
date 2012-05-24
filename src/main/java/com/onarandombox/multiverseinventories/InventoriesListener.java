@@ -4,6 +4,7 @@ import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
@@ -18,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -94,6 +96,22 @@ public class InventoriesListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void playerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        String playerWorld = player.getWorld().getName();
+        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+        if (globalProfile.getWorld() == null) {
+            inventories.getData().updateWorld(player.getName(), playerWorld);
+        } else {
+            if (!playerWorld.equals(globalProfile.getWorld())) {
+                Logging.fine("Player did not login to the world they logged out of!");
+                new ShareHandler(this.inventories, player, globalProfile.getWorld(), playerWorld).handleSharing();
+                inventories.getData().updateWorld(player.getName(), playerWorld);
+            }
+        }
+    }
+
     /**
      * Called when a player changes worlds.
      *
@@ -118,6 +136,7 @@ public class InventoriesListener implements Listener {
         }
 
         new ShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
+        inventories.getData().updateWorld(player.getName(), toWorld.getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -38,5 +38,9 @@ public interface PlayerData {
     GlobalProfile getGlobalProfile(String playerName);
 
     boolean updateGlobalProfile(String playerName, GlobalProfile globalProfile);
+
+    void updateWorld(String playerName, String worldName);
+
+    void updateProfileType(String playerName, ProfileType profileType);
 }
 

@@ -5,6 +5,7 @@ import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -223,6 +224,20 @@ public class FlatFilePlayerData implements PlayerData {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void updateWorld(String playerName, String worldName) {
+        GlobalProfile globalProfile = getGlobalProfile(playerName);
+        globalProfile.setWorld(worldName);
+        updateGlobalProfile(playerName, globalProfile);
+    }
+
+    @Override
+    public void updateProfileType(String playerName, ProfileType profileType) {
+        GlobalProfile globalProfile = getGlobalProfile(playerName);
+        globalProfile.setProfileType(profileType);
+        updateGlobalProfile(playerName, globalProfile);
     }
 }
 
