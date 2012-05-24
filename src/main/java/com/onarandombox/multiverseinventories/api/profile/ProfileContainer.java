@@ -15,6 +15,8 @@ public interface ProfileContainer {
      */
     PlayerProfile getPlayerData(OfflinePlayer player);
 
+    PlayerProfile getPlayerData(ProfileType profileType, OfflinePlayer player);
+
     /**
      * Adds a player player to this world player.
      *
@@ -27,7 +29,9 @@ public interface ProfileContainer {
      *
      * @param player Player to remove data for.
      */
-    void removePlayerData(OfflinePlayer player);
+    void removeAllPlayerData(OfflinePlayer player);
+
+    void removePlayerData(ProfileType profileType, OfflinePlayer player);
 
     /**
      * @return The name to use to look up Data.

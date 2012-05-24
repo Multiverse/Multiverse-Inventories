@@ -179,7 +179,7 @@ public class InventoriesListener implements Listener {
         profile.set(Sharables.LEVEL, event.getNewLevel());
         profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
         profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-        this.inventories.getData().updatePlayerData(worldProfile.getDataName(), profile);
+        this.inventories.getData().updatePlayerData(profile);
         for (WorldGroupProfile groupProfile : this.inventories.getGroupManager().getGroupsForWorld(deathWorld)) {
             profile = groupProfile.getPlayerData(event.getEntity());
             boolean changed = false;
@@ -196,7 +196,7 @@ public class InventoriesListener implements Listener {
                 changed = true;
             }
             if (changed) {
-                this.inventories.getData().updatePlayerData(groupProfile.getDataName(), profile);
+                this.inventories.getData().updatePlayerData(profile);
             }
         }
     }

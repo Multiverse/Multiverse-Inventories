@@ -26,7 +26,7 @@ public class AdventureListener implements Listener {
     public void worldReset(MVAResetFinishedEvent event) {
         WorldProfile worldProfile = inventories.getWorldManager().getWorldProfile(event.getWorld());
         for (OfflinePlayer player : inventories.getServer().getOfflinePlayers()) {
-            worldProfile.removePlayerData(player);
+            worldProfile.removeAllPlayerData(player);
         }
         Logging.info("Removed all inventories for Multiverse-Adventure world.");
     }

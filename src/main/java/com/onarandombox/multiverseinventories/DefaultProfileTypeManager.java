@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,5 +76,10 @@ class DefaultProfileTypeManager implements ProfileTypeManager {
         }
         this.profileConfig.getConfig().set("profile_types", toSave);
         this.profileConfig.save();
+    }
+
+    @Override
+    public Collection<ProfileType> getProfileTypes() {
+        return Collections.unmodifiableCollection(ProfileTypes.getProfileTypes());
     }
 }

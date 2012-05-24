@@ -1,6 +1,8 @@
 package com.onarandombox.multiverseinventories.util.data;
 
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
+import com.onarandombox.multiverseinventories.ProfileTypes;
+import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
@@ -9,7 +11,6 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +26,10 @@ public class FlatFilePlayerData implements PlayerData {
     private File worldFolder = null;
     private File groupFolder = null;
     private File playerFolder = null;
+    private Inventories inventories;
 
-    public FlatFilePlayerData(JavaPlugin plugin) throws IOException {
+    public FlatFilePlayerData(Inventories plugin) throws IOException {
+        this.inventories = plugin;
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -142,16 +145,16 @@ public class FlatFilePlayerData implements PlayerData {
      * {@inheritDoc}
      */
     @Override
-    public boolean updatePlayerData(String dataName, PlayerProfile playerProfile) {
-        File playerFile = this.getPlayerFile(playerProfile.getType(),
-                dataName, playerProfile.getPlayer().getName());
+    public boolean updatePlayerData(PlayerProfile playerProfile) {
+        File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
+                playerProfile.getContainerName(), playerProfile.getPlayer().getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        playerData.createSection("playerData", playerProfile.serialize());
+        playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
             Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
-                    + " for world: " + dataName);
+                    + " for " + playerProfile.getContainerType().toString() + ": " + playerProfile.getContainerName());
             Logging.severe(e.getMessage());
             return false;
         }
@@ -162,23 +165,48 @@ public class FlatFilePlayerData implements PlayerData {
      * {@inheritDoc}
      */
     @Override
-    public PlayerProfile getPlayerData(ContainerType type, String dataName, String playerName) {
-        File playerFile = this.getPlayerFile(type, dataName, playerName);
+    public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
+        File playerFile = this.getPlayerFile(containerType, dataName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        ConfigurationSection section = playerData.getConfigurationSection("playerData");
+        convertConfig(playerData);
+        ConfigurationSection section = playerData.getConfigurationSection(profileType.getName());
         if (section == null) {
-            section = playerData.createSection("playerData");
+            section = playerData.createSection(profileType.getName());
         }
-        return new DefaultPlayerProfile(type, dataName, playerName, convertSection(section));
+        return new DefaultPlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
+    }
+
+    private void convertConfig(FileConfiguration config) {
+        ConfigurationSection section = config.getConfigurationSection("playerData");
+        if (section != null) {
+            config.set(ProfileTypes.DEFAULT.getName(), section);
+            config.set("playerData", null);
+            Logging.finer("Migrated old player data to new multi-profile format");
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean removePlayerData(ContainerType type, String dataName, String playerName) {
-        File playerFile = this.getPlayerFile(type, dataName, playerName);
-        return playerFile.delete();
+    public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
+        if (profileType == null) {
+            File playerFile = this.getPlayerFile(containerType, dataName, playerName);
+            return playerFile.delete();
+        } else {
+            File playerFile = this.getPlayerFile(containerType, dataName, playerName);
+            FileConfiguration playerData = this.getConfigHandle(playerFile);
+            playerData.set(profileType.getName(), null);
+            try {
+                playerData.save(playerFile);
+            } catch (IOException e) {
+                Logging.severe("Could not delete data for player: " + playerName
+                        + " for " + containerType.toString() + ": " + dataName);
+                Logging.severe(e.getMessage());
+                return false;
+            }
+            return true;
+        }
     }
 
     private Map<String, Object> convertSection(ConfigurationSection section) {

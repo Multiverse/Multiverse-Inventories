@@ -42,7 +42,7 @@ final class ShareHandler {
             WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
             if (!worldGroupProfile.getNegativeShares().isEmpty()) {
                 Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
-                        + ") shares for " + profile.getType() + ":" + container.getDataName());
+                        + ") shares for " + profile.getContainerType() + ":" + container.getDataName());
                 shares.removeAll(worldGroupProfile.getNegativeShares());
             }
         }
@@ -59,7 +59,7 @@ final class ShareHandler {
             WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
             if (!worldGroupProfile.getNegativeShares().isEmpty()) {
                 Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
-                        + ") shares for " + profile.getType() + ":" + container.getDataName());
+                        + ") shares for " + profile.getContainerType() + ":" + container.getDataName());
                 shares.removeAll(((WorldGroupProfile) container).getNegativeShares());
             }
         }
@@ -201,9 +201,9 @@ final class ShareHandler {
             sharable.getHandler().updateProfile(profile.getProfile(), event.getPlayer());
         }
         Logging.finer("Persisted: " + persisted.toString() + " to "
-                + profile.getProfile().getType() + ":" + profile.getDataName()
+                + profile.getProfile().getContainerType() + ":" + profile.getDataName()
                 + " for player " + profile.getProfile().getPlayer().getName());
-        this.inventories.getData().updatePlayerData(profile.getDataName(), profile.getProfile());
+        this.inventories.getData().updatePlayerData(profile.getProfile());
     }
 
     private void updatePlayer(PersistingProfile profile) {
@@ -231,12 +231,12 @@ final class ShareHandler {
         if (!loaded.toString().isEmpty()) {
             Logging.finer("Updated: " + loaded.toString() + " for "
                     + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getType() + ":" + profile.getDataName());
+                    + profile.getProfile().getContainerType() + ":" + profile.getDataName());
         }
         if (!defaulted.toString().isEmpty()) {
             Logging.finer("Defaulted: " + defaulted.toString() + " for "
                     + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getType() + ":" + profile.getDataName());
+                    + profile.getProfile().getContainerType() + ":" + profile.getDataName());
         }
     }
 }

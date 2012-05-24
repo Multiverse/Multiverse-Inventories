@@ -169,7 +169,7 @@ public class WorldInventoriesImporter implements DataImporter {
             playerProfile.set(Sharables.EXHAUSTION, wiStats.getExhaustion());
             playerProfile.set(Sharables.FOOD_LEVEL, wiStats.getFoodLevel());
         }
-        this.inventories.getData().updatePlayerData(profileContainer.getDataName(), playerProfile);
+        this.inventories.getData().updatePlayerData(playerProfile);
         Logging.finest("Player's data imported successfully for group: " + profileContainer.getDataName());
     }
 

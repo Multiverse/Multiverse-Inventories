@@ -2,9 +2,13 @@ package com.onarandombox.multiverseinventories.api.profile;
 
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
+import java.util.Collection;
+
 public interface ProfileTypeManager {
 
-    public void registerProfileType(String name, Shares shares);
+    void registerProfileType(String name, Shares shares);
 
-    public ProfileType lookupType(String name);
+    ProfileType lookupType(String name);
+
+    Collection<ProfileType> getProfileTypes();
 }

@@ -134,7 +134,7 @@ public class MultiInvImporter implements DataImporter {
         playerProfile.set(Sharables.TOTAL_EXPERIENCE, playerFileLoader.getTotalExperience());
         playerProfile.set(Sharables.LEVEL, playerFileLoader.getLevel());
         playerProfile.set(Sharables.FOOD_LEVEL, playerFileLoader.getHunger());
-        this.inventories.getData().updatePlayerData(dataName, playerProfile);
+        this.inventories.getData().updatePlayerData(playerProfile);
     }
 
     /**
