@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.event;
 
 import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -18,12 +17,12 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
     private boolean cancelled;
 
     private final Player player;
-    private final World fromWorld;
-    private final World toWorld;
+    private final String fromWorld;
+    private final String toWorld;
     private final List<PersistingProfile> fromProfiles;
     private final List<PersistingProfile> toProfiles;
 
-    public MVInventoryHandlingEvent(Player player, World fromWorld, World toWorld) {
+    public MVInventoryHandlingEvent(Player player, String fromWorld, String toWorld) {
         this.fromProfiles = new ArrayList<PersistingProfile>();
         this.toProfiles = new ArrayList<PersistingProfile>();
         this.player = player;
@@ -82,14 +81,14 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
     /**
      * @return The world travelling from.
      */
-    public World getFromWorld() {
+    public String getFromWorld() {
         return this.fromWorld;
     }
 
     /**
      * @return The world travelling to.
      */
-    public World getToWorld() {
+    public String getToWorld() {
         return this.toWorld;
     }
 

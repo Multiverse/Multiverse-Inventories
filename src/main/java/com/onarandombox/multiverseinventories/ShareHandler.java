@@ -13,7 +13,6 @@ import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -28,7 +27,7 @@ final class ShareHandler {
     private boolean hasBypass = false;
 
     public ShareHandler(Inventories inventories, Player player,
-                        World fromWorld, World toWorld) {
+                        String fromWorld, String toWorld) {
         this.event = new MVInventoryHandlingEvent(player, fromWorld, toWorld);
         this.inventories = inventories;
     }
@@ -72,15 +71,15 @@ final class ShareHandler {
      * inventories/stats for a player and persisting the changes.
      */
     public void handleSharing() {
-        Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld().getName()
-                + " to " + "world: " + event.getToWorld().getName() + " ===");
+        Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld()
+                + " to " + "world: " + event.getToWorld() + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.inventories.getWorldManager()
-                .getWorldProfile(event.getFromWorld().getName());
+                .getWorldProfile(event.getFromWorld());
         this.addFromProfile(fromWorldProfile, Sharables.allOf(),
                 fromWorldProfile.getPlayerData(event.getPlayer()));
 
-        if (Perm.BYPASS_WORLD.hasBypass(event.getPlayer(), event.getToWorld().getName())) {
+        if (Perm.BYPASS_WORLD.hasBypass(event.getPlayer(), event.getToWorld())) {
             this.hasBypass = true;
             completeSharing();
             return;
@@ -88,10 +87,10 @@ final class ShareHandler {
 
         // Get any groups we need to save stuff to.
         List<WorldGroupProfile> fromWorldGroups = this.inventories.getGroupManager()
-                .getGroupsForWorld(event.getFromWorld().getName());
+                .getGroupsForWorld(event.getFromWorld());
         for (WorldGroupProfile fromWorldGroup : fromWorldGroups) {
             PlayerProfile profile = fromWorldGroup.getPlayerData(event.getPlayer());
-            if (!fromWorldGroup.containsWorld(event.getToWorld().getName())) {
+            if (!fromWorldGroup.containsWorld(event.getToWorld())) {
                 this.addFromProfile(fromWorldGroup,
                         Sharables.fromShares(fromWorldGroup.getShares()), profile);
             } else {
@@ -106,7 +105,7 @@ final class ShareHandler {
         Shares sharesToUpdate = Sharables.noneOf();
         //Shares optionalSharesToUpdate = Sharables.noneOptional();
         List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
-                .getGroupsForWorld(event.getToWorld().getName());
+                .getGroupsForWorld(event.getToWorld());
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroupProfile toWorldGroup : toWorldGroups) {
@@ -114,7 +113,7 @@ final class ShareHandler {
                     this.hasBypass = true;
                 } else {
                     PlayerProfile profile = toWorldGroup.getPlayerData(event.getPlayer());
-                    if (!toWorldGroup.containsWorld(event.getFromWorld().getName())) {
+                    if (!toWorldGroup.containsWorld(event.getFromWorld())) {
                         Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
                         this.addToProfile(toWorldGroup,
                                 sharesToAdd, profile);
@@ -134,7 +133,7 @@ final class ShareHandler {
             // Get world we need to load from.
             Logging.finer("No groups for toWorld.");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
-                    .getWorldProfile(event.getToWorld().getName());
+                    .getWorldProfile(event.getToWorld());
             this.addToProfile(toWorldProfile, Sharables.allOf(),
                     toWorldProfile.getPlayerData(event.getPlayer()));
             sharesToUpdate = Sharables.allOf();
@@ -147,7 +146,7 @@ final class ShareHandler {
             // Get world we need to load from.
             Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
             WorldProfile toWorldProfile = this.inventories.getWorldManager()
-                    .getWorldProfile(event.getToWorld().getName());
+                    .getWorldProfile(event.getToWorld());
             this.addToProfile(toWorldProfile, sharesToUpdate,
                     toWorldProfile.getPlayerData(event.getPlayer()));
         }

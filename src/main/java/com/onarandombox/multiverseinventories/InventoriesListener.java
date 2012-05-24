@@ -117,7 +117,7 @@ public class InventoriesListener implements Listener {
             return;
         }
 
-        new ShareHandler(this.inventories, player, fromWorld, toWorld).handleSharing();
+        new ShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
