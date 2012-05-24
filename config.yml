@@ -7,6 +7,9 @@ groups:
         - inventory
         spawn:
           world: world1
+        profiles:
+        - default_profile
+        - game_mode_profile
     group2:
         worlds:
         - world2
