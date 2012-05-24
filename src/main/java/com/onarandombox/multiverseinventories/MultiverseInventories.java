@@ -5,7 +5,6 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
-import com.onarandombox.multiverseinventories.api.profile.GlobalProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -59,7 +58,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
     private WorldProfileManager worldProfileManager = null;
-    private GlobalProfileManager globalProfileManager = null;
     private ProfileTypeManager profileTypeManager = null;
     private ImportManager importManager = new ImportManager(this);
 
@@ -294,8 +292,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.config = null;
         this.groupManager = null;
         this.worldProfileManager = null;
-        this.globalProfileManager = null;
         this.profileTypeManager = null;
+        this.data = null;
 
         ProfileTypes.resetProfileTypes();
         this.getProfileTypeManager();
@@ -377,17 +375,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             this.worldProfileManager = new WeakWorldProfileManager(this);
         }
         return this.worldProfileManager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public GlobalProfileManager getGlobalProfileManager() {
-        if (this.globalProfileManager == null) {
-            this.globalProfileManager = new DefaultGlobalProfileManager(this);
-        }
-        return this.globalProfileManager;
     }
 
     /**

@@ -34,5 +34,9 @@ public interface PlayerData {
      * @return True if successfully removed.
      */
     boolean removePlayerData(ContainerType type, String dataName, String playerName);
+
+    GlobalProfile getGlobalProfile(String playerName);
+
+    boolean updateGlobalProfile(String playerName, GlobalProfile globalProfile);
 }
 

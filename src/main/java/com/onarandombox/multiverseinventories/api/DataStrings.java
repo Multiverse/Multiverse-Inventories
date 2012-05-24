@@ -73,6 +73,14 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
+     * Player bed spawn location identifier.
+     */
+    public static final String PLAYER_LAST_WORLD = "lastWorld";
+    /**
+     * Player bed spawn location identifier.
+     */
+    public static final String PLAYER_PROFILE_TYPE = "profileType";
+    /**
      * Player health identifier.
      */
     public static final String PLAYER_HEALTH = "hp";

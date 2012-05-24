@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.util.data;
 
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
+import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.Logging;
@@ -22,6 +23,7 @@ public class FlatFilePlayerData implements PlayerData {
     private static final String YML = ".yml";
     private File worldFolder = null;
     private File groupFolder = null;
+    private File playerFolder = null;
 
     public FlatFilePlayerData(JavaPlugin plugin) throws IOException {
         // Make the data folders
@@ -38,6 +40,12 @@ public class FlatFilePlayerData implements PlayerData {
         if (!this.groupFolder.exists()) {
             if (!this.groupFolder.mkdirs()) {
                 throw new IOException("Could not create group folder!");
+            }
+        }
+        this.playerFolder = new File(plugin.getDataFolder(), "players");
+        if (!this.playerFolder.exists()) {
+            if (!this.playerFolder.mkdirs()) {
+                throw new IOException("Could not create player folder!");
             }
         }
     }
@@ -77,6 +85,26 @@ public class FlatFilePlayerData implements PlayerData {
      */
     File getPlayerFile(ContainerType type, String dataName, String playerName) {
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
+        if (!playerFile.exists()) {
+            try {
+                playerFile.createNewFile();
+            } catch (IOException e) {
+                Logging.severe("Could not create necessary player file: " + playerName + YML);
+                Logging.severe("Your data may not be saved!");
+                Logging.severe(e.getMessage());
+            }
+        }
+        return playerFile;
+    }
+
+    /**
+     * Retrieves the yaml data file for a player for their global data.
+     *
+     * @param playerName The name of the player.
+     * @return The yaml data file for a player.
+     */
+    File getGlobalFile(String playerName) {
+        File playerFile = new File(playerFolder, playerName + YML);
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
@@ -143,6 +171,9 @@ public class FlatFilePlayerData implements PlayerData {
         return new DefaultPlayerProfile(type, dataName, playerName, convertSection(section));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removePlayerData(ContainerType type, String dataName, String playerName) {
         File playerFile = this.getPlayerFile(type, dataName, playerName);
@@ -160,6 +191,38 @@ public class FlatFilePlayerData implements PlayerData {
             }
         }
         return resultMap;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GlobalProfile getGlobalProfile(String playerName) {
+        File playerFile = this.getGlobalFile(playerName);
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        ConfigurationSection section = playerData.getConfigurationSection("playerData");
+        if (section == null) {
+            section = playerData.createSection("playerData");
+        }
+        return new DefaultGlobalProfile(playerName, convertSection(section));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean updateGlobalProfile(String playerName, GlobalProfile globalProfile) {
+        File playerFile = this.getGlobalFile(playerName);
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        playerData.createSection("playerData", globalProfile.serialize());
+        try {
+            playerData.save(playerFile);
+        } catch (IOException e) {
+            Logging.severe("Could not save global data for player: " + globalProfile.getName());
+            Logging.severe(e.getMessage());
+            return false;
+        }
+        return true;
     }
 }
 
