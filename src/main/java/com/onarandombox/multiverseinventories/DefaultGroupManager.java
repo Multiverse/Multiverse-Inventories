@@ -23,7 +23,7 @@ import java.util.Map;
  */
 final class DefaultGroupManager implements GroupManager {
 
-    private HashMap<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
+    private Map<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
     private Inventories inventories;
 
     public DefaultGroupManager(Inventories inventories) {
@@ -71,7 +71,7 @@ final class DefaultGroupManager implements GroupManager {
      *
      * @return Map of Group Name -> World Group
      */
-    protected HashMap<String, WorldGroupProfile> getGroupNames() {
+    protected Map<String, WorldGroupProfile> getGroupNames() {
         return this.groupNamesMap;
     }
 

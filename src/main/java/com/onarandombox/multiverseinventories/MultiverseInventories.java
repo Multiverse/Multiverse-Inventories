@@ -5,8 +5,8 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
+import com.onarandombox.multiverseinventories.api.profile.GlobalProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
-import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
@@ -59,7 +59,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
     private WorldProfileManager worldProfileManager = null;
-    private ProfileManager profileManager = null;
+    private GlobalProfileManager globalProfileManager = null;
     private ProfileTypeManager profileTypeManager = null;
     private ImportManager importManager = new ImportManager(this);
 
@@ -294,7 +294,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.config = null;
         this.groupManager = null;
         this.worldProfileManager = null;
-        this.profileManager = null;
+        this.globalProfileManager = null;
         this.profileTypeManager = null;
 
         ProfileTypes.resetProfileTypes();
@@ -383,11 +383,11 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      * {@inheritDoc}
      */
     @Override
-    public ProfileManager getProfileManager() {
-        if (this.profileManager == null) {
-            this.profileManager = new DefaultProfileManager(this);
+    public GlobalProfileManager getGlobalProfileManager() {
+        if (this.globalProfileManager == null) {
+            this.globalProfileManager = new DefaultGlobalProfileManager(this);
         }
-        return this.profileManager;
+        return this.globalProfileManager;
     }
 
     /**

@@ -32,7 +32,8 @@ public interface PlayerProfile {
     OfflinePlayer getPlayer();
 
     /**
-     * Retrieves the profile's value of the {@link Sharable} passed in for the {@link ProfileType#DEFAULT} profile.
+     * Retrieves the profile's value of the {@link Sharable} passed in for the
+     * {@link com.onarandombox.multiverseinventories.ProfileTypes#DEFAULT} profile.
      *
      * @param sharable Represents the key for the data wanted from the profile.
      * @param <T>      This indicates the type of return value to be expected.
@@ -41,7 +42,8 @@ public interface PlayerProfile {
     <T> T get(Sharable<T> sharable);
 
     /**
-     * Sets the profile's value for the {@link Sharable} passed in for the {@link ProfileType#DEFAULT} profile.
+     * Sets the profile's value for the {@link Sharable} passed in for the
+     * {@link com.onarandombox.multiverseinventories.ProfileTypes#DEFAULT} profile.
      *
      * @param sharable Represents the key for the data to store.
      * @param value    The value of the data.

@@ -99,7 +99,7 @@ public class InventoriesListener implements Listener {
      *
      * @param event The world change event.
      */
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void playerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();

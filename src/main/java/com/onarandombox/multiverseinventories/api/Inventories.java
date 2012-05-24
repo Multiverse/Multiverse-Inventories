@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.MultiverseCore.api.MVPlugin;
+import com.onarandombox.multiverseinventories.api.profile.GlobalProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
-import com.onarandombox.multiverseinventories.api.profile.ProfileManager;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
@@ -61,7 +61,7 @@ public interface Inventories extends MVPlugin, Messaging {
      * @return The Profile manager for this plugin.  This is where you find access to the different profile types
      * such as creative and survival.
      */
-    ProfileManager getProfileManager();
+    GlobalProfileManager getGlobalProfileManager();
 
     /**
      * Gets the server's root-folder as {@link File}.
