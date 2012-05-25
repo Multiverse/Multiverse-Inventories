@@ -74,7 +74,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
      */
     @Override
     public PlayerProfile getPlayerData(OfflinePlayer player) {
-        return getPlayerData(ProfileTypes.DEFAULT, player);
+        return getPlayerData(inventories.getData().getGlobalProfile(player.getName()).getProfileType(), player);
     }
 
     /**
