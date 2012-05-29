@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.event;
 
 import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -19,15 +20,20 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
     private final Player player;
     private final String fromWorld;
     private final String toWorld;
+    private final GameMode fromGameMode;
+    private final GameMode toGameMode;
     private final List<PersistingProfile> fromProfiles;
     private final List<PersistingProfile> toProfiles;
 
-    public MVInventoryHandlingEvent(Player player, String fromWorld, String toWorld) {
+    public MVInventoryHandlingEvent(Player player, String fromWorld, String toWorld,
+                                    GameMode fromGameMode, GameMode toGameMode) {
         this.fromProfiles = new ArrayList<PersistingProfile>();
         this.toProfiles = new ArrayList<PersistingProfile>();
         this.player = player;
         this.fromWorld = fromWorld;
         this.toWorld = toWorld;
+        this.fromGameMode = fromGameMode;
+        this.toGameMode = toGameMode;
     }
 
     private static final HandlerList HANDLERS = new HandlerList();
@@ -90,6 +96,20 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
      */
     public String getToWorld() {
         return this.toWorld;
+    }
+
+    /**
+     * @return The GameMode player is changing from.
+     */
+    public GameMode getFromGameMode() {
+        return fromGameMode;
+    }
+
+    /**
+     * @return The GameMode player is changing to.
+     */
+    public GameMode getToGameMode() {
+        return toGameMode;
     }
 
     /**

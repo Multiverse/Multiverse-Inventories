@@ -13,6 +13,7 @@ import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -27,8 +28,9 @@ final class ShareHandler {
     private boolean hasBypass = false;
 
     public ShareHandler(Inventories inventories, Player player,
-                        String fromWorld, String toWorld) {
-        this.event = new MVInventoryHandlingEvent(player, fromWorld, toWorld);
+                        String fromWorld, String toWorld,
+                        GameMode fromGameMode, GameMode toGameMode) {
+        this.event = new MVInventoryHandlingEvent(player, fromWorld, toWorld, fromGameMode, toGameMode);
         this.inventories = inventories;
     }
 
@@ -71,6 +73,20 @@ final class ShareHandler {
      * inventories/stats for a player and persisting the changes.
      */
     public void handleSharing() {
+        if (!event.getFromWorld().equals(event.getToWorld())) {
+            handleWorldSharing();
+        }
+        if (!event.getFromGameMode().equals(event.getToGameMode())) {
+            handleGameModeSharing();
+        }
+
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            this.completeSharing();
+        }
+    }
+
+    private void handleWorldSharing() {
         Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld()
                 + " to " + "world: " + event.getToWorld() + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
@@ -150,11 +166,10 @@ final class ShareHandler {
             this.addToProfile(toWorldProfile, sharesToUpdate,
                     toWorldProfile.getPlayerData(event.getPlayer()));
         }
+    }
 
-        Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            this.completeSharing();
-        }
+    private void handleGameModeSharing() {
+
     }
 
     private void completeSharing() {
