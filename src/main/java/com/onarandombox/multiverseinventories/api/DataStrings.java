@@ -465,6 +465,10 @@ public class DataStrings {
 
                 boolean first = true;
                 for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+                    if (entry.getKey() == null) {
+                        Logging.finer("Not saving null enchantment!");
+                        continue;
+                    }
                     if (first) {
                         first = false;
                     } else {
