@@ -418,6 +418,10 @@ public class DataStrings {
                 String[] enchantValues = DataStrings.splitEntry(dataValue);
                 try {
                     Enchantment enchantment = Enchantment.getByName(enchantValues[0]);
+                    if (enchantment == null) {
+                        Logging.fine("Could not parse item enchantment: " + enchantValues[0]);
+                        continue;
+                    }
                     enchantsMap.put(enchantment, Integer.valueOf(enchantValues[1]));
                 } catch (Exception ignore) {
                 }
