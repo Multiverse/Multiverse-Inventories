@@ -46,7 +46,7 @@ final class ShareHandler {
                 shares.removeAll(worldGroupProfile.getNegativeShares());
             }
         }
-        event.getFromProfiles().add(new DefaultPersistingProfile(container.getDataName(), shares, profile));
+        event.getFromProfiles().add(new DefaultPersistingProfile(shares, profile));
     }
 
     /**
@@ -63,7 +63,7 @@ final class ShareHandler {
                 shares.removeAll(((WorldGroupProfile) container).getNegativeShares());
             }
         }
-        event.getToProfiles().add(new DefaultPersistingProfile(container.getDataName(), shares, profile));
+        event.getToProfiles().add(new DefaultPersistingProfile(shares, profile));
     }
 
     /**
@@ -201,7 +201,7 @@ final class ShareHandler {
             sharable.getHandler().updateProfile(profile.getProfile(), event.getPlayer());
         }
         Logging.finer("Persisted: " + persisted.toString() + " to "
-                + profile.getProfile().getContainerType() + ":" + profile.getDataName()
+                + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
                 + " for player " + profile.getProfile().getPlayer().getName());
         this.inventories.getData().updatePlayerData(profile.getProfile());
     }
@@ -231,12 +231,12 @@ final class ShareHandler {
         if (!loaded.toString().isEmpty()) {
             Logging.finer("Updated: " + loaded.toString() + " for "
                     + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getDataName());
+                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName());
         }
         if (!defaulted.toString().isEmpty()) {
             Logging.finer("Defaulted: " + defaulted.toString() + " for "
                     + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getDataName());
+                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName());
         }
     }
 }

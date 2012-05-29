@@ -11,20 +11,10 @@ final class DefaultPersistingProfile implements PersistingProfile {
 
     private Shares shares;
     private PlayerProfile profile;
-    private String dataName;
 
-    public DefaultPersistingProfile(String dataName, Shares shares, PlayerProfile profile) {
+    public DefaultPersistingProfile(Shares shares, PlayerProfile profile) {
         this.shares = shares;
         this.profile = profile;
-        this.dataName = dataName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDataName() {
-        return this.dataName;
     }
 
     /**
