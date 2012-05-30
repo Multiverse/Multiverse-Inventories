@@ -99,5 +99,9 @@ public interface InventoriesConfig {
      * @param useBypass Whether or not to check for bypass permissions.
      */
     void setUsingBypass(boolean useBypass);
+
+    boolean isUsingGameModeProfiles();
+
+    void setUsingGameModeProfiles(boolean useGameModeProfile);
 }
 

@@ -4,16 +4,17 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.Logging;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProfileTypes {
+public final class ProfileTypes {
 
-    public static final ProfileType DEFAULT = new DefaultProfileType("default_profile", Sharables.allOf());
+    public static final ProfileType SURVIVAL = new DefaultProfileType("SURVIVAL", Sharables.allOf());
 
-    public static final ProfileType GAME_MODE = new DefaultProfileType("game_mode_profile", Sharables.allOf());
+    public static final ProfileType CREATIVE = new DefaultProfileType("CREATIVE", Sharables.allOf());
 
     private static Map<String, ProfileType> profileTypeMap;
 
@@ -23,7 +24,7 @@ public class ProfileTypes {
 
     static void resetProfileTypes() {
         profileTypeMap = new HashMap<String, ProfileType>();
-        profileTypeMap.put(DEFAULT.getName(), DEFAULT);
+        profileTypeMap.put(SURVIVAL.getName(), SURVIVAL);
     }
 
     static ProfileType registerProfileType(String name, Shares shares) {
@@ -41,7 +42,22 @@ public class ProfileTypes {
         return type;
     }
 
+    public static ProfileType forGameMode(Player player) {
+        switch (player.getGameMode()) {
+            case SURVIVAL:
+                return SURVIVAL;
+            case CREATIVE:
+                return CREATIVE;
+            default:
+                return SURVIVAL;
+        }
+    }
+
     static Collection<ProfileType> getProfileTypes() {
         return profileTypeMap.values();
+    }
+
+    private ProfileTypes() {
+        throw new AssertionError();
     }
 }

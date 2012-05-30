@@ -646,7 +646,7 @@ public class MockPlayer implements Player {
 
     @Override
     public GameMode getGameMode() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return GameMode.SURVIVAL;
     }
 
     @Override

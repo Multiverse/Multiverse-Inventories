@@ -10,6 +10,7 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,8 +74,8 @@ abstract class WeakProfileContainer implements ProfileContainer {
      * {@inheritDoc}
      */
     @Override
-    public PlayerProfile getPlayerData(OfflinePlayer player) {
-        return getPlayerData(inventories.getData().getGlobalProfile(player.getName()).getProfileType(), player);
+    public PlayerProfile getPlayerData(Player player) {
+        return getPlayerData(ProfileTypes.forGameMode(player), player);
     }
 
     /**

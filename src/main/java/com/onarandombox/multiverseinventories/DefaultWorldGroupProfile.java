@@ -18,7 +18,6 @@ import org.bukkit.event.EventPriority;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -97,18 +96,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                 Logging.warning("Spawn settings for group formatted incorrectly");
             }
         }
-        if (dataMap.containsKey("profiles")) {
-            Object profilesObj = dataMap.get("profiles");
-            if (!(profilesObj instanceof List)) {
-                Logging.warning("Profiles formatted incorrectly for group: " + name);
-            } else {
-                for (Object obj : ((List) profilesObj)) {
-                    profileTypes.add(ProfileTypes.lookupType(obj.toString(), true));
-                }
-            }
-        } else {
-            profileTypes.add(ProfileTypes.DEFAULT);
-        }
         /*
         if (data.contains("blacklist")) {
 
@@ -136,11 +123,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             spawnProps.put("priority", this.getSpawnPriority().toString());
             results.put("spawn", spawnProps);
         }
-        List<String> profileTypeList = new LinkedList<String>();
-        for (ProfileType type : this.profileTypes) {
-            profileTypeList.add(type.getName());
-        }
-        results.put("profiles", profileTypeList);
         /*
         if (!this.getItemBlacklist().isEmpty()) {
 

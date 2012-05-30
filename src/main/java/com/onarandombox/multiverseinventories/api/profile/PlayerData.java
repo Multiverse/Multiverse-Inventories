@@ -42,6 +42,6 @@ public interface PlayerData {
 
     void updateWorld(String playerName, String worldName);
 
-    void updateProfileType(String playerName, ProfileType profileType);
+    //void updateProfileType(String playerName, ProfileType profileType);
 }
 

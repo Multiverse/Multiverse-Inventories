@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
+import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
@@ -119,10 +120,10 @@ public class MultiInvImporter implements DataImporter {
                 Logging.warning("Could not import player data for group: " + dataName);
                 return;
             }
-            playerProfile = group.getPlayerData(player);
+            playerProfile = group.getPlayerData(ProfileTypes.SURVIVAL, player);
         } else {
             playerProfile = this.inventories.getWorldManager()
-                    .getWorldProfile(dataName).getPlayerData(player);
+                    .getWorldProfile(dataName).getPlayerData(ProfileTypes.SURVIVAL, player);
         }
         MIInventoryInterface inventoryInterface =
                 playerFileLoader.getInventory(GameMode.SURVIVAL.toString());

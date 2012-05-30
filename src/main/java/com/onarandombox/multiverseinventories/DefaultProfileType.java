@@ -18,10 +18,12 @@ class DefaultProfileType implements ProfileType {
         return name;
     }
 
+    /*
     @Override
     public Shares getShares() {
         return shares;
     }
+    */
 
     public boolean equals(Object o) {
         return o instanceof ProfileType && ((ProfileType) o).getName().equals(this.getName());

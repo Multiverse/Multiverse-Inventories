@@ -10,9 +10,5 @@ public interface GlobalProfile {
 
     void setWorld(String world);
 
-    ProfileType getProfileType();
-
-    void setProfileType(ProfileType profileType);
-
     Map<String, Object> serialize();
 }

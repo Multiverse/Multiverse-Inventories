@@ -179,7 +179,8 @@ public class FlatFilePlayerData implements PlayerData {
     private void convertConfig(FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection("playerData");
         if (section != null) {
-            config.set(ProfileTypes.DEFAULT.getName(), section);
+            config.set(ProfileTypes.SURVIVAL.getName(), section);
+            config.set(ProfileTypes.CREATIVE.getName(), section);
             config.set("playerData", null);
             Logging.finer("Migrated old player data to new multi-profile format");
         }
@@ -260,12 +261,13 @@ public class FlatFilePlayerData implements PlayerData {
         globalProfile.setWorld(worldName);
         updateGlobalProfile(playerName, globalProfile);
     }
-
+    /*
     @Override
     public void updateProfileType(String playerName, ProfileType profileType) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setProfileType(profileType);
         updateGlobalProfile(playerName, globalProfile);
     }
+    */
 }
 

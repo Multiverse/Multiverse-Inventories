@@ -56,6 +56,9 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         OPTIONAL_SHARES("shares.use_optionals", new ArrayList<String>(),
                 "# You must specify optional shares you wish to use here or they will be ignored.",
                 "# The only built in optional share is \"economy\""),
+        USE_GAME_MODE_PROFILES("settings.use_game_mode_profiles", false,
+                "# If this is set to true, players will have different inventories/stats for each game mode.",
+                "# Please note that old data migrated to the version that has this feature will have their data copied for both game modes."),
         /**
          * Groups section path and comments.  No simple default for this.
          */
@@ -327,6 +330,16 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void setDefaultingUngroupedWorlds(boolean useDefaultGroup) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), useDefaultGroup);
+    }
+
+    @Override
+    public boolean isUsingGameModeProfiles() {
+        return this.getBoolean(Path.USE_GAME_MODE_PROFILES);
+    }
+
+    @Override
+    public void setUsingGameModeProfiles(boolean useGameModeProfile) {
+        this.getConfig().set(Path.USE_GAME_MODE_PROFILES.getPath(), useGameModeProfile);
     }
 
     /**

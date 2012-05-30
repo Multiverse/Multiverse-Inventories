@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
+import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
@@ -154,7 +155,7 @@ public class WorldInventoriesImporter implements DataImporter {
     }
 
     private void transferData(OfflinePlayer player, Group wiGroup, ProfileContainer profileContainer) {
-        PlayerProfile playerProfile = profileContainer.getPlayerData(player);
+        PlayerProfile playerProfile = profileContainer.getPlayerData(ProfileTypes.SURVIVAL, player);
         WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
         WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
         if (wiInventory != null) {

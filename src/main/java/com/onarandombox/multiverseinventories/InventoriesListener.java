@@ -9,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Location;
@@ -161,20 +160,15 @@ public class InventoriesListener implements Listener {
                 || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
             return;
         }
+        Player player = event.getPlayer();
         String fromWorldName = event.getFrom().getWorld().getName();
         String toWorldName = event.getTo().getWorld().getName();
         WorldProfile fromWorldProfile = this.inventories.getWorldManager().getWorldProfile(fromWorldName);
-        PlayerProfile playerProfile = fromWorldProfile.getPlayerData(event.getPlayer());
-        if (playerProfile.getProfileType().getShares().isSharing(Sharables.LAST_LOCATION)) {
-            playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
-        }
+        PlayerProfile playerProfile = fromWorldProfile.getPlayerData(player);
+        playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
         List<WorldGroupProfile> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
         for (WorldGroupProfile fromGroup : fromGroups) {
             playerProfile = fromGroup.getPlayerData(event.getPlayer());
-            // TODO Is this right?
-            if (!playerProfile.getProfileType().getShares().isSharing(Sharables.LAST_LOCATION)) {
-                continue;
-            }
             if (fromGroup.containsWorld(toWorldName)) {
                 if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
                     playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
@@ -190,36 +184,16 @@ public class InventoriesListener implements Listener {
         String deathWorld = event.getEntity().getWorld().getName();
         WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(deathWorld);
         PlayerProfile profile = worldProfile.getPlayerData(event.getEntity());
-        Shares profileShares = profile.getProfileType().getShares();
-        if (profileShares.isSharing(Sharables.LEVEL)) {
-            profile.set(Sharables.LEVEL, event.getNewLevel());
-        }
-        if (profileShares.isSharing(Sharables.EXPERIENCE)) {
-            profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
-        }
-        if (profileShares.isSharing(Sharables.TOTAL_EXPERIENCE)) {
-            profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-        }
+        profile.set(Sharables.LEVEL, event.getNewLevel());
+        profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
+        profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
         this.inventories.getData().updatePlayerData(profile);
         for (WorldGroupProfile groupProfile : this.inventories.getGroupManager().getGroupsForWorld(deathWorld)) {
             profile = groupProfile.getPlayerData(event.getEntity());
-            boolean changed = false;
-            profileShares = profile.getProfileType().getShares();
-            if (profileShares.isSharing(Sharables.LEVEL) && groupProfile.isSharing(Sharables.LEVEL)) {
-                profile.set(Sharables.LEVEL, event.getNewLevel());
-                changed = true;
-            }
-            if (profileShares.isSharing(Sharables.EXPERIENCE) && groupProfile.isSharing(Sharables.EXPERIENCE)) {
-                profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
-                changed = true;
-            }
-            if (profileShares.isSharing(Sharables.TOTAL_EXPERIENCE) && groupProfile.isSharing(Sharables.TOTAL_EXPERIENCE)) {
-                profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-                changed = true;
-            }
-            if (changed) {
-                this.inventories.getData().updatePlayerData(profile);
-            }
+            profile.set(Sharables.LEVEL, event.getNewLevel());
+            profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
+            profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
+            this.inventories.getData().updatePlayerData(profile);
         }
     }
 
