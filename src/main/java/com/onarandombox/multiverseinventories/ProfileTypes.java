@@ -4,7 +4,7 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.Logging;
-import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,8 +42,8 @@ public final class ProfileTypes {
         return type;
     }
 
-    public static ProfileType forGameMode(Player player) {
-        switch (player.getGameMode()) {
+    public static ProfileType forGameMode(GameMode mode) {
+        switch (mode) {
             case SURVIVAL:
                 return SURVIVAL;
             case CREATIVE:

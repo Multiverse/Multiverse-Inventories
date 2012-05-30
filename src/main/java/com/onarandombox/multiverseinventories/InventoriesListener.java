@@ -116,7 +116,7 @@ public class InventoriesListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.isCancelled()) {
+        if (event.isCancelled() || !inventories.getMVIConfig().isUsingGameModeProfiles()) {
             return;
         }
         Player player = event.getPlayer();
