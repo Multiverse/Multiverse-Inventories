@@ -74,6 +74,9 @@ final class ShareHandler {
      * inventories/stats for a player and persisting the changes.
      */
     public void handleSharing() {
+        Logging.finer("=== " + event.getPlayer().getName() + " traveling from world '" + event.getFromWorld()
+                + "' with game mode '" + event.getFromGameMode() + "' to " + "world '" + event.getToWorld()
+                + "' with game mode '" + event.getToGameMode() + "' ===");
         if (!event.getFromWorld().equals(event.getToWorld())) {
             handleWorldSharing();
         }
@@ -88,8 +91,6 @@ final class ShareHandler {
     }
 
     private void handleWorldSharing() {
-        Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld()
-                + " to " + "world: " + event.getToWorld() + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile fromWorldProfile = this.inventories.getWorldManager()
                 .getWorldProfile(event.getFromWorld());
@@ -174,8 +175,6 @@ final class ShareHandler {
         ProfileType fromType = ProfileTypes.forGameMode(event.getFromGameMode());
         ProfileType toType = ProfileTypes.forGameMode(event.getToGameMode());
         String world = event.getPlayer().getWorld().getName();
-        Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
-                + " to: " + toType + " for world: " + world + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
         WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(world);
         this.addFromProfile(worldProfile, Sharables.allOf(), worldProfile.getPlayerData(fromType, player));
