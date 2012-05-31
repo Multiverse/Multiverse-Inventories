@@ -105,16 +105,19 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String playerWorld = player.getWorld().getName();
+        verifyCorrectWorld(player, player.getWorld().getName());
+    }
+
+    private void verifyCorrectWorld(Player player, String world) {
         GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
         if (globalProfile.getWorld() == null) {
-            inventories.getData().updateWorld(player.getName(), playerWorld);
+            inventories.getData().updateWorld(player.getName(), world);
         } else {
-            if (!playerWorld.equals(globalProfile.getWorld())) {
-                Logging.fine("Player did not login to the world they logged out of!");
+            if (!world.equals(globalProfile.getWorld())) {
+                Logging.fine("Player did not spawn in the world they were last reported to be in!");
                 new WorldChangeShareHandler(this.inventories, player,
-                        globalProfile.getWorld(), playerWorld).handleSharing();
-                inventories.getData().updateWorld(player.getName(), playerWorld);
+                        globalProfile.getWorld(), world).handleSharing();
+                inventories.getData().updateWorld(player.getName(), world);
             }
         }
     }
@@ -215,6 +218,11 @@ public class InventoriesListener implements Listener {
             this.inventories.getData().updatePlayerData(profile);
         }
         Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerRespawn(PlayerRespawnEvent event) {
+        verifyCorrectWorld(event.getPlayer(), event.getRespawnLocation().getWorld().getName());
     }
 
     /**
