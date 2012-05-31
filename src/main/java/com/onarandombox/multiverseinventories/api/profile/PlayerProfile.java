@@ -31,6 +31,9 @@ public interface PlayerProfile {
      */
     OfflinePlayer getPlayer();
 
+    /**
+     * @return The type of profile this object represents.
+     */
     ProfileType getProfileType();
 
     /**

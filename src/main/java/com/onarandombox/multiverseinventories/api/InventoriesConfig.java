@@ -100,8 +100,14 @@ public interface InventoriesConfig {
      */
     void setUsingBypass(boolean useBypass);
 
+    /**
+     * @return True if using separate data for game modes.
+     */
     boolean isUsingGameModeProfiles();
 
+    /**
+     * @param useGameModeProfile whether to use separate data for game modes.
+     */
     void setUsingGameModeProfiles(boolean useGameModeProfile);
 }
 

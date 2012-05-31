@@ -8,6 +8,9 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * Default implementation of the ProfileTypeManager.
+ */
 class DefaultProfileTypeManager implements ProfileTypeManager {
 
     //private CommentedYamlConfiguration profileConfig;
@@ -53,6 +56,7 @@ class DefaultProfileTypeManager implements ProfileTypeManager {
         */
     }
 
+    @Override
     public void registerProfileType(String name, Shares shares) {
         ProfileTypes.registerProfileType(name, shares);
         //saveProfileTypes();

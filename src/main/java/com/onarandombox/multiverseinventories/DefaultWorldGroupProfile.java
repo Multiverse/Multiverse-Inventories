@@ -3,7 +3,6 @@ package com.onarandombox.multiverseinventories;
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -17,7 +16,6 @@ import org.bukkit.event.EventPriority;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +31,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     private HashSet<String> worlds = new HashSet<String>();
     private Shares shares = Sharables.noneOf();
     private Shares negativeShares = Sharables.noneOf();
-    private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();
+    //private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();
 
     public DefaultWorldGroupProfile(Inventories inventories, String name) {
         super(inventories, ContainerType.GROUP);
@@ -307,10 +305,12 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         this.spawnPriority = priority;
     }
 
+    /*
     @Override
     public Set<ProfileType> getProfileTypes() {
         return this.profileTypes;
     }
+    */
 
     /*
     protected HashMap<String, ItemBlacklist> getItemBlacklist() {

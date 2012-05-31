@@ -31,12 +31,18 @@ public interface ProfileContainer {
     void addPlayerData(PlayerProfile playerProfile);
 
     /**
-     * Removes the profile data for a given player in this world/group.
+     * Removes all of the profile data for a given player in this world/group.
      *
      * @param player Player to remove data for.
      */
     void removeAllPlayerData(OfflinePlayer player);
 
+    /**
+     * Removes the profile data for a specific type of profile in this world/group.
+     *
+     * @param profileType The type of profile to remove data for.
+     * @param player Player to remove data for.
+     */
     void removePlayerData(ProfileType profileType, OfflinePlayer player);
 
     /**

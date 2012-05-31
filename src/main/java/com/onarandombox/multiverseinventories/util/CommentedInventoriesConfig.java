@@ -56,6 +56,9 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         OPTIONAL_SHARES("shares.use_optionals", new ArrayList<String>(),
                 "# You must specify optional shares you wish to use here or they will be ignored.",
                 "# The only built in optional share is \"economy\""),
+        /**
+         * Whether or not to split data based on game modes.
+         */
         USE_GAME_MODE_PROFILES("settings.use_game_mode_profiles", false,
                 "# If this is set to true, players will have different inventories/stats for each game mode.",
                 "# Please note that old data migrated to the version that has this feature will have their data copied for both game modes."),

@@ -17,6 +17,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Default implementation of a player profile, that is, the data per world/group/gamemode.
+ */
 class DefaultPlayerProfile implements PlayerProfile {
 
     private Map<Sharable, Object> data = new HashMap<Sharable, Object>();

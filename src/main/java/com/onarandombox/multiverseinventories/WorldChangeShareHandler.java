@@ -24,6 +24,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                 player.getGameMode(), player.getGameMode());
     }
 
+    @Override
     public void handle() {
         Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld()
                 + " to " + "world: " + event.getToWorld() + " ===");

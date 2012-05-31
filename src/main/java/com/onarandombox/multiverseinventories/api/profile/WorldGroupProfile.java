@@ -138,7 +138,7 @@ public interface WorldGroupProfile extends ProfileContainer {
      */
     void setSpawnPriority(EventPriority priority);
 
-    Set<ProfileType> getProfileTypes();
+    //Set<ProfileType> getProfileTypes();
 
     // ItemBlacklist getItemBlacklist(String worldName);
 }

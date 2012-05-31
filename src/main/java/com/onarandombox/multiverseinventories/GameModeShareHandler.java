@@ -21,9 +21,10 @@ final class GameModeShareHandler extends ShareHandler {
     public GameModeShareHandler(Inventories inventories, Player player,
                                 GameMode fromGameMode, GameMode toGameMode) {
         super(inventories, player, Cause.GAME_MODE_CHANGE, player.getWorld().getName(),
-                player.getWorld().getName(),fromGameMode, toGameMode);
+                player.getWorld().getName(), fromGameMode, toGameMode);
     }
 
+    @Override
     public void handle() {
         Player player = event.getPlayer();
         ProfileType fromType = ProfileTypes.forGameMode(event.getFromGameMode());

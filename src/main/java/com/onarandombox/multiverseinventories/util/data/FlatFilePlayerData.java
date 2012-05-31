@@ -228,6 +228,7 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public GlobalProfile getGlobalProfile(String playerName) {
+        // TODO use data caching to avoid excess object creation.
         File playerFile = this.getGlobalFile(playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
@@ -241,8 +242,8 @@ public class FlatFilePlayerData implements PlayerData {
      * {@inheritDoc}
      */
     @Override
-    public boolean updateGlobalProfile(String playerName, GlobalProfile globalProfile) {
-        File playerFile = this.getGlobalFile(playerName);
+    public boolean updateGlobalProfile(GlobalProfile globalProfile) {
+        File playerFile = this.getGlobalFile(globalProfile.getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", globalProfile.serialize());
         try {
@@ -259,7 +260,7 @@ public class FlatFilePlayerData implements PlayerData {
     public void updateWorld(String playerName, String worldName) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setWorld(worldName);
-        updateGlobalProfile(playerName, globalProfile);
+        updateGlobalProfile(globalProfile);
     }
     /*
     @Override

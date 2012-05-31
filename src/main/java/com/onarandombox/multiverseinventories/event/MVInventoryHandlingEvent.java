@@ -15,8 +15,17 @@ import java.util.List;
  */
 public class MVInventoryHandlingEvent extends Event implements Cancellable {
 
+    /**
+     * The cause of this Handling event.
+     */
     public static enum Cause {
+        /**
+         * Event caused by player changing worlds.
+         */
         WORLD_CHANGE,
+        /**
+         * Event caused by player changing game modes.
+         */
         GAME_MODE_CHANGE
     }
 
@@ -126,6 +135,9 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
         return this.player;
     }
 
+    /**
+     * @return The cause of this event.
+     */
     public Cause getCause() {
         return cause;
     }

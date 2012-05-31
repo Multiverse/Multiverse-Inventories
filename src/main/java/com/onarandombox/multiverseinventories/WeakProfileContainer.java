@@ -31,7 +31,10 @@ abstract class WeakProfileContainer implements ProfileContainer {
     }
 
     /**
-     * @return The map of bukkit players to their player profiles for this world player.
+     * Gets the stored profiles for this player, mapped by ProfileType.
+     *
+     * @param name The name of player to get profile map for.
+     * @return The profile map for the given player.
      */
     protected Map<ProfileType, PlayerProfile> getPlayerData(String name) {
         Map<ProfileType, PlayerProfile> data = this.playerData.get(name);

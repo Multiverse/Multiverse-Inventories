@@ -6,6 +6,9 @@ import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Default implementation of global player profiles.
+ */
 class DefaultGlobalProfile implements GlobalProfile {
 
     private final String name;
@@ -28,10 +31,12 @@ class DefaultGlobalProfile implements GlobalProfile {
         return this.name;
     }
 
+    @Override
     public String getWorld() {
         return this.lastWorld;
     }
 
+    @Override
     public void setWorld(String world) {
         this.lastWorld = world;
     }

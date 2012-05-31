@@ -97,6 +97,11 @@ public class InventoriesListener implements Listener {
         }
     }
 
+    /**
+     * Called when a player joins the server.
+     *
+     * @param event The player join event.
+     */
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -114,6 +119,11 @@ public class InventoriesListener implements Listener {
         }
     }
 
+    /**
+     * Called when a player changes game modes.
+     *
+     * @param event The game mode change event.
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerGameModeChange(PlayerGameModeChangeEvent event) {
         if (event.isCancelled() || !inventories.getMVIConfig().isUsingGameModeProfiles()) {
@@ -151,6 +161,11 @@ public class InventoriesListener implements Listener {
         inventories.getData().updateWorld(player.getName(), toWorld.getName());
     }
 
+    /**
+     * Called when a player teleports.
+     *
+     * @param event The player teleport event.
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerTeleport(PlayerTeleportEvent event) {
         if (event.isCancelled()
@@ -177,6 +192,11 @@ public class InventoriesListener implements Listener {
         }
     }
 
+    /**
+     * Called when a player dies.
+     *
+     * @param event The player death event.
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerDeath(PlayerDeathEvent event) {
         String deathWorld = event.getEntity().getWorld().getName();
