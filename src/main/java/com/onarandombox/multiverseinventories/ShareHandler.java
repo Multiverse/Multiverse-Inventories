@@ -3,35 +3,30 @@ package com.onarandombox.multiverseinventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
+import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
 import com.onarandombox.multiverseinventories.util.Logging;
-import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 /**
- * Simple implementation of ShareHandler.
+ * Abstract class for handling sharing of data between worlds and game modes.
  */
-final class ShareHandler {
+abstract class ShareHandler {
 
-    private final MVInventoryHandlingEvent event;
-    private final Inventories inventories;
-    private boolean hasBypass = false;
+    protected final MVInventoryHandlingEvent event;
+    protected final Inventories inventories;
+    protected boolean hasBypass = false;
 
-    public ShareHandler(Inventories inventories, Player player,
+    public ShareHandler(Inventories inventories, Player player, Cause cause,
                         String fromWorld, String toWorld,
                         GameMode fromGameMode, GameMode toGameMode) {
-        this.event = new MVInventoryHandlingEvent(player, fromWorld, toWorld, fromGameMode, toGameMode);
+        this.event = new MVInventoryHandlingEvent(player, cause, fromWorld, toWorld, fromGameMode, toGameMode);
         this.inventories = inventories;
     }
 
@@ -40,7 +35,7 @@ final class ShareHandler {
      * @param shares    What from this group needs to be saved.
      * @param profile   The player player that will need data saved to.
      */
-    public void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+    public final void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
         if (container instanceof WorldGroupProfile) {
             WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
             if (!worldGroupProfile.getNegativeShares().isEmpty()) {
@@ -57,7 +52,7 @@ final class ShareHandler {
      * @param shares    What from this group needs to be loaded.
      * @param profile   The player player that will need data loaded from.
      */
-    public void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
+    public final void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
         if (container instanceof WorldGroupProfile) {
             WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
             if (!worldGroupProfile.getNegativeShares().isEmpty()) {
@@ -73,16 +68,8 @@ final class ShareHandler {
      * Finalizes the transfer from one world to another.  This handles the switching
      * inventories/stats for a player and persisting the changes.
      */
-    public void handleSharing() {
-        Logging.finer("=== " + event.getPlayer().getName() + " traveling from world '" + event.getFromWorld()
-                + "' with game mode '" + event.getFromGameMode() + "' to " + "world '" + event.getToWorld()
-                + "' with game mode '" + event.getToGameMode() + "' ===");
-        if (!event.getFromWorld().equals(event.getToWorld())) {
-            handleWorldSharing();
-        }
-        if (!event.getFromGameMode().equals(event.getToGameMode())) {
-            handleGameModeSharing();
-        }
+    public final void handleSharing() {
+        this.handle();
 
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
@@ -90,114 +77,10 @@ final class ShareHandler {
         }
     }
 
-    private void handleWorldSharing() {
-        // Grab the player from the world they're coming from to save their stuff to every time.
-        WorldProfile fromWorldProfile = this.inventories.getWorldManager()
-                .getWorldProfile(event.getFromWorld());
-        this.addFromProfile(fromWorldProfile, Sharables.allOf(),
-                fromWorldProfile.getPlayerData(event.getPlayer()));
-
-        if (Perm.BYPASS_WORLD.hasBypass(event.getPlayer(), event.getToWorld())) {
-            this.hasBypass = true;
-            completeSharing();
-            return;
-        }
-
-        // Get any groups we need to save stuff to.
-        List<WorldGroupProfile> fromWorldGroups = this.inventories.getGroupManager()
-                .getGroupsForWorld(event.getFromWorld());
-        for (WorldGroupProfile fromWorldGroup : fromWorldGroups) {
-            PlayerProfile profile = fromWorldGroup.getPlayerData(event.getPlayer());
-            if (!fromWorldGroup.containsWorld(event.getToWorld())) {
-                this.addFromProfile(fromWorldGroup,
-                        Sharables.fromShares(fromWorldGroup.getShares()), profile);
-            } else {
-                if (!fromWorldGroup.getShares().isSharing(Sharables.all()) || !fromWorldGroup.getNegativeShares().isEmpty()) {
-                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
-                }
-            }
-        }
-        if (fromWorldGroups.isEmpty()) {
-            Logging.finer("No groups for fromWorld.");
-        }
-        Shares sharesToUpdate = Sharables.noneOf();
-        //Shares optionalSharesToUpdate = Sharables.noneOptional();
-        List<WorldGroupProfile> toWorldGroups = this.inventories.getGroupManager()
-                .getGroupsForWorld(event.getToWorld());
-        if (!toWorldGroups.isEmpty()) {
-            // Get groups we need to load from
-            for (WorldGroupProfile toWorldGroup : toWorldGroups) {
-                if (Perm.BYPASS_GROUP.hasBypass(event.getPlayer(), toWorldGroup.getName())) {
-                    this.hasBypass = true;
-                } else {
-                    PlayerProfile profile = toWorldGroup.getPlayerData(event.getPlayer());
-                    if (!toWorldGroup.containsWorld(event.getFromWorld())) {
-                        Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                        this.addToProfile(toWorldGroup,
-                                sharesToAdd, profile);
-                        sharesToUpdate.addAll(sharesToAdd);
-                    } else {
-                        if (!toWorldGroup.getShares().isSharing(Sharables.all()) || !toWorldGroup.getNegativeShares().isEmpty()) {
-                            Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                            this.addToProfile(toWorldGroup, sharesToAdd, profile);
-                            sharesToUpdate.addAll(sharesToAdd);
-                        } else {
-                            sharesToUpdate = Sharables.allOf();
-                        }
-                    }
-                }
-            }
-        } else {
-            // Get world we need to load from.
-            Logging.finer("No groups for toWorld.");
-            WorldProfile toWorldProfile = this.inventories.getWorldManager()
-                    .getWorldProfile(event.getToWorld());
-            this.addToProfile(toWorldProfile, Sharables.allOf(),
-                    toWorldProfile.getPlayerData(event.getPlayer()));
-            sharesToUpdate = Sharables.allOf();
-        }
-
-        // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
-        if (!sharesToUpdate.isSharing(Sharables.all())) {
-            sharesToUpdate = Sharables.complimentOf(sharesToUpdate);
-
-            // Get world we need to load from.
-            Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
-            WorldProfile toWorldProfile = this.inventories.getWorldManager()
-                    .getWorldProfile(event.getToWorld());
-            this.addToProfile(toWorldProfile, sharesToUpdate,
-                    toWorldProfile.getPlayerData(event.getPlayer()));
-        }
-    }
-
-    private void handleGameModeSharing() {
-        Player player = event.getPlayer();
-        ProfileType fromType = ProfileTypes.forGameMode(event.getFromGameMode());
-        ProfileType toType = ProfileTypes.forGameMode(event.getToGameMode());
-        String world = event.getPlayer().getWorld().getName();
-        // Grab the player from the world they're coming from to save their stuff to every time.
-        WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(world);
-        this.addFromProfile(worldProfile, Sharables.allOf(), worldProfile.getPlayerData(fromType, player));
-
-        if (Perm.BYPASS_WORLD.hasBypass(player, world)) {
-            this.hasBypass = true;
-            completeSharing();
-            return;
-        }
-
-        List<WorldGroupProfile> worldGroups = this.inventories.getGroupManager().getGroupsForWorld(world);
-        for (WorldGroupProfile worldGroup : worldGroups) {
-            this.addFromProfile(worldGroup, Sharables.allOf(), worldGroup.getPlayerData(fromType, player));
-            this.addToProfile(worldGroup, Sharables.allOf(), worldGroup.getPlayerData(toType, player));
-        }
-        if (worldGroups.isEmpty()) {
-            Logging.finer("No groups for world.");
-            this.addToProfile(worldProfile, Sharables.allOf(), worldProfile.getPlayerData(toType, player));
-        }
-    }
+    protected abstract void handle();
 
     private void completeSharing() {
-        Logging.finer("Travel affected by " + event.getFromProfiles().size() + " fromProfiles and "
+        Logging.finer("Change affected by " + event.getFromProfiles().size() + " fromProfiles and "
                 + event.getToProfiles().size() + " toProfiles");
         // This if statement should never happen, really.
         if (event.getToProfiles().isEmpty()) {
@@ -211,7 +94,7 @@ final class ShareHandler {
             } else {
                 Logging.warning("No fromWorld to save to");
             }
-            Logging.finer("=== " + event.getPlayer().getName() + "'s travel handling complete! ===");
+            Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
             return;
         }
 
@@ -221,7 +104,7 @@ final class ShareHandler {
         for (PersistingProfile persistingProfile : event.getToProfiles()) {
             updatePlayer(persistingProfile);
         }
-        Logging.finer("=== " + event.getPlayer().getName() + "'s travel handling complete! ===");
+        Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
     }
 
     private void updateProfile(PersistingProfile profile) {

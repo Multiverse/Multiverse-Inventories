@@ -107,8 +107,8 @@ public class InventoriesListener implements Listener {
         } else {
             if (!playerWorld.equals(globalProfile.getWorld())) {
                 Logging.fine("Player did not login to the world they logged out of!");
-                new ShareHandler(this.inventories, player, globalProfile.getWorld(), playerWorld,
-                        player.getGameMode(), player.getGameMode()).handleSharing();
+                new WorldChangeShareHandler(this.inventories, player,
+                        globalProfile.getWorld(), playerWorld).handleSharing();
                 inventories.getData().updateWorld(player.getName(), playerWorld);
             }
         }
@@ -120,8 +120,7 @@ public class InventoriesListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String world = player.getWorld().getName();
-        new ShareHandler(this.inventories, player, world, world,
+        new GameModeShareHandler(this.inventories, player,
                 player.getGameMode(), event.getNewGameMode()).handleSharing();
     }
 
@@ -148,8 +147,7 @@ public class InventoriesListener implements Listener {
             return;
         }
 
-        new ShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName(),
-                player.getGameMode(), player.getGameMode()).handleSharing();
+        new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
         inventories.getData().updateWorld(player.getName(), toWorld.getName());
     }
 

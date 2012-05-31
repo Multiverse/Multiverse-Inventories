@@ -15,9 +15,15 @@ import java.util.List;
  */
 public class MVInventoryHandlingEvent extends Event implements Cancellable {
 
+    public static enum Cause {
+        WORLD_CHANGE,
+        GAME_MODE_CHANGE
+    }
+
     private boolean cancelled;
 
     private final Player player;
+    private final Cause cause;
     private final String fromWorld;
     private final String toWorld;
     private final GameMode fromGameMode;
@@ -25,11 +31,12 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
     private final List<PersistingProfile> fromProfiles;
     private final List<PersistingProfile> toProfiles;
 
-    public MVInventoryHandlingEvent(Player player, String fromWorld, String toWorld,
+    public MVInventoryHandlingEvent(Player player, Cause cause, String fromWorld, String toWorld,
                                     GameMode fromGameMode, GameMode toGameMode) {
         this.fromProfiles = new ArrayList<PersistingProfile>();
         this.toProfiles = new ArrayList<PersistingProfile>();
         this.player = player;
+        this.cause = cause;
         this.fromWorld = fromWorld;
         this.toWorld = toWorld;
         this.fromGameMode = fromGameMode;
@@ -117,5 +124,9 @@ public class MVInventoryHandlingEvent extends Event implements Cancellable {
      */
     public Player getPlayer() {
         return this.player;
+    }
+
+    public Cause getCause() {
+        return cause;
     }
 }
