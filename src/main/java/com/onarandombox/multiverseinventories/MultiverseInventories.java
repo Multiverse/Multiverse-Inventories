@@ -252,6 +252,11 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
                 + this.getDescription().getVersion()));
         builder.append(this.logAndAddToPasteBinBuffer("Debug Level: " + this.getMVIConfig().getGlobalDebug()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
+        builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass()));
+        builder.append(this.logAndAddToPasteBinBuffer("Default Ungrouped Worlds: "
+                + this.getMVIConfig().isDefaultingUngroupedWorlds()));
+        builder.append(this.logAndAddToPasteBinBuffer("Using GameMode Profiles: "
+                + this.getMVIConfig().isUsingGameModeProfiles()));
         builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
         for (WorldGroupProfile group : this.getGroupManager().getGroups()) {
             builder.append(this.logAndAddToPasteBinBuffer(group.toString()));
