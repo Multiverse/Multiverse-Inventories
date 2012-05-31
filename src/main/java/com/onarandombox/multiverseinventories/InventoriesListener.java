@@ -199,6 +199,7 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerDeath(PlayerDeathEvent event) {
+        Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
         WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(deathWorld);
         PlayerProfile profile = worldProfile.getPlayerData(event.getEntity());
@@ -213,6 +214,7 @@ public class InventoriesListener implements Listener {
             profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
             this.inventories.getData().updatePlayerData(profile);
         }
+        Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
     }
 
     /**
