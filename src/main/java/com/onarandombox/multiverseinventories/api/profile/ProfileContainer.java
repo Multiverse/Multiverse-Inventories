@@ -12,7 +12,9 @@ public interface ProfileContainer {
 
     /**
      * @param player Player to get data for.
-     * @return The Player profile for the associated player for the {@link ProfileType} for their current GameMode.
+     * @return The Player profile for the associated player for the {@link ProfileType} for their current GameMode if
+     * {@link com.onarandombox.multiverseinventories.api.InventoriesConfig#isUsingGameModeProfiles()} is true or for
+     * {@link com.onarandombox.multiverseinventories.ProfileTypes#SURVIVAL} otherwise.
      */
     PlayerProfile getPlayerData(Player player);
 
