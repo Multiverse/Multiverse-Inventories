@@ -6,6 +6,7 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -117,7 +118,13 @@ public final class Sharables implements Shares {
                         player.setHealth(PlayerStats.HEALTH);
                         return false;
                     }
-                    player.setHealth(value);
+                    try {
+                        player.setHealth(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setHealth(PlayerStats.HEALTH);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
@@ -140,7 +147,13 @@ public final class Sharables implements Shares {
                         player.setRemainingAir(PlayerStats.REMAINING_AIR);
                         return false;
                     }
-                    player.setRemainingAir(value);
+                    try {
+                        player.setRemainingAir(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setRemainingAir(PlayerStats.REMAINING_AIR);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
@@ -162,7 +175,13 @@ public final class Sharables implements Shares {
                         player.setMaximumAir(PlayerStats.MAXIMUM_AIR);
                         return false;
                     }
-                    player.setMaximumAir(value);
+                    try {
+                        player.setMaximumAir(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setMaximumAir(PlayerStats.MAXIMUM_AIR);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_AIR)).build();
@@ -184,7 +203,13 @@ public final class Sharables implements Shares {
                         player.setFallDistance(PlayerStats.FALL_DISTANCE);
                         return false;
                     }
-                    player.setFallDistance(value);
+                    try {
+                        player.setFallDistance(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setFallDistance(PlayerStats.FALL_DISTANCE);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FALL_DISTANCE))
@@ -207,7 +232,13 @@ public final class Sharables implements Shares {
                         player.setFireTicks(PlayerStats.FIRE_TICKS);
                         return false;
                     }
-                    player.setFireTicks(value);
+                    try {
+                        player.setFireTicks(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setFireTicks(PlayerStats.FIRE_TICKS);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FIRE_TICKS))
@@ -231,7 +262,13 @@ public final class Sharables implements Shares {
                         player.setExp(PlayerStats.EXPERIENCE);
                         return false;
                     }
-                    player.setExp(value);
+                    try {
+                        player.setExp(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setExp(PlayerStats.EXPERIENCE);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
@@ -253,7 +290,13 @@ public final class Sharables implements Shares {
                         player.setLevel(PlayerStats.LEVEL);
                         return false;
                     }
-                    player.setLevel(value);
+                    try {
+                        player.setLevel(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setLevel(PlayerStats.LEVEL);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
@@ -275,7 +318,13 @@ public final class Sharables implements Shares {
                         player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
                         return false;
                     }
-                    player.setTotalExperience(value);
+                    try {
+                        player.setTotalExperience(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE)).build();
@@ -297,7 +346,13 @@ public final class Sharables implements Shares {
                         player.setFoodLevel(PlayerStats.FOOD_LEVEL);
                         return false;
                     }
-                    player.setFoodLevel(value);
+                    try {
+                        player.setFoodLevel(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setFoodLevel(PlayerStats.FOOD_LEVEL);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL))
@@ -320,7 +375,13 @@ public final class Sharables implements Shares {
                         player.setExhaustion(PlayerStats.EXHAUSTION);
                         return false;
                     }
-                    player.setExhaustion(value);
+                    try {
+                        player.setExhaustion(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setExhaustion(PlayerStats.EXHAUSTION);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION))
@@ -343,7 +404,13 @@ public final class Sharables implements Shares {
                         player.setSaturation(PlayerStats.SATURATION);
                         return false;
                     }
-                    player.setSaturation(value);
+                    try {
+                        player.setSaturation(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setSaturation(PlayerStats.SATURATION);
+                        return false;
+                    }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_SATURATION))
