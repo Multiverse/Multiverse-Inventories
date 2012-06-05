@@ -222,7 +222,7 @@ final class DefaultGroupManager implements GroupManager {
         if (sender != null) {
             this.inventories.getMessager().sendMessage(sender, message);
         }
-        Logging.info(message);
+        Logging.fine(message);
         List<GroupingConflict> conflicts = this.inventories.getGroupManager().checkGroups();
         for (GroupingConflict conflict : conflicts) {
             message = this.inventories.getMessager().getMessage(Message.CONFLICT_RESULTS,
@@ -244,7 +244,7 @@ final class DefaultGroupManager implements GroupManager {
             if (sender != null) {
                 this.inventories.getMessager().sendMessage(sender, message);
             }
-            Logging.info(message);
+            Logging.fine(message);
         }
     }
 }
