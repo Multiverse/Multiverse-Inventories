@@ -72,6 +72,9 @@ class DefaultPlayerProfile implements PlayerProfile {
      * @param stats Parses these values to fill out this Profile.
      */
     protected void parsePlayerStats(String stats) {
+        if (stats.isEmpty()) {
+            return;
+        }
         String[] statsArray = stats.split(DataStrings.GENERAL_DELIMITER);
         for (String stat : statsArray) {
             try {
@@ -111,7 +114,9 @@ class DefaultPlayerProfile implements PlayerProfile {
                 }
             }
         }
-        playerData.put(DataStrings.PLAYER_STATS, statBuilder.toString());
+        if (!statBuilder.toString().isEmpty()) {
+            playerData.put(DataStrings.PLAYER_STATS, statBuilder.toString());
+        }
         return playerData;
     }
 
