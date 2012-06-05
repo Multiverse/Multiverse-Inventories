@@ -302,16 +302,21 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
         ProfileTypes.resetProfileTypes();
         this.getProfileTypeManager();
-        // Get world groups from config
-        this.getGroupManager().setGroups(this.getMVIConfig().getWorldGroups());
-        // Create initial World Group for first run IF NO GROUPS EXIST
-        if (this.getMVIConfig().isFirstRun()) {
-            Logging.info("First run!");
-            if (this.getGroupManager().getGroups().isEmpty()) {
-                this.getGroupManager().createDefaultGroup();
+        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                // Get world groups from config
+                getGroupManager().setGroups(getMVIConfig().getWorldGroups());
+                // Create initial World Group for first run IF NO GROUPS EXIST
+                if (getMVIConfig().isFirstRun()) {
+                    Logging.info("First run!");
+                    if (getGroupManager().getGroups().isEmpty()) {
+                        getGroupManager().createDefaultGroup();
+                    }
+                }
+                getGroupManager().checkForConflicts(null);
             }
-        }
-        this.getGroupManager().checkForConflicts(null);
+        }, 1L);
     }
 
     /**
