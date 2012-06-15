@@ -168,7 +168,15 @@ public class FlatFilePlayerData implements PlayerData {
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
         File playerFile = this.getPlayerFile(containerType, dataName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        convertConfig(playerData);
+        if (convertConfig(playerData)) {
+            try {
+                playerData.save(playerFile);
+            } catch (IOException e) {
+                Logging.severe("Could not save data for player: " + playerName
+                        + " for " + containerType.toString() + ": " + dataName + " after conversion.");
+                Logging.severe(e.getMessage());
+            }
+        }
         ConfigurationSection section = playerData.getConfigurationSection(profileType.getName());
         if (section == null) {
             section = playerData.createSection(profileType.getName());
@@ -176,14 +184,16 @@ public class FlatFilePlayerData implements PlayerData {
         return new DefaultPlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
     }
 
-    private void convertConfig(FileConfiguration config) {
+    private boolean convertConfig(FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection("playerData");
         if (section != null) {
             config.set(ProfileTypes.SURVIVAL.getName(), section);
             config.set(ProfileTypes.CREATIVE.getName(), section);
             config.set("playerData", null);
             Logging.finer("Migrated old player data to new multi-profile format");
+            return true;
         }
+        return false;
     }
 
     /**
