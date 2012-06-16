@@ -222,7 +222,12 @@ public class InventoriesListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerRespawn(PlayerRespawnEvent event) {
-        verifyCorrectWorld(event.getPlayer(), event.getRespawnLocation().getWorld().getName());
+        Location respawnLoc = event.getRespawnLocation();
+        if (respawnLoc == null) {
+            // This probably only happens if a naughty plugin sets the location to null...
+            return;
+        }
+        verifyCorrectWorld(event.getPlayer(), respawnLoc.getWorld().getName());
     }
 
     /**
