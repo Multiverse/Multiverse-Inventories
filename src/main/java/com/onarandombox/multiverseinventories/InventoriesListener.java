@@ -11,6 +11,7 @@ import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -227,7 +228,12 @@ public class InventoriesListener implements Listener {
             // This probably only happens if a naughty plugin sets the location to null...
             return;
         }
-        verifyCorrectWorld(event.getPlayer(), respawnLoc.getWorld().getName());
+        final Player player = event.getPlayer();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(inventories, new Runnable() {
+            public void run() {
+                verifyCorrectWorld(player, player.getWorld().getName());
+            }
+        }, 2L);
     }
 
     /**
