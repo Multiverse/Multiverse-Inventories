@@ -189,6 +189,7 @@ public class FlatFilePlayerData implements PlayerData {
         if (section != null) {
             config.set(ProfileTypes.SURVIVAL.getName(), section);
             config.set(ProfileTypes.CREATIVE.getName(), section);
+            config.set(ProfileTypes.ADVENTURE.getName(), section);
             config.set("playerData", null);
             Logging.finer("Migrated old player data to new multi-profile format");
             return true;

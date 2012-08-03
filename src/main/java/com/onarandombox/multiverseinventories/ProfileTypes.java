@@ -25,6 +25,11 @@ public final class ProfileTypes {
      */
     public static final ProfileType CREATIVE = new DefaultProfileType("CREATIVE", Sharables.allOf());
 
+    /**
+     * The profile type for the ADVENTURE Game Mode.
+     */
+    public static final ProfileType ADVENTURE = new DefaultProfileType("ADVENTURE", Sharables.allOf());
+
     private static Map<String, ProfileType> profileTypeMap;
 
     static {
@@ -45,7 +50,8 @@ public final class ProfileTypes {
 
     /**
      * Looks up a profile type and optionally creates it if it doesn't exist.
-     * @param name The name of the profile type to look up.
+     *
+     * @param name           The name of the profile type to look up.
      * @param registerIfNone Registers the profile type if it doesn't exist.
      * @return The profile by the given name or null if non-existent and uncreated.
      */
@@ -69,6 +75,8 @@ public final class ProfileTypes {
                 return SURVIVAL;
             case CREATIVE:
                 return CREATIVE;
+            case ADVENTURE:
+                return ADVENTURE;
             default:
                 return SURVIVAL;
         }
