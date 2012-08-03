@@ -184,15 +184,15 @@ and adjust the build number accordingly -->
         </plugins>
     </build>
     <dependencies>
-        <!-- Start of Bukkit Dependency -->
+        <!-- Start of Multiverse Core Dependency -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.2.5-R1.0</version>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.4</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- End of Bukkit Dependency -->
+        <!-- End of Multiverse Core Dependency -->
         <!-- Start of ConfigurationLib Dependency -->
         <dependency>
             <groupId>com.feildmaster.lib</groupId>
@@ -208,21 +208,6 @@ and adjust the build number accordingly -->
             </exclusions>
         </dependency>
         <!-- End of ConfigurationLib Dependency -->
-        <!-- Start of Multiverse Core Dependency -->
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>2.4</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- End of Multiverse Core Dependency -->
         <!-- Start of Multiverse Adventure Dependency -->
         <dependency>
             <groupId>com.onarandombox.multiverseadventure</groupId>
