@@ -63,19 +63,19 @@ public class MockPlayer implements Player {
     float saturation = PlayerStats.SATURATION;
     int food_level = PlayerStats.FOOD_LEVEL;
     int health = PlayerStats.HEALTH;
-    
+
     Collection<PotionEffect> potionEffects = new LinkedList<PotionEffect>();
-    
+
     int max_no_damage_ticks = 0;
     int max_air = 20;
     int last_damage = 0;
-    
+
     PlayerInventory inventory = new MockPlayerInventory();
-    
+
     public MockPlayer(String name, Server server) {
         this.name = name;
     }
-    
+
 
     @Override
     public void setCompassTarget(Location location) {
@@ -314,6 +314,21 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public int getExpToLevel() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean hasLineOfSight(Entity entity) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isValid() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public Player getPlayer() {
         return this;
     }
@@ -334,19 +349,8 @@ public class MockPlayer implements Player {
     public Server getServer() {
         return this.server;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     @Override
     public void setDisplayName(String s) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -578,7 +582,6 @@ public class MockPlayer implements Player {
     }
 
 
-
     @Override
     public boolean setWindowProperty(Property property, int i) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
@@ -654,10 +657,6 @@ public class MockPlayer implements Player {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    
-    
-    
-    
 
     @Override
     public double getEyeHeight() {
@@ -756,23 +755,6 @@ public class MockPlayer implements Player {
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
     @Override
     public void setVelocity(Vector vector) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -783,7 +765,6 @@ public class MockPlayer implements Player {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    
 
     @Override
     public boolean teleport(Entity entity) {
@@ -805,22 +786,6 @@ public class MockPlayer implements Player {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     @Override
     public void remove() {
@@ -853,16 +818,6 @@ public class MockPlayer implements Player {
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
     @Override
     public void setLastDamageCause(EntityDamageEvent entityDamageEvent) {
         //To change body of implemented methods use File | Settings | File Templates.
@@ -878,13 +833,6 @@ public class MockPlayer implements Player {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    
-    
-    
-    
-    
-    
-    
 
     @Override
     public void playEffect(EntityEffect entityEffect) {
@@ -956,12 +904,7 @@ public class MockPlayer implements Player {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    
 
-    
-    
-    
-    
     @Override
     public long getFirstPlayed() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
