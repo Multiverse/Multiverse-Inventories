@@ -4,7 +4,6 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
@@ -21,9 +20,11 @@ import java.util.List;
 
 public class TemporaryEnderChestListener implements Listener {
 
-    private Inventories plugin;
+    private final Inventories plugin;
 
-    TemporaryEnderChestListener(Inventories plugin) {
+    private boolean hasBeenWarned = false;
+
+    TemporaryEnderChestListener(final Inventories plugin) {
         this.plugin = plugin;
     }
 
@@ -38,18 +39,27 @@ public class TemporaryEnderChestListener implements Listener {
         if (!(event.getPlayer() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getPlayer();
+        final Player player = (Player) event.getPlayer();
+        final String world = player.getWorld().getName();
         PlayerProfile playerProfile = null;
-        List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(player.getWorld().getName());
+        boolean multiple = false;
+        final List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(world);
         for (WorldGroupProfile worldGroupProfile : groupsForWorld) {
             if (worldGroupProfile.isSharing(Sharables.ENDER_CHEST)) {
-                playerProfile = worldGroupProfile.getPlayerData(player);
-                break;
+                if (playerProfile == null) {
+                    playerProfile = worldGroupProfile.getPlayerData(player);
+                } else {
+                    multiple = true;
+                    break;
+                }
             }
         }
+        if (multiple && !hasBeenWarned) {
+            Logging.warning("There was a conflict when attempting to load an Ender chest inventory due to world '" + world + "' sharing ender_chest in multiple groups. One inventory was picked from multiple.  It is not likely anything very bad will occur due to this but item loss is possible.  This is a temporary issue and will not occur once Bukkit adds a way to properly work with Ender chests.  This may continue to happen but this is the only warning you will receive.");
+            hasBeenWarned = true;
+        }
         if (playerProfile == null) {
-            WorldProfile worldProfile = plugin.getWorldManager().getWorldProfile(player.getWorld().getName());
-            playerProfile = worldProfile.getPlayerData(player);
+            playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
         }
         ItemStack[] contents = playerProfile.get(Sharables.ENDER_CHEST);
         if (contents == null) {
@@ -70,9 +80,10 @@ public class TemporaryEnderChestListener implements Listener {
         if (!(event.getPlayer() instanceof Player)) {
             return;
         }
-        Player player = (Player) event.getPlayer();
+        final Player player = (Player) event.getPlayer();
+        final String world = player.getWorld().getName();
         PlayerProfile playerProfile = null;
-        List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(player.getWorld().getName());
+        final List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(world);
         for (WorldGroupProfile worldGroupProfile : groupsForWorld) {
             if (worldGroupProfile.isSharing(Sharables.ENDER_CHEST)) {
                 playerProfile = worldGroupProfile.getPlayerData(player);
@@ -81,8 +92,7 @@ public class TemporaryEnderChestListener implements Listener {
                 Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
             }
         }
-        WorldProfile worldProfile = plugin.getWorldManager().getWorldProfile(player.getWorld().getName());
-        playerProfile = worldProfile.getPlayerData(player);
+        playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
         playerProfile.set(Sharables.ENDER_CHEST, event.getInventory().getContents());
         plugin.getData().updatePlayerData(playerProfile);
         Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
