@@ -129,6 +129,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
             Bukkit.getPluginManager().registerEvents(adventureListener, this);
         }
+        // Temporary solution for ender chests
+        Bukkit.getPluginManager().registerEvents(new TemporaryEnderChestListener(this), this);
 
         // Register Commands
         this.registerCommands();
