@@ -65,6 +65,10 @@ public class DataStrings {
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
     /**
+     * Ender chest inventory contents identifier.
+     */
+    public static final String ENDER_CHEST_CONTENTS = "enderChestContents";
+    /**
      * Player bed spawn location identifier.
      */
     public static final String PLAYER_BED_SPAWN_LOCATION = "bedSpawnLocation";

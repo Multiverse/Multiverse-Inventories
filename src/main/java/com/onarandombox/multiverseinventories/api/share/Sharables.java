@@ -102,6 +102,24 @@ public final class Sharables implements Shares {
                     new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
 
     /**
+     * Sharing Enderchest Inventory.
+     */
+    public static final Sharable<ItemStack[]> ENDER_CHEST = new Sharable.Builder<ItemStack[]>("ender_chest",
+            ItemStack[].class, new SharableHandler<ItemStack[]>() {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            // TODO switch inventories properly when Bukkit API is available.
+        }
+
+        @Override
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
+            // TODO switch inventories properly when Bukkit API is available.
+            return true;
+        }
+    }).serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
+            new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
+
+    /**
      * Sharing Health.
      */
     public static final Sharable<Integer> HEALTH = new Sharable.Builder<Integer>("hit_points", Integer.class,
@@ -518,7 +536,7 @@ public final class Sharables implements Shares {
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
-            fromSharables(INVENTORY, ARMOR), "inv", "inventories");
+            fromSharables(INVENTORY, ARMOR, ENDER_CHEST), "inv", "inventories");
 
     /**
      * Grouping for experience sharables.
@@ -557,7 +575,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION), "*",
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST), "*",
             "everything");
 
 

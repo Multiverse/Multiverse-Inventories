@@ -14,6 +14,10 @@ public class PlayerStats {
      */
     public static final int ARMOR_SIZE = 4;
     /**
+     * Number of slots in an ender chest.
+     */
+    public static final int ENDER_CHEST_SIZE = 27;
+    /**
      * Default health value.
      */
     public static final int HEALTH = 20;
