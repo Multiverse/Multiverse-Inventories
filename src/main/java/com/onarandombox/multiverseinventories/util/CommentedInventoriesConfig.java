@@ -320,7 +320,13 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public Shares getOptionalShares() {
         if (this.optionalSharables == null) {
-            this.optionalSharables = Sharables.fromList(this.getConfig().getList(Path.OPTIONAL_SHARES.getPath()));
+            List list = this.getConfig().getList(Path.OPTIONAL_SHARES.getPath());
+            if (list != null) {
+                this.optionalSharables = Sharables.fromList(list);
+            } else {
+                Logging.warning("'" + Path.OPTIONAL_SHARES.getPath() + "' is setup incorrectly!");
+                this.optionalSharables = Sharables.noneOf();
+            }
         }
         return this.optionalSharables;
     }
