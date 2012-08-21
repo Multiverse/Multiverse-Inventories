@@ -18,13 +18,13 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class TemporaryEnderChestListener implements Listener {
+public class EnderChestListenerEarly1_3_1_RBs implements Listener {
 
     private final Inventories plugin;
 
     private boolean hasBeenWarned = false;
 
-    TemporaryEnderChestListener(final Inventories plugin) {
+    EnderChestListenerEarly1_3_1_RBs(final Inventories plugin) {
         this.plugin = plugin;
     }
 
