@@ -14,22 +14,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class TemporaryEnderChestListener implements Listener {
+public class EnderChestListenerEarly1_3_1_RBs implements Listener {
 
     private final Inventories plugin;
 
     private boolean hasBeenWarned = false;
 
-    TemporaryEnderChestListener(final Inventories plugin) {
+    private final Map<String, Inventory> openInventories = new HashMap<String, Inventory>();
+
+    EnderChestListenerEarly1_3_1_RBs(final Inventories plugin) {
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void inventoryOpen(InventoryOpenEvent event) {
+    public void inventoryOpen(final InventoryOpenEvent event) {
         if (event.isCancelled()) {
             return;
         }
@@ -69,11 +75,12 @@ public class TemporaryEnderChestListener implements Listener {
             Logging.finest("Creating blank inventory for ender chest");
         }
         event.getInventory().setContents(contents);
+        openInventories.put(player.getName(), event.getInventory());
         Logging.finest("Loaded ender chest from '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void inventoryClose(InventoryCloseEvent event) {
+    public void inventoryClose(final InventoryCloseEvent event) {
         if (event.getInventory().getType() != InventoryType.ENDER_CHEST) {
             return;
         }
@@ -95,6 +102,31 @@ public class TemporaryEnderChestListener implements Listener {
         playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
         playerProfile.set(Sharables.ENDER_CHEST, event.getInventory().getContents());
         plugin.getData().updatePlayerData(playerProfile);
+        openInventories.remove(player.getName());
         Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
+    }
+
+    @EventHandler
+    public void playerQuit(final PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        if (openInventories.containsKey(player.getName())) {
+            final Inventory inventory = openInventories.get(player.getName());
+            final String world = player.getWorld().getName();
+            PlayerProfile playerProfile = null;
+            final List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(world);
+            for (WorldGroupProfile worldGroupProfile : groupsForWorld) {
+                if (worldGroupProfile.isSharing(Sharables.ENDER_CHEST)) {
+                    playerProfile = worldGroupProfile.getPlayerData(player);
+                    playerProfile.set(Sharables.ENDER_CHEST, inventory.getContents());
+                    plugin.getData().updatePlayerData(playerProfile);
+                    Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
+                }
+            }
+            playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
+            playerProfile.set(Sharables.ENDER_CHEST, inventory.getContents());
+            plugin.getData().updatePlayerData(playerProfile);
+            openInventories.remove(player.getName());
+            Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
+        }
     }
 }

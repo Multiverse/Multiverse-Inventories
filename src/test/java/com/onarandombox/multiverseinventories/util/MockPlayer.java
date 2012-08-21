@@ -71,6 +71,7 @@ public class MockPlayer implements Player {
     int last_damage = 0;
 
     PlayerInventory inventory = new MockPlayerInventory();
+    PlayerInventory enderChest = new MockPlayerInventory();
 
     public MockPlayer(String name, Server server) {
         this.name = name;
@@ -170,6 +171,11 @@ public class MockPlayer implements Player {
     @Override
     public PlayerInventory getInventory() {
         return this.inventory;
+    }
+
+    @Override
+    public Inventory getEnderChest() {
+        return this.enderChest;
     }
 
     @Override
@@ -993,5 +999,25 @@ public class MockPlayer implements Player {
     @Override
     public void setOp(boolean b) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setFlySpeed(float v) throws IllegalArgumentException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setWalkSpeed(float v) throws IllegalArgumentException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public float getFlySpeed() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public float getWalkSpeed() {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

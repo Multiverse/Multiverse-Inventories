@@ -34,6 +34,8 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -129,8 +131,19 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
             Bukkit.getPluginManager().registerEvents(adventureListener, this);
         }
-        // Temporary solution for ender chests
-        Bukkit.getPluginManager().registerEvents(new TemporaryEnderChestListener(this), this);
+
+        try {
+            InventoryType.ENDER_CHEST.getClass();
+            try {
+                Player.class.getMethod("getEnderChest");
+                Logging.fine("Ender chest supported through proper Bukkit and Multiverse-Inventories API!");
+            } catch (NoSuchMethodException ignore) {
+                Bukkit.getPluginManager().registerEvents(new EnderChestListenerEarly1_3_1_RBs(this), this);
+                Logging.fine("Ender chest supported for early releases of Bukkit for MC 1.3.1.");
+            }
+        } catch (NoSuchFieldError ignore) {
+            Logging.fine("No ender chest support for pre MC 1.3!");
+        }
 
         // Register Commands
         this.registerCommands();
