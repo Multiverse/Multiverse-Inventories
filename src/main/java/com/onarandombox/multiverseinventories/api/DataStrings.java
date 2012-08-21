@@ -9,6 +9,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -355,9 +358,9 @@ public class DataStrings {
     /**
      * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
      */
-    public static final class ItemWrapper {
+    public static abstract class ItemWrapper {
 
-        private ItemStack item;
+        protected ItemStack item;
 
         /**
          * Wraps the given {@link ItemStack} in an ItemWrapper so that it can be easily turned into a string.
@@ -365,8 +368,8 @@ public class DataStrings {
          * @param item The {@link ItemStack} to wrap.
          * @return The wrapped {@link ItemStack}.
          */
-        public static ItemWrapper wrap(ItemStack item) {
-            return new ItemWrapper(item);
+        public static ItemWrapper wrap(final ItemStack item) {
+            return new LegacyItemWrapper(item);
         }
 
         /**
@@ -375,15 +378,39 @@ public class DataStrings {
          * @param itemString the String to parse.
          * @return The wrapped {@link ItemStack}.
          */
-        public static ItemWrapper wrap(String itemString) {
-            return new ItemWrapper(itemString);
+        public static ItemWrapper wrap(final String itemString) {
+            return new LegacyItemWrapper(itemString);
+            /*
+            if (itemString.startsWith("{")) {
+                return new JSONItemWrapper(itemString);
+            } else {
+                return new LegacyItemWrapper(itemString);
+            }
+            */
         }
 
-        private ItemWrapper(ItemStack item) {
+        /**
+         * Retrieves the ItemStack that this class is wrapping.
+         *
+         * @return The ItemStack this class is wrapping.
+         */
+        public final ItemStack getItem() {
+            return this.item;
+        }
+
+        public abstract String toString();
+    }
+
+    /**
+     * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
+     */
+    private static final class LegacyItemWrapper extends ItemWrapper {
+
+        private LegacyItemWrapper(final ItemStack item) {
             this.item = item;
         }
 
-        private ItemWrapper(String itemString) {
+        private LegacyItemWrapper(final String itemString) {
             int type = 0;
             short damage = 0;
             int amount = 1;
@@ -414,7 +441,7 @@ public class DataStrings {
             }
         }
 
-        private Map<Enchantment, Integer> parseEnchants(String enchantsString) {
+        private Map<Enchantment, Integer> parseEnchants(final String enchantsString) {
             String[] enchantData = enchantsString.split(DataStrings.SECONDARY_DELIMITER);
             Map<Enchantment, Integer> enchantsMap = new LinkedHashMap<Enchantment, Integer>(enchantData.length);
 
@@ -431,15 +458,6 @@ public class DataStrings {
                 }
             }
             return enchantsMap;
-        }
-
-        /**
-         * Retrieves the ItemStack that this class is wrapping.
-         *
-         * @return The ItemStack this class is wrapping.
-         */
-        public ItemStack getItem() {
-            return this.item;
         }
 
         /**
@@ -485,6 +503,102 @@ public class DataStrings {
             }
 
             return result.toString();
+        }
+    }
+
+    private static final JSONParser JSON_PARSER = new JSONParser();
+    /**
+     * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
+     */
+    private static final class JSONItemWrapper extends ItemWrapper {
+
+        private JSONItemWrapper(final ItemStack item) {
+            this.item = item;
+        }
+
+        private JSONItemWrapper(final String itemString) {
+            int type = 0;
+            short damage = 0;
+            int amount = 1;
+            JSONObject itemData = null;
+            try {
+                Object obj = JSON_PARSER.parse(itemString);
+                if (obj instanceof JSONObject) {
+                    itemData = (JSONObject) obj;
+                }
+            } catch (ParseException e) {
+                Logging.warning("Could not parse item: " + itemString + "!  Item may be lost!");
+            }
+            if (itemData == null) {
+                Logging.warning("Could not parse item: " + itemString + "!  Item may be lost!");
+            } else {
+                Object obj = itemData.get(ITEM_TYPE_ID);
+                if (obj != null && obj instanceof Number) {
+                    type = ((Number) obj).intValue();
+                }
+                obj = itemData.get(ITEM_AMOUNT);
+                if (obj != null && obj instanceof Number) {
+                    amount = ((Number) obj).intValue();
+                }
+                obj = itemData.get(ITEM_DURABILITY);
+                if (obj != null && obj instanceof Number) {
+                    damage = ((Number) obj).shortValue();
+                }
+            }
+            this.item = new ItemStack(type, amount, damage);
+
+            if (itemData != null && itemData.containsKey(ITEM_ENCHANTS)) {
+                Object obj = itemData.get(ITEM_ENCHANTS);
+                if (obj instanceof JSONObject) {
+                    this.getItem().addUnsafeEnchantments(this.parseEnchants((JSONObject) obj));
+                } else {
+                    Logging.warning("Could not parse item enchantments: " + obj);
+                }
+            }
+        }
+
+        private Map<Enchantment, Integer> parseEnchants(JSONObject enchantData) {
+            final Map<Enchantment, Integer> enchantsMap = new LinkedHashMap<Enchantment, Integer>(enchantData.size());
+            for (Object key : enchantData.keySet()) {
+                Enchantment enchantment = Enchantment.getByName(key.toString());
+                Object value = enchantData.get(key);
+                if (enchantment == null || !(value instanceof Number)) {
+                    Logging.fine("Could not parse item enchantment: " + key.toString());
+                    continue;
+                }
+                enchantsMap.put(enchantment, ((Number) value).intValue());
+            }
+            return enchantsMap;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public String toString() {
+            JSONObject jsonItem = new JSONObject();
+            jsonItem.put(ITEM_TYPE_ID, getItem().getTypeId());
+            if (getItem().getDurability() != 0) {
+                jsonItem.put(ITEM_DURABILITY, getItem().getDurability());
+            }
+            if (getItem().getAmount() != 1) {
+                jsonItem.put(ITEM_AMOUNT, getItem().getAmount());
+            }
+
+            Map<Enchantment, Integer> enchants = getItem().getEnchantments();
+            if (enchants.size() > 0) {
+                JSONObject jsonEnchants = new JSONObject();
+                for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+                    if (entry.getKey() == null) {
+                        Logging.finer("Not saving null enchantment!");
+                        continue;
+                    }
+                    jsonEnchants.put(entry.getKey().getName(), entry.getValue());
+                }
+                jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
+            }
+
+            return jsonItem.toString();
         }
     }
 }
