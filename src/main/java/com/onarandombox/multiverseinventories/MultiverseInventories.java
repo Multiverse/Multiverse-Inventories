@@ -313,7 +313,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.groupManager = null;
         this.worldProfileManager = null;
         this.profileTypeManager = null;
-        this.data = null;
+        //this.data = null;
 
         ProfileTypes.resetProfileTypes();
         this.getProfileTypeManager();

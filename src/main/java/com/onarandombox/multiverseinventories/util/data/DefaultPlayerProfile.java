@@ -195,5 +195,10 @@ class DefaultPlayerProfile implements PlayerProfile {
     public ProfileType getProfileType() {
         return this.profileType;
     }
+
+    @Override
+    public PlayerProfile clone() throws CloneNotSupportedException {
+        return (PlayerProfile) super.clone();
+    }
 }
 

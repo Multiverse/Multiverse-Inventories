@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Implementation of PlayerData.
@@ -23,10 +25,11 @@ import java.util.Map;
 public class FlatFilePlayerData implements PlayerData {
 
     private static final String YML = ".yml";
-    private File worldFolder = null;
-    private File groupFolder = null;
-    private File playerFolder = null;
-    private Inventories inventories;
+    private final File worldFolder;
+    private final File groupFolder;
+    private final File playerFolder;
+    private final Inventories inventories;
+    private final FileWriteThread fileWriteThread;
 
     public FlatFilePlayerData(Inventories plugin) throws IOException {
         this.inventories = plugin;
@@ -52,6 +55,8 @@ public class FlatFilePlayerData implements PlayerData {
                 throw new IOException("Could not create player folder!");
             }
         }
+        fileWriteThread = new FileWriteThread();
+        fileWriteThread.start();
     }
 
     private FileConfiguration getConfigHandle(File file) {
@@ -141,11 +146,38 @@ public class FlatFilePlayerData implements PlayerData {
     }
     */
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean updatePlayerData(PlayerProfile playerProfile) {
+    private class FileWriteThread extends Thread {
+
+        FileWriteThread() {
+            super("MV-Inv Profile Write Thread");
+        }
+
+        private final BlockingQueue<PlayerProfile> profileWriteQueue = new LinkedBlockingQueue<PlayerProfile>();
+
+        @Override
+        public void run() {
+            while(true) {
+                try {
+                    PlayerProfile profile = profileWriteQueue.take();
+                    processProfileWrite(profile);
+                } catch (InterruptedException ignore) { }
+            }
+        }
+
+        public void queue(PlayerProfile profile) {
+            try {
+                profileWriteQueue.add(profile.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void waitUntilEmpty() {
+            while(!profileWriteQueue.isEmpty()) { }
+        }
+    }
+
+    private void processProfileWrite(PlayerProfile playerProfile) {
         File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
                 playerProfile.getContainerName(), playerProfile.getPlayer().getName());
         FileConfiguration playerData = this.getConfigHandle(playerFile);
@@ -156,9 +188,15 @@ public class FlatFilePlayerData implements PlayerData {
             Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
                     + " for " + playerProfile.getContainerType().toString() + ": " + playerProfile.getContainerName());
             Logging.severe(e.getMessage());
-            return false;
         }
-        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updatePlayerData(PlayerProfile playerProfile) {
+        fileWriteThread.queue(playerProfile);
     }
 
     /**
@@ -166,6 +204,7 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
+        fileWriteThread.waitUntilEmpty();
         File playerFile = this.getPlayerFile(containerType, dataName, playerName);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         if (convertConfig(playerData)) {

@@ -8,10 +8,11 @@ public interface PlayerData {
     /**
      * Updates the persisted data for a player for a specific world profile.
      *
+     *
      * @param playerProfile The profile for the player that is being updated.
      * @return True if successfully updated.
      */
-    boolean updatePlayerData(PlayerProfile playerProfile);
+    void updatePlayerData(PlayerProfile playerProfile);
 
     /**
      * Retrieves a PlayerProfile from the data source.

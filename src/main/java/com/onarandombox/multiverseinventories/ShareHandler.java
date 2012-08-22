@@ -79,7 +79,7 @@ abstract class ShareHandler {
 
     protected abstract void handle();
 
-    private void completeSharing() {
+    void completeSharing() {
         Logging.finer("Change affected by " + event.getFromProfiles().size() + " fromProfiles and "
                 + event.getToProfiles().size() + " toProfiles");
         // This if statement should never happen, really.
@@ -107,7 +107,8 @@ abstract class ShareHandler {
         Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
     }
 
-    private void updateProfile(PersistingProfile profile) {
+    void updateProfile(PersistingProfile profile) {
+        int debug = inventories.getMVIConfig().getGlobalDebug();
         StringBuilder persisted = new StringBuilder();
         for (Sharable sharable : profile.getShares()) {
             if (sharable.isOptional()) {
@@ -116,20 +117,24 @@ abstract class ShareHandler {
                     continue;
                 }
             }
-            if (!persisted.toString().isEmpty()) {
-                persisted.append(", ");
+            if (debug > 0) {
+                if (persisted.length() > 0) {
+                    persisted.append(", ");
+                }
+                persisted.append(sharable.getNames()[0]);
             }
-            persisted.append(sharable.getNames()[0]);
             sharable.getHandler().updateProfile(profile.getProfile(), event.getPlayer());
         }
-        Logging.finer("Persisted: " + persisted.toString() + " to "
-                + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                + " (" + profile.getProfile().getProfileType() + ")"
-                + " for player " + profile.getProfile().getPlayer().getName());
+        if (debug > 0) {
+            Logging.finer("Persisted: " + persisted.toString() + " to "
+                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
+                    + " (" + profile.getProfile().getProfileType() + ")"
+                    + " for player " + profile.getProfile().getPlayer().getName());
+        }
         this.inventories.getData().updatePlayerData(profile.getProfile());
     }
 
-    private void updatePlayer(PersistingProfile profile) {
+    void updatePlayer(PersistingProfile profile) {
         StringBuilder defaulted = new StringBuilder();
         StringBuilder loaded = new StringBuilder();
         for (Sharable sharable : profile.getShares()) {
@@ -140,12 +145,12 @@ abstract class ShareHandler {
                 }
             }
             if (sharable.getHandler().updatePlayer(event.getPlayer(), profile.getProfile())) {
-                if (!loaded.toString().isEmpty()) {
+                if (loaded.length() > 0) {
                     loaded.append(", ");
                 }
                 loaded.append(sharable.getNames()[0]);
             } else {
-                if (!defaulted.toString().isEmpty()) {
+                if (defaulted.length() > 0) {
                     defaulted.append(", ");
                 }
                 defaulted.append(sharable.getNames()[0]);

@@ -9,7 +9,7 @@ import java.util.Map;
  * Interface for a PlayerProfile which controls all the world/group specific data for a player.
  * This represents what is saved/loaded to/from persistence.
  */
-public interface PlayerProfile {
+public interface PlayerProfile extends Cloneable {
 
     /**
      * @return A map containing all the player data to be saved to disk.
@@ -53,5 +53,7 @@ public interface PlayerProfile {
      * @param <T>      The type of value to be expected.
      */
     <T> void set(Sharable<T> sharable, T value);
+
+    PlayerProfile clone() throws CloneNotSupportedException;
 }
 
