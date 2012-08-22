@@ -9,6 +9,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -200,6 +201,14 @@ public class DataStrings {
      * @return New location object or null if no location could be created.
      */
     public static Location parseLocation(String locString) {
+        if (locString.startsWith("{")) {
+            return jsonParseLocation(locString);
+        } else {
+            return legacyParseLocation(locString);
+        }
+    }
+
+    private static Location legacyParseLocation(String locString) {
         String[] locArray = locString.split(DataStrings.GENERAL_DELIMITER);
         World world = null;
         double x = 0;
@@ -234,12 +243,79 @@ public class DataStrings {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
+    private static Location jsonParseLocation(String locString) {
+        if (locString.isEmpty()) {
+            return null;
+        }
+        JSONObject jsonLoc;
+        try {
+            jsonLoc = (JSONObject) JSON_PARSER.parse(locString);
+        } catch (ParseException e) {
+            Logging.warning("Could not parse location! " + e.getMessage());
+            return null;
+        } catch (ClassCastException e) {
+            Logging.warning("Could not parse location! " + e.getMessage());
+            return null;
+        }
+        World world = null;
+        double x = 0;
+        double y = 0;
+        double z = 0;
+        float pitch = 0;
+        float yaw = 0;
+        if (jsonLoc.containsKey(LOCATION_WORLD)) {
+            world = Bukkit.getWorld(jsonLoc.get(LOCATION_WORLD).toString());
+        }
+        if (jsonLoc.containsKey(LOCATION_X)) {
+            Object value = jsonLoc.get(LOCATION_X);
+            if (value instanceof Number) {
+                x = ((Number) value).doubleValue();
+            }
+        }
+        if (jsonLoc.containsKey(LOCATION_Y)) {
+            Object value = jsonLoc.get(LOCATION_Y);
+            if (value instanceof Number) {
+                y = ((Number) value).doubleValue();
+            }
+        }
+        if (jsonLoc.containsKey(LOCATION_Z)) {
+            Object value = jsonLoc.get(LOCATION_Z);
+            if (value instanceof Number) {
+                z = ((Number) value).doubleValue();
+            }
+        }
+        if (jsonLoc.containsKey(LOCATION_PITCH)) {
+            Object value = jsonLoc.get(LOCATION_PITCH);
+            if (value instanceof Number) {
+                pitch = ((Number) value).floatValue();
+            }
+        }
+        if (jsonLoc.containsKey(LOCATION_YAW)) {
+            Object value = jsonLoc.get(LOCATION_YAW);
+            if (value instanceof Number) {
+                yaw = ((Number) value).floatValue();
+            }
+        }
+        if (world == null) {
+            return null;
+        }
+        return new Location(world, x, y, z, yaw, pitch);
+    }
+
     /**
      * @param inventoryString An inventory in string form to be parsed into an ItemStack array.
      * @param inventorySize The number of item slots in the inventory.
      * @return an ItemStack array containing the inventory contents parsed from inventoryString.
      */
     public static ItemStack[] parseInventory(String inventoryString, int inventorySize) {
+        if (inventoryString.startsWith("{")) {
+            return jsonParseInventory(inventoryString, inventorySize);
+        } else {
+            return legacyParseInventory(inventoryString, inventorySize);
+        }
+    }
+
+    private static ItemStack[] legacyParseInventory(String inventoryString, int inventorySize) {
         String[] inventoryArray = inventoryString.split(DataStrings.ITEM_DELIMITER);
         ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[inventorySize]);
         for (String itemString : inventoryArray) {
@@ -258,11 +334,58 @@ public class DataStrings {
         return invContents;
     }
 
+    private static ItemStack[] jsonParseInventory(String inventoryString, int inventorySize) {
+        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[inventorySize]);
+        if (inventoryString.isEmpty()) {
+            return invContents;
+        }
+        JSONObject jsonItems;
+        try {
+            jsonItems = (JSONObject) JSON_PARSER.parse(inventoryString);
+        } catch (ParseException e) {
+            Logging.warning("Could not parse inventory! " + e.getMessage());
+            return invContents;
+        } catch (ClassCastException e) {
+            Logging.warning("Could not parse inventory! " + e.getMessage());
+            return invContents;
+        }
+        for (Object key : jsonItems.keySet()) {
+            int index = -1;
+            try {
+                index = Integer.valueOf(key.toString());
+            } catch (NumberFormatException e) {
+                Logging.warning("Invalid key: " + key + " while parsing inventory");
+                continue;
+            }
+            if (index == -1) {
+                Logging.warning("Invalid key: " + key + " while parsing inventory");
+                continue;
+            }
+            if (index > inventorySize) {
+                Logging.warning("Invalid key: " + key + " while parsing inventory");
+                continue;
+            }
+            Object value = jsonItems.get(key);
+            if (value instanceof JSONObject) {
+                invContents[index] = ItemWrapper.wrap((JSONObject) value).getItem();
+            }
+        }
+        return invContents;
+    }
+
     /**
      * @param potionsString A player's potion effects in string form to be parsed into Collection<PotionEffect>.
      * @return a collection of potion effects parsed from potionsString.
      */
     public static PotionEffect[] parsePotionEffects(String potionsString) {
+        if (potionsString.startsWith("[")) {
+            return jsonParsePotionEffects(potionsString);
+        } else {
+            return legacyParsePotionEffects(potionsString);
+        }
+    }
+
+    public static PotionEffect[] legacyParsePotionEffects(String potionsString) {
         List<PotionEffect> potionEffectList = new LinkedList<PotionEffect>();
         String[] potionsArray = potionsString.split(DataStrings.GENERAL_DELIMITER);
         for (String potionString : potionsArray) {
@@ -293,6 +416,57 @@ public class DataStrings {
         return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
     }
 
+    public static PotionEffect[] jsonParsePotionEffects(String potionsString) {
+        List<PotionEffect> potionEffectList = new LinkedList<PotionEffect>();
+        if (potionsString.isEmpty()) {
+            return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
+        }
+        JSONArray jsonPotions;
+        try {
+            jsonPotions = (JSONArray) JSON_PARSER.parse(potionsString);
+        } catch (ParseException e) {
+            Logging.warning("Could not parse potions! " + e.getMessage());
+            return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
+        } catch (ClassCastException e) {
+            Logging.warning("Could not parse potions! " + e.getMessage());
+            return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
+        }
+        for (Object obj : jsonPotions) {
+            if (obj instanceof JSONObject) {
+                JSONObject jsonPotion = (JSONObject) obj;
+                int type = -1;
+                int duration = -1;
+                int amplifier = -1;
+                if (jsonPotion.containsKey(POTION_TYPE)) {
+                    Object value = jsonPotion.get(POTION_TYPE);
+                    if (value instanceof Number) {
+                        type = ((Number) value).intValue();
+                    }
+                }
+                if (jsonPotion.containsKey(POTION_AMPLIFIER)) {
+                    Object value = jsonPotion.get(POTION_AMPLIFIER);
+                    if (value instanceof Number) {
+                        amplifier = ((Number) value).intValue();
+                    }
+                }
+                if (jsonPotion.containsKey(POTION_DURATION)) {
+                    Object value = jsonPotion.get(POTION_DURATION);
+                    if (value instanceof Number) {
+                        duration = ((Number) value).intValue();
+                    }
+                }
+                if (type == -1 || duration == -1 || amplifier == -1) {
+                    Logging.fine("Could not parse potion effect string: " + obj);
+                } else {
+                    potionEffectList.add(new PotionEffect(PotionEffectType.getById(type), duration, amplifier));
+                }
+            } else {
+                Logging.warning("Could not parse potion effect: " + obj);
+            }
+        }
+        return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
+    }
+
     /**
      * Converts an ItemStack array into a String for easy persistence.
      *
@@ -300,6 +474,16 @@ public class DataStrings {
      * @return A string representation of an inventory.
      */
     public static String valueOf(ItemStack[] items) {
+        JSONObject jsonItems = new JSONObject();
+        for (Integer i = 0; i < items.length; i++) {
+            if (items[i] != null && items[i].getTypeId() != 0) {
+                jsonItems.put(i.toString(), new JSONItemWrapper(items[i]).asJSONObject());
+            }
+        }
+        return jsonItems.toJSONString();
+    }
+
+    private static String legacyValueOf(ItemStack[] items) {
         StringBuilder builder = new StringBuilder();
         for (Integer i = 0; i < items.length; i++) {
             if (items[i] != null && items[i].getTypeId() != 0) {
@@ -319,6 +503,17 @@ public class DataStrings {
      * @return A String representation of a {@link Location}
      */
     public static String valueOf(Location location) {
+        JSONObject jsonLoc = new JSONObject();
+        jsonLoc.put(LOCATION_WORLD, location.getWorld().getName());
+        jsonLoc.put(DataStrings.LOCATION_X, location.getX());
+        jsonLoc.put(DataStrings.LOCATION_Y, location.getY());
+        jsonLoc.put(DataStrings.LOCATION_Z, location.getZ());
+        jsonLoc.put(DataStrings.LOCATION_PITCH, location.getPitch());
+        jsonLoc.put(DataStrings.LOCATION_YAW, location.getYaw());
+        return jsonLoc.toJSONString();
+    }
+
+    private static String legacyValueOf(Location location) {
         StringBuilder builder = new StringBuilder();
         builder.append(DataStrings.createEntry(DataStrings.LOCATION_WORLD, location.getWorld().getName()));
         builder.append(DataStrings.GENERAL_DELIMITER);
@@ -341,6 +536,18 @@ public class DataStrings {
      * @return A String representation of a Collection<{@link PotionEffect}>
      */
     public static String valueOf(PotionEffect[] potionEffects) {
+        JSONArray jsonPotions = new JSONArray();
+        for (PotionEffect potion : potionEffects) {
+            JSONObject jsonPotion = new JSONObject();
+            jsonPotion.put(DataStrings.POTION_TYPE, potion.getType().getId());
+            jsonPotion.put(DataStrings.POTION_DURATION, potion.getDuration());
+            jsonPotion.put(DataStrings.POTION_AMPLIFIER, potion.getAmplifier());
+            jsonPotions.add(jsonPotion);
+        }
+        return jsonPotions.toJSONString();
+    }
+
+    private static String legacyValueOf(PotionEffect[] potionEffects) {
         StringBuilder builder = new StringBuilder();
         for (PotionEffect potion : potionEffects) {
             if (!builder.toString().isEmpty()) {
@@ -369,7 +576,7 @@ public class DataStrings {
          * @return The wrapped {@link ItemStack}.
          */
         public static ItemWrapper wrap(final ItemStack item) {
-            return new LegacyItemWrapper(item);
+            return new JSONItemWrapper(item);
         }
 
         /**
@@ -379,14 +586,21 @@ public class DataStrings {
          * @return The wrapped {@link ItemStack}.
          */
         public static ItemWrapper wrap(final String itemString) {
-            return new LegacyItemWrapper(itemString);
-            /*
             if (itemString.startsWith("{")) {
                 return new JSONItemWrapper(itemString);
             } else {
                 return new LegacyItemWrapper(itemString);
             }
-            */
+        }
+
+        /**
+         * Parses the given String as an ItemWrapper so that it can be easily turned into an {@link ItemStack}.
+         *
+         * @param jsonItems the items in JSONObject form to parse.
+         * @return The wrapped {@link ItemStack}.
+         */
+        public static ItemWrapper wrap(final JSONObject jsonItems) {
+            return new JSONItemWrapper(jsonItems);
         }
 
         /**
@@ -450,8 +664,11 @@ public class DataStrings {
                 try {
                     Enchantment enchantment = Enchantment.getByName(enchantValues[0]);
                     if (enchantment == null) {
-                        Logging.fine("Could not parse item enchantment: " + enchantValues[0]);
-                        continue;
+                        enchantment = Enchantment.getById(Integer.valueOf(enchantValues[0]));
+                        if (enchantment == null) {
+                            Logging.fine("Could not parse item enchantment: " + enchantValues[0]);
+                            continue;
+                        }
                     }
                     enchantsMap.put(enchantment, Integer.valueOf(enchantValues[1]));
                 } catch (Exception ignore) {
@@ -517,9 +734,6 @@ public class DataStrings {
         }
 
         private JSONItemWrapper(final String itemString) {
-            int type = 0;
-            short damage = 0;
-            int amount = 1;
             JSONObject itemData = null;
             try {
                 Object obj = JSON_PARSER.parse(itemString);
@@ -531,7 +745,22 @@ public class DataStrings {
             }
             if (itemData == null) {
                 Logging.warning("Could not parse item: " + itemString + "!  Item may be lost!");
-            } else {
+            }
+            createItem(itemData);
+        }
+
+        private JSONItemWrapper(JSONObject itemData) {
+            if (itemData == null) {
+                Logging.warning("Could not parse item!  Item may be lost!");
+            }
+            createItem(itemData);
+        }
+
+        private void createItem(JSONObject itemData) {
+            int type = 0;
+            short damage = 0;
+            int amount = 1;
+            if (itemData != null) {
                 Object obj = itemData.get(ITEM_TYPE_ID);
                 if (obj != null && obj instanceof Number) {
                     type = ((Number) obj).intValue();
@@ -576,6 +805,10 @@ public class DataStrings {
          */
         @Override
         public String toString() {
+            return asJSONObject().toJSONString();
+        }
+
+        public JSONObject asJSONObject() {
             JSONObject jsonItem = new JSONObject();
             jsonItem.put(ITEM_TYPE_ID, getItem().getTypeId());
             if (getItem().getDurability() != 0) {
@@ -597,8 +830,7 @@ public class DataStrings {
                 }
                 jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
             }
-
-            return jsonItem.toString();
+            return jsonItem;
         }
     }
 }

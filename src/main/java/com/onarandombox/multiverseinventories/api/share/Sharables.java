@@ -547,9 +547,8 @@ public final class Sharables implements Shares {
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     PotionEffect[] effects = profile.get(POTIONS);
-                    Iterator<PotionEffect> it = player.getActivePotionEffects().iterator();
-                    while (it.hasNext()) {
-                        player.removePotionEffect(it.next().getType());
+                    for (PotionEffect effect : player.getActivePotionEffects()) {
+                        player.removePotionEffect(effect.getType());
                     }
                     if (effects == null) {
                         return false;

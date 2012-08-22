@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -40,9 +41,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,7 +66,7 @@ public class MockPlayer implements Player {
     int food_level = PlayerStats.FOOD_LEVEL;
     int health = PlayerStats.HEALTH;
 
-    Collection<PotionEffect> potionEffects = new LinkedList<PotionEffect>();
+    Map<Integer, PotionEffect> potionEffects = new HashMap<Integer, PotionEffect>();
 
     int max_no_damage_ticks = 0;
     int max_air = 20;
@@ -246,7 +248,8 @@ public class MockPlayer implements Player {
 
     @Override
     public boolean addPotionEffect(PotionEffect potionEffect) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        potionEffects.put(potionEffect.getType().getId(), potionEffect);
+        return true;
     }
 
     @Override
@@ -266,12 +269,12 @@ public class MockPlayer implements Player {
 
     @Override
     public void removePotionEffect(PotionEffectType potionEffectType) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        potionEffects.remove(potionEffectType.getId());
     }
 
     @Override
     public Collection<PotionEffect> getActivePotionEffects() {
-        return this.potionEffects;
+        return new ArrayList<PotionEffect>(this.potionEffects.values());
     }
 
     @Override
@@ -1019,5 +1022,10 @@ public class MockPlayer implements Player {
     @Override
     public float getWalkSpeed() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void playSound(Location location, Sound sound, float v, float v1) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 }

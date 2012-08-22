@@ -12,6 +12,9 @@ import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,6 +24,8 @@ import java.util.Map;
  * Default implementation of a player profile, that is, the data per world/group/gamemode.
  */
 class DefaultPlayerProfile implements PlayerProfile {
+
+    private static final JSONParser JSON_PARSER = new JSONParser();
 
     private Map<Sharable, Object> data = new HashMap<Sharable, Object>();
 
@@ -75,6 +80,14 @@ class DefaultPlayerProfile implements PlayerProfile {
         if (stats.isEmpty()) {
             return;
         }
+        if (stats.startsWith("{")) {
+            jsonParsePlayerStats(stats);
+        } else {
+            legacyParsePlayerStats(stats);
+        }
+    }
+
+    private void legacyParsePlayerStats(String stats) {
         String[] statsArray = stats.split(DataStrings.GENERAL_DELIMITER);
         for (String stat : statsArray) {
             try {
@@ -89,13 +102,40 @@ class DefaultPlayerProfile implements PlayerProfile {
         }
     }
 
+    private void jsonParsePlayerStats(String stats) {
+        JSONObject jsonStats = null;
+        try {
+            jsonStats = (JSONObject) JSON_PARSER.parse(stats);
+        } catch (ParseException e) {
+            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+                    getContainerType() + " '" + getContainerName() + "': " + e.getMessage());
+        } catch (ClassCastException e) {
+            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+                    getContainerType() + " '" + getContainerName() + "': " + e.getMessage());
+        }
+        if (jsonStats == null) {
+            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+                    getContainerType() + " '" + getContainerName() + "'");
+            return;
+        }
+        for (Object key : jsonStats.keySet()) {
+            Sharable sharable = ProfileEntry.lookup(true, key.toString());
+            if (sharable != null) {
+                this.data.put(sharable, sharable.getSerializer().deserialize(jsonStats.get(key).toString()));
+            } else {
+                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
+                        + getContainerType() + " '" + getContainerName() + "'");
+            }
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> playerData = new LinkedHashMap<String, Object>();
-        StringBuilder statBuilder = new StringBuilder();
+        JSONObject jsonStats = new JSONObject();
         for (Map.Entry<Sharable, Object> entry : this.data.entrySet()) {
             if (entry.getValue() != null) {
                 if (entry.getKey().getSerializer() == null) {
@@ -103,19 +143,16 @@ class DefaultPlayerProfile implements PlayerProfile {
                 }
                 Sharable sharable = entry.getKey();
                 if (sharable.getProfileEntry().isStat()) {
-                    if (!statBuilder.toString().isEmpty()) {
-                        statBuilder.append(DataStrings.GENERAL_DELIMITER);
-                    }
-                    statBuilder.append(DataStrings.createEntry(sharable.getProfileEntry().getFileTag(),
-                            sharable.getSerializer().serialize(entry.getValue())));
+                    jsonStats.put(sharable.getProfileEntry().getFileTag(),
+                            sharable.getSerializer().serialize(entry.getValue()));
                 } else {
                     playerData.put(sharable.getProfileEntry().getFileTag(),
                             sharable.getSerializer().serialize(entry.getValue()));
                 }
             }
         }
-        if (!statBuilder.toString().isEmpty()) {
-            playerData.put(DataStrings.PLAYER_STATS, statBuilder.toString());
+        if (!jsonStats.isEmpty()) {
+            playerData.put(DataStrings.PLAYER_STATS, jsonStats.toJSONString());
         }
         return playerData;
     }
