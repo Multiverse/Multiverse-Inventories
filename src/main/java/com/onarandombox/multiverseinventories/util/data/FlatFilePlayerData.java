@@ -169,7 +169,7 @@ public class FlatFilePlayerData implements PlayerData {
 
         public void queue(final PlayerProfile profile) {
             try {
-                final clonedProfile = profile.clone();
+                final PlayerProfile clonedProfile = profile.clone();
                 if (waiting) {
                     waitingQueue.add(clonedProfile);
                 } else {
