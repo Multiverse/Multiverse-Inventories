@@ -153,27 +153,39 @@ public class FlatFilePlayerData implements PlayerData {
         }
 
         private final BlockingQueue<PlayerProfile> profileWriteQueue = new LinkedBlockingQueue<PlayerProfile>();
+        private final BlockingQueue<PlayerProfile> waitingQueue = new LinkedBlockingQueue<PlayerProfile>();
+        
+        private volatile boolean waiting = false;
 
         @Override
         public void run() {
             while(true) {
                 try {
-                    PlayerProfile profile = profileWriteQueue.take();
+                    final PlayerProfile profile = profileWriteQueue.take();
                     processProfileWrite(profile);
                 } catch (InterruptedException ignore) { }
             }
         }
 
-        public void queue(PlayerProfile profile) {
+        public void queue(final PlayerProfile profile) {
             try {
-                profileWriteQueue.add(profile.clone());
+                final clonedProfile = profile.clone();
+                if (waiting) {
+                    waitingQueue.add(clonedProfile);
+                } else {
+                    profileWriteQueue.add(clonedProfile);
+                }
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
         }
 
         public void waitUntilEmpty() {
+            waiting = true;
             while(!profileWriteQueue.isEmpty()) { }
+            waiting = false;
+            profileWriteQueue.addAll(waitingQueue);
+            waitingQueue.clear();
         }
     }
 
