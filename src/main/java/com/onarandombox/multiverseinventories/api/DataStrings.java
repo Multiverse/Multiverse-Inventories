@@ -917,7 +917,7 @@ public class DataStrings {
                 //Get the iterator for the n.m.s stack's nbt compound
                 Iterator iterator = minecraftStack.getTag().c().iterator();
                 //Pass the iterator into a function that turns it into a json object
-                jsonNBTTags = CraftBukkitUtils.parseNBTCompound(iterator);
+                jsonNBTTags = CraftBukkitUtils.parseNBTCompound(iterator, CraftBukkitUtils.NBTKeysToIgnore);
                 
                 //Aww yeah, successfully parsed the compound
                 if (jsonNBTTags != null) {

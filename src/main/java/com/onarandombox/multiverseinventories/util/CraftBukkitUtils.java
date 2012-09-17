@@ -1,6 +1,8 @@
 package com.onarandombox.multiverseinventories.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,6 +27,16 @@ import com.onarandombox.multiverseinventories.api.DataStrings;
  * Helper class for dealing with some craftbukkit stuff, mostly nbt tags
  */
 public class CraftBukkitUtils {
+    
+    public static Collection<String> NBTKeysToIgnore = new HashSet<String>();
+    
+    static {
+        NBTKeysToIgnore.add("Count");
+        NBTKeysToIgnore.add("Slot");
+        NBTKeysToIgnore.add("id");
+        NBTKeysToIgnore.add("Damage");
+        NBTKeysToIgnore.add("ench");
+    }
     
     /**
      * Converts a raw java object to an nbt tag
@@ -210,6 +222,17 @@ public class CraftBukkitUtils {
      * @return The compound as a JSONObject
      */
     public static JSONObject parseNBTCompound (Iterator iterator) {
+        return parseNBTCompound(iterator, null);
+    }
+    
+    /**
+     * Parse an nbt compound (essentially a map of names with nbt bases)
+     * 
+     * @param iterator An iterator for the collection from the nbt compound taken from <pre>compound.c().iterator()</pre>
+     * @param keysToIgnore String collection of the key names to ignore, pass null to ignore nothing
+     * @return The compound as a JSONObject
+     */
+    public static JSONObject parseNBTCompound (Iterator iterator, Collection<String> keysToIgnore) {
         
         //Make a json object to map the names and data types along with the values
         JSONObject map = new JSONObject();
@@ -222,10 +245,11 @@ public class CraftBukkitUtils {
             //Get the name from the nbt base object
             String name = nbtbase.getName();
             
-            //Ignore these few values since we store them using the bukkit api
-            if (name.equalsIgnoreCase("Count") || name.equalsIgnoreCase("Slot") || name.equalsIgnoreCase("id") || name.equalsIgnoreCase("Damage") || name.equalsIgnoreCase("ench")) {
-                //continue to the next iterator object
-                continue;
+            //Ignore the specified values
+            if (keysToIgnore != null) {
+                if (keysToIgnore.contains(name)) {
+                    continue;
+                }
             }
             
             //Parse the nbt tag's value into a java object
