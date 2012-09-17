@@ -3,10 +3,8 @@ package com.onarandombox.multiverseinventories.api;
 import com.onarandombox.multiverseinventories.util.CraftBukkitUtils;
 import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-
 import net.minecraft.server.NBTBase;
 import net.minecraft.server.NBTTagCompound;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,7 +18,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -768,6 +765,16 @@ public class DataStrings {
             createItem(itemData);
         }
 
+        private static boolean hasCraftBukkit() {
+            try {
+                Class.forName("org.bukkit.craftbukkit.inventory.CraftItemStack");
+                Class.forName("net.minecraft.server.ItemStack");
+            } catch (ClassNotFoundException e) {
+                return false;
+            }
+            return true;
+        }
+
         private void createItem(JSONObject itemData) {
             int type = 0;
             short damage = 0;
@@ -797,16 +804,20 @@ public class DataStrings {
                 }
             }
             
-            try {
-                Class.forName("org.bukkit.craftbukkit.inventory.CraftItemStack");
-                Class.forName("net.minecraft.server.ItemStack");
-            } catch (ClassNotFoundException e) {
+            if (!hasCraftBukkit()) {
+                System.out.println("YEAHHHHHHHHHHH");
                 return;
             }
             
             if (itemData != null && itemData.containsKey(ITEM_NBTTAGS)) {
                 //Turn the item to a CraftItemStack so that it'll have a default tag and such
-                this.item = new CraftItemStack(item);
+                try {
+                    this.item = new CraftItemStack(getItem());
+                } catch (ExceptionInInitializerError e) {
+                    return;
+                } catch (NoClassDefFoundError e) {
+                    return;
+                }
                 //Get the n.m.s stack from the CraftItemStack
                 net.minecraft.server.ItemStack minecraftStack = ((CraftItemStack) this.item).getHandle();
                 //Grab the object associated with the nbttag identifier
@@ -881,18 +892,21 @@ public class DataStrings {
                 jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
             }
                         
-            try {
-                Class.forName("org.bukkit.craftbukkit.inventory.CraftItemStack");
-                Class.forName("net.minecraft.server.ItemStack");
-            } catch (ClassNotFoundException e) {
+            if (!hasCraftBukkit()) {
                 return jsonItem;
             }
             
             if (!(item instanceof CraftItemStack)) {
-                this.item = new CraftItemStack(item);
+                try {
+                    this.item = new CraftItemStack(getItem());
+                } catch (ExceptionInInitializerError e) {
+                    return jsonItem;
+                } catch (NoClassDefFoundError e) {
+                    return jsonItem;
+                }
             }
             
-            CraftItemStack craftStack = (CraftItemStack) item;
+            CraftItemStack craftStack = (CraftItemStack) getItem();
             net.minecraft.server.ItemStack minecraftStack = craftStack.getHandle();
             
             //A n.m.s stack should always have an nbt object with it but just to be safe
