@@ -50,6 +50,13 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          * Whether or not to make ungrouped worlds use the default group.
          */
         DEFAULT_UNGROUPED_WORLDS("settings.default_ungrouped_worlds", false, "# If set to true, any world not listed in a group will automatically use the settings for the default group!"),
+
+        LOGGING_SAVE_LOAD("settings.save_load_on_log_in_out", false,
+                "# The default and suggested setting for this is FALSE.",
+                "# False means Multiverse-Inventories will not attempt to load or save any player data when they log in and out.",
+                "# That means that MINECRAFT will handle that exact thing JUST LIKE IT DOES NORMALLY.",
+                "# Changing this to TRUE will have Multiverse-Inventories save player data when they log out and load it when they log in.",
+                "# The biggest potential drawback here is that if your server crashes, player stats/inventories may be lost/rolled back!"),
         /**
          * First Run flag config path, default and comments.
          */
@@ -313,6 +320,22 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void setUsingBypass(boolean useBypass) {
         this.getConfig().set(Path.USE_BYPASS.getPath(), useBypass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean usingLoggingSaveLoad() {
+        return this.getBoolean(Path.LOGGING_SAVE_LOAD);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setUsingLoggingSaveLoad(boolean useLoggingSaveLoad) {
+        this.getConfig().set(Path.LOGGING_SAVE_LOAD.getPath(), useLoggingSaveLoad);
     }
 
     private Shares optionalSharables = null;

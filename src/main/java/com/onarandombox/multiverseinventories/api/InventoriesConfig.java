@@ -78,6 +78,20 @@ public interface InventoriesConfig {
     void setDefaultingUngroupedWorlds(boolean useDefaultGroup);
 
     /**
+     * Tells whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @return True if should save and load on player log out and in.
+     */
+    boolean usingLoggingSaveLoad();
+
+    /**
+     * Sets whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @param useLoggingSaveLoad true if should save and load on player log out and in.
+     */
+    void setUsingLoggingSaveLoad(boolean useLoggingSaveLoad);
+
+    /**
      * Saves the configuration file to disk.
      */
     void save();

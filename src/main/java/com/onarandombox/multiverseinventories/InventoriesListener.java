@@ -22,6 +22,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -104,9 +105,33 @@ public class InventoriesListener implements Listener {
      * @param event The player join event.
      */
     @EventHandler
-    public void playerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+    public void playerJoin(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+        final String world = globalProfile.getWorld();
+        if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
+            ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+                    inventories.getWorldManager().getWorldProfile(world).getPlayerData(player)));
+        }
+        inventories.getData().setLoadOnLogin(player.getName(), false);
         verifyCorrectWorld(player, player.getWorld().getName());
+    }
+
+    /**
+     * Called when a player leaves the server.
+     *
+     * @param event The player quit event.
+     */
+    @EventHandler
+    public void playerQuit(final PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        final String world = event.getPlayer().getWorld().getName();
+        inventories.getData().updateWorld(player.getName(), world);
+        if (inventories.getMVIConfig().usingLoggingSaveLoad()) {
+            ShareHandler.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+                    inventories.getWorldManager().getWorldProfile(world).getPlayerData(player)));
+            inventories.getData().setLoadOnLogin(player.getName(), true);
+        }
     }
 
     private void verifyCorrectWorld(Player player, String world) {

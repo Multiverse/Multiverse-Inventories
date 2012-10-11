@@ -324,6 +324,14 @@ public class FlatFilePlayerData implements PlayerData {
         globalProfile.setWorld(worldName);
         updateGlobalProfile(globalProfile);
     }
+
+    @Override
+    public void setLoadOnLogin(final String playerName, final boolean loadOnLogin) {
+        final GlobalProfile globalProfile = getGlobalProfile(playerName);
+        globalProfile.setLoadOnLogin(loadOnLogin);
+        updateGlobalProfile(globalProfile);
+    }
+
     /*
     @Override
     public void updateProfileType(String playerName, ProfileType profileType) {

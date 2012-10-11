@@ -18,6 +18,20 @@ public interface GlobalProfile {
     String getWorld();
 
     /**
+     * Says whether the player data for the player's logout world should be loaded when the player logs in.
+     *
+     * @return true if player data should be loaded when they log in.
+     */
+    boolean shouldLoadOnLogin();
+
+    /**
+     * Sets whether the player data for the player's logout world should be loaded when the player logs in.
+     *
+     * @param loadOnLogin true if player data should be loaded when they log in.
+     */
+    void setLoadOnLogin(boolean loadOnLogin);
+
+    /**
      * Sets the last world the player was known to be in.  This is done automatically on world change.
      *
      * @param world The world the player is in.

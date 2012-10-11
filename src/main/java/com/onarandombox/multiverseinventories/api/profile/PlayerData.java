@@ -62,6 +62,14 @@ public interface PlayerData {
      */
     void updateWorld(String playerName, String worldName);
 
+    /**
+     * A convenience method for setting whether player data should be loaded on login for the specified player.
+     *
+     * @param playerName The player whose data should be loaded.
+     * @param loadOnLogin Whether or not to load on login.
+     */
+    void setLoadOnLogin(String playerName, boolean loadOnLogin);
+
     //void updateProfileType(String playerName, ProfileType profileType);
 }
 

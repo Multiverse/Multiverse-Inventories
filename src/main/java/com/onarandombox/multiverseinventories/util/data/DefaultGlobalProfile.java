@@ -13,6 +13,7 @@ class DefaultGlobalProfile implements GlobalProfile {
 
     private final String name;
     private String lastWorld = null;
+    private boolean loadOnLogin = false;
     //private ProfileType profileType = ProfileTypes.SURVIVAL;
 
     DefaultGlobalProfile(String playerName, Map<String, Object> playerData) {
@@ -20,9 +21,9 @@ class DefaultGlobalProfile implements GlobalProfile {
         for (String key : playerData.keySet()) {
             if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_WORLD)) {
                 this.lastWorld = playerData.get(key).toString();
-            } /*else if (key.equalsIgnoreCase(DataStrings.PLAYER_PROFILE_TYPE)) {
-                this.profileType = ProfileTypes.lookupType(playerData.get(key).toString(), true);
-            }*/
+            } else if (key.equalsIgnoreCase(DataStrings.PLAYER_SHOULD_LOAD)) {
+                this.loadOnLogin = Boolean.valueOf(playerData.get(key).toString());
+            }
         }
     }
 
@@ -39,6 +40,16 @@ class DefaultGlobalProfile implements GlobalProfile {
     @Override
     public void setWorld(String world) {
         this.lastWorld = world;
+    }
+
+    @Override
+    public boolean shouldLoadOnLogin() {
+        return loadOnLogin;
+    }
+
+    @Override
+    public void setLoadOnLogin(boolean loadOnLogin) {
+        this.loadOnLogin = loadOnLogin;
     }
 
     /*
@@ -58,6 +69,7 @@ class DefaultGlobalProfile implements GlobalProfile {
         if (this.lastWorld != null) {
             result.put(DataStrings.PLAYER_LAST_WORLD, this.lastWorld);
         }
+        result.put(DataStrings.PLAYER_SHOULD_LOAD, this.loadOnLogin);
         //result.put(DataStrings.PLAYER_PROFILE_TYPE, this.profileType.getName());
         return result;
     }

@@ -91,9 +91,13 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
-     * Player bed spawn location identifier.
+     * Player last world identifier.
      */
     public static final String PLAYER_LAST_WORLD = "lastWorld";
+    /**
+     * Player should load identifier.
+     */
+    public static final String PLAYER_SHOULD_LOAD = "shouldLoad";
     /**
      * Player bed spawn location identifier.
      */
