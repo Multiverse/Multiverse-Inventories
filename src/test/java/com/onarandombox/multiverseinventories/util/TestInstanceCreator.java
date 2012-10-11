@@ -49,13 +49,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @PrepareForTest({InventoriesListener.class})
 public class TestInstanceCreator {
@@ -158,6 +152,11 @@ public class TestInstanceCreator {
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayers()).thenAnswer(new Answer<OfflinePlayer[]>() {
                 public OfflinePlayer[] answer(InvocationOnMock invocation) throws Throwable {
+                    return players.values().toArray(new Player[players.values().size()]);
+                }
+            });
+            when(mockServer.getOnlinePlayers()).thenAnswer(new Answer<Player[]>() {
+                public Player[] answer(InvocationOnMock invocation) throws Throwable {
                     return players.values().toArray(new Player[players.values().size()]);
                 }
             });
@@ -319,6 +318,16 @@ public class TestInstanceCreator {
         }
         */
 
+        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
+        inventories.onDisable();
+
+        MockWorldFactory.clearWorlds();
+
+        plugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
+        MultiverseCore core = (MultiverseCore) plugin;
+        core.onDisable();
+
         try {
             Field serverField = Bukkit.class.getDeclaredField("server");
             serverField.setAccessible(true);
@@ -330,15 +339,6 @@ public class TestInstanceCreator {
             Assert.fail(e.getMessage());
             return false;
         }
-
-        MockWorldFactory.clearWorlds();
-
-        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
-        MultiverseInventories inventories = (MultiverseInventories) plugin;
-        inventories.onDisable();
-        plugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
-        MultiverseCore core = (MultiverseCore) plugin;
-        core.onDisable();
 
         return true;
     }
