@@ -191,7 +191,7 @@ public class TestPerformance {
         shareHandler.handle();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            shareHandler.updateProfile(shareHandler.event.getFromProfiles().get(0));
+            shareHandler.updateProfile(inventories, player, shareHandler.event.getFromProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -204,7 +204,7 @@ public class TestPerformance {
         shareHandler.handle();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            shareHandler.updatePlayer(shareHandler.event.getToProfiles().get(0));
+            shareHandler.updatePlayer(inventories, player, shareHandler.event.getToProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -244,6 +244,9 @@ public class TestPerformance {
         Map<Sharable, Double> averageUpdateProfile = new HashMap<Sharable, Double>();
         PlayerProfile profile = inventories.getGroupManager().getDefaultGroup().getPlayerData(player);
         for (Sharable share : Sharables.all()) {
+            if (share.isOptional()) {
+                continue;
+            }
             long startTime = 0;
             long endTime = 0;
             double[] timeTaken = new double[numTests];
