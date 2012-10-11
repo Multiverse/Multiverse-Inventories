@@ -75,8 +75,15 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void onDisable() {
-        // Display disable message/version info
-        Logging.info("disabled.", true);
+        for (final Player player : getServer().getOnlinePlayers()) {
+            final String world = player.getWorld().getName();
+            //getData().updateWorld(player.getName(), world);
+            if (getMVIConfig().usingLoggingSaveLoad()) {
+                ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
+                        getWorldManager().getWorldProfile(world).getPlayerData(player)));
+                getData().setLoadOnLogin(player.getName(), true);
+            }
+        }
         Logging.close();
     }
 
