@@ -1,5 +1,9 @@
 package com.onarandombox.multiverseinventories.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.server.NBTBase;
+import net.minecraft.server.NBTCompressedStreamTools;
 import net.minecraft.server.NBTTagByte;
 import net.minecraft.server.NBTTagByteArray;
 import net.minecraft.server.NBTTagCompound;
@@ -258,7 +263,7 @@ public class CraftBukkitUtils {
             //If the nbt base is of a list type
             if (nbtbase.getTypeId() == 9) {
                 //Just in case!
-                if (value != null) {
+                if (value != null && ((NBTTagList) nbtbase).size() != 0) {
                     //Get the type of objects stored in the list
                     byte listType = ((NBTTagList) nbtbase).get(0).getTypeId();
                     //Store the name of the nbt base in the format "name;type;listtype" along with its value
@@ -289,6 +294,11 @@ public class CraftBukkitUtils {
         
         //Define an array list to be used as a fall back
         ArrayList values = new ArrayList();
+        
+        //Return an empty list if its an empty list
+        if (tag.size() == 0){
+            return values;
+        }
             
         //Create a list with the proper parameters to give simple json a hint on how to serialize the list
         switch (tag.get(0).getTypeId()) {
@@ -350,7 +360,6 @@ public class CraftBukkitUtils {
                 //Byte value of 2, cast the base to an nbt short and return its data
                 case 2:
                     value = ((NBTTagShort) nbtbase).data;
-                    System.out.println("short value: " + value);
                     break;
                 
                 //Byte value of 3, cast the base to an nbt int and return its data
@@ -405,6 +414,15 @@ public class CraftBukkitUtils {
         
         //Return the value
         return value;
+    }
+    
+    /**
+     * Grabs nbt data from player's data file in json format
+     * @param file The player's data file
+     * @throws FileNotFoundException 
+     */
+    public static JSONObject getPlayerDataJson(File file) throws FileNotFoundException {
+        return parseNBTCompound(NBTCompressedStreamTools.a((InputStream) (new FileInputStream(file))).c().iterator());
     }
 
 }
