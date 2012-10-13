@@ -489,9 +489,9 @@ public class DataStrings {
      */
     public static String valueOf(ItemStack[] items) {
         JSONObject jsonItems = new JSONObject();
-        for (Integer i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             if (items[i] != null && items[i].getTypeId() != 0) {
-                jsonItems.put(i.toString(), new JSONItemWrapper(items[i]).asJSONObject());
+                jsonItems.put(Integer.valueOf(i).toString(), new JSONItemWrapper(items[i]).asJSONObject());
             }
         }
         return jsonItems.toJSONString();
@@ -499,7 +499,7 @@ public class DataStrings {
 
     private static String legacyValueOf(ItemStack[] items) {
         StringBuilder builder = new StringBuilder();
-        for (Integer i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             if (items[i] != null && items[i].getTypeId() != 0) {
                 if (!builder.toString().isEmpty()) {
                     builder.append(DataStrings.ITEM_DELIMITER);
