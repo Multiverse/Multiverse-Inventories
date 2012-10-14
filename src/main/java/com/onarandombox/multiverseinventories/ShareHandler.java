@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -116,6 +117,10 @@ abstract class ShareHandler {
                     Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
                     continue;
                 }
+                if (profile.getProfile().getContainerType() == ContainerType.WORLD && !inventories.getMVIConfig().usingOptionalsForUngrouped()) {
+                    Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
+                    continue;
+                }
             }
             if (debug > 0) {
                 if (persisted.length() > 0) {
@@ -141,6 +146,10 @@ abstract class ShareHandler {
             if (sharable.isOptional()) {
                 if (!inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
                     Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
+                    continue;
+                }
+                if (profile.getProfile().getContainerType() == ContainerType.WORLD && !inventories.getMVIConfig().usingOptionalsForUngrouped()) {
+                    Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
                     continue;
                 }
             }

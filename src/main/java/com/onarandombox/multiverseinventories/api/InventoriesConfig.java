@@ -92,15 +92,29 @@ public interface InventoriesConfig {
     void setUsingLoggingSaveLoad(boolean useLoggingSaveLoad);
 
     /**
+     * Whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @return true if should utilize optional shares in worlds that are not grouped.
+     */
+    boolean usingOptionalsForUngrouped();
+
+    /**
+     * Sets whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @param usingOptionalsForUngrouped true if should utilize optional shares in worlds that are not grouped.
+     */
+    void setUsingOptionalsForUngrouped(final boolean usingOptionalsForUngrouped);
+
+    /**
      * Saves the configuration file to disk.
      */
     void save();
 
     /**
      * @return A list of optional {@link com.onarandombox.multiverseinventories.api.share.Sharable}s to be treated as
-     * regular {@link com.onarandombox.multiverseinventories.api.share.Sharable}s throughout the code.
-     * A {@link com.onarandombox.multiverseinventories.api.share.Sharable} marked as optional is ignored if it is not
-     * contained in this list.
+     *         regular {@link com.onarandombox.multiverseinventories.api.share.Sharable}s throughout the code.
+     *         A {@link com.onarandombox.multiverseinventories.api.share.Sharable} marked as optional is ignored if it is not
+     *         contained in this list.
      */
     Shares getOptionalShares();
 

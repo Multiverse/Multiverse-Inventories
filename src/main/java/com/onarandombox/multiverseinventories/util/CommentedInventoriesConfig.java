@@ -51,12 +51,20 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          */
         DEFAULT_UNGROUPED_WORLDS("settings.default_ungrouped_worlds", false, "# If set to true, any world not listed in a group will automatically use the settings for the default group!"),
 
+        /**
+         * Whether or not to save/load player data on log out/in.
+         */
         LOGGING_SAVE_LOAD("settings.save_load_on_log_in_out", false,
                 "# The default and suggested setting for this is FALSE.",
                 "# False means Multiverse-Inventories will not attempt to load or save any player data when they log in and out.",
                 "# That means that MINECRAFT will handle that exact thing JUST LIKE IT DOES NORMALLY.",
                 "# Changing this to TRUE will have Multiverse-Inventories save player data when they log out and load it when they log in.",
                 "# The biggest potential drawback here is that if your server crashes, player stats/inventories may be lost/rolled back!"),
+
+        USE_OPTIONALS_UNGROUPED("shares.optionals_for_ungrouped_worlds", true,
+                "# When set to true, optional shares WILL be utilized in cases where a group does not cover their uses for a world.",
+                "# An example of this in action would be an ungrouped world using last_location.  When this is true, players will return to their last location in that world.",
+                "# When set to false, optional shares WILL NOt be utilized in these cases, effectively disabling it for ungrouped worlds."),
         /**
          * First Run flag config path, default and comments.
          */
@@ -372,6 +380,16 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void setUsingGameModeProfiles(boolean useGameModeProfile) {
         this.getConfig().set(Path.USE_GAME_MODE_PROFILES.getPath(), useGameModeProfile);
+    }
+
+    @Override
+    public boolean usingOptionalsForUngrouped() {
+        return this.getBoolean(Path.USE_OPTIONALS_UNGROUPED);
+    }
+
+    @Override
+    public void setUsingOptionalsForUngrouped(final boolean usingOptionalsForUngrouped) {
+        this.getConfig().set(Path.USE_OPTIONALS_UNGROUPED.getPath(), usingOptionalsForUngrouped);
     }
 
     /**
