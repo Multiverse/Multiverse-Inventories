@@ -165,12 +165,17 @@ and adjust the build number accordingly -->
                             <artifactSet>
                                 <includes>
                                     <include>com.feildmaster.lib:EnhancedConfiguration</include>
+                                    <include>com.dumptruckman.minecraft:Logging</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
                                 <relocation>
                                     <pattern>com.feildmaster.lib.configuration</pattern>
                                     <shadedPattern>com.onarandombox.multiverseinventories.util</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.dumptruckman.minecraft.util.Logging</pattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.util.InvLogging</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -196,6 +201,15 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
+        <!-- Start of Logging Dependency -->
+        <dependency>
+            <groupId>com.dumptruckman.minecraft</groupId>
+            <artifactId>Logging</artifactId>
+            <version>1.0.2</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+        <!-- End of Logging Dependency -->
         <!-- Start of ConfigurationLib Dependency -->
         <dependency>
             <groupId>com.feildmaster.lib</groupId>

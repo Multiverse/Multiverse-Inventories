@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
@@ -26,7 +27,6 @@ import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
-import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.util.data.FlatFilePlayerData;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
@@ -84,7 +84,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
                 getData().setLoadOnLogin(player.getName(), true);
             }
         }
-        Logging.close();
+        Logging.shutdown();
     }
 
     /**
@@ -114,7 +114,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        Logging.initDebug(this);
 
         this.reloadConfig();
 
@@ -161,7 +160,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         Sharables.init(this);
 
         // Display enable message/version info
-        Logging.info("enabled.", true);
+        Logging.log(true, Level.INFO, "enabled.");
     }
 
     private void registerCommands() {
@@ -228,7 +227,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void log(Level level, String msg) {
-        Logging.log(level, msg, false);
+        Logging.logStatic(level, msg);
     }
 
     /**
@@ -288,7 +287,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
     private String logAndAddToPasteBinBuffer(String string) {
         Logging.info(string);
-        return Logging.getString(string + "\n", false);
+        return Logging.getPrefixedMessage(string + "\n", false);
     }
 
     /**

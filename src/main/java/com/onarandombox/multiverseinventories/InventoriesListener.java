@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
@@ -9,7 +10,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -181,7 +182,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         groupsConfig.save();
         config.save();
 
-        Logging.setDebugMode(this.getGlobalDebug());
+        Logging.setDebugLevel(this.getGlobalDebug());
     }
 
     private void migrateGroups() {
@@ -243,7 +244,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     @Override
     public void setGlobalDebug(int globalDebug) {
         this.getConfig().set(Path.DEBUG_LEVEL.getPath(), globalDebug);
-        Logging.setDebugMode(globalDebug);
+        Logging.setDebugLevel(globalDebug);
     }
 
     /**

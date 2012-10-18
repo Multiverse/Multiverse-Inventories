@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories.migration;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.migration.multiinv.MultiInvImporter;
 import com.onarandombox.multiverseinventories.migration.worldinventories.WorldInventoriesImporter;
-import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.WorldInventories;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 

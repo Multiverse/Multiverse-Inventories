@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
@@ -8,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;

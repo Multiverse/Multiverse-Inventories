@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.util.CraftBukkitUtils;
-import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import net.minecraft.server.NBTBase;
 import net.minecraft.server.NBTTagCompound;

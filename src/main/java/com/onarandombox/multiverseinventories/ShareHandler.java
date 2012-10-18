@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
@@ -10,7 +11,6 @@ import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
-import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

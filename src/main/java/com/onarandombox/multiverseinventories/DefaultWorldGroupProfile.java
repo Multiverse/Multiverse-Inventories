@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
@@ -8,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
-import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;

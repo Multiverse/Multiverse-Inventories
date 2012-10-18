@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

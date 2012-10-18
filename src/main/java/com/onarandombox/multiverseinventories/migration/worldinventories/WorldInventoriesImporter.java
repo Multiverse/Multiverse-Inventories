@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
@@ -9,7 +10,6 @@ import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
-import com.onarandombox.multiverseinventories.util.Logging;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
 import me.drayshak.WorldInventories.WIPlayerStats;

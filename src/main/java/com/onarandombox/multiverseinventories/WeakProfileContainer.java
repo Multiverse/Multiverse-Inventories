@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
@@ -8,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
-import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 

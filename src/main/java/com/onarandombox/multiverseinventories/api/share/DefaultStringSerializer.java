@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api.share;
 
-import com.onarandombox.multiverseinventories.util.Logging;
+import com.dumptruckman.minecraft.util.Logging;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

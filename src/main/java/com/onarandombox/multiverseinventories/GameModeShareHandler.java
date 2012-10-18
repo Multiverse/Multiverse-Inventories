@@ -1,12 +1,12 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
-import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

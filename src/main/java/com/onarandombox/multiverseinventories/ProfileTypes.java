@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
-import com.onarandombox.multiverseinventories.util.Logging;
 import org.bukkit.GameMode;
 
 import java.util.Collection;

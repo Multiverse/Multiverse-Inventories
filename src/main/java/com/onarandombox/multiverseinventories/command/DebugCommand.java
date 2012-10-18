@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.command;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.util.Logging;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
