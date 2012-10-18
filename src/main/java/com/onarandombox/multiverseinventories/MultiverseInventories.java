@@ -227,7 +227,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void log(Level level, String msg) {
-        Logging.logStatic(level, msg);
+        Logging.log(level, msg);
     }
 
     /**
