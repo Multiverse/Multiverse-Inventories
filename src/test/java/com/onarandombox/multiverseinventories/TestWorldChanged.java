@@ -92,12 +92,15 @@ public class TestWorldChanged {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
 
         // remove world2 from default group
         cmdArgs = new String[]{"rmworld", "world2", "default"};
@@ -144,12 +147,15 @@ public class TestWorldChanged {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
 
         // remove world2 from default group
         cmdArgs = new String[]{"rmworld", "world2", "default"};
@@ -236,12 +242,15 @@ public class TestWorldChanged {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
 
         // remove world2 from default group
         cmdArgs = new String[]{"rmworld", "world2", "default"};

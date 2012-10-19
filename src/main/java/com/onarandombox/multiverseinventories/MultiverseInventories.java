@@ -13,7 +13,6 @@ import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
-import com.onarandombox.multiverseinventories.command.DebugCommand;
 import com.onarandombox.multiverseinventories.command.GroupCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
@@ -173,7 +172,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
         this.getCommandHandler().registerCommand(new AddSharesCommand(this));
         this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
-        this.getCommandHandler().registerCommand(new DebugCommand(this));
         this.getCommandHandler().registerCommand(new SpawnCommand(this));
         this.getCommandHandler().registerCommand(new GroupCommand(this));
         this.getCommandHandler().registerCommand(new ToggleCommand(this));

@@ -70,12 +70,15 @@ public class TestCommands {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] debugArgs = new String[]{"debug", "3"};
-        plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
+        plugin.onCommand(mockCommandSender, mockCoreCommand, "", debugArgs);
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
