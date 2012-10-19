@@ -271,7 +271,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
-        builder.append(this.logAndAddToPasteBinBuffer("Debug Level: " + this.getMVIConfig().getGlobalDebug()));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass()));
         builder.append(this.logAndAddToPasteBinBuffer("Default Ungrouped Worlds: "

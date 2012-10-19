@@ -34,11 +34,6 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          */
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
         /**
-         * Debug Mode config path, default and comments.
-         */
-        DEBUG_LEVEL("settings.debug_level", 0, "# Level of debugging information to display.", "# 0 = off, "
-                + "1-3 increasing amount of debug spam."),
-        /**
          * First Run flag config path, default and comments.
          */
         FIRST_RUN("settings.first_run", true, "# If this is true it will generate world groups for you based on MV worlds."),
@@ -243,8 +238,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void setGlobalDebug(int globalDebug) {
-        this.getConfig().set(Path.DEBUG_LEVEL.getPath(), globalDebug);
-        Logging.setDebugLevel(globalDebug);
+        plugin.getCore().getMVConfig().setGlobalDebug(globalDebug);
     }
 
     /**
@@ -252,7 +246,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public int getGlobalDebug() {
-        return this.getInt(Path.DEBUG_LEVEL);
+        return plugin.getCore().getMVConfig().getGlobalDebug();
     }
 
     /**
