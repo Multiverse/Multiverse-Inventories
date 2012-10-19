@@ -179,7 +179,7 @@ public class CraftBukkitUtils {
                 //If the nbt tag was successfully created
                 if (computedValue != null) {
                     //Add it to the compound
-                    compound.set(name, jsonToNBTObject(rawValue, name, type, listType));
+                    compound.set(name, computedValue);
                 }
                 //Continue to the next object
                 continue;
