@@ -7,21 +7,24 @@ package com.onarandombox.multiverseinventories.api.share;
  */
 final class DefaultSharable<T> implements Sharable<T> {
 
-    private String[] names;
-    private SharableHandler<T> handler;
-    private SharableSerializer<T> serializer;
-    private ProfileEntry profileEntry;
-    private boolean optional;
-    private Class<T> type;
+    private final String[] names;
+    private final SharableHandler<T> handler;
+    private final SharableSerializer<T> serializer;
+    private final ProfileEntry profileEntry;
+    private final boolean optional;
+    private final Class<T> type;
+    private final String nmsNBTTag;
 
-    DefaultSharable(String[] names, Class<T> type, SharableHandler<T> handler, SharableSerializer<T> serializer,
-                    ProfileEntry entry, boolean optional) {
+    DefaultSharable(final String[] names, final Class<T> type, final SharableHandler<T> handler,
+                    final SharableSerializer<T> serializer, final ProfileEntry entry, final boolean optional,
+                    final String nmsNBTTag) {
         this.names = names;
         this.handler = handler;
         this.serializer = serializer;
         this.profileEntry = entry;
         this.optional = optional;
         this.type = type;
+        this.nmsNBTTag = nmsNBTTag;
         Sharables.register(this);
     }
 
@@ -79,5 +82,13 @@ final class DefaultSharable<T> implements Sharable<T> {
     @Override
     public boolean isOptional() {
         return this.optional;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getNMSNBTTag() {
+        return nmsNBTTag;
     }
 }

@@ -75,6 +75,10 @@ public class DataStrings {
      */
     public static final String PLAYER_INVENTORY_CONTENTS = "inventoryContents";
     /**
+     * NMS NBT Tag for Inventory.
+     */
+    public static final String NMS_NBT_INVENTORY = "Inventory";
+    /**
      * Player armor contents identifier.
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
@@ -82,6 +86,10 @@ public class DataStrings {
      * Ender chest inventory contents identifier.
      */
     public static final String ENDER_CHEST_CONTENTS = "enderChestContents";
+    /**
+     * NMS NBT Tag for Ender Chest.
+     */
+    public static final String NMS_NBT_ENDER_CHEST = "EnderItems";
     /**
      * Player bed spawn location identifier.
      */
@@ -107,41 +115,81 @@ public class DataStrings {
      */
     public static final String PLAYER_HEALTH = "hp";
     /**
+     * NMS NBT Tag for Health.
+     */
+    public static final String NMS_NBT_HEALTH = "Health";
+    /**
      * Player exp identifier.
      */
     public static final String PLAYER_EXPERIENCE = "xp";
+    /**
+     * NMS NBT Tag for experience.
+     */
+    public static final String NMS_NBT_EXPERIENCE = "XpP";
     /**
      * Player total exp identifier.
      */
     public static final String PLAYER_TOTAL_EXPERIENCE = "txp";
     /**
-     * Player exp identifier.
+     * NMS NBT Tag for experience.
+     */
+    public static final String NMS_NBT_EXPERIENCE_TOTAL = "XpTotal";
+    /**
+     * Player exp level identifier.
      */
     public static final String PLAYER_LEVEL = "el";
+    /**
+     * NMS NBT Tag for experience level.
+     */
+    public static final String NMS_NBT_EXPERIENCE_LEVEL = "XpLevel";
     /**
      * Player food level identifier.
      */
     public static final String PLAYER_FOOD_LEVEL = "fl";
     /**
+     * NMS NBT Tag for food level.
+     */
+    public static final String NMS_NBT_FOOD_LEVEL = "foodLevel";
+    /**
      * Player exhaustion identifier.
      */
     public static final String PLAYER_EXHAUSTION = "ex";
+    /**
+     * NMS NBT Tag for food exhaustion level.
+     */
+    public static final String NMS_NBT_FOOD_EXHAUSTION_LEVEL = "foodExhaustionLevel";
     /**
      * Player saturation identifier.
      */
     public static final String PLAYER_SATURATION = "sa";
     /**
-     * Player saturation identifier.
+     * NMS NBT Tag for food saturation level.
+     */
+    public static final String NMS_NBT_FOOD_SATURATION_LEVEL = "foodSaturationLevel";
+    /**
+     * Player fall distance identifier.
      */
     public static final String PLAYER_FALL_DISTANCE = "fd";
     /**
-     * Player saturation identifier.
+     * NMS NBT Tag for fall distance.
+     */
+    public static final String NMS_NBT_FALL_DISTANCE = "FallDistance";
+    /**
+     * Player fire ticks identifier.
      */
     public static final String PLAYER_FIRE_TICKS = "ft";
     /**
-     * Player saturation identifier.
+     * NMS NBT Tag for fire ticks.
+     */
+    public static final String NMS_NBT_FIRE_TICKS = "Fire";
+    /**
+     * Player remaining air identifier.
      */
     public static final String PLAYER_REMAINING_AIR = "ra";
+    /**
+     * NMS NBT Tag for remaining air.
+     */
+    public static final String NMS_NBT_AIR = "Air";
     /**
      * Player saturation identifier.
      */
