@@ -318,7 +318,10 @@ public class TestInstanceCreator {
         }
         */
 
-        Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        Server maybeNullServer = getServer();
+        PluginManager maybeNullPluginManager = maybeNullServer.getPluginManager();
+        Plugin plugin = maybeNullPluginManager.getPlugin("Multiverse-Inventories");
+        //Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
         MultiverseInventories inventories = (MultiverseInventories) plugin;
         inventories.onDisable();
 
