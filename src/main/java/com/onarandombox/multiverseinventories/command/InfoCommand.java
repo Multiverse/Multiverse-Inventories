@@ -71,7 +71,7 @@ public class InfoCommand extends InventoriesCommand {
                 worldsString.append(world);
             }
         }
-        this.messager.normal(Message.INFO_GROUP_INFO,
+        this.messager.normal(Message.INFO_GROUPS_INFO,
                 sender, worldsString, worldGroup.getShares().toString());
     }
 

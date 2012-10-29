@@ -12,8 +12,10 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
- * The /mvi info Command.
+ * The /mvinv rmshares Command.
+ * @deprecated Deprecated in favor of /mvinv group.
  */
+@Deprecated
 public class RemoveSharesCommand extends InventoriesCommand {
 
     public RemoveSharesCommand(MultiverseInventories plugin) {

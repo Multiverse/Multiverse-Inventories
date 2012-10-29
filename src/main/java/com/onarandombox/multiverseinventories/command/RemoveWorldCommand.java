@@ -1,9 +1,9 @@
 package com.onarandombox.multiverseinventories.command;
 
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
+import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -11,8 +11,10 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
- * The /mvi info Command.
+ * The /mvinv rmworld Command.
+ * @deprecated Deprecated in favor of /mvinv group.
  */
+@Deprecated
 public class RemoveWorldCommand extends InventoriesCommand {
 
     public RemoveWorldCommand(MultiverseInventories plugin) {
