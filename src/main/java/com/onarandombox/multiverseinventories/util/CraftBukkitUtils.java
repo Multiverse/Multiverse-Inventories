@@ -58,7 +58,7 @@ public class CraftBukkitUtils {
         try {
             switch (type) {
                 case 1:
-                    value = new NBTTagByte(name, (Byte) rawValue);
+                    value = new NBTTagByte(name, ((Number) rawValue).byteValue());
                     break;
                     
                 case 2:
@@ -66,19 +66,19 @@ public class CraftBukkitUtils {
                     break;
                     
                 case 3:
-                    value = new NBTTagInt(name, (Integer) rawValue);
+                    value = new NBTTagInt(name, ((Number) rawValue).intValue());
                     break;
                     
                 case 4:
-                    value = new NBTTagLong(name, (Long) rawValue);
+                    value = new NBTTagLong(name, ((Number) rawValue).longValue());
                     break;
                     
                 case 5:
-                    value = new NBTTagFloat(name, (Float) rawValue);
+                    value = new NBTTagFloat(name, ((Number) rawValue).floatValue());
                     break;
                     
                 case 6:
-                    value = new NBTTagDouble(name, (Double) rawValue);
+                    value = new NBTTagDouble(name, ((Number) rawValue).doubleValue());
                     break;
                     
                 case 7:
