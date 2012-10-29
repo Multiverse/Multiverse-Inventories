@@ -4,6 +4,7 @@ import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
 import junit.framework.Assert;
@@ -165,15 +166,15 @@ public class TestWorldChanged {
         cmdArgs = new String[]{"addshares", "-saturation", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
+        Shares shares = Sharables.allOf();
+        shares.remove(Sharables.SATURATION);
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
 
         // Reload to ensure things are saving to config.yml
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getNegativeShares().isSharing(Sharables.SATURATION));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));

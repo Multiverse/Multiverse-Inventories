@@ -72,7 +72,7 @@ public class InfoCommand extends InventoriesCommand {
             }
         }
         this.messager.normal(Message.INFO_GROUP_INFO,
-                sender, worldsString, worldGroup.getShares().toString(), worldGroup.getNegativeShares().toString());
+                sender, worldsString, worldGroup.getShares().toString());
     }
 
     private void worldInfo(CommandSender sender, WorldProfile worldProfile) {

@@ -175,7 +175,7 @@ public class GroupCommand extends InventoriesCommand {
                     plugin.getGroupManager().addGroup(worldGroup, true);
                     messager.normal(Message.GROUP_CREATED, sender);
                     messager.normal(Message.INFO_GROUP, sender, worldGroup.getName());
-                    messager.normal(Message.INFO_GROUP_INFO, sender, worldGroup.getWorlds(), worldGroup.getShares(), worldGroup.getNegativeShares());
+                    messager.normal(Message.INFO_GROUP_INFO, sender, worldGroup.getWorlds(), worldGroup.getShares());
                     plugin.getGroupManager().checkForConflicts(sender);
                 }
                 return Prompt.END_OF_CONVERSATION;
@@ -195,9 +195,9 @@ public class GroupCommand extends InventoriesCommand {
                 if (!negative) {
                     worldGroup.getShares().addAll(shares);
                 } else {
-                    worldGroup.getNegativeShares().addAll(shares);
+                    worldGroup.getShares().removeAll(shares);
                 }
-                messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(), worldGroup.getShares(), worldGroup.getNegativeShares());
+                messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(), worldGroup.getShares());
             }
             return this;
         }

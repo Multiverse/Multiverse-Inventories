@@ -40,34 +40,20 @@ public class RemoveSharesCommand extends InventoriesCommand {
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
         Shares newShares;
-        Shares negativeShares;
         if (args.get(0).contains("all") || args.get(0).contains("everything") || args.get(0).contains("*")) {
             newShares = Sharables.allOf();
-            negativeShares = Sharables.noneOf();
-        } else if (args.get(0).contains("-all") || args.get(0).contains("-everything") || args.get(0).contains("-*")) {
-            negativeShares = Sharables.allOf();
-            newShares = Sharables.noneOf();
         } else {
-            negativeShares = Sharables.noneOf();
             newShares = Sharables.noneOf();
             String[] sharesString = args.get(0).split(",");
             for (String shareString : sharesString) {
-                if (shareString.startsWith("-") && shareString.length() > 1) {
-                    Shares shares = Sharables.lookup(shareString.substring(1));
-                    if (shares == null) {
-                        continue;
-                    }
-                    negativeShares.setSharing(shares, true);
-                } else {
-                    Shares shares = Sharables.lookup(shareString);
-                    if (shares == null) {
-                        continue;
-                    }
-                    newShares.setSharing(shares, true);
+                Shares shares = Sharables.lookup(shareString);
+                if (shares == null) {
+                    continue;
                 }
+                newShares.setSharing(shares, true);
             }
         }
-        if (newShares.isEmpty() && negativeShares.isEmpty()) {
+        if (newShares.isEmpty()) {
             this.messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
             return;
         }
@@ -79,13 +65,10 @@ public class RemoveSharesCommand extends InventoriesCommand {
         for (Sharable sharable : newShares) {
             worldGroup.getShares().setSharing(sharable, false);
         }
-        for (Sharable sharable : negativeShares) {
-            worldGroup.getNegativeShares().setSharing(sharable, false);
-        }
         this.plugin.getMVIConfig().updateWorldGroup(worldGroup);
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
-                worldGroup.getShares().toString(), worldGroup.getNegativeShares().toString());
+                worldGroup.getShares().toString());
     }
 }
 

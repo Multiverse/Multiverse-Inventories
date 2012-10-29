@@ -5,7 +5,6 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
@@ -37,14 +36,6 @@ abstract class ShareHandler {
      * @param profile   The player player that will need data saved to.
      */
     public final void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        if (container instanceof WorldGroupProfile) {
-            WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
-            if (!worldGroupProfile.getNegativeShares().isEmpty()) {
-                Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
-                        + ") shares for " + profile.getContainerType() + ":" + container.getDataName());
-                shares.removeAll(worldGroupProfile.getNegativeShares());
-            }
-        }
         event.getFromProfiles().add(new DefaultPersistingProfile(shares, profile));
     }
 
@@ -54,14 +45,6 @@ abstract class ShareHandler {
      * @param profile   The player player that will need data loaded from.
      */
     public final void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        if (container instanceof WorldGroupProfile) {
-            WorldGroupProfile worldGroupProfile = (WorldGroupProfile) container;
-            if (!worldGroupProfile.getNegativeShares().isEmpty()) {
-                Logging.finer("Removing negative (" + worldGroupProfile.getNegativeShares()
-                        + ") shares for " + profile.getContainerType() + ":" + container.getDataName());
-                shares.removeAll(((WorldGroupProfile) container).getNegativeShares());
-            }
-        }
         event.getToProfiles().add(new DefaultPersistingProfile(shares, profile));
     }
 

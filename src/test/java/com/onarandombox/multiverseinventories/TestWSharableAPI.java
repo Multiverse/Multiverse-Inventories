@@ -169,7 +169,7 @@ public class TestWSharableAPI {
         WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
-        newGroup.getNegativeShares().add(OPTIONAL);
+        newGroup.getShares().remove(OPTIONAL);
         inventories.getGroupManager().addGroup(newGroup, true);
 
         // Verify removal

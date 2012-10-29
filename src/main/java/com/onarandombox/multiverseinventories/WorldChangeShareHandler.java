@@ -48,7 +48,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                 this.addFromProfile(fromWorldGroup,
                         Sharables.fromShares(fromWorldGroup.getShares()), profile);
             } else {
-                if (!fromWorldGroup.getShares().isSharing(Sharables.all()) || !fromWorldGroup.getNegativeShares().isEmpty()) {
+                if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
                     this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
                 }
             }
@@ -73,7 +73,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                                 sharesToAdd, profile);
                         sharesToUpdate.addAll(sharesToAdd);
                     } else {
-                        if (!toWorldGroup.getShares().isSharing(Sharables.all()) || !toWorldGroup.getNegativeShares().isEmpty()) {
+                        if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
                             this.addToProfile(toWorldGroup, sharesToAdd, profile);
                             sharesToUpdate.addAll(sharesToAdd);

@@ -91,19 +91,12 @@ public interface WorldGroupProfile extends ProfileContainer {
     boolean isSharing(Sharable sharable);
 
     /**
-     * Retrieves the shares for this World Group.
+     * Retrieves the shares for this World Group.  Any changes to this group must be subsequently saved to the data
+     * source for the changes to be permanent.
      *
      * @return The shares for this World Group.
      */
     Shares getShares();
-
-    /**
-     * Retrieves the negated shares for this World Group.  Elements in this Shares set may be found in
-     * {@link #getShares()}.  Their presence here means that the copies in {@link #getShares()} will be ignored.
-     *
-     * @return The negated shares for this World Group.
-     */
-    Shares getNegativeShares();
 
     /**
      * @return A map containing all the world group data to be saved to disk.

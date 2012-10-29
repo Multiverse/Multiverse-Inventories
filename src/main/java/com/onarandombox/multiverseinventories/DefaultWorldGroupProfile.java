@@ -67,7 +67,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             Object sharesListObj = dataMap.get("shares");
             if (sharesListObj instanceof List) {
                 this.getShares().mergeShares(Sharables.fromList((List) sharesListObj));
-                this.getNegativeShares().mergeShares(Sharables.negativeFromList((List) sharesListObj));
+                this.getShares().removeAll(Sharables.negativeFromList((List) sharesListObj));
             } else {
                 Logging.warning("Shares formatted incorrectly for group: " + name);
             }
@@ -109,9 +109,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
         Map<String, Object> results = new LinkedHashMap<String, Object>();
         results.put("worlds", Lists.newArrayList(this.getWorlds()));
         List<String> sharesList = this.getShares().toStringList();
-        for (Sharable sharable : this.getNegativeShares()) {
-            sharesList.add("-" + sharable.getNames()[0]);
-        }
         if (!sharesList.isEmpty()) {
             results.put("shares", sharesList);
         }
@@ -213,7 +210,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
 
     @Override
     public boolean isSharing(Sharable sharable) {
-        return getShares().isSharing(sharable) && !getNegativeShares().isSharing(sharable);
+        return getShares().isSharing(sharable);
     }
 
     /**
@@ -222,18 +219,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     @Override
     public Shares getShares() {
         return this.shares;
-    }
-
-    private void setNegativeShares(Shares shares) {
-        this.shares = shares;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Shares getNegativeShares() {
-        return this.negativeShares;
     }
 
     /**
@@ -264,7 +249,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
             builder.append(worldsString[i]);
         }
         builder.append("], Shares: [").append(this.getShares().toString()).append("]");
-        builder.append(", Negative Shares: [").append(this.getNegativeShares().toString()).append("]");
         if (this.getSpawnWorld() != null) {
             builder.append(", Spawn World: ").append(this.getSpawnWorld());
             builder.append(", Spawn Priority: ").append(this.getSpawnPriority().toString());
