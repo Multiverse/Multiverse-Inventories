@@ -137,7 +137,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
             }
-            this.inventories.getGroupManager().addGroup(newGroup, true);
+            this.inventories.getGroupManager().updateGroup(newGroup);
             Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());
         }
     }

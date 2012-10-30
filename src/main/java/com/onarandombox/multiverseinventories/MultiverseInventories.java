@@ -319,8 +319,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
-                // Get world groups from config
-                getGroupManager().setGroups(getMVIConfig().getWorldGroups());
                 // Create initial World Group for first run IF NO GROUPS EXIST
                 if (getMVIConfig().isFirstRun()) {
                     Logging.info("First run!");

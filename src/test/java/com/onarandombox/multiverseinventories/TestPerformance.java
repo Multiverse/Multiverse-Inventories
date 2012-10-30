@@ -119,24 +119,24 @@ public class TestPerformance {
         WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
 
         newGroup = inventories.getGroupManager().newEmptyGroup("test2");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
         newGroup = inventories.getGroupManager().newEmptyGroup("test3");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
         newGroup = inventories.getGroupManager().newEmptyGroup("test4");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
         newGroup = inventories.getGroupManager().newEmptyGroup("test5");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
@@ -229,7 +229,7 @@ public class TestPerformance {
         WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));

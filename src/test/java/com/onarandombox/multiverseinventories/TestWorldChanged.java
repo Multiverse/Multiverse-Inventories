@@ -361,7 +361,7 @@ public class TestWorldChanged {
         group.addWorld("world_the_end");
         group.addWorld("world2");
         group.getShares().setSharing(Sharables.allOf(), true);
-        inventories.getGroupManager().addGroup(group, true);
+        inventories.getGroupManager().updateGroup(group);
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
         Assert.assertTrue(inventories.getGroupManager().checkGroups().isEmpty());

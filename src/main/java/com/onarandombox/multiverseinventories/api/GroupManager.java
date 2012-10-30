@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Manager class for manipulating the groups of this plugin that are contained in memory.
+ * Manager class for manipulating the groups of this plugin that are contained in the groups configuration.
  */
 public interface GroupManager {
 
     /**
      * Retrieves the world group associated with the given name.
-     *
+     * <p/>
      * These groups represent the groups that define a set of worlds and what they share.
      *
      * @param groupName Name of world group to retrieve. Casing is ignored.
@@ -25,15 +25,17 @@ public interface GroupManager {
 
     /**
      * Returns a list of all the world groups defined in Multiverse-Inventories's groups configuration.
+     * <p/>
+     * This list is unmodifiable.
      *
-     * @return A List of all world groups.
+     * @return An unmodifiable list of all world groups.
      */
     List<WorldGroupProfile> getGroups();
 
     /**
-     * Retrieves all of the World Groups associated with the given world.  Casing is ignored.
+     * Retrieves all of the world groups associated with the given world.
      *
-     * @param worldName Name of the world to get groups for.
+     * @param worldName Name of the world to get groups for.  Casing is ignored.
      * @return List of World Groups associated with the world or null if none.
      */
     List<WorldGroupProfile> getGroupsForWorld(String worldName);
@@ -42,6 +44,7 @@ public interface GroupManager {
      * Sets up the World Groups in memory.
      *
      * @param worldGroups List of World Groups to store in memory.
+     * @deprecated This feature is now completely unused.
      */
     @Deprecated
     void setGroups(List<WorldGroupProfile> worldGroups);
@@ -58,12 +61,12 @@ public interface GroupManager {
 
     /**
      * Adds or updates a world group in Multiverse-Inventories.
-     *
+     * <p/>
      * This will update an existing group by persisting changes made to it in the groups configuration.
      * This should be called when any of the facets of a group such as worlds or shares have been modified.
-     *
+     * <p/>
      * If the group does not exist it will be added to the groups configuration.
-     *
+     * <p/>
      * If worldGroup's name matches the name of a different WorldGroupProfile object that is already
      * known, the previous object will be overwritten with worldGroup parameter.
      *
@@ -80,12 +83,14 @@ public interface GroupManager {
     boolean removeGroup(WorldGroupProfile worldGroup);
 
     /**
-     * Creates a new empty world group.  Please note if you do not add worlds to this group it will
-     * not persist very well.  This does not automatically persist the new group.  It must bed added via
-     * {@link #addGroup(com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile, boolean)}
+     * Creates a new empty world group.
+     * <p/>
+     * Please note if you do not add worlds to this group it will not persist very well.
+     * This does not automatically persist the new group.  It must bed added via
+     * {@link #updateGroup(com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile)}
      *
      * @param name A name for the new group.
-     * @return The newly created WorldGroupProfile.
+     * @return The newly created world group.
      */
     WorldGroupProfile newEmptyGroup(String name);
 

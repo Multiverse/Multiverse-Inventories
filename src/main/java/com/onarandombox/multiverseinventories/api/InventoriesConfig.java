@@ -35,6 +35,8 @@ public interface InventoriesConfig {
      * Retrieves the list of groups set up in the config.
      *
      * @return List of world groups or null if there are none.
+     * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
+     *             {@link GroupManager}
      */
     @Deprecated
     List<WorldGroupProfile> getWorldGroups();
@@ -44,6 +46,8 @@ public interface InventoriesConfig {
      * ConfigurationSection in the config if one does not exist.
      *
      * @param worldGroup Group to update.
+     * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
+     *             {@link GroupManager}
      */
     @Deprecated
     void updateWorldGroup(WorldGroupProfile worldGroup);
@@ -52,6 +56,8 @@ public interface InventoriesConfig {
      * Removes the specified world group in the config.
      *
      * @param worldGroup Group to remove.
+     * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
+     *             {@link GroupManager}
      */
     @Deprecated
     void removeWorldGroup(WorldGroupProfile worldGroup);
@@ -111,6 +117,7 @@ public interface InventoriesConfig {
     /**
      * Saves the configuration file to disk.
      */
+    // TODO remove need for this method.
     void save();
 
     /**

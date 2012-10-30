@@ -143,7 +143,6 @@ class YamlInventoriesConfig implements InventoriesConfig {
     }
 
 
-
     /**
      * Loads default settings for any missing config values.
      */
@@ -206,6 +205,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public List<WorldGroupProfile> getWorldGroups() {
         return plugin.getGroupManager().getGroups();
     }
@@ -308,15 +308,17 @@ class YamlInventoriesConfig implements InventoriesConfig {
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public void updateWorldGroup(WorldGroupProfile worldGroup) {
-
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeWorldGroup(WorldGroupProfile worldGroup) { }
+    @Deprecated
+    public void removeWorldGroup(WorldGroupProfile worldGroup) {
+    }
 
     /**
      * {@inheritDoc}

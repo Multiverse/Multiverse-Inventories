@@ -14,7 +14,9 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +25,7 @@ import java.util.Map;
  */
 abstract class AbstractGroupManager implements GroupManager {
 
-    protected final Map<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
+    protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<String, WorldGroupProfile>();
     protected final Inventories plugin;
 
     public AbstractGroupManager(final Inventories plugin) {
@@ -43,9 +45,7 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public List<WorldGroupProfile> getGroups() {
-        List<WorldGroupProfile> groups = new ArrayList<WorldGroupProfile>();
-        groups.addAll(this.getGroupNames().values());
-        return groups;
+        return Collections.unmodifiableList(new ArrayList<WorldGroupProfile>(this.getGroupNames().values()));
     }
 
     /**
@@ -79,6 +79,7 @@ abstract class AbstractGroupManager implements GroupManager {
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public void addGroup(final WorldGroupProfile worldGroup, final boolean persist) {
         updateGroup(worldGroup);
     }
@@ -88,7 +89,8 @@ abstract class AbstractGroupManager implements GroupManager {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
     }
 
-    protected void persistGroup(final WorldGroupProfile worldGroup) { }
+    protected void persistGroup(final WorldGroupProfile worldGroup) {
+    }
 
     /**
      * {@inheritDoc}
@@ -113,6 +115,7 @@ abstract class AbstractGroupManager implements GroupManager {
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public WorldGroupProfile newGroupFromMap(String name, Map<String, Object> dataMap) throws DeserializationException {
         if (getGroup(name) != null) {
             return null;
@@ -124,7 +127,9 @@ abstract class AbstractGroupManager implements GroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void setGroups(List<WorldGroupProfile> worldGroups) { }
+    @Deprecated
+    public void setGroups(List<WorldGroupProfile> worldGroups) {
+    }
 
     /**
      * {@inheritDoc}

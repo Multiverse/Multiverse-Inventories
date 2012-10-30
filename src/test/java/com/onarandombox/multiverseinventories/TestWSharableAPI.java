@@ -170,7 +170,7 @@ public class TestWSharableAPI {
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         newGroup.getShares().remove(OPTIONAL);
-        inventories.getGroupManager().addGroup(newGroup, true);
+        inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
