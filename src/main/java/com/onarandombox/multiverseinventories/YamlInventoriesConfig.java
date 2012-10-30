@@ -1,12 +1,11 @@
-package com.onarandombox.multiverseinventories.util;
+package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
-import org.bukkit.configuration.ConfigurationSection;
+import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -14,12 +13,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Implementation of Config.
  */
-public class CommentedInventoriesConfig implements InventoriesConfig {
+class YamlInventoriesConfig implements InventoriesConfig {
 
     /**
      * Enum for easily keeping track of config paths, defaults and comments.
@@ -72,23 +70,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
          */
         USE_GAME_MODE_PROFILES("settings.use_game_mode_profiles", false,
                 "# If this is set to true, players will have different inventories/stats for each game mode.",
-                "# Please note that old data migrated to the version that has this feature will have their data copied for both game modes."),
-        /**
-         * Groups section path and comments.  No simple default for this.
-         */
-        GROUPS("groups", null, "# This is where you configure your world groups",
-                "# example below: ",
-                "#    groups:",
-                "#      example_group:",
-                "#        worlds:",
-                "#        - world1",
-                "#        - world2",
-                "#        shares:",
-                "#        - all",
-                "# In this example, world1 and world2 will share everything sharable.",
-                "# When things are shared this means they are the SAME for each world listed in the group.",
-                "# Options for shares: inventory, exp, health, hunger, beds",
-                "# Worlds not listed in a group will have a separate personal inventory/stats/bed UNLESS default_ungrouped_worlds is true");
+                "# Please note that old data migrated to the version that has this feature will have their data copied for both game modes.");
 
         private String path;
         private Object def;
@@ -129,10 +111,9 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
     }
 
     private CommentedYamlConfiguration config;
-    private CommentedYamlConfiguration groupsConfig;
     private MultiverseInventories plugin;
 
-    public CommentedInventoriesConfig(MultiverseInventories plugin) throws IOException {
+    public YamlInventoriesConfig(MultiverseInventories plugin) throws IOException {
         this.plugin = plugin;
         // Make the data folders
         if (plugin.getDataFolder().mkdirs()) {
@@ -150,53 +131,24 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
         config = new CommentedYamlConfiguration(configFile, true);
         config.load();
 
-        // Check if the group config file exists.  If not, create it and migrate group data.
-        boolean migrateGroups = false;
-        File groupConfigFile = new File(plugin.getDataFolder(), "groups.yml");
-        if (!groupConfigFile.exists()) {
-            Logging.fine("Created groups file.");
-            groupConfigFile.createNewFile();
-            migrateGroups = true;
-        }
-
-        // Load the configuration file into memory
-        groupsConfig = new CommentedYamlConfiguration(groupConfigFile, true);
-        groupsConfig.load();
-
-        if (migrateGroups) {
-            migrateGroups();
-        }
-
         // Sets defaults config values
         this.setDefaults();
 
         config.getConfig().options().header("# Multiverse-Inventories Settings");
-        groupsConfig.getConfig().options().header("# Multiverse-Inventories Groups");
 
         // Saves the configuration from memory to file
-        groupsConfig.save();
         config.save();
 
         Logging.setDebugLevel(this.getGlobalDebug());
     }
 
-    private void migrateGroups() {
-        ConfigurationSection section = config.getConfig().getConfigurationSection("groups");
-        if (section != null) {
-            groupsConfig.getConfig().set("groups", section);
-            config.getConfig().set("groups", null);
-            Logging.fine("Migrated groups to groups.yml");
-        }
-    }
+
 
     /**
      * Loads default settings for any missing config values.
      */
     private void setDefaults() {
-        for (CommentedInventoriesConfig.Path path : CommentedInventoriesConfig.Path.values()) {
-            if (path == Path.GROUPS) {
-                continue;
-            }
+        for (YamlInventoriesConfig.Path path : YamlInventoriesConfig.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
             if (this.getConfig().get(path.getPath()) == null) {
                 if (path.getDefault() != null) {
@@ -207,10 +159,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
                 }
             }
         }
-        groupsConfig.addComment(Path.GROUPS.getPath(), Path.GROUPS.getComments());
-        if (groupsConfig.getConfig().get(Path.GROUPS.getPath()) == null) {
-            this.getConfig().createSection(Path.GROUPS.getPath());
-        }
+
     }
 
     private Boolean getBoolean(Path path) {
@@ -227,10 +176,6 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
 
     private FileConfiguration getConfig() {
         return this.config.getConfig();
-    }
-
-    private FileConfiguration getGroupsConfig() {
-        return this.groupsConfig.getConfig();
     }
 
     /**
@@ -262,35 +207,7 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public List<WorldGroupProfile> getWorldGroups() {
-        Logging.finer("Getting world groups from config file");
-        ConfigurationSection groupsSection = this.getGroupsConfig().getConfigurationSection("groups");
-        if (groupsSection == null) {
-            Logging.finer("Could not find a 'groups' section in config!");
-            return null;
-        }
-        Set<String> groupNames = groupsSection.getKeys(false);
-        Logging.finer("Loading groups: " + groupNames.toString());
-        List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>(groupNames.size());
-        for (String groupName : groupNames) {
-            Logging.finer("Attempting to load group: " + groupName + "...");
-            WorldGroupProfile worldGroup;
-            try {
-                ConfigurationSection groupSection =
-                        this.getGroupsConfig().getConfigurationSection("groups." + groupName);
-                if (groupSection == null) {
-                    Logging.warning("Group: '" + groupName + "' is not formatted correctly!");
-                    continue;
-                }
-                worldGroup = this.plugin.getGroupManager().newGroupFromMap(groupName, groupSection.getValues(true));
-            } catch (DeserializationException e) {
-                Logging.warning("Unable to load world group: " + groupName);
-                Logging.warning("Reason: " + e.getMessage());
-                continue;
-            }
-            worldGroups.add(worldGroup);
-            Logging.finer("Group: " + worldGroup.getName() + " added to memory");
-        }
-        return worldGroups;
+        return plugin.getGroupManager().getGroups();
     }
 
     /**
@@ -392,18 +309,14 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
      */
     @Override
     public void updateWorldGroup(WorldGroupProfile worldGroup) {
-        Logging.finer("Updating group in config: " + worldGroup.getName());
-        this.getGroupsConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
+
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeWorldGroup(WorldGroupProfile worldGroup) {
-        Logging.finer("Removing group from config: " + worldGroup.getName());
-        this.getGroupsConfig().set("groups." + worldGroup.getName(), null);
-    }
+    public void removeWorldGroup(WorldGroupProfile worldGroup) { }
 
     /**
      * {@inheritDoc}
@@ -414,7 +327,6 @@ public class CommentedInventoriesConfig implements InventoriesConfig {
             this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.optionalSharables.toStringList());
         }
         this.config.save();
-        this.groupsConfig.save();
     }
 }
 

@@ -47,7 +47,7 @@ class GroupSharesPrompt extends InventoriesPrompt {
         if (s.equals("@")) {
             group.getShares().clear();
             group.getShares().addAll(this.shares);
-            plugin.getGroupManager().addGroup(group, true);
+            plugin.getGroupManager().updateGroup(group);
             if (isCreating) {
                 messager.normal(Message.GROUP_CREATION_COMPLETE, sender);
             } else {

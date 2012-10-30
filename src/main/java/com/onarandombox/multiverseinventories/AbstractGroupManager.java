@@ -19,15 +19,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Implementation of WorldGroupManager.
+ * Abstract implementation of GroupManager with no persistence of groups.
  */
-final class DefaultGroupManager implements GroupManager {
+abstract class AbstractGroupManager implements GroupManager {
 
-    private Map<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
-    private Inventories inventories;
+    protected final Map<String, WorldGroupProfile> groupNamesMap = new HashMap<String, WorldGroupProfile>();
+    protected final Inventories plugin;
 
-    public DefaultGroupManager(Inventories inventories) {
-        this.inventories = inventories;
+    public AbstractGroupManager(final Inventories plugin) {
+        this.plugin = plugin;
     }
 
     /**
@@ -59,7 +59,7 @@ final class DefaultGroupManager implements GroupManager {
                 worldGroups.add(worldGroup);
             }
         }
-        if (worldGroups.isEmpty() && this.inventories.getMVIConfig().isDefaultingUngroupedWorlds()) {
+        if (worldGroups.isEmpty() && this.plugin.getMVIConfig().isDefaultingUngroupedWorlds()) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());
         }
@@ -79,22 +79,23 @@ final class DefaultGroupManager implements GroupManager {
      * {@inheritDoc}
      */
     @Override
-    public void addGroup(WorldGroupProfile worldGroup, boolean persist) {
-        this.getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
-        this.inventories.getMVIConfig().updateWorldGroup(worldGroup);
-        if (persist) {
-            this.inventories.getMVIConfig().save();
-        }
+    public void addGroup(final WorldGroupProfile worldGroup, final boolean persist) {
+        updateGroup(worldGroup);
     }
+
+    @Override
+    public void updateGroup(final WorldGroupProfile worldGroup) {
+        getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+    }
+
+    protected void persistGroup(final WorldGroupProfile worldGroup) { }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeGroup(WorldGroupProfile worldGroup) {
-        this.getGroupNames().remove(worldGroup.getName().toLowerCase());
-        this.inventories.getMVIConfig().removeWorldGroup(worldGroup);
-        this.inventories.getMVIConfig().save();
+    public boolean removeGroup(final WorldGroupProfile worldGroup) {
+        return getGroupNames().remove(worldGroup.getName().toLowerCase()) != null;
     }
 
     /**
@@ -102,7 +103,10 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public WorldGroupProfile newEmptyGroup(String name) {
-        return new DefaultWorldGroupProfile(this.inventories, name);
+        if (getGroup(name) != null) {
+            return null;
+        }
+        return new DefaultWorldGroupProfile(this.plugin, name);
     }
 
     /**
@@ -110,24 +114,17 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public WorldGroupProfile newGroupFromMap(String name, Map<String, Object> dataMap) throws DeserializationException {
-        return new DefaultWorldGroupProfile(this.inventories, name, dataMap);
+        if (getGroup(name) != null) {
+            return null;
+        }
+        return new DefaultWorldGroupProfile(this.plugin, name, dataMap);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setGroups(List<WorldGroupProfile> worldGroups) {
-        if (worldGroups == null) {
-            Logging.info("No world groups have been configured!");
-            Logging.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
-            return;
-        }
-
-        for (WorldGroupProfile worldGroup : worldGroups) {
-            this.addGroup(worldGroup, false);
-        }
-    }
+    public void setGroups(List<WorldGroupProfile> worldGroups) { }
 
     /**
      * {@inheritDoc}
@@ -140,7 +137,7 @@ final class DefaultGroupManager implements GroupManager {
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.inventories, "default");
+        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, "default");
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -152,9 +149,9 @@ final class DefaultGroupManager implements GroupManager {
             worldGroup.addWorld(defaultEnd);
             worlds.append(", ").append(defaultEnd.getName());
         }
-        this.addGroup(worldGroup, false);
-        this.inventories.getMVIConfig().setFirstRun(false);
-        this.inventories.getMVIConfig().save();
+        this.updateGroup(worldGroup);
+        this.plugin.getMVIConfig().setFirstRun(false);
+        this.plugin.getMVIConfig().save();
         Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
     }
 
@@ -167,7 +164,7 @@ final class DefaultGroupManager implements GroupManager {
         if (group == null) {
             group = newEmptyGroup("default");
             group.getShares().setSharing(Sharables.allOf(), true);
-            this.addGroup(group, true);
+            this.updateGroup(group);
         }
         return group;
     }
@@ -218,31 +215,31 @@ final class DefaultGroupManager implements GroupManager {
      */
     @Override
     public void checkForConflicts(CommandSender sender) {
-        String message = this.inventories.getMessager().getMessage(Message.CONFLICT_CHECKING);
+        String message = this.plugin.getMessager().getMessage(Message.CONFLICT_CHECKING);
         if (sender != null) {
-            this.inventories.getMessager().sendMessage(sender, message);
+            this.plugin.getMessager().sendMessage(sender, message);
         }
         Logging.fine(message);
-        List<GroupingConflict> conflicts = this.inventories.getGroupManager().checkGroups();
+        List<GroupingConflict> conflicts = this.plugin.getGroupManager().checkGroups();
         for (GroupingConflict conflict : conflicts) {
-            message = this.inventories.getMessager().getMessage(Message.CONFLICT_RESULTS,
+            message = this.plugin.getMessager().getMessage(Message.CONFLICT_RESULTS,
                     conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),
                     conflict.getConflictingShares().toString(), conflict.getWorldsString());
             if (sender != null) {
-                this.inventories.getMessager().sendMessage(sender, message);
+                this.plugin.getMessager().sendMessage(sender, message);
             }
             Logging.info(message);
         }
         if (!conflicts.isEmpty()) {
-            message = this.inventories.getMessager().getMessage(Message.CONFLICT_FOUND);
+            message = this.plugin.getMessager().getMessage(Message.CONFLICT_FOUND);
             if (sender != null) {
-                this.inventories.getMessager().sendMessage(sender, message);
+                this.plugin.getMessager().sendMessage(sender, message);
             }
             Logging.info(message);
         } else {
-            message = this.inventories.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
+            message = this.plugin.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
             if (sender != null) {
-                this.inventories.getMessager().sendMessage(sender, message);
+                this.plugin.getMessager().sendMessage(sender, message);
             }
             Logging.fine(message);
         }

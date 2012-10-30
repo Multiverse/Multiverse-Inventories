@@ -157,7 +157,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     public void addWorld(String worldName, boolean updateConfig) {
         this.getWorlds().add(worldName);
         if (updateConfig) {
-            this.getInventories().getMVIConfig().updateWorldGroup(this);
+            getInventories().getGroupManager().updateGroup(this);
         }
     }
 
@@ -184,7 +184,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     public void removeWorld(String worldName, boolean updateConfig) {
         this.getWorlds().remove(worldName);
         if (updateConfig) {
-            this.getInventories().getMVIConfig().updateWorldGroup(this);
+            getInventories().getGroupManager().updateGroup(this);
         }
     }
 

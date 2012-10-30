@@ -67,7 +67,7 @@ public class RemoveSharesCommand extends InventoriesCommand {
         for (Sharable sharable : newShares) {
             worldGroup.getShares().setSharing(sharable, false);
         }
-        this.plugin.getMVIConfig().updateWorldGroup(worldGroup);
+        this.plugin.getGroupManager().updateGroup(worldGroup);
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());

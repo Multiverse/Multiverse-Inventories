@@ -25,7 +25,6 @@ import com.onarandombox.multiverseinventories.command.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
-import com.onarandombox.multiverseinventories.util.CommentedInventoriesConfig;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.util.data.FlatFilePlayerData;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
@@ -292,18 +291,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public InventoriesConfig getMVIConfig() {
-        if (this.config == null) {
-            // Loads the configuration
-            try {
-                this.config = new CommentedInventoriesConfig(this);
-                Logging.fine("Loaded config file!");
-            } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
-                Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
-                Logging.severe(e.getMessage());
-                Bukkit.getPluginManager().disablePlugin(this);
-                return null;
-            }
-        }
         return this.config;
     }
 
@@ -312,14 +299,23 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void reloadConfig() {
-        this.config = null;
-        this.groupManager = null;
-        this.worldProfileManager = null;
-        this.profileTypeManager = null;
-        //this.data = null;
+        try {
+            this.config = new YamlInventoriesConfig(this);
+            this.groupManager = new YamlGroupManager(this, new File(getDataFolder(), "groups.yml"));
+            this.worldProfileManager = new WeakWorldProfileManager(this);
+            this.profileTypeManager = new DefaultProfileTypeManager(new File(this.getDataFolder(), "profiles.yml"));
+            //this.data = null;
+            Logging.fine("Loaded config file!");
+        } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
+            Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
+            Logging.severe(e.getMessage());
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         ProfileTypes.resetProfileTypes();
         this.getProfileTypeManager();
+
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
@@ -369,9 +365,9 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void setMessager(Messager messager) {
-        if (messager == null)
+        if (messager == null) {
             throw new IllegalArgumentException("The new messager can't be null!");
-
+        }
         this.messager = messager;
     }
 
@@ -388,9 +384,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public GroupManager getGroupManager() {
-        if (this.groupManager == null) {
-            this.groupManager = new DefaultGroupManager(this);
-        }
         return this.groupManager;
     }
 
@@ -399,9 +392,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public WorldProfileManager getWorldManager() {
-        if (this.worldProfileManager == null) {
-            this.worldProfileManager = new WeakWorldProfileManager(this);
-        }
         return this.worldProfileManager;
     }
 
@@ -418,9 +408,9 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void setServerFolder(File newServerFolder) {
-        if (!newServerFolder.isDirectory())
+        if (!newServerFolder.isDirectory()) {
             throw new IllegalArgumentException("That's not a folder!");
-
+        }
         this.serverFolder = newServerFolder;
     }
 
@@ -429,9 +419,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public ProfileTypeManager getProfileTypeManager() {
-        if (this.profileTypeManager == null) {
-            this.profileTypeManager = new DefaultProfileTypeManager(new File(this.getDataFolder(), "profiles.yml"));
-        }
         return profileTypeManager;
     }
 }

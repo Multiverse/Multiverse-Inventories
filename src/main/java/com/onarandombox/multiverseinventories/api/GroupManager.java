@@ -14,14 +14,18 @@ import java.util.Map;
 public interface GroupManager {
 
     /**
-     * Retrieves the WorldGroupProfile associated with the given name.  Casing is ignored.
+     * Retrieves the world group associated with the given name.
      *
-     * @param groupName Name of WorldGroupProfile to retrieve.
+     * These groups represent the groups that define a set of worlds and what they share.
+     *
+     * @param groupName Name of world group to retrieve. Casing is ignored.
      * @return The world group by the name given or null if one doesn't exist by that name.
      */
     WorldGroupProfile getGroup(String groupName);
 
     /**
+     * Returns a list of all the world groups defined in Multiverse-Inventories's groups configuration.
+     *
      * @return A List of all world groups.
      */
     List<WorldGroupProfile> getGroups();
@@ -39,22 +43,41 @@ public interface GroupManager {
      *
      * @param worldGroups List of World Groups to store in memory.
      */
+    @Deprecated
     void setGroups(List<WorldGroupProfile> worldGroups);
 
     /**
-     * Adds a World Group to the collection in memory.
+     * Adds a World Group to the collection in memory, also writing it to the groups configuration.
      *
      * @param worldGroup World group to add.
-     * @param persist    True means this world group will be added to the Config file as well.
+     * @param persist    This parameter is unused due to deprecation of the method.
+     * @deprecated
      */
+    @Deprecated
     void addGroup(WorldGroupProfile worldGroup, boolean persist);
 
     /**
-     * Removes a World Group from the collection in memory AND from the config.
+     * Adds or updates a world group in Multiverse-Inventories.
      *
-     * @param worldGroup World group to remove.
+     * This will update an existing group by persisting changes made to it in the groups configuration.
+     * This should be called when any of the facets of a group such as worlds or shares have been modified.
+     *
+     * If the group does not exist it will be added to the groups configuration.
+     *
+     * If worldGroup's name matches the name of a different WorldGroupProfile object that is already
+     * known, the previous object will be overwritten with worldGroup parameter.
+     *
+     * @param worldGroup the world group to add.
      */
-    void removeGroup(WorldGroupProfile worldGroup);
+    void updateGroup(WorldGroupProfile worldGroup);
+
+    /**
+     * Removes a world group from the collection in memory AND from the groups configuration.
+     *
+     * @param worldGroup the world group to remove.
+     * @return true if group was removed.
+     */
+    boolean removeGroup(WorldGroupProfile worldGroup);
 
     /**
      * Creates a new empty world group.  Please note if you do not add worlds to this group it will
@@ -73,7 +96,9 @@ public interface GroupManager {
      * @param dataMap A map of the data that pertains to this world group.
      * @return The newly created WorldGroupProfile.
      * @throws DeserializationException If the dataMap is not formatted correctly.
+     * @deprecated This method is no longer appropriate as part of the api.  It has no realistic outside function.
      */
+    @Deprecated
     WorldGroupProfile newGroupFromMap(String name, Map<String, Object> dataMap) throws DeserializationException;
 
     /**

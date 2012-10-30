@@ -36,6 +36,7 @@ public interface InventoriesConfig {
      *
      * @return List of world groups or null if there are none.
      */
+    @Deprecated
     List<WorldGroupProfile> getWorldGroups();
 
     /**
@@ -44,6 +45,7 @@ public interface InventoriesConfig {
      *
      * @param worldGroup Group to update.
      */
+    @Deprecated
     void updateWorldGroup(WorldGroupProfile worldGroup);
 
     /**
@@ -51,6 +53,7 @@ public interface InventoriesConfig {
      *
      * @param worldGroup Group to remove.
      */
+    @Deprecated
     void removeWorldGroup(WorldGroupProfile worldGroup);
 
     /**
