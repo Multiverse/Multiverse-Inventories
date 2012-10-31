@@ -25,21 +25,20 @@ import java.util.Set;
  */
 class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGroupProfile {
 
-    private String name = "";
+    private final String name;
+    private final HashSet<String> worlds = new HashSet<String>();
+    private final Shares shares = Sharables.noneOf();
+
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
-    private HashSet<String> worlds = new HashSet<String>();
-    private Shares shares = Sharables.noneOf();
-    private Shares negativeShares = Sharables.noneOf();
-    //private Set<ProfileType> profileTypes = new LinkedHashSet<ProfileType>();
 
-    public DefaultWorldGroupProfile(Inventories inventories, String name) {
+    public DefaultWorldGroupProfile(final Inventories inventories, final String name) {
         super(inventories, ContainerType.GROUP);
         this.name = name;
     }
 
-    public DefaultWorldGroupProfile(Inventories inventories, String name,
-                                    Map<String, Object> dataMap) throws DeserializationException {
+    public DefaultWorldGroupProfile(final Inventories inventories, final String name,
+                                    final Map<String, Object> dataMap) throws DeserializationException {
         this(inventories, name);
         if (dataMap.containsKey("worlds")) {
             Object worldListObj = dataMap.get("worlds");
@@ -138,9 +137,8 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
      * {@inheritDoc}
      */
     @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+    @Deprecated
+    public void setName(String name) { }
 
     /**
      * {@inheritDoc}
@@ -202,10 +200,6 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     @Override
     public Set<String> getWorlds() {
         return this.worlds;
-    }
-
-    private void setShares(Shares shares) {
-        this.shares = shares;
     }
 
     @Override

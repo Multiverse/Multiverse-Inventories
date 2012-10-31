@@ -26,7 +26,9 @@ public interface WorldGroupProfile extends ProfileContainer {
      * Sets the name of this World Group.
      *
      * @param name The new name for this World Group.
+     * @deprecated As this method is dangerous.
      */
+    @Deprecated
     void setName(String name);
 
     /**
