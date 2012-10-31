@@ -301,7 +301,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     public void reloadConfig() {
         try {
             this.config = new YamlInventoriesConfig(this);
-            this.groupManager = new YamlGroupManager(this, new File(getDataFolder(), "groups.yml"));
+            this.groupManager = new YamlGroupManager(this, new File(getDataFolder(), "groups.yml"),
+                    ((YamlInventoriesConfig) config).getConfig());
             this.worldProfileManager = new WeakWorldProfileManager(this);
             this.profileTypeManager = new DefaultProfileTypeManager(new File(this.getDataFolder(), "profiles.yml"));
             //this.data = null;

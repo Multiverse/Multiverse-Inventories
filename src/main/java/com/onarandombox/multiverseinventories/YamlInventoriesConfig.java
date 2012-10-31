@@ -173,7 +173,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
         return this.getConfig().getString(path.getPath(), (String) path.getDefault());
     }
 
-    private FileConfiguration getConfig() {
+    FileConfiguration getConfig() {
         return this.config.getConfig();
     }
 

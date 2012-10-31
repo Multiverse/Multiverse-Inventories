@@ -5,6 +5,7 @@ import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -36,7 +37,8 @@ final class YamlGroupManager extends AbstractGroupManager {
 
     private final CommentedYamlConfiguration groupsConfig;
 
-    YamlGroupManager(final Inventories inventories, final File groupConfigFile) throws IOException {
+    YamlGroupManager(final Inventories inventories, final File groupConfigFile, final Configuration config)
+            throws IOException {
         super(inventories);
 
         // Check if the group config file exists.  If not, create it and migrate group data.
@@ -51,7 +53,7 @@ final class YamlGroupManager extends AbstractGroupManager {
         groupsConfig.load();
 
         if (migrateGroups) {
-            migrateGroups();
+            migrateGroups(config);
         }
 
         groupsConfig.addComment("groups", groupSectionComments);
@@ -76,11 +78,11 @@ final class YamlGroupManager extends AbstractGroupManager {
         }
     }
 
-    private void migrateGroups() {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("groups");
+    private void migrateGroups(final Configuration config) {
+        ConfigurationSection section = config.getConfigurationSection("groups");
         if (section != null) {
             getConfig().set("groups", section);
-            plugin.getConfig().set("groups", null);
+            config.set("groups", null);
             Logging.fine("Migrated groups to groups.yml");
         }
     }
