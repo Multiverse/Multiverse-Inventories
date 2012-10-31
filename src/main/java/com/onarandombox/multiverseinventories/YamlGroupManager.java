@@ -20,19 +20,8 @@ import java.util.Set;
 final class YamlGroupManager extends AbstractGroupManager {
 
     private final List<String> groupSectionComments = Collections.unmodifiableList(new ArrayList<String>() {{
-        add("# This is where you configure your world groups");
-        add("# example below: ");
-        add("#    groups:");
-        add("#      example_group:");
-        add("#        worlds:");
-        add("#        - world1");
-        add("#        - world2");
-        add("#        shares:");
-        add("#        - all");
-        add("# In this example, world1 and world2 will share everything sharable.");
-        add("# When things are shared this means they are the SAME for each world listed in the group.");
-        add("# Options for shares: inventory, exp, health, hunger, beds");
-        add("# Worlds not listed in a group will have a separate personal inventory/stats/bed UNLESS default_ungrouped_worlds is true");
+        add("# To ADD, DELETE, and EDIT groups use the command /mvinv group.");
+        add("# No support will be given for those who manually edit these groups.");
     }});
 
     private final CommentedYamlConfiguration groupsConfig;
