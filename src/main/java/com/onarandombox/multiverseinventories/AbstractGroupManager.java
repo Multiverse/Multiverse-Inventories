@@ -53,6 +53,7 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public List<WorldGroupProfile> getGroupsForWorld(String worldName) {
+        worldName = worldName.toLowerCase();
         List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>();
         for (WorldGroupProfile worldGroup : this.getGroupNames().values()) {
             if (worldGroup.containsWorld(worldName)) {

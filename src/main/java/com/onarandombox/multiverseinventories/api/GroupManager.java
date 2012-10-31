@@ -35,7 +35,7 @@ public interface GroupManager {
     /**
      * Retrieves all of the world groups associated with the given world.
      *
-     * @param worldName Name of the world to get groups for.  Casing is ignored.
+     * @param worldName Name of the world to get groups for.
      * @return List of World Groups associated with the world or null if none.
      */
     List<WorldGroupProfile> getGroupsForWorld(String worldName);
@@ -52,7 +52,7 @@ public interface GroupManager {
     /**
      * Adds a World Group to the collection in memory, also writing it to the groups configuration.
      *
-     * @param worldGroup World group to add.
+     * @param worldGroup World group to add.  Casing is ignored.
      * @param persist    This parameter is unused due to deprecation of the method.
      * @deprecated
      */
