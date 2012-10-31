@@ -79,6 +79,9 @@ final class YamlGroupManager extends AbstractGroupManager {
     }
 
     private void migrateGroups(final Configuration config) {
+        if (config == null) {
+            return;
+        }
         ConfigurationSection section = config.getConfigurationSection("groups");
         if (section != null) {
             getConfig().set("groups", section);
