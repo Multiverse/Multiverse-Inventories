@@ -9,11 +9,13 @@ import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -60,7 +62,11 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     private FileConfiguration getConfigHandle(File file) {
-        return EnhancedConfiguration.loadConfiguration(file);
+        try {
+            return new EncodedConfiguration(file, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return new EnhancedConfiguration(file);
+        }
     }
 
     private File getFolder(ContainerType type, String folderName) {

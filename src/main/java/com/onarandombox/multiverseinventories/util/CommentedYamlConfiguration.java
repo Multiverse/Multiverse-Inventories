@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +38,12 @@ public final class CommentedYamlConfiguration {
     /**
      * Loads this Configuration object into memory.
      */
-    public void load() {
-        config = new EnhancedConfiguration(file);
+    public void load() throws UnsupportedEncodingException {
+        try {
+            config = new EncodedConfiguration(file, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            config = new EnhancedConfiguration(file);
+        }
     }
 
     /**
