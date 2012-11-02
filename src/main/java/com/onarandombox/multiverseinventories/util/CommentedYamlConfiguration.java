@@ -38,7 +38,7 @@ public final class CommentedYamlConfiguration {
      * Loads this Configuration object into memory.
      */
     public void load() {
-        config = EnhancedConfiguration.loadConfiguration(file);
+        config = new EnhancedConfiguration(file);
     }
 
     /**
