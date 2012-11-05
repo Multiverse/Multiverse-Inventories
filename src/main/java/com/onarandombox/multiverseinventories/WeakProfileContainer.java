@@ -95,9 +95,10 @@ abstract class WeakProfileContainer implements ProfileContainer {
         Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getName());
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
-            Logging.finer("Profile (" + profileType + ") for " + player.getName() + " not cached, loading from disk...");
             playerProfile = this.getData().getPlayerData(this.type,
                     this.getDataName(), profileType, player.getName());
+            Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
+                    profileType, type, playerProfile.getContainerName(), player.getName());
             profileMap.put(profileType, playerProfile);
         }
         return playerProfile;
