@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.Inventories;
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -43,13 +42,14 @@ final class WorldChangeShareHandler extends ShareHandler {
         List<WorldGroupProfile> fromWorldGroups = this.inventories.getGroupManager()
                 .getGroupsForWorld(event.getFromWorld());
         for (WorldGroupProfile fromWorldGroup : fromWorldGroups) {
-            PlayerProfile profile = fromWorldGroup.getPlayerData(event.getPlayer());
             if (!fromWorldGroup.containsWorld(event.getToWorld())) {
                 this.addFromProfile(fromWorldGroup,
-                        Sharables.fromShares(fromWorldGroup.getShares()), profile);
+                        Sharables.fromShares(fromWorldGroup.getShares()),
+                        fromWorldGroup.getPlayerData(event.getPlayer()));
             } else {
                 if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
-                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()), profile);
+                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()),
+                            fromWorldGroup.getPlayerData(event.getPlayer()));
                 }
             }
         }
@@ -66,16 +66,15 @@ final class WorldChangeShareHandler extends ShareHandler {
                 if (Perm.BYPASS_GROUP.hasBypass(event.getPlayer(), toWorldGroup.getName())) {
                     this.hasBypass = true;
                 } else {
-                    PlayerProfile profile = toWorldGroup.getPlayerData(event.getPlayer());
                     if (!toWorldGroup.containsWorld(event.getFromWorld())) {
                         Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
                         this.addToProfile(toWorldGroup,
-                                sharesToAdd, profile);
+                                sharesToAdd, toWorldGroup.getPlayerData(event.getPlayer()));
                         sharesToUpdate.addAll(sharesToAdd);
                     } else {
                         if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                            this.addToProfile(toWorldGroup, sharesToAdd, profile);
+                            this.addToProfile(toWorldGroup, sharesToAdd, toWorldGroup.getPlayerData(event.getPlayer()));
                             sharesToUpdate.addAll(sharesToAdd);
                         } else {
                             sharesToUpdate = Sharables.allOf();
