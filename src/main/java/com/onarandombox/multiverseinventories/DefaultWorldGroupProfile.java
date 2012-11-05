@@ -220,7 +220,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
      */
     @Override
     public boolean containsWorld(String worldName) {
-        return this.getWorlds().contains(worldName);
+        return this.getWorlds().contains(worldName.toLowerCase());
     }
 
     /**
@@ -264,7 +264,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
      */
     @Override
     public void setSpawnWorld(String worldName) {
-        this.spawnWorld = worldName;
+        this.spawnWorld = worldName.toLowerCase();
     }
 
     /**
