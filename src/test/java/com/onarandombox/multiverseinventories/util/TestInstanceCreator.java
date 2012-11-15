@@ -45,17 +45,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @PrepareForTest({InventoriesListener.class})
 public class TestInstanceCreator {
@@ -173,6 +168,19 @@ public class TestInstanceCreator {
                     String arg;
                     try {
                         arg = (String) invocation.getArguments()[0];
+                    } catch (Exception e) {
+                        return null;
+                    }
+                    return MockWorldFactory.getWorld(arg);
+                }
+            });
+
+            when(mockServer.getWorld(any(UUID.class))).thenAnswer(new Answer<World>() {
+                @Override
+                public World answer(InvocationOnMock invocation) throws Throwable {
+                    UUID arg;
+                    try {
+                        arg = (UUID) invocation.getArguments()[0];
                     } catch (Exception e) {
                         return null;
                     }

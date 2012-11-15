@@ -7,15 +7,6 @@
 
 package com.onarandombox.multiverseinventories.util;
 
-import static org.mockito.Mockito.*;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -25,14 +16,26 @@ import org.bukkit.generator.ChunkGenerator;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.mockito.Mockito.*;
+
 public class MockWorldFactory {
 
+    private static final Map<UUID, World> worldUIDS = new HashMap<UUID, World>();
     private static final Map<String, World> createdWorlds = new LinkedHashMap<String, World>();
 
     private MockWorldFactory() {
     }
 
     private static void registerWorld(World world) {
+        worldUIDS.put(world.getUID(), world);
         createdWorlds.put(world.getName(), world);
     }
 
@@ -76,6 +79,7 @@ public class MockWorldFactory {
                 return mockBlock;
             }
         });
+        when(mockWorld.getUID()).thenReturn(UUID.randomUUID());
         return mockWorld;
     }
 
@@ -143,6 +147,10 @@ public class MockWorldFactory {
 
     public static World getWorld(String name) {
         return createdWorlds.get(name);
+    }
+
+    public static World getWorld(UUID worldUID) {
+        return worldUIDS.get(worldUID);
     }
 
     public static List<World> getWorlds() {
