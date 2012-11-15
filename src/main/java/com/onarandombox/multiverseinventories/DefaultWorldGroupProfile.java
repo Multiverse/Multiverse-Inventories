@@ -48,6 +48,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                 if (!(worldListObj instanceof List)) {
                     Logging.fine("World list formatted incorrectly for world group: " + name);
                 } else {
+                    final StringBuilder builder = new StringBuilder();
                     for (Object worldNameObj : (List) worldListObj) {
                         if (worldNameObj == null) {
                             Logging.fine("Error with a world listed in group: " + name);
@@ -56,9 +57,13 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                         this.addWorld(worldNameObj.toString(), false);
                         World world = Bukkit.getWorld(worldNameObj.toString());
                         if (world == null) {
-                            Logging.warning("World: " + worldNameObj.toString() + " is not loaded.");
+                            if (builder.length() != 0) {
+                                builder.append(", ");
+                            }
+                            builder.append(worldNameObj.toString());
                         }
                     }
+                    Logging.config("The following worlds are in groups but not loaded: %s", builder.toString());
                 }
             }
         }
