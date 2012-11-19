@@ -63,7 +63,9 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
                             builder.append(worldNameObj.toString());
                         }
                     }
-                    Logging.config("The following worlds are in groups but not loaded: %s", builder.toString());
+                    if (builder.length() > 0) {
+                        Logging.config("The following worlds for group '%s' are not loaded: %s", name, builder.toString());
+                    }
                 }
             }
         }
