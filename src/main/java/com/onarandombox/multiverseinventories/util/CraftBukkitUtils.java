@@ -2,30 +2,18 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import net.minecraft.server.NBTBase;
-import net.minecraft.server.NBTCompressedStreamTools;
-import net.minecraft.server.NBTTagByte;
-import net.minecraft.server.NBTTagByteArray;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.NBTTagDouble;
-import net.minecraft.server.NBTTagFloat;
-import net.minecraft.server.NBTTagInt;
-import net.minecraft.server.NBTTagIntArray;
-import net.minecraft.server.NBTTagList;
-import net.minecraft.server.NBTTagLong;
-import net.minecraft.server.NBTTagShort;
-import net.minecraft.server.NBTTagString;
+import net.minecraft.server.v1_4_5.*;
+import net.minecraft.server.v1_4_5.ItemStack;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
+import org.bukkit.inventory.*;
 import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper class for dealing with some craftbukkit stuff, mostly nbt tags
@@ -40,6 +28,77 @@ public class CraftBukkitUtils {
         NBTKeysToIgnore.add("id");
         NBTKeysToIgnore.add("Damage");
         NBTKeysToIgnore.add("ench");
+    }
+
+    public static void applyToStack(org.bukkit.inventory.ItemStack stack, JSONObject itemData) {
+        if (itemData != null && itemData.containsKey(DataStrings.ITEM_NBTTAGS)) {
+            //Turn the item to a CraftItemStack so that it'll have a default tag and such
+            try {
+                stack = new CraftItemStack(stack);
+            } catch (ExceptionInInitializerError e) {
+                return;
+            } catch (NoClassDefFoundError e) {
+                return;
+            }
+            //Get the n.m.s stack from the CraftItemStack
+            ItemStack minecraftStack = ((CraftItemStack) stack).getHandle();
+            //Grab the object associated with the nbttag identifier
+            Object obj = itemData.get(DataStrings.ITEM_NBTTAGS);
+            if (obj instanceof JSONObject) {
+
+                //This should never happen but just in case the stack's tag compound is null by default put in a new blank one
+                if (minecraftStack.getTag() == null) {
+                    minecraftStack.setTag(new NBTTagCompound());
+                }
+
+                //Create a compound from the json data
+                NBTTagCompound compound = CraftBukkitUtils.jsonToNBTTagCompound((JSONObject) obj);
+
+                //If no errors occured and compound was successfully created
+                if (compound != null) {
+                    //Iterate over all the nbt bases in the compound adding them to the compound in the minecraft stack
+                    Iterator iterator = compound.c().iterator();
+                    while (iterator.hasNext()) {
+                        NBTBase nbtbase = (NBTBase) iterator.next();
+                        minecraftStack.getTag().set(nbtbase.getName(), nbtbase);
+                    }
+                }
+            } else {
+                Logging.warning("Could not parse item nbt tags: " + obj);
+            }
+        }
+    }
+
+    /**
+     * Parses the nbt compound for the specified ItemStack
+     *
+     * @param stack
+     * @return
+     */
+    public static JSONObject parseItemCompound (org.bukkit.inventory.ItemStack stack) {
+        if(!(stack instanceof CraftItemStack)) {
+            stack = new CraftItemStack(stack);
+        }
+
+        CraftItemStack craftStack = (CraftItemStack) stack;
+        ItemStack minecraftStack = craftStack.getHandle();
+
+        //A n.m.s stack should always have an nbt object with it but just to be safe
+        if (minecraftStack.getTag() != null) {
+
+            //Create a new json object for the nbt tags
+            JSONObject jsonNBTTags = new JSONObject();
+            //Get the iterator for the n.m.s stack's nbt compound
+            Iterator iterator = minecraftStack.getTag().c().iterator();
+            //Pass the iterator into a function that turns it into a json object
+            jsonNBTTags = CraftBukkitUtils.parseNBTCompound(iterator, CraftBukkitUtils.NBTKeysToIgnore);
+
+            //Aww yeah, successfully parsed the compound
+            if (jsonNBTTags != null) {
+                return jsonNBTTags;
+            }
+        }
+        return null;
     }
     
     /**
