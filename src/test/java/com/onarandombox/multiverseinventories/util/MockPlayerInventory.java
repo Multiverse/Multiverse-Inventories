@@ -84,6 +84,11 @@ public class MockPlayerInventory implements PlayerInventory {
     }
 
     @Override
+    public int clear(int i, int i2) {
+        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public HumanEntity getHolder() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

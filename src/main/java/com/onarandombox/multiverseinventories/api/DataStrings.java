@@ -3,13 +3,10 @@ package com.onarandombox.multiverseinventories.api;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.util.CraftBukkitUtils;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import net.minecraft.server.NBTBase;
-import net.minecraft.server.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -872,52 +869,14 @@ public class DataStrings {
                 }
             }
 
+            if (!hasCraftBukkit() || itemData == null) {
+                return;
+            }
+
             try {
-                if (!hasCraftBukkit()) {
-                    return;
-                }
-
-                if (itemData != null && itemData.containsKey(ITEM_NBTTAGS)) {
-                    //Turn the item to a CraftItemStack so that it'll have a default tag and such
-                    try {
-                        this.item = new CraftItemStack(getItem());
-                    } catch (ExceptionInInitializerError e) {
-                        return;
-                    } catch (NoClassDefFoundError e) {
-                        return;
-                    }
-                    //Get the n.m.s stack from the CraftItemStack
-                    net.minecraft.server.ItemStack minecraftStack = ((CraftItemStack) this.item).getHandle();
-                    //Grab the object associated with the nbttag identifier
-                    Object obj = itemData.get(ITEM_NBTTAGS);
-                    if (obj instanceof JSONObject) {
-
-                        //This should never happen but just in case the stack's tag compound is null by default put in a new blank one
-                        if (minecraftStack.getTag() == null) {
-                            minecraftStack.setTag(new NBTTagCompound());
-                        }
-
-                        //Create a compound from the json data
-                        NBTTagCompound compound = CraftBukkitUtils.jsonToNBTTagCompound((JSONObject) obj);
-
-                        //If no errors occured and compound was successfully created
-                        if (compound != null) {
-                            //Iterate over all the nbt bases in the compound adding them to the compound in the minecraft stack
-                            Iterator iterator = compound.c().iterator();
-                            while (iterator.hasNext()) {
-                                NBTBase nbtbase = (NBTBase) iterator.next();
-                                minecraftStack.getTag().set(nbtbase.getName(), nbtbase);
-                            }
-                        }
-                    } else {
-                        Logging.warning("Could not parse item nbt tags: " + obj);
-                    }
-                }
-            } catch (Exception e) {
-                Logging.warning("Exception while loading CB only elements of item: " + e.getMessage());
-                for (StackTraceElement ste : e.getStackTrace()) {
-                    Logging.fine(ste.toString());
-                }
+                CraftBukkitUtils.applyToStack(item, itemData);
+            } catch (Throwable t) {
+                Logging.warning("Error attempting to apply json nbt compound to stack", t);
             }
         }
 
@@ -971,35 +930,13 @@ public class DataStrings {
                     return jsonItem;
                 }
 
-                if (!(item instanceof CraftItemStack)) {
-                    try {
-                        this.item = new CraftItemStack(getItem());
-                    } catch (ExceptionInInitializerError e) {
-                        return jsonItem;
-                    } catch (NoClassDefFoundError e) {
-                        return jsonItem;
+                try {
+                    JSONObject NBTAsJson = CraftBukkitUtils.parseItemCompound(item);
+                    if (NBTAsJson != null) {
+                        jsonItem.put(ITEM_NBTTAGS, NBTAsJson);
                     }
-                }
-
-                CraftItemStack craftStack = (CraftItemStack) getItem();
-                net.minecraft.server.ItemStack minecraftStack = craftStack.getHandle();
-
-                //A n.m.s stack should always have an nbt object with it but just to be safe
-                if (minecraftStack.getTag() != null) {
-
-                    //Create a new json object for the nbt tags
-                    JSONObject jsonNBTTags = new JSONObject();
-                    //Get the iterator for the n.m.s stack's nbt compound
-                    Iterator iterator = minecraftStack.getTag().c().iterator();
-                    //Pass the iterator into a function that turns it into a json object
-                    jsonNBTTags = CraftBukkitUtils.parseNBTCompound(iterator, CraftBukkitUtils.NBTKeysToIgnore);
-
-                    //Aww yeah, successfully parsed the compound
-                    if (jsonNBTTags != null) {
-                        //Put the nbt tags in json form along with the nbt tag identifier
-                        jsonItem.put(ITEM_NBTTAGS, jsonNBTTags);
-                    }
-
+                } catch (Throwable t) {
+                    Logging.warning("Error while converting nbt compound to json", t);
                 }
             } catch (Exception e) {
                 Logging.warning("Exception while saving CB only elements of item: " + e.getMessage());
