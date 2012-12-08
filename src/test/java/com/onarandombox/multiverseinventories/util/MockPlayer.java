@@ -96,6 +96,11 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void giveExpLevels(int i) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public float getExp() {
         return this.exp;
     }
@@ -163,6 +168,11 @@ public class MockPlayer implements Player {
     @Override
     public void setBedSpawnLocation(Location location) {
         this.bedSpawn = location;
+    }
+
+    @Override
+    public void setBedSpawnLocation(Location location, boolean b) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -283,6 +293,11 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public Location getLocation(Location location) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public World getWorld() {
         return this.playerLocation.getWorld();
     }
@@ -330,6 +345,16 @@ public class MockPlayer implements Player {
     @Override
     public boolean hasLineOfSight(Entity entity) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean getRemoveWhenFarAway() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setRemoveWhenFarAway(boolean b) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
