@@ -16,7 +16,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -832,8 +831,8 @@ public class DataStrings {
 
         private static boolean hasCraftBukkit() {
             try {
-                Class.forName("org.bukkit.craftbukkit.inventory.CraftItemStack");
-                Class.forName("net.minecraft.server.ItemStack");
+                Class.forName("org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack");
+                Class.forName("net.minecraft.server.v1_4_5.ItemStack");
             } catch (ClassNotFoundException e) {
                 return false;
             }
