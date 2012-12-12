@@ -25,6 +25,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.InventoryView.Property;
@@ -1052,5 +1053,20 @@ public class MockPlayer implements Player {
     @Override
     public void playSound(Location location, Sound sound, float v, float v1) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public EntityEquipment getEquipment() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setCanPickupItems(boolean b) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean getCanPickupItems() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
