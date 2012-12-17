@@ -48,14 +48,14 @@ public class CraftBukkitUtils {
         if (itemData != null && itemData.containsKey(DataStrings.ITEM_NBTTAGS)) {
             //Turn the item to a CraftItemStack so that it'll have a default tag and such
             try {
-                stack = new CraftItemStack(stack);
+                stack = CraftItemStack.asCraftCopy(stack);
             } catch (ExceptionInInitializerError e) {
                 return;
             } catch (NoClassDefFoundError e) {
                 return;
             }
             //Get the n.m.s stack from the CraftItemStack
-            ItemStack minecraftStack = ((CraftItemStack) stack).getHandle();
+            ItemStack minecraftStack = CraftItemStack.asNMSCopy(stack);
             //Grab the object associated with the nbttag identifier
             Object obj = itemData.get(DataStrings.ITEM_NBTTAGS);
             if (obj instanceof JSONObject) {
@@ -91,11 +91,11 @@ public class CraftBukkitUtils {
      */
     public static JSONObject parseItemCompound (org.bukkit.inventory.ItemStack stack) {
         if(!(stack instanceof CraftItemStack)) {
-            stack = new CraftItemStack(stack);
+            stack = CraftItemStack.asCraftCopy(stack);
         }
 
         CraftItemStack craftStack = (CraftItemStack) stack;
-        ItemStack minecraftStack = craftStack.getHandle();
+        ItemStack minecraftStack = CraftItemStack.asNMSCopy(craftStack);
 
         //A n.m.s stack should always have an nbt object with it but just to be safe
         if (minecraftStack.getTag() != null) {
