@@ -7,8 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.json.simple.JSONArray;
@@ -62,6 +64,10 @@ public class DataStrings {
      * NBTTags identifier.
      */
     public static final String ITEM_NBTTAGS = "n";
+    /**
+     * NBTTags identifier.
+     */
+    public static final String ITEM_ITEMSTACK = "is";
     /**
      * Player stats identifier.
      */
@@ -840,6 +846,31 @@ public class DataStrings {
         }
 
         private void createItem(JSONObject itemData) {
+            if (itemData != null && itemData.containsKey(ITEM_ITEMSTACK)) {
+                Object obj = itemData.get(ITEM_ITEMSTACK);
+                if (obj instanceof Map) {
+                    Map<String, Object> map = (Map<String, Object>) obj;
+                    // JSONObject apparently likes to store numbers as Longs
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        if (entry.getValue() instanceof Long) {
+                            entry.setValue(((Long) entry.getValue()).intValue());
+                        }
+                    }
+                    this.item = ItemStack.deserialize(map);
+                    if (map.containsKey("meta")) {
+                        Object metaObj = map.get("meta");
+                        if (metaObj instanceof Map) {
+                            Map<String, Object> metaMap = (Map<String, Object>) metaObj;
+                            metaMap.put("==", "ItemMeta");
+                            ItemMeta meta = (ItemMeta) ConfigurationSerialization.deserializeObject(metaMap);
+                            this.item.setItemMeta(meta);
+                        }
+                    }
+                    return;
+                } else {
+                    Logging.warning("Could not parse item: " + obj);
+                }
+            }
             int type = 0;
             short damage = 0;
             int amount = 1;
@@ -901,49 +932,27 @@ public class DataStrings {
             return asJSONObject().toJSONString();
         }
 
+        /*
+        private JSONObject jsonObjectFromMap(final Map<String, Object> map) {
+            final JSONObject json = new JSONObject();
+            for (final Map.Entry<String, Object> entry : map.entrySet()) {
+                if (entry.getValue() instanceof Map) {
+                    json.put(entry.getKey(), jsonObjectFromMap((Map<String, Object>) entry.getValue()));
+                } else {
+                    json.put(entry.getKey(), entry.getValue());
+                }
+            }
+            return json;
+        }
+        */
+
         public JSONObject asJSONObject() {
-            JSONObject jsonItem = new JSONObject();
-            jsonItem.put(ITEM_TYPE_ID, getItem().getTypeId());
-            if (getItem().getDurability() != 0) {
-                jsonItem.put(ITEM_DURABILITY, getItem().getDurability());
+            final JSONObject jsonItem = new JSONObject();
+            final Map<String, Object> map = getItem().serialize();
+            if (map.containsKey("meta")) {
+                map.put("meta", getItem().getItemMeta().serialize());
             }
-            if (getItem().getAmount() != 1) {
-                jsonItem.put(ITEM_AMOUNT, getItem().getAmount());
-            }
-
-            Map<Enchantment, Integer> enchants = getItem().getEnchantments();
-            if (enchants.size() > 0) {
-                JSONObject jsonEnchants = new JSONObject();
-                for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
-                    if (entry.getKey() == null) {
-                        Logging.finer("Not saving null enchantment!");
-                        continue;
-                    }
-                    jsonEnchants.put(entry.getKey().getName(), entry.getValue());
-                }
-                jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
-            }
-
-            try {
-                if (!hasCraftBukkit()) {
-                    return jsonItem;
-                }
-
-                try {
-                    JSONObject NBTAsJson = CraftBukkitUtils.parseItemCompound(item);
-                    if (NBTAsJson != null) {
-                        jsonItem.put(ITEM_NBTTAGS, NBTAsJson);
-                    }
-                } catch (Throwable t) {
-                    Logging.warning("Error while converting nbt compound to json", t);
-                }
-            } catch (Exception e) {
-                Logging.warning("Exception while saving CB only elements of item: " + e.getMessage());
-                for (StackTraceElement ste : e.getStackTrace()) {
-                    Logging.fine(ste.toString());
-                }
-            }
-            
+            jsonItem.put(ITEM_ITEMSTACK, map);
             return jsonItem;
         }
         

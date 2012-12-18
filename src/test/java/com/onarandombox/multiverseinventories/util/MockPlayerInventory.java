@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import com.onarandombox.multiverseinventories.api.DataStrings.ItemWrapper;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -270,34 +269,14 @@ public class MockPlayerInventory implements PlayerInventory {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public boolean containsAtLeast(final ItemStack itemStack, final int i) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        boolean first = true;
-        for (Integer i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
-            if (this.getContents()[i] != null && this.getContents()[i].getTypeId() != 0) {
-                if (first) {
-                    first = false;
-                } else {
-                    builder.append(DataStrings.ITEM_DELIMITER);
-                }
-                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getContents()[i]).toString()));
-            }
-        }
-        StringBuilder finalString = new StringBuilder();
-        finalString.append("{ \"inventoryContents\" : \"").append(builder.toString()).append("\"").append(", \"armorContents\" : \"");
-        builder = new StringBuilder();
-        first = true;
-        for (Integer i = 0; i < PlayerStats.ARMOR_SIZE; i++) {
-            if (this.getArmorContents()[i] != null && this.getArmorContents()[i].getTypeId() != 0) {
-                if (first) {
-                    first = false;
-                } else {
-                    builder.append(DataStrings.ITEM_DELIMITER);
-                }
-                builder.append(DataStrings.createEntry(i, ItemWrapper.wrap(this.getArmorContents()[i]).toString()));
-            }
-        }
-        finalString.append(builder.toString()).append("\" }");
-        return finalString.toString();
+        return "{\"inventoryContents\":" + DataStrings.valueOf(getContents())
+                + ",\"armorContents\":" + DataStrings.valueOf(getArmorContents())
+                + "}";
     }
 }

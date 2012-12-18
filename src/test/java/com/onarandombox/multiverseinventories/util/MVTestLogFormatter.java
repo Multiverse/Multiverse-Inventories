@@ -25,7 +25,7 @@ public class MVTestLogFormatter extends Formatter {
         StringBuilder ret = new StringBuilder();
 
         ret.append("[").append(df.format(record.getMillis())).append("] [")
-                .append(record.getLoggerName()).append("] [")
+                //.append(record.getLoggerName()).append("] [")
                 .append(record.getLevel().getLocalizedName()).append("] ");
         ret.append(record.getMessage());
         ret.append('\n');

@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.After;
@@ -87,7 +88,7 @@ public class TestWorldChanged {
     }
 
     @Test
-    public void testBasicWorldChange() {
+    public void testBasicWorldChange() throws IOException {
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
@@ -120,6 +121,13 @@ public class TestWorldChanged {
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        bookMeta.setAuthor("dumptruckman");
+        bookMeta.setPages("This is my freaking", "book", "man");
+        bookMeta.setDisplayName("Super Book");
+        book.setItemMeta(bookMeta);
+        fillerItems.put(1, book);
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
 
@@ -188,7 +196,7 @@ public class TestWorldChanged {
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1, (byte) 15));
         float satTest = 0.349F;
         player.setSaturation(satTest);
         int hpTest = 13;
@@ -197,8 +205,9 @@ public class TestWorldChanged {
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
-
         String newInventory = player.getInventory().toString();
+
+        // Inventory and health should be same, saturation different (from original values)
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertNotSame(satTest, player.getSaturation());
         Assert.assertEquals(hpTest, player.getHealth());
@@ -206,6 +215,7 @@ public class TestWorldChanged {
         changeWorld(player, "world_nether", "world2");
         newInventory = player.getInventory().toString();
 
+        // Inventory, health and saturation should be different (from original values)
         Assert.assertNotSame(originalInventory, newInventory);
         Assert.assertNotSame(satTest, player.getSaturation());
         Assert.assertNotSame(hpTest, player.getHealth());
@@ -214,8 +224,9 @@ public class TestWorldChanged {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         changeWorld(player, "world2", "world");
-
         newInventory = player.getInventory().toString();
+
+        // Inventory, health and saturation should be same (from original values)
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(satTest, player.getSaturation());
         Assert.assertEquals(hpTest, player.getHealth());
@@ -223,6 +234,7 @@ public class TestWorldChanged {
         changeWorld(player, "world", "world2");
         newInventory = player.getInventory().toString();
 
+        // Inventory, health and saturation should be different (from original values)
         Assert.assertNotSame(originalInventory, newInventory);
         Assert.assertNotSame(satTest, player.getSaturation());
         Assert.assertNotSame(hpTest, player.getHealth());

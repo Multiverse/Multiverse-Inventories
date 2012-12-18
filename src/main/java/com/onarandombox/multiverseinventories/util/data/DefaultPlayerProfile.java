@@ -19,6 +19,7 @@ import org.json.simple.parser.ParseException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Default implementation of a player profile, that is, the data per world/group/gamemode.
@@ -66,7 +67,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                     this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key).toString()));
                 } catch (Exception e) {
                     Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key).toString() + "'");
-                    Logging.fine(e.getMessage());
+                    Logging.getLogger().log(Level.FINE, "Exception: ", e);
                 }
             }
         }

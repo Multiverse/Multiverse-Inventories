@@ -25,6 +25,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
@@ -52,7 +53,7 @@ import java.util.logging.Logger;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@PrepareForTest({InventoriesListener.class})
+@PrepareForTest({InventoriesListener.class, CraftItemFactory.class})
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
     private MultiverseCore core;
@@ -69,6 +70,7 @@ public class TestInstanceCreator {
         try {
             FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
+            Assert.assertFalse(invDirectory.exists());
             invDirectory.mkdirs();
             Assert.assertTrue(invDirectory.exists());
 
@@ -304,6 +306,8 @@ public class TestInstanceCreator {
             when(commandSender.hasPermission(Matchers.isA(Permission.class))).thenReturn(true);
             when(commandSender.addAttachment(plugin)).thenReturn(null);
             when(commandSender.isOp()).thenReturn(true);
+
+            when(mockServer.getItemFactory()).thenReturn(CraftItemFactory.instance());
 
             Bukkit.setServer(mockServer);
 

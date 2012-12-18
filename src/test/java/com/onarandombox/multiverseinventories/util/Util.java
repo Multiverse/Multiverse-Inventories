@@ -7,6 +7,8 @@
 
 package com.onarandombox.multiverseinventories.util;
 
+import com.dumptruckman.minecraft.util.Logging;
+
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -16,7 +18,8 @@ import java.util.logging.Logger;
 public class Util {
     private Util() {}
 
-    public static final Logger logger = Logger.getLogger("MV-Test");
+    //public static final Logger logger = Logger.getLogger("MV-Test");
+    public static final Logger logger = Logging.getLogger();
 
     static {
         logger.setUseParentHandlers(false);
