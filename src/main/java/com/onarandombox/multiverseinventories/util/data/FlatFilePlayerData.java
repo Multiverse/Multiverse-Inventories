@@ -10,6 +10,8 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
+import com.onarandombox.multiverseinventories.util.EncodedJsonConfiguration;
+import com.onarandombox.multiverseinventories.util.JsonConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -27,6 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class FlatFilePlayerData implements PlayerData {
 
     private static final String YML = ".yml";
+    private static final String JSON = ".json";
     private final File worldFolder;
     private final File groupFolder;
     private final File playerFolder;
@@ -62,10 +65,18 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     private FileConfiguration getConfigHandle(File file) {
-        try {
-            return new EncodedConfiguration(file, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return new EnhancedConfiguration(file);
+        if (file.getName().endsWith(YML)) {
+            try {
+                return new EncodedConfiguration(file, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return new EnhancedConfiguration(file);
+            }
+        } else {
+            try {
+                return new EncodedJsonConfiguration(file, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return new JsonConfiguration(file);
+            }
         }
     }
 
@@ -118,8 +129,24 @@ public class FlatFilePlayerData implements PlayerData {
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
      */
-    File getGlobalFile(String playerName) {
+    File getGlobalFile(String playerName, boolean forceJson) {
+        File jsonPlayerFile = new File(playerFolder, playerName + JSON);
         File playerFile = new File(playerFolder, playerName + YML);
+        if (!jsonPlayerFile.exists()) {
+            if (forceJson) {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException e) {
+                    Logging.severe("Could not create necessary player file: " + playerName + YML);
+                    Logging.severe("Your data may not be saved!");
+                    Logging.severe(e.getMessage());
+                }
+                return jsonPlayerFile;
+            }
+            if (playerFile.exists()) {
+                return playerFile;
+            }
+        }
         if (!playerFile.exists()) {
             try {
                 playerFile.createNewFile();
@@ -297,7 +324,7 @@ public class FlatFilePlayerData implements PlayerData {
     @Override
     public GlobalProfile getGlobalProfile(String playerName) {
         // TODO use data caching to avoid excess object creation.
-        File playerFile = this.getGlobalFile(playerName);
+        File playerFile = this.getGlobalFile(playerName, false);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
@@ -311,7 +338,7 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public boolean updateGlobalProfile(GlobalProfile globalProfile) {
-        File playerFile = this.getGlobalFile(globalProfile.getName());
+        File playerFile = this.getGlobalFile(globalProfile.getName(), true);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", globalProfile.serialize());
         try {

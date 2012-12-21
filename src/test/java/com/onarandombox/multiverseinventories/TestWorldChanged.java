@@ -8,6 +8,7 @@ import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
 import junit.framework.Assert;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -20,6 +21,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.After;
@@ -32,6 +34,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,6 +131,12 @@ public class TestWorldChanged {
         bookMeta.setDisplayName("Super Book");
         book.setItemMeta(bookMeta);
         fillerItems.put(1, book);
+        ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
+        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
+        leatherMeta.setColor(Color.PURPLE);
+        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
+        leather.setItemMeta(leatherMeta);
+        fillerItems.put(2, leather);
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
 

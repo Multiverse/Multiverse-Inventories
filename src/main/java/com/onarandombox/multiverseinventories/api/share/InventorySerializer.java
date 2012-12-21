@@ -17,11 +17,12 @@ public final class InventorySerializer implements SharableSerializer<ItemStack[]
 
     @Override
     public ItemStack[] deserialize(Object obj) {
-        return DataStrings.parseInventory(obj.toString(), this.inventorySize);
+        return DataStrings.parseInventory(obj, this.inventorySize);
     }
 
     @Override
     public Object serialize(ItemStack[] itemStacks) {
-        return DataStrings.valueOf(itemStacks);
+        //return DataStrings.valueOf(itemStacks);
+        return DataStrings.asJsonObject(itemStacks);
     }
 }

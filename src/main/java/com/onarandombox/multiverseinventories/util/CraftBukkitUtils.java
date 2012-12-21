@@ -16,8 +16,8 @@ import net.minecraft.server.v1_4_5.NBTTagList;
 import net.minecraft.server.v1_4_5.NBTTagLong;
 import net.minecraft.server.v1_4_5.NBTTagShort;
 import net.minecraft.server.v1_4_5.NBTTagString;
+import net.minidev.json.JSONObject;
 import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;

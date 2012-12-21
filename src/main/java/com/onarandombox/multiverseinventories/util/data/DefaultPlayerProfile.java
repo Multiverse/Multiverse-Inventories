@@ -64,10 +64,11 @@ class DefaultPlayerProfile implements PlayerProfile {
                         Logging.fine("Player fileTag '" + key + "' is unrecognized!");
                         continue;
                     }
-                    this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key).toString()));
+                    this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key)));
                 } catch (Exception e) {
-                    Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key).toString() + "'");
+                    Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key) + "'");
                     Logging.getLogger().log(Level.FINE, "Exception: ", e);
+                    e.printStackTrace();
                 }
             }
         }
