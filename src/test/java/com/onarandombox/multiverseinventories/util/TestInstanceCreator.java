@@ -25,7 +25,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.WorldCreator;
 import org.bukkit.WorldType;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemFactory;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;

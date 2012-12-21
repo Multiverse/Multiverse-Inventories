@@ -191,7 +191,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.4.5-R0.3-SNAPSHOT</version>
+            <version>1.4.6-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>

@@ -1051,6 +1051,11 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void setTexturePack(String s) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public void playSound(Location location, Sound sound, float v, float v1) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
