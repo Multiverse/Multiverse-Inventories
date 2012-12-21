@@ -837,8 +837,8 @@ public class DataStrings {
 
         private static boolean hasCraftBukkit() {
             try {
-                Class.forName("org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack");
-                Class.forName("net.minecraft.server.v1_4_5.ItemStack");
+                Class.forName("org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack");
+                Class.forName("net.minecraft.server.v1_4_6.ItemStack");
             } catch (ClassNotFoundException e) {
                 return false;
             }
