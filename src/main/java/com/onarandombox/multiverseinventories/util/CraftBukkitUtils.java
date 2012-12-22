@@ -2,9 +2,9 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import net.minecraft.server.v1_4_6.*;
+import net.minecraft.server.v1_4_5.*;
 import net.minidev.json.JSONObject;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
 
 import java.io.File;
 import java.io.FileInputStream;
