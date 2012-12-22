@@ -3,6 +3,10 @@ package com.onarandombox.multiverseinventories.api;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.util.CraftBukkitUtils;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,10 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -802,7 +802,7 @@ public class DataStrings {
         }
     }
 
-    private static final JSONParser JSON_PARSER = new JSONParser();
+    private static final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);
     /**
      * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
      */
@@ -850,12 +850,6 @@ public class DataStrings {
                 Object obj = itemData.get(ITEM_ITEMSTACK);
                 if (obj instanceof Map) {
                     Map<String, Object> map = (Map<String, Object>) obj;
-                    // JSONObject apparently likes to store numbers as Longs
-                    for (Map.Entry<String, Object> entry : map.entrySet()) {
-                        if (entry.getValue() instanceof Long) {
-                            entry.setValue(((Long) entry.getValue()).intValue());
-                        }
-                    }
                     this.item = ItemStack.deserialize(map);
                     if (map.containsKey("meta")) {
                         Object metaObj = map.get("meta");
