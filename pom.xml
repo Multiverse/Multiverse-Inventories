@@ -164,6 +164,7 @@ and adjust the build number accordingly -->
                                 <includes>
                                     <include>com.feildmaster.lib:EnhancedConfiguration</include>
                                     <include>com.dumptruckman.minecraft:Logging</include>
+                                    <include>net.minidev:json-smart</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
@@ -195,7 +196,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.4.6-R0.1-SNAPSHOT</version>
+            <version>1.4.5-R1.0</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
