@@ -74,6 +74,16 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void setMaxHealth(final int i) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void resetMaxHealth() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public float getExp() {
         return this.exp;
     }
