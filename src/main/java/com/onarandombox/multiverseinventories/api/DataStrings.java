@@ -941,12 +941,48 @@ public class DataStrings {
         */
 
         public JSONObject asJSONObject() {
-            final JSONObject jsonItem = new JSONObject();
-            final Map<String, Object> map = getItem().serialize();
-            if (map.containsKey("meta")) {
-                map.put("meta", getItem().getItemMeta().serialize());
+            JSONObject jsonItem = new JSONObject();
+            jsonItem.put(ITEM_TYPE_ID, getItem().getTypeId());
+            if (getItem().getDurability() != 0) {
+                jsonItem.put(ITEM_DURABILITY, getItem().getDurability());
             }
-            jsonItem.put(ITEM_ITEMSTACK, map);
+            if (getItem().getAmount() != 1) {
+                jsonItem.put(ITEM_AMOUNT, getItem().getAmount());
+            }
+
+            Map<Enchantment, Integer> enchants = getItem().getEnchantments();
+            if (enchants.size() > 0) {
+                JSONObject jsonEnchants = new JSONObject();
+                for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
+                    if (entry.getKey() == null) {
+                        Logging.finer("Not saving null enchantment!");
+                        continue;
+                    }
+                    jsonEnchants.put(entry.getKey().getName(), entry.getValue());
+                }
+                jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
+            }
+
+            try {
+                if (!hasCraftBukkit()) {
+                    return jsonItem;
+                }
+
+                try {
+                    JSONObject NBTAsJson = CraftBukkitUtils.parseItemCompound(item);
+                    if (NBTAsJson != null) {
+                        jsonItem.put(ITEM_NBTTAGS, NBTAsJson);
+                    }
+                } catch (Throwable t) {
+                    Logging.warning("Error while converting nbt compound to json", t);
+                }
+            } catch (Exception e) {
+                Logging.warning("Exception while saving CB only elements of item: " + e.getMessage());
+                for (StackTraceElement ste : e.getStackTrace()) {
+                    Logging.fine(ste.toString());
+                }
+            }
+
             return jsonItem;
         }
         
