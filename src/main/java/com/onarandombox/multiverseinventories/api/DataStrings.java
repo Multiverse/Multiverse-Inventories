@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * This class handles the formatting of strings for data i/o.
@@ -974,7 +975,7 @@ public class DataStrings {
                         jsonItem.put(ITEM_NBTTAGS, NBTAsJson);
                     }
                 } catch (Throwable t) {
-                    Logging.warning("Error while converting nbt compound to json", t);
+                    Logging.getLogger().log(Level.WARNING, "Error while converting nbt compound to json", t);
                 }
             } catch (Exception e) {
                 Logging.warning("Exception while saving CB only elements of item: " + e.getMessage());
