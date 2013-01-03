@@ -11,10 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -22,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 /**
  * This class handles the formatting of strings for data i/o.
@@ -373,11 +370,56 @@ public class DataStrings {
      * @return an ItemStack array containing the inventory contents parsed from inventoryString.
      */
     public static ItemStack[] parseInventory(String inventoryString, int inventorySize) {
+        System.out.println("parseInventory = " + inventoryString);
         if (inventoryString.startsWith("{")) {
             return jsonParseInventory(inventoryString, inventorySize);
         } else {
             return legacyParseInventory(inventoryString, inventorySize);
         }
+    }
+
+    /**
+     * @param inventory An inventory in object form to be parsed into an ItemStack array.
+     * @param inventorySize The number of item slots in the inventory.
+     * @return an ItemStack array containing the inventory contents parsed from inventoryString.
+     */
+    public static ItemStack[] parseInventory(Object inventory, int inventorySize) {
+        if (inventory.toString().startsWith("{\"")) {
+            return parseInventory(inventory.toString(), inventorySize);
+        }
+        ItemStack[] invContents = MinecraftTools.fillWithAir(new ItemStack[inventorySize]);
+        if (inventory instanceof Map) {
+            Map<String, Object> inventoryMap = (Map<String, Object>) inventory;
+            for (final Map.Entry<String, Object> entry : inventoryMap.entrySet()) {
+                int index = -1;
+                if (!(entry.getValue() instanceof ItemStack)) {
+                    Logging.warning("Invalid item: " + entry.getValue() + " while parsing inventory");
+                    continue;
+                }
+                try {
+                    index = Integer.valueOf(entry.getKey());
+                } catch (NumberFormatException e) {
+                    Logging.warning("Invalid key: " + entry.getKey() + " while parsing inventory");
+                    continue;
+                }
+                if (index == -1) {
+                    Logging.warning("Invalid key: " + entry.getKey() + " while parsing inventory");
+                    continue;
+                }
+                if (index > inventorySize) {
+                    Logging.warning("Invalid key: " + entry.getKey() + " while parsing inventory");
+                    continue;
+                }
+                try {
+                    final ItemStack item = (ItemStack) entry.getValue();
+                    invContents[index] = item;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Logging.warning("Could not parse item: " + entry.getValue());
+                }
+            }
+        }
+        return invContents;
     }
 
     private static ItemStack[] legacyParseInventory(String inventoryString, int inventorySize) {
@@ -523,7 +565,12 @@ public class DataStrings {
                 if (type == -1 || duration == -1 || amplifier == -1) {
                     Logging.fine("Could not parse potion effect string: " + obj);
                 } else {
-                    potionEffectList.add(new PotionEffect(PotionEffectType.getById(type), duration, amplifier));
+                    PotionEffectType pType = PotionEffectType.getById(type);
+                    if (pType == null) {
+                        Logging.warning("Could not parse potion effect type: " + type);
+                        continue;
+                    }
+                    potionEffectList.add(new PotionEffect(pType, duration, amplifier));
                 }
             } else {
                 Logging.warning("Could not parse potion effect: " + obj);
@@ -546,6 +593,23 @@ public class DataStrings {
             }
         }
         return jsonItems.toJSONString();
+    }
+
+    /**
+     * Converts an ItemStack array into a String for easy persistence.
+     *
+     * @param items The items you wish to "string-i-tize".
+     * @return A string representation of an inventory.
+     */
+    public static JSONObject asJsonObject(ItemStack[] items) {
+        JSONObject jsonItems = new JSONObject();
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] != null && items[i].getTypeId() != 0) {
+                jsonItems.put(Integer.valueOf(i).toString(), items[i]);
+                //jsonItems.put(Integer.valueOf(i).toString(), new JSONItemWrapper(items[i]).asJSONObject());
+            }
+        }
+        return jsonItems;
     }
 
     private static String legacyValueOf(ItemStack[] items) {
@@ -851,7 +915,15 @@ public class DataStrings {
                 Object obj = itemData.get(ITEM_ITEMSTACK);
                 if (obj instanceof Map) {
                     Map<String, Object> map = (Map<String, Object>) obj;
+                    // JSONObject apparently likes to store numbers as Longs
+                    /*for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        if (entry.getValue() instanceof Long) {
+                            entry.setValue(((Long) entry.getValue()).intValue());
+                        }
+                    }
+                    */
                     this.item = ItemStack.deserialize(map);
+                    /*
                     if (map.containsKey("meta")) {
                         Object metaObj = map.get("meta");
                         if (metaObj instanceof Map) {
@@ -861,6 +933,7 @@ public class DataStrings {
                             this.item.setItemMeta(meta);
                         }
                     }
+                    */
                     return;
                 } else {
                     Logging.warning("Could not parse item: " + obj);
@@ -927,7 +1000,6 @@ public class DataStrings {
             return asJSONObject().toJSONString();
         }
 
-        /*
         private JSONObject jsonObjectFromMap(final Map<String, Object> map) {
             final JSONObject json = new JSONObject();
             for (final Map.Entry<String, Object> entry : map.entrySet()) {
@@ -939,52 +1011,15 @@ public class DataStrings {
             }
             return json;
         }
-        */
 
         public JSONObject asJSONObject() {
-            JSONObject jsonItem = new JSONObject();
-            jsonItem.put(ITEM_TYPE_ID, getItem().getTypeId());
-            if (getItem().getDurability() != 0) {
-                jsonItem.put(ITEM_DURABILITY, getItem().getDurability());
-            }
-            if (getItem().getAmount() != 1) {
-                jsonItem.put(ITEM_AMOUNT, getItem().getAmount());
-            }
-
-            Map<Enchantment, Integer> enchants = getItem().getEnchantments();
-            if (enchants.size() > 0) {
-                JSONObject jsonEnchants = new JSONObject();
-                for (Map.Entry<Enchantment, Integer> entry : enchants.entrySet()) {
-                    if (entry.getKey() == null) {
-                        Logging.finer("Not saving null enchantment!");
-                        continue;
-                    }
-                    jsonEnchants.put(entry.getKey().getName(), entry.getValue());
-                }
-                jsonItem.put(ITEM_ENCHANTS, jsonEnchants);
-            }
-
-            try {
-                if (!hasCraftBukkit()) {
-                    return jsonItem;
-                }
-
-                try {
-                    JSONObject NBTAsJson = CraftBukkitUtils.parseItemCompound(item);
-                    if (NBTAsJson != null) {
-                        jsonItem.put(ITEM_NBTTAGS, NBTAsJson);
-                    }
-                } catch (Throwable t) {
-                    Logging.getLogger().log(Level.WARNING, "Error while converting nbt compound to json", t);
-                }
-            } catch (Exception e) {
-                Logging.warning("Exception while saving CB only elements of item: " + e.getMessage());
-                for (StackTraceElement ste : e.getStackTrace()) {
-                    Logging.fine(ste.toString());
-                }
-            }
-
-            return jsonItem;
+           // final JSONObject jsonItem = new JSONObject();
+            //final Map<String, Object> map = getItem().serialize();
+            //if (map.containsKey("meta")) {
+            //    map.put("meta", getItem().getItemMeta().serialize());
+            //}
+            //jsonItem.put(ITEM_ITEMSTACK, jsonObjectFromMap(map));
+            return jsonObjectFromMap(getItem().serialize());
         }
         
  
