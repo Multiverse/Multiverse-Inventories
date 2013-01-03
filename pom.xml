@@ -129,7 +129,7 @@ and adjust the build number accordingly -->
                 <version>2.11</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/**.java</exclude>
+                        <exclude>**/TestPerformance.java</exclude>
                     </excludes>
                 </configuration>
                 <dependencies>
