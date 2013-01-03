@@ -31,15 +31,15 @@ public class CraftBukkitUtils {
         NBTKeysToIgnore.add("ench");
     }
 
-    public static void applyToStack(org.bukkit.inventory.ItemStack stack, JSONObject itemData) {
+    public static org.bukkit.inventory.ItemStack applyToStack(org.bukkit.inventory.ItemStack stack, JSONObject itemData) {
         if (itemData != null && itemData.containsKey(DataStrings.ITEM_NBTTAGS)) {
             //Turn the item to a CraftItemStack so that it'll have a default tag and such
             try {
                 stack = CraftItemStack.asCraftCopy(stack);
             } catch (ExceptionInInitializerError e) {
-                return;
+                return stack;
             } catch (NoClassDefFoundError e) {
-                return;
+                return stack;
             }
             //Get the n.m.s stack from the CraftItemStack
             ItemStack minecraftStack = CraftItemStack.asNMSCopy(stack);
@@ -67,7 +67,9 @@ public class CraftBukkitUtils {
             } else {
                 Logging.warning("Could not parse item nbt tags: " + obj);
             }
+            return CraftItemStack.asBukkitCopy(minecraftStack);
         }
+        return stack;
     }
 
     /**

@@ -110,17 +110,27 @@ public class FlatFilePlayerData implements PlayerData {
      * @return The yaml data file for a player.
      */
     File getPlayerFile(ContainerType type, String dataName, String playerName) {
+        File jsonPlayerFile = new File(this.getFolder(type, dataName), playerName + JSON);
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
-        if (!playerFile.exists()) {
-            try {
-                playerFile.createNewFile();
-            } catch (IOException e) {
-                Logging.severe("Could not create necessary player file: " + playerName + YML);
-                Logging.severe("Your data may not be saved!");
-                Logging.severe(e.getMessage());
+        if (jsonPlayerFile.exists()) {
+            return jsonPlayerFile;
+        } else {
+            if (playerFile.exists()) {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException ignore) { }
+                return playerFile;
+            } else {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException e) {
+                    Logging.severe("Could not create necessary player file: " + playerName + JSON);
+                    Logging.severe("Your data may not be saved!");
+                    Logging.severe(e.getMessage());
+                }
             }
         }
-        return playerFile;
+        return jsonPlayerFile;
     }
 
     /**

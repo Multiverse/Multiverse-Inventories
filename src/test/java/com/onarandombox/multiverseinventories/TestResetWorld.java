@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -12,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.After;
@@ -22,6 +25,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,6 +114,19 @@ public class TestResetWorld {
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        bookMeta.setAuthor("dumptruckman");
+        bookMeta.setPages("This is my freaking", "book", "man");
+        bookMeta.setDisplayName("Super Book");
+        book.setItemMeta(bookMeta);
+        fillerItems.put(1, book);
+        ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
+        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
+        leatherMeta.setColor(Color.PURPLE);
+        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
+        leather.setItemMeta(leatherMeta);
+        fillerItems.put(2, leather);
         addToInventory(player.getInventory(), fillerItems);
         String originalInventory = player.getInventory().toString();
 

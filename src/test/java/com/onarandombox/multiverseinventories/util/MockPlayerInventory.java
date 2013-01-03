@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -9,8 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 public class MockPlayerInventory implements PlayerInventory {
     
@@ -274,9 +275,19 @@ public class MockPlayerInventory implements PlayerInventory {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    private static Map<String, Object> makeMap(ItemStack[] items) {
+        Map<String, Object> contents = new LinkedHashMap<String, Object>(items.length);
+        for (int i = 0; i < items.length; i++) {
+            if (items[i] != null && items[i].getTypeId() != 0) {
+                contents.put(Integer.valueOf(i).toString(), items[i]);
+            }
+        }
+        return contents;
+    }
+
     public String toString() {
-        return "{\"inventoryContents\":" + DataStrings.valueOf(getContents())
-                + ",\"armorContents\":" + DataStrings.valueOf(getArmorContents())
+        return "{\"inventoryContents\":" + makeMap(getContents())
+                + ",\"armorContents\":" + makeMap(getArmorContents())
                 + "}";
     }
 }

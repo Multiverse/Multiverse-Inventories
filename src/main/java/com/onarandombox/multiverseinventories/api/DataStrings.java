@@ -270,6 +270,10 @@ public class DataStrings {
         }
     }
 
+    public static Location parseLocation(Map locMap) {
+        return parseLocMap(locMap);
+    }
+
     private static Location legacyParseLocation(String locString) {
         String[] locArray = locString.split(DataStrings.GENERAL_DELIMITER);
         World world = null;
@@ -319,41 +323,45 @@ public class DataStrings {
             Logging.warning("Could not parse location! " + e.getMessage());
             return null;
         }
+        return parseLocMap(jsonLoc);
+    }
+
+    private static Location parseLocMap(Map locMap) {
         World world = null;
         double x = 0;
         double y = 0;
         double z = 0;
         float pitch = 0;
         float yaw = 0;
-        if (jsonLoc.containsKey(LOCATION_WORLD)) {
-            world = Bukkit.getWorld(jsonLoc.get(LOCATION_WORLD).toString());
+        if (locMap.containsKey(LOCATION_WORLD)) {
+            world = Bukkit.getWorld(locMap.get(LOCATION_WORLD).toString());
         }
-        if (jsonLoc.containsKey(LOCATION_X)) {
-            Object value = jsonLoc.get(LOCATION_X);
+        if (locMap.containsKey(LOCATION_X)) {
+            Object value = locMap.get(LOCATION_X);
             if (value instanceof Number) {
                 x = ((Number) value).doubleValue();
             }
         }
-        if (jsonLoc.containsKey(LOCATION_Y)) {
-            Object value = jsonLoc.get(LOCATION_Y);
+        if (locMap.containsKey(LOCATION_Y)) {
+            Object value = locMap.get(LOCATION_Y);
             if (value instanceof Number) {
                 y = ((Number) value).doubleValue();
             }
         }
-        if (jsonLoc.containsKey(LOCATION_Z)) {
-            Object value = jsonLoc.get(LOCATION_Z);
+        if (locMap.containsKey(LOCATION_Z)) {
+            Object value = locMap.get(LOCATION_Z);
             if (value instanceof Number) {
                 z = ((Number) value).doubleValue();
             }
         }
-        if (jsonLoc.containsKey(LOCATION_PITCH)) {
-            Object value = jsonLoc.get(LOCATION_PITCH);
+        if (locMap.containsKey(LOCATION_PITCH)) {
+            Object value = locMap.get(LOCATION_PITCH);
             if (value instanceof Number) {
                 pitch = ((Number) value).floatValue();
             }
         }
-        if (jsonLoc.containsKey(LOCATION_YAW)) {
-            Object value = jsonLoc.get(LOCATION_YAW);
+        if (locMap.containsKey(LOCATION_YAW)) {
+            Object value = locMap.get(LOCATION_YAW);
             if (value instanceof Number) {
                 yaw = ((Number) value).floatValue();
             }
@@ -370,7 +378,6 @@ public class DataStrings {
      * @return an ItemStack array containing the inventory contents parsed from inventoryString.
      */
     public static ItemStack[] parseInventory(String inventoryString, int inventorySize) {
-        System.out.println("parseInventory = " + inventoryString);
         if (inventoryString.startsWith("{")) {
             return jsonParseInventory(inventoryString, inventorySize);
         } else {
@@ -632,6 +639,10 @@ public class DataStrings {
      * @return A String representation of a {@link Location}
      */
     public static String valueOf(Location location) {
+        return valueOfLocation(location).toJSONString();
+    }
+
+    public static JSONObject valueOfLocation(Location location) {
         JSONObject jsonLoc = new JSONObject();
         jsonLoc.put(LOCATION_WORLD, location.getWorld().getName());
         jsonLoc.put(DataStrings.LOCATION_X, location.getX());
@@ -639,7 +650,7 @@ public class DataStrings {
         jsonLoc.put(DataStrings.LOCATION_Z, location.getZ());
         jsonLoc.put(DataStrings.LOCATION_PITCH, location.getPitch());
         jsonLoc.put(DataStrings.LOCATION_YAW, location.getYaw());
-        return jsonLoc.toJSONString();
+        return jsonLoc;
     }
 
     private static String legacyValueOf(Location location) {
@@ -972,7 +983,7 @@ public class DataStrings {
             }
 
             try {
-                CraftBukkitUtils.applyToStack(item, itemData);
+                item = CraftBukkitUtils.applyToStack(item, itemData);
             } catch (Throwable t) {
                 Logging.warning("Error attempting to apply json nbt compound to stack", t);
             }

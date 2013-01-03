@@ -52,7 +52,16 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
-                this.parsePlayerStats(playerData.get(key).toString());
+                final Object statsObject = playerData.get(key);
+                if (statsObject instanceof String) {
+                    this.parsePlayerStats(statsObject.toString());
+                } else {
+                    if (statsObject instanceof Map) {
+                        parsePlayerStats((Map) statsObject);
+                    } else {
+                        Logging.warning("Could not parse stats for " + playerName);
+                    }
+                }
             } else {
                 if (playerData.get(key) == null) {
                     Logging.fine("Player data '" + key + "' is null for: " + playerName);
@@ -86,6 +95,18 @@ class DefaultPlayerProfile implements PlayerProfile {
             jsonParsePlayerStats(stats);
         } else {
             legacyParsePlayerStats(stats);
+        }
+    }
+
+    protected void parsePlayerStats(final Map stats) {
+        for (Object key : stats.keySet()) {
+            Sharable sharable = ProfileEntry.lookup(true, key.toString());
+            if (sharable != null) {
+                this.data.put(sharable, sharable.getSerializer().deserialize(stats.get(key).toString()));
+            } else {
+                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
+                        + getContainerType() + " '" + getContainerName() + "'");
+            }
         }
     }
 
@@ -154,7 +175,7 @@ class DefaultPlayerProfile implements PlayerProfile {
             }
         }
         if (!jsonStats.isEmpty()) {
-            playerData.put(DataStrings.PLAYER_STATS, jsonStats.toJSONString());
+            playerData.put(DataStrings.PLAYER_STATS, jsonStats);
         }
         return playerData;
     }

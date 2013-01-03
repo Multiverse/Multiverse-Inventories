@@ -9,7 +9,6 @@ import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -186,11 +185,7 @@ public class TestWSharableAPI {
         //cmdArgs = new String[]{"addshare", "-optional", "default"};
         //inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
-        fillerItems.put(3, new ItemStack(Material.BOW, 1));
-        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
-        addToInventory(player.getInventory(), fillerItems);
+        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
         player.setMaximumNoDamageTicks(10);
         int lastDamage = 10;
         player.setLastDamage(lastDamage);

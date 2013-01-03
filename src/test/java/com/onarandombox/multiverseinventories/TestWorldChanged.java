@@ -90,6 +90,27 @@ public class TestWorldChanged {
         }
     }
 
+    public static Map<Integer, ItemStack> getFillerInv() {
+        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
+        fillerItems.put(3, new ItemStack(Material.BOW, 1));
+        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
+        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
+        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        BookMeta bookMeta = (BookMeta) book.getItemMeta();
+        bookMeta.setAuthor("dumptruckman");
+        bookMeta.setPages("This is my freaking", "book", "man");
+        bookMeta.setDisplayName("Super Book");
+        book.setItemMeta(bookMeta);
+        fillerItems.put(1, book);
+        ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
+        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
+        leatherMeta.setColor(Color.PURPLE);
+        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
+        leather.setItemMeta(leatherMeta);
+        fillerItems.put(2, leather);
+        return fillerItems;
+    }
+
     @Test
     public void testBasicWorldChange() throws IOException {
 
@@ -120,24 +141,7 @@ public class TestWorldChanged {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
-        fillerItems.put(3, new ItemStack(Material.BOW, 1));
-        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
-        ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        BookMeta bookMeta = (BookMeta) book.getItemMeta();
-        bookMeta.setAuthor("dumptruckman");
-        bookMeta.setPages("This is my freaking", "book", "man");
-        bookMeta.setDisplayName("Super Book");
-        book.setItemMeta(bookMeta);
-        fillerItems.put(1, book);
-        ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
-        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
-        leatherMeta.setColor(Color.PURPLE);
-        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
-        leather.setItemMeta(leatherMeta);
-        fillerItems.put(2, leather);
-        addToInventory(player.getInventory(), fillerItems);
+        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -202,15 +206,11 @@ public class TestWorldChanged {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
-        fillerItems.put(3, new ItemStack(Material.BOW, 1));
-        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1, (byte) 15));
         float satTest = 0.349F;
         player.setSaturation(satTest);
         int hpTest = 13;
         player.setHealth(hpTest);
-        addToInventory(player.getInventory(), fillerItems);
+        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -308,13 +308,9 @@ public class TestWorldChanged {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
-        fillerItems.put(3, new ItemStack(Material.BOW, 1));
-        fillerItems.put(13, new ItemStack(Material.DIRT, 64));
-        fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         float satTest = 0.349F;
         player.setSaturation(satTest);
-        addToInventory(player.getInventory(), fillerItems);
+        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         // Changing to world within same group, nothing should change.
