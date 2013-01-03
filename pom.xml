@@ -164,6 +164,7 @@ and adjust the build number accordingly -->
                                 <includes>
                                     <include>com.feildmaster.lib:EnhancedConfiguration</include>
                                     <include>com.dumptruckman.minecraft:Logging</include>
+                                    <include>net.minidev:json-smart</include>
                                 </includes>
                             </artifactSet>
                             <relocations>
@@ -195,7 +196,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.4.5-R0.3-SNAPSHOT</version>
+            <version>1.4.6-R0.3</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -275,7 +276,7 @@ and adjust the build number accordingly -->
             <scope>compile</scope>
         </dependency>
         <!-- End of WorldInventories Dependency -->
-        <!-- Start of json-smart Dependency -->
+        <!-- Start of jsonsmart Dependency -->
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
@@ -283,7 +284,7 @@ and adjust the build number accordingly -->
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- End of json-smart Dependency -->
+        <!-- End of jsonsmart Dependency -->
         <!-- Start of Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>

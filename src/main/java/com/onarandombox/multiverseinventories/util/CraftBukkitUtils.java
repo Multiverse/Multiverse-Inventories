@@ -2,32 +2,15 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import net.minecraft.server.v1_4_5.ItemStack;
-import net.minecraft.server.v1_4_5.NBTBase;
-import net.minecraft.server.v1_4_5.NBTCompressedStreamTools;
-import net.minecraft.server.v1_4_5.NBTTagByte;
-import net.minecraft.server.v1_4_5.NBTTagByteArray;
-import net.minecraft.server.v1_4_5.NBTTagCompound;
-import net.minecraft.server.v1_4_5.NBTTagDouble;
-import net.minecraft.server.v1_4_5.NBTTagFloat;
-import net.minecraft.server.v1_4_5.NBTTagInt;
-import net.minecraft.server.v1_4_5.NBTTagIntArray;
-import net.minecraft.server.v1_4_5.NBTTagList;
-import net.minecraft.server.v1_4_5.NBTTagLong;
-import net.minecraft.server.v1_4_5.NBTTagShort;
-import net.minecraft.server.v1_4_5.NBTTagString;
+import net.minecraft.server.v1_4_6.*;
 import net.minidev.json.JSONObject;
-import org.bukkit.craftbukkit.v1_4_5.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Helper class for dealing with some craftbukkit stuff, mostly nbt tags
