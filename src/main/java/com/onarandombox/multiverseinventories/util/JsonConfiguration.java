@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
+import com.dumptruckman.minecraft.util.Logging;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.lang.Validate;
@@ -37,18 +38,22 @@ public class JsonConfiguration extends FileConfiguration {
 
     private Map<String, Object> buildMap(final Map<String, Object> map) {
         final Map<String, Object> result = new LinkedHashMap<String, Object>();
-        for (final Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getValue() instanceof ConfigurationSection) {
-                result.put(entry.getKey(), buildMap(((ConfigurationSection) entry.getValue()).getValues(false)));
-            } else if (entry.getValue() instanceof ConfigurationSerializable) {
-                ConfigurationSerializable serializable = (ConfigurationSerializable) entry.getValue();
-                Map<String, Object> values = new LinkedHashMap<String, Object>();
-                values.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(serializable.getClass()));
-                values.putAll(serializable.serialize());
-                result.put(entry.getKey(), buildMap(values));
-            } else {
-                result.put(entry.getKey(), entry.getValue());
+        try {
+            for (final Map.Entry<String, Object> entry : map.entrySet()) {
+                if (entry.getValue() instanceof ConfigurationSection) {
+                    result.put(entry.getKey(), buildMap(((ConfigurationSection) entry.getValue()).getValues(false)));
+                } else if (entry.getValue() instanceof ConfigurationSerializable) {
+                    ConfigurationSerializable serializable = (ConfigurationSerializable) entry.getValue();
+                    Map<String, Object> values = new LinkedHashMap<String, Object>();
+                    values.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(serializable.getClass()));
+                    values.putAll(serializable.serialize());
+                    result.put(entry.getKey(), buildMap(values));
+                } else {
+                    result.put(entry.getKey(), entry.getValue());
+                }
             }
+        } catch (Exception e) {
+            Logging.getLogger().log(Level.WARNING, "Error while building configuration map.", e);
         }
         return result;
     }
