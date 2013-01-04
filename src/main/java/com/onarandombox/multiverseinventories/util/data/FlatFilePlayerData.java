@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Level;
 
 /**
  * Implementation of PlayerData.
@@ -233,16 +234,20 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     private void processProfileWrite(PlayerProfile playerProfile) {
-        File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
-                playerProfile.getContainerName(), playerProfile.getPlayer().getName());
-        FileConfiguration playerData = this.getConfigHandle(playerFile);
-        playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
         try {
-            playerData.save(playerFile);
-        } catch (IOException e) {
-            Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
-                    + " for " + playerProfile.getContainerType().toString() + ": " + playerProfile.getContainerName());
-            Logging.severe(e.getMessage());
+            File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
+                    playerProfile.getContainerName(), playerProfile.getPlayer().getName());
+            FileConfiguration playerData = this.getConfigHandle(playerFile);
+            playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
+            try {
+                playerData.save(playerFile);
+            } catch (IOException e) {
+                Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+                        + " for " + playerProfile.getContainerType().toString() + ": " + playerProfile.getContainerName());
+                Logging.severe(e.getMessage());
+            }
+        } catch (final Exception e) {
+            Logging.getLogger().log(Level.WARNING, "Error while attempting to write profile data.", e);
         }
     }
 
