@@ -16,7 +16,9 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -36,24 +38,54 @@ public class JsonConfiguration extends FileConfiguration {
         return dump;
     }
 
-    private Map<String, Object> buildMap(final Map<String, Object> map) {
-        final Map<String, Object> result = new LinkedHashMap<String, Object>();
+    private Map<String, Object> buildMap(final Map<?, ?> map) {
+        final Map<String, Object> result = new LinkedHashMap<String, Object>(map.size());
         try {
-            for (final Map.Entry<String, Object> entry : map.entrySet()) {
+            for (final Map.Entry<?, ?> entry : map.entrySet()) {
                 if (entry.getValue() instanceof ConfigurationSection) {
-                    result.put(entry.getKey(), buildMap(((ConfigurationSection) entry.getValue()).getValues(false)));
+                    result.put(entry.getKey().toString(), buildMap(((ConfigurationSection) entry.getValue()).getValues(false)));
+                } else if (entry.getValue() instanceof Map) {
+                    result.put(entry.getKey().toString(), buildMap(((Map) entry.getValue())));
+                } else if (entry.getValue() instanceof List) {
+                    result.put(entry.getKey().toString(), buildList((List) entry.getValue()));
                 } else if (entry.getValue() instanceof ConfigurationSerializable) {
                     ConfigurationSerializable serializable = (ConfigurationSerializable) entry.getValue();
                     Map<String, Object> values = new LinkedHashMap<String, Object>();
                     values.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(serializable.getClass()));
                     values.putAll(serializable.serialize());
-                    result.put(entry.getKey(), buildMap(values));
+                    result.put(entry.getKey().toString(), buildMap(values));
                 } else {
-                    result.put(entry.getKey(), entry.getValue());
+                    result.put(entry.getKey().toString(), entry.getValue());
                 }
             }
         } catch (Exception e) {
             Logging.getLogger().log(Level.WARNING, "Error while building configuration map.", e);
+        }
+        return result;
+    }
+
+    private List<Object> buildList(final List<?> list) {
+        final List<Object> result = new ArrayList<Object>(list.size());
+        try {
+            for (final Object o : list) {
+                if (o instanceof ConfigurationSection) {
+                    result.add(buildMap(((ConfigurationSection) o).getValues(false)));
+                } else if (o instanceof Map) {
+                    result.add(buildMap(((Map) o)));
+                } else if (o instanceof List) {
+                    result.add(buildList((List) o));
+                } else if (o instanceof ConfigurationSerializable) {
+                    ConfigurationSerializable serializable = (ConfigurationSerializable) o;
+                    Map<String, Object> values = new LinkedHashMap<String, Object>();
+                    values.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(serializable.getClass()));
+                    values.putAll(serializable.serialize());
+                    result.add(buildMap(values));
+                } else {
+                    result.add(o);
+                }
+            }
+        } catch (Exception e) {
+            Logging.getLogger().log(Level.WARNING, "Error while building configuration list.", e);
         }
         return result;
     }
@@ -99,10 +131,12 @@ public class JsonConfiguration extends FileConfiguration {
     }
 
     protected Object dealWithSerializedObjects(final Map<?, ?> input) {
-        final Map<String, Object> output = new LinkedHashMap<String, Object>();
+        final Map<String, Object> output = new LinkedHashMap<String, Object>(input.size());
         for (final Map.Entry<?, ?> e : input.entrySet()) {
             if (e.getValue() instanceof Map) {
                 output.put(e.getKey().toString(), dealWithSerializedObjects((Map<?, ?>) e.getValue()));
+            }  else if (e.getValue() instanceof List) {
+                output.put(e.getKey().toString(), dealWithSerializedObjects((List<?>) e.getValue()));
             } else {
                 output.put(e.getKey().toString(), e.getValue());
             }
@@ -112,6 +146,20 @@ public class JsonConfiguration extends FileConfiguration {
                 return ConfigurationSerialization.deserializeObject(output);
             } catch (IllegalArgumentException ex) {
                 throw new YAMLException("Could not deserialize object", ex);
+            }
+        }
+        return output;
+    }
+
+    protected Object dealWithSerializedObjects(final List<?> input) {
+        final List<Object> output = new ArrayList<Object>(input.size());
+        for (final Object o : input) {
+            if (o instanceof Map) {
+                output.add(dealWithSerializedObjects((Map<?, ?>) o));
+            } else if (o instanceof List) {
+                output.add(dealWithSerializedObjects((List<?>) o));
+            } else {
+                output.add(o);
             }
         }
         return output;
