@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api.share;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.fernferret.allpay.multiverse.GenericBank;
+import com.fernferret.allpay.multiverse.commons.GenericBank;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
