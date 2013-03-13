@@ -179,11 +179,10 @@ public class InventoriesListener implements Listener {
             Logging.fine("PlayerChangedWorldEvent fired when player travelling in same world.");
             return;
         }
-        // Do nothing if dealing with non-managed worlds
+        // Warn if not managed by Multiverse-Core
         if (this.inventories.getCore().getMVWorldManager().getMVWorld(toWorld) == null
                 || this.inventories.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
-            Logging.fine("The from or to world is not managed by Multiverse!");
-            return;
+            Logging.fine("The from or to world is not managed by Multiverse-Core!");
         }
 
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
