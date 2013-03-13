@@ -133,6 +133,13 @@ public interface WorldGroupProfile extends ProfileContainer {
      */
     void setSpawnPriority(EventPriority priority);
 
+    /**
+     * Is this a default group.
+     * 
+     * @return true if this is the default group.
+     */
+    boolean isDefault();
+    
     //Set<ProfileType> getProfileTypes();
 
     // ItemBlacklist getItemBlacklist(String worldName);
