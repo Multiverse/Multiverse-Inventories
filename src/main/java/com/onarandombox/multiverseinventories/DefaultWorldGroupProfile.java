@@ -24,6 +24,7 @@ import java.util.Set;
  * Implementation of WorldGroupProfile.
  */
 class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGroupProfile {
+    static final String DEFAULT_GROUP_NAME = "default";
 
     private final String name;
     private final HashSet<String> worlds = new HashSet<String>();
@@ -288,6 +289,14 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     @Override
     public void setSpawnPriority(EventPriority priority) {
         this.spawnPriority = priority;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDefault() {
+        return DEFAULT_GROUP_NAME.equals(getName());
     }
 
     /*

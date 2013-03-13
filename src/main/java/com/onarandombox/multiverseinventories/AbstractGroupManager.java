@@ -60,11 +60,21 @@ abstract class AbstractGroupManager implements GroupManager {
                 worldGroups.add(worldGroup);
             }
         }
-        if (worldGroups.isEmpty() && this.plugin.getMVIConfig().isDefaultingUngroupedWorlds()) {
+        // Only use the default group for worlds managed by MV-Core
+        if (worldGroups.isEmpty() && this.plugin.getMVIConfig().isDefaultingUngroupedWorlds() && 
+                this.plugin.getCore().getMVWorldManager().isMVWorld(worldName)) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());
         }
         return worldGroups;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasGroup(String worldName) {
+        return !getGroupsForWorld(worldName).isEmpty();
     }
 
     /**
@@ -137,13 +147,13 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public void createDefaultGroup() {
-        if (this.getGroup("default") != null) {
+        if (this.getGroup(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME) != null) {
             return;
         }
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, "default");
+        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -166,9 +176,9 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public WorldGroupProfile getDefaultGroup() {
-        WorldGroupProfile group = this.getGroupNames().get("default");
+        WorldGroupProfile group = this.getGroupNames().get(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
         if (group == null) {
-            group = newEmptyGroup("default");
+            group = newEmptyGroup(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
             group.getShares().setSharing(Sharables.allOf(), true);
             this.updateGroup(group);
         }

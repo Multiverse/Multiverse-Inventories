@@ -41,6 +41,14 @@ public interface GroupManager {
     List<WorldGroupProfile> getGroupsForWorld(String worldName);
 
     /**
+     * Check if the given world has any configured groups.
+     * 
+     * @param worldName Name of the world to check.
+     * @return true if this world has one or more groups.
+     */
+    boolean hasGroup(String worldName);
+
+    /**
      * Sets up the World Groups in memory.
      *
      * @param worldGroups List of World Groups to store in memory.
