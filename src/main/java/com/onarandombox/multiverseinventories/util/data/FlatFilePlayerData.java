@@ -236,13 +236,13 @@ public class FlatFilePlayerData implements PlayerData {
     private void processProfileWrite(PlayerProfile playerProfile) {
         try {
             File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
-                    playerProfile.getContainerName(), playerProfile.getPlayer().getName());
+                    playerProfile.getContainerName(), playerProfile.getPlayerName());
             FileConfiguration playerData = this.getConfigHandle(playerFile);
             playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
-                Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+                Logging.severe("Could not save data for player: " + playerProfile.getPlayerName()
                         + " for " + playerProfile.getContainerType().toString() + ": " + playerProfile.getContainerName());
                 Logging.severe(e.getMessage());
             }

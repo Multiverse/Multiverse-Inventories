@@ -117,7 +117,7 @@ abstract class ShareHandler {
             Logging.finer("Persisted: " + persisted.toString() + " to "
                     + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
                     + " (" + profile.getProfile().getProfileType() + ")"
-                    + " for player " + profile.getProfile().getPlayer().getName());
+                    + " for player " + profile.getProfile().getPlayerName());
         }
         inventories.getData().updatePlayerData(profile.getProfile());
     }
@@ -150,13 +150,13 @@ abstract class ShareHandler {
         }
         if (!loaded.toString().isEmpty()) {
             Logging.finer("Updated: " + loaded.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
+                    + profile.getProfile().getPlayerName() + " for "
                     + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
                     + " (" + profile.getProfile().getProfileType() + ")");
         }
         if (!defaulted.toString().isEmpty()) {
             Logging.finer("Defaulted: " + defaulted.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
+                    + profile.getProfile().getPlayerName() + " for "
                     + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
                     + " (" + profile.getProfile().getProfileType() + ")");
         }

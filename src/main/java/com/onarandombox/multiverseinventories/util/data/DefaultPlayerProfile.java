@@ -33,7 +33,7 @@ class DefaultPlayerProfile implements PlayerProfile {
     private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
     private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
 
-    private OfflinePlayer player;
+    private String player;
     private ContainerType containerType;
     private String containerName;
     private ProfileType profileType;
@@ -42,7 +42,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         this.containerType = containerType;
         this.profileType = profileType;
         this.containerName = containerName;
-        this.player = player;
+        this.player = player.getName();
         armorContents = MinecraftTools.fillWithAir(armorContents);
         inventoryContents = MinecraftTools.fillWithAir(inventoryContents);
     }
@@ -104,7 +104,7 @@ class DefaultPlayerProfile implements PlayerProfile {
             if (sharable != null) {
                 this.data.put(sharable, sharable.getSerializer().deserialize(stats.get(key).toString()));
             } else {
-                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
+                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayerName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
             }
         }
@@ -118,7 +118,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                 Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
                 this.data.put(sharable, sharable.getSerializer().deserialize(statValues[1]));
             } catch (Exception e) {
-                Logging.warning("Could not parse stat: '" + stat + "' for player '" + getPlayer().getName() + "' for "
+                Logging.warning("Could not parse stat: '" + stat + "' for player '" + getPlayerName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
                 Logging.warning("Exception: " + e.getClass() + " Message: " + e.getMessage());
             }
@@ -130,14 +130,14 @@ class DefaultPlayerProfile implements PlayerProfile {
         try {
             jsonStats = (JSONObject) JSON_PARSER.parse(stats);
         } catch (ParseException e) {
-            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+            Logging.warning("Could not parse stats for player'" + getPlayerName() + "' for " +
                     getContainerType() + " '" + getContainerName() + "': " + e.getMessage());
         } catch (ClassCastException e) {
-            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+            Logging.warning("Could not parse stats for player'" + getPlayerName() + "' for " +
                     getContainerType() + " '" + getContainerName() + "': " + e.getMessage());
         }
         if (jsonStats == null) {
-            Logging.warning("Could not parse stats for player'" + getPlayer().getName() + "' for " +
+            Logging.warning("Could not parse stats for player'" + getPlayerName() + "' for " +
                     getContainerType() + " '" + getContainerName() + "'");
             return;
         }
@@ -146,7 +146,7 @@ class DefaultPlayerProfile implements PlayerProfile {
             if (sharable != null) {
                 this.data.put(sharable, sharable.getSerializer().deserialize(jsonStats.get(key).toString()));
             } else {
-                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
+                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayerName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
             }
         }
@@ -200,7 +200,7 @@ class DefaultPlayerProfile implements PlayerProfile {
      * {@inheritDoc}
      */
     @Override
-    public OfflinePlayer getPlayer() {
+    public String getPlayerName() {
         return this.player;
     }
 

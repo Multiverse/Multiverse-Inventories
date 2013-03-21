@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
 import com.onarandombox.multiverseinventories.api.share.Sharable;
-import org.bukkit.OfflinePlayer;
 
 import java.util.Map;
 
@@ -27,9 +26,9 @@ public interface PlayerProfile extends Cloneable {
     String getContainerName();
 
     /**
-     * @return the Player associated with this profile.
+     * @return the exact name of the Player associated with this profile.
      */
-    OfflinePlayer getPlayer();
+    String getPlayerName();
 
     /**
      * @return The type of profile this object represents.
