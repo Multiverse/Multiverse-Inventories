@@ -539,6 +539,21 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void setPlayerWeather(WeatherType weatherType) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public WeatherType getPlayerWeather() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void resetPlayerWeather() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
     public boolean getAllowFlight() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -560,6 +575,11 @@ public class MockPlayer implements Player {
 
     @Override
     public boolean canSee(Player player) {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isOnGround() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1054,6 +1074,26 @@ public class MockPlayer implements Player {
 
     @Override
     public boolean getCanPickupItems() {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setCustomName(String s) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getCustomName() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setCustomNameVisible(boolean b) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isCustomNameVisible() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
