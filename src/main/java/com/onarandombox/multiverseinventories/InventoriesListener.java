@@ -173,6 +173,7 @@ public class InventoriesListener implements Listener {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
         World toWorld = player.getWorld();
+        player.closeInventory();
 
         // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {
