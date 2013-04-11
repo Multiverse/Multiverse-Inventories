@@ -19,12 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
@@ -173,7 +168,6 @@ public class InventoriesListener implements Listener {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
         World toWorld = player.getWorld();
-        player.closeInventory();
 
         // A precaution..  Will this ever be true?
         if (fromWorld.equals(toWorld)) {

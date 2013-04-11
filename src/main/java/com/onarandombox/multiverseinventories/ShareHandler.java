@@ -125,6 +125,7 @@ abstract class ShareHandler {
     static void updatePlayer(final Inventories inventories, final Player player, final PersistingProfile profile) {
         StringBuilder defaulted = new StringBuilder();
         StringBuilder loaded = new StringBuilder();
+        player.closeInventory();
         for (Sharable sharable : profile.getShares()) {
             if (sharable.isOptional()) {
                 if (!inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
