@@ -63,7 +63,7 @@ final class YamlGroupManager extends AbstractGroupManager {
         }
 
         for (final WorldGroupProfile worldGroup : worldGroups) {
-            getGroupNames().put(worldGroup.getName(), worldGroup);
+            getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
         }
     }
 
