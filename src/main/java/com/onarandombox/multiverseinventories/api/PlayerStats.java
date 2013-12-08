@@ -20,7 +20,7 @@ public class PlayerStats {
     /**
      * Default health value.
      */
-    public static final int HEALTH = 20;
+    public static final double HEALTH = 20;
     /**
      * Default experience value.
      */

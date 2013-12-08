@@ -100,19 +100,19 @@ public class TestWSharableAPI {
                     return true;
                 }
             }).defaultSerializer(new ProfileEntry(false, "custom")).build();
-    public final static Sharable<Integer> OPTIONAL = new Sharable.Builder<Integer>("optional", Integer.class,
-            new SharableHandler<Integer>() {
+    public final static Sharable<Double> OPTIONAL = new Sharable.Builder<Double>("optional", Double.class,
+            new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(CUSTOM, player.getLastDamage());
+                    profile.set(OPTIONAL, player.getLastDamage());
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Integer value = profile.get(CUSTOM);
+                    Double value = profile.get(OPTIONAL);
                     if (value == null) {
                         // Specify default value
-                        player.setLastDamage(0);
+                        player.setLastDamage(0.0);
                         return false;
                     }
                     player.setLastDamage(value);
@@ -187,7 +187,7 @@ public class TestWSharableAPI {
 
         addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
         player.setMaximumNoDamageTicks(10);
-        int lastDamage = 10;
+        double lastDamage = 10;
         player.setLastDamage(lastDamage);
         Assert.assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();

@@ -156,7 +156,8 @@ public final class Sharables implements Shares {
     /**
      * Sharing Health.
      */
-    public static final Sharable<Integer> HEALTH = new Sharable.Builder<Integer>("hit_points", Integer.class,
+    /*
+    public static final Sharable<Integer> OLD_HEALTH = new Sharable.Builder<Integer>("hit_points", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
@@ -165,7 +166,38 @@ public final class Sharables implements Shares {
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Integer value = profile.get(HEALTH);
+                    Integer value = profile.get(OLD_HEALTH);
+                    if (value == null) {
+                        player.setHealth(PlayerStats.HEALTH);
+                        return false;
+                    }
+                    try {
+                        player.setHealth(value);
+                    } catch (IllegalArgumentException e) {
+                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
+                        player.setHealth(PlayerStats.HEALTH);
+                        return false;
+                    }
+                    return true;
+                }
+            }).nmsNBTTag(DataStrings.NMS_NBT_HEALTH)
+            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
+            .altName("health").altName("hp").altName("hitpoints").build();
+
+    */
+    /**
+     * Sharing Health.
+     */
+    public static final Sharable<Double> HEALTH = new Sharable.Builder<Double>("hit_points", Double.class,
+            new SharableHandler<Double>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(HEALTH, player.getHealth());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Double value = profile.get(HEALTH);
                     if (value == null) {
                         player.setHealth(PlayerStats.HEALTH);
                         return false;

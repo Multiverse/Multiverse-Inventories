@@ -18,6 +18,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
@@ -37,13 +38,13 @@ public class MockPlayer implements Player {
     float exhaustion = PlayerStats.EXHAUSTION;
     float saturation = PlayerStats.SATURATION;
     int food_level = PlayerStats.FOOD_LEVEL;
-    int health = PlayerStats.HEALTH;
+    double health = PlayerStats.HEALTH;
 
     Map<Integer, PotionEffect> potionEffects = new HashMap<Integer, PotionEffect>();
 
     int max_no_damage_ticks = 0;
     int max_air = 20;
-    int last_damage = 0;
+    double last_damage = 0;
 
     PlayerInventory inventory = new MockPlayerInventory();
     PlayerInventory enderChest = new MockPlayerInventory();
@@ -74,7 +75,7 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public void setMaxHealth(final int i) {
+    public void setMaxHealth(final double d) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -183,15 +184,34 @@ public class MockPlayer implements Player {
         return this.name;
     }
 
+    @Override
+    public void _INVALID_damage(int i) {
+
+    }
 
     @Override
-    public int getHealth() {
+    public void _INVALID_damage(int i, Entity entity) {
+
+    }
+
+    @Override
+    public double getHealth() {
         return this.health;
     }
 
     @Override
-    public void setHealth(int i) {
-        this.health = i;
+    public int _INVALID_getHealth() {
+        return 0;
+    }
+
+    @Override
+    public void _INVALID_setHealth(int i) {
+
+    }
+
+    @Override
+    public void setHealth(double d) {
+        this.health = d;
     }
 
     @Override
@@ -205,18 +225,38 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public int getLastDamage() {
+    public double getLastDamage() {
         return this.last_damage;
     }
 
     @Override
-    public void setLastDamage(int i) {
-        this.last_damage = i;
+    public int _INVALID_getLastDamage() {
+        return 0;
     }
 
     @Override
-    public int getMaxHealth() {
+    public void _INVALID_setLastDamage(int i) {
+
+    }
+
+    @Override
+    public void setLastDamage(double d) {
+        this.last_damage = d;
+    }
+
+    @Override
+    public double getMaxHealth() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public int _INVALID_getMaxHealth() {
+        return 0;
+    }
+
+    @Override
+    public void _INVALID_setMaxHealth(int i) {
+
     }
 
     @Override
@@ -539,6 +579,21 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void setPlayerWeather(WeatherType weatherType) {
+
+    }
+
+    @Override
+    public WeatherType getPlayerWeather() {
+        return null;
+    }
+
+    @Override
+    public void resetPlayerWeather() {
+
+    }
+
+    @Override
     public boolean getAllowFlight() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -561,6 +616,11 @@ public class MockPlayer implements Player {
     @Override
     public boolean canSee(Player player) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean isOnGround() {
+        return false;
     }
 
     @Override
@@ -747,12 +807,12 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public void damage(int i) {
+    public void damage(double d) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public void damage(int i, Entity entity) {
+    public void damage(double d, Entity entity) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1038,8 +1098,43 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public Scoreboard getScoreboard() {
+        return null;
+    }
+
+    @Override
+    public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException {
+
+    }
+
+    @Override
+    public boolean isHealthScaled() {
+        return false;
+    }
+
+    @Override
+    public void setHealthScaled(boolean b) {
+
+    }
+
+    @Override
+    public void setHealthScale(double v) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public double getHealthScale() {
+        return 0;
+    }
+
+    @Override
     public void playSound(Location location, Sound sound, float v, float v1) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void playSound(Location location, String s, float v, float v2) {
+
     }
 
     @Override
@@ -1055,5 +1150,40 @@ public class MockPlayer implements Player {
     @Override
     public boolean getCanPickupItems() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setCustomName(String s) {
+
+    }
+
+    @Override
+    public String getCustomName() {
+        return null;
+    }
+
+    @Override
+    public void setCustomNameVisible(boolean b) {
+
+    }
+
+    @Override
+    public boolean isCustomNameVisible() {
+        return false;
+    }
+
+    @Override
+    public boolean isLeashed() {
+        return false;
+    }
+
+    @Override
+    public Entity getLeashHolder() throws IllegalStateException {
+        return null;
+    }
+
+    @Override
+    public boolean setLeashHolder(Entity entity) {
+        return false;
     }
 }
