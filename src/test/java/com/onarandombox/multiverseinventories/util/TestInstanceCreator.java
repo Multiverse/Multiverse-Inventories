@@ -21,6 +21,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemFactory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -49,7 +50,7 @@ public class TestInstanceCreator {
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
-    public Map<String, MockPlayer> players = new HashMap<String, MockPlayer>();
+    public Map<String, Player> players = new HashMap<String, Player>();
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -126,15 +127,15 @@ public class TestInstanceCreator {
             when(plugin.getServer()).thenReturn(mockServer);
             when(core.getServer()).thenReturn(mockServer);
             when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
-            Answer<MockPlayer> playerAnswer = new Answer<MockPlayer>() {
-                public MockPlayer answer(InvocationOnMock invocation) throws Throwable {
+            Answer<Player> playerAnswer = new Answer<Player>() {
+                public Player answer(InvocationOnMock invocation) throws Throwable {
                     String arg;
                     try {
                         arg = (String) invocation.getArguments()[0];
                     } catch (Exception e) {
                         return null;
                     }
-                    MockPlayer player = players.get(arg);
+                    Player player = players.get(arg);
                     if (player == null) {
                         player = new MockPlayer(arg, mockServer);
                         players.put(arg, player);
