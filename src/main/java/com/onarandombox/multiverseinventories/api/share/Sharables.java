@@ -495,7 +495,7 @@ public final class Sharables implements Shares {
                         player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
                         return false;
                     }
-                    player.setBedSpawnLocation(loc);
+                    player.setBedSpawnLocation(loc, true);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
