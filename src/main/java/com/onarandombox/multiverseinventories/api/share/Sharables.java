@@ -156,8 +156,8 @@ public final class Sharables implements Shares {
     /**
      * Sharing Health.
      */
-    public static final Sharable<Integer> HEALTH = new Sharable.Builder<Integer>("hit_points", Integer.class,
-            new SharableHandler<Integer>() {
+    public static final Sharable<Double> HEALTH = new Sharable.Builder<Double>("hit_points", Double.class,
+            new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
                     profile.set(HEALTH, player.getHealth());
@@ -165,7 +165,7 @@ public final class Sharables implements Shares {
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Integer value = profile.get(HEALTH);
+                    Double value = profile.get(HEALTH);
                     if (value == null) {
                         player.setHealth(PlayerStats.HEALTH);
                         return false;

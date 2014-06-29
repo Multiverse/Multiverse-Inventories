@@ -163,7 +163,7 @@ public class WorldInventoriesImporter implements DataImporter {
             playerProfile.set(Sharables.ARMOR, wiInventory.getArmour());
         }
         if (wiStats != null) {
-            playerProfile.set(Sharables.HEALTH, wiStats.getHealth());
+            playerProfile.set(Sharables.HEALTH, (double) wiStats.getHealth());
             playerProfile.set(Sharables.SATURATION, wiStats.getSaturation());
             playerProfile.set(Sharables.EXPERIENCE, wiStats.getExp());
             playerProfile.set(Sharables.LEVEL, wiStats.getLevel());

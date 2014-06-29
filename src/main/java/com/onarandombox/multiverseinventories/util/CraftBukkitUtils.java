@@ -2,14 +2,18 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import net.minecraft.server.v1_4_6.*;
+import net.minecraft.server.v1_7_R1.*;
 import net.minidev.json.JSONObject;
-import org.bukkit.craftbukkit.v1_4_6.inventory.CraftItemStack;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_7_R1.inventory.CraftItemStack;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,7 +65,19 @@ public class CraftBukkitUtils {
                     Iterator iterator = compound.c().iterator();
                     while (iterator.hasNext()) {
                         NBTBase nbtbase = (NBTBase) iterator.next();
-                        minecraftStack.getTag().set(nbtbase.getName(), nbtbase);
+                        String name = null;
+                        try {
+                            Method m = nbtbase.getClass().getDeclaredMethod("a_");
+                            m.setAccessible(true);
+                            name = (String) m.invoke(nbtbase);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchMethodException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        minecraftStack.getTag().set(name, nbtbase);
                     }
                 }
             } else {
@@ -103,10 +119,10 @@ public class CraftBukkitUtils {
         }
         return null;
     }
-    
+
     /**
      * Converts a raw java object to an nbt tag
-     * 
+     *
      * @param rawValue The raw java object
      * @param name The name of the nbt tag
      * @param type The type of the nbt tag
@@ -114,56 +130,67 @@ public class CraftBukkitUtils {
      * @return The nbt tag object computed from the data
      */
     public static NBTBase jsonToNBTObject (Object rawValue, String name, byte type, byte extraData) {
-        
+
         NBTBase value = null;
-        
+
         try {
             switch (type) {
                 case 1:
-                    value = new NBTTagByte(name, ((Number) rawValue).byteValue());
+                    value = new NBTTagByte(((Number) rawValue).byteValue());
                     break;
-                    
+
                 case 2:
-                    value = new NBTTagShort(name, ((Number) rawValue).shortValue());
+                    value = new NBTTagShort(((Number) rawValue).shortValue());
                     break;
-                    
+
                 case 3:
-                    value = new NBTTagInt(name, ((Number) rawValue).intValue());
+                    value = new NBTTagInt(((Number) rawValue).intValue());
                     break;
-                    
+
                 case 4:
-                    value = new NBTTagLong(name, ((Number) rawValue).longValue());
+                    value = new NBTTagLong(((Number) rawValue).longValue());
                     break;
-                    
+
                 case 5:
-                    value = new NBTTagFloat(name, ((Number) rawValue).floatValue());
+                    value = new NBTTagFloat(((Number) rawValue).floatValue());
                     break;
-                    
+
                 case 6:
-                    value = new NBTTagDouble(name, ((Number) rawValue).doubleValue());
+                    value = new NBTTagDouble(((Number) rawValue).doubleValue());
                     break;
-                    
+
                 case 7:
-                    value = new NBTTagByteArray(name, (byte[]) rawValue);
+                    value = new NBTTagByteArray((byte[]) rawValue);
                     break;
-                    
+
                 case 8:
-                    value = new NBTTagString(name, (String) rawValue);
+                    value = new NBTTagString((String) rawValue);
                     break;
-                    
+
                 case 9:
                     //Pass the info to another function to convert a java list to an nbt list
                     value = CraftBukkitUtils.jsonToNBTList((List) rawValue, name, extraData);
                     break;
-                    
+
                 case 10:
                     //Pass the info to another function to convert the json object to an nbt compound
                     value = CraftBukkitUtils.jsonToNBTTagCompound((JSONObject) rawValue);
                     break;
-                    
+
                 case 11:
-                    value = new NBTTagIntArray(name, (int[]) rawValue);
+                    value = new NBTTagIntArray((int[]) rawValue);
                     break;
+            }
+
+            try {
+                if (value == null) return null;
+                Field f = value.getClass().getDeclaredField("name");
+                f.setAccessible(true);
+                f.set(value, name);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         } catch (ClassCastException e) {
             Logging.warning(e.getMessage() + ", could not parse " + NBTBase.getTagName(type) + ": " + rawValue);
@@ -171,20 +198,20 @@ public class CraftBukkitUtils {
         } catch (Exception e) {
             return null;
         }
-        
+
         return value;
     }
-    
+
     /**
      * Converts a parsed nbt compound in json format back to an nbt compound
      * @param json The json object to be converted back
      * @return The converted nbt compound
      */
     public static NBTTagCompound jsonToNBTTagCompound (JSONObject json) {
-        
+
         //The compound to be returned
         NBTTagCompound compound = new NBTTagCompound();
-        
+
         //Iterate over all the keys (names and ids) in the json object
         for (Object key : json.keySet()) {
             //If the name and ids aren't strings something went terrible wrong :<
@@ -192,19 +219,19 @@ public class CraftBukkitUtils {
                 Logging.warning("Could not parse NBTTag name: " + key.toString());
                 return null;
             }
-            
+
             //The raw data type
             String dataType = (String) key;
-                
+
             //Split up the raw data type by the general delimiter so we can extract the ids from it
-            String[] dataTypeString = ((String) dataType).split(DataStrings.GENERAL_DELIMITER);
-            
+            String[] dataTypeString = dataType.split(DataStrings.GENERAL_DELIMITER);
+
             //If there were more or less than 2 or 3 elements from the split, something went horrible wrong
             if (dataTypeString.length != 2 && dataTypeString.length != 3) {
                 Logging.warning("Could not parse NBTTag data type: " + dataType.toString());
                 return null;
             }
-                
+
             //Parse the nbt tag type
             byte type = 0;
             try {
@@ -214,7 +241,7 @@ public class CraftBukkitUtils {
                 Logging.warning("Could not parse NBTTag data type: " + dataTypeString[1]);
                 return null;
             }
-            
+
             //Additional byte for the type of nbt tags in an nbt list
             byte listType = 0;
             if (type == 9) {
@@ -226,13 +253,13 @@ public class CraftBukkitUtils {
                     return null;
                 }
             }
-            
+
             //Name should be the first index
             String name = dataTypeString[0];
             NBTBase value = null;
             //Grab the raw value from the json map
             Object rawValue = json.get(key);
-            
+
             //If the tag is a list
             if (type == 9) {
                 //Compute the nbt tag value from the raw java object
@@ -245,7 +272,7 @@ public class CraftBukkitUtils {
                 //Continue to the next object
                 continue;
             }
-            
+
             //Compute the nbt tag value from the raw java object
             NBTBase computedValue = jsonToNBTObject(rawValue, name, type, (byte) -1);
             //If the nbt tag was successfully created
@@ -253,73 +280,95 @@ public class CraftBukkitUtils {
                 //Add it to the compound
                 compound.set(name, jsonToNBTObject(rawValue, name, type, (byte) -1));
             }
-            
+
 
         }
-        
+
         return compound;
     }
-    
+
     /**
      * Converts a java list of nbt data to an nbt list
-     * 
+     *
      * @param list The list to be converted to an nbt list
      * @param name The name of the list
      * @param type The type of objects in the list
      * @return The computed nbtlist from the data
      */
     public static NBTTagList jsonToNBTList (List list, String name, byte type) {
-        NBTTagList nbtlist = new NBTTagList(name);
+        NBTTagList nbtlist = new NBTTagList();
+
+        try {
+            Field f = nbtlist.getClass().getDeclaredField("name");
+            f.setAccessible(true);
+            f.set(nbtlist, name);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         for (Object object : list) {
             NBTBase computedValue = jsonToNBTObject(object, "", type, (byte) -1);
             if (computedValue != null) {
                 nbtlist.add(computedValue);
-            }           
+            }
         }
-        
+
         return nbtlist;
     }
-    
+
     /**
      * Parse an nbt compound (essentially a map of names with nbt bases)
-     * 
+     *
      * @param iterator An iterator for the collection from the nbt compound taken from <pre>compound.c().iterator()</pre>
      * @return The compound as a JSONObject
      */
     public static JSONObject parseNBTCompound (Iterator iterator) {
         return parseNBTCompound(iterator, null);
     }
-    
+
     /**
      * Parse an nbt compound (essentially a map of names with nbt bases)
-     * 
+     *
      * @param iterator An iterator for the collection from the nbt compound taken from <pre>compound.c().iterator()</pre>
      * @param keysToIgnore String collection of the key names to ignore, pass null to ignore nothing
      * @return The compound as a JSONObject
      */
     public static JSONObject parseNBTCompound (Iterator iterator, Collection<String> keysToIgnore) {
-        
+
         //Make a json object to map the names and data types along with the values
         JSONObject map = new JSONObject();
-        
+
         //Begin looping over the nbt compound collection
         while (iterator.hasNext()) {
             //Get the nbt base object from the iterator
             NBTBase nbtbase = (NBTBase) iterator.next();
-            
+
             //Get the name from the nbt base object
-            String name = nbtbase.getName();
-            
+            String name = null;
+            try {
+                Method m = nbtbase.getClass().getDeclaredMethod("a_");
+                m.setAccessible(true);
+                name = (String) m.invoke(nbtbase);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
             //Ignore the specified values
             if (keysToIgnore != null) {
                 if (keysToIgnore.contains(name)) {
                     continue;
                 }
             }
-            
+
             //Parse the nbt tag's value into a java object
             Object value = parseNBTValue(nbtbase, nbtbase.getTypeId());
-            
+
             //If the nbt base is of a list type
             if (nbtbase.getTypeId() == 9) {
                 //Just in case!
@@ -327,15 +376,15 @@ public class CraftBukkitUtils {
                     //Get the type of objects stored in the list
                     byte listType = ((NBTTagList) nbtbase).get(0).getTypeId();
                     //Store the name of the nbt base in the format "name;type;listtype" along with its value
-                    map.put(nbtbase.getName() + DataStrings.GENERAL_DELIMITER + nbtbase.getTypeId() + DataStrings.GENERAL_DELIMITER + listType, value);
+                    map.put(name + DataStrings.GENERAL_DELIMITER + nbtbase.getTypeId() + DataStrings.GENERAL_DELIMITER + listType, value);
                 }
                 continue;
             }
-            
+
             //Just in case!
             if (value != null) {
               //Store the name of the nbt base in the format "name;type" along with its value
-                map.put(nbtbase.getName() + DataStrings.GENERAL_DELIMITER + nbtbase.getTypeId(), value);
+                map.put(name + DataStrings.GENERAL_DELIMITER + nbtbase.getTypeId(), value);
             }
             
         }
@@ -364,22 +413,31 @@ public class CraftBukkitUtils {
         switch (tag.get(0).getTypeId()) {
             case 1:
                 values = new ArrayList<Byte>();
+                break;
             case 2:
                 values = new ArrayList<Short>();
+                break;
             case 3:
                 values = new ArrayList<Integer>();
+                break;
             case 4:
                 values = new ArrayList<Long>();
+                break;
             case 5:
                 values = new ArrayList<Float>();
+                break;
             case 6:
                 values = new ArrayList<Double>();
+                break;
             case 7:
                 values = new ArrayList<byte[]>();
+                break;
             case 8:
                 values = new ArrayList<String>();
+                break;
             case 11:
                 values = new ArrayList<int[]>();
+                break;
         }
         
         //Loop over the values in the nbt list
@@ -414,42 +472,106 @@ public class CraftBukkitUtils {
             switch (type) {
                 //Byte value of 1, cast the base to an nbt byte and return its data
                 case 1:
-                    value = ((NBTTagByte) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagByte) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 
                 //Byte value of 2, cast the base to an nbt short and return its data
                 case 2:
-                    value = ((NBTTagShort) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagShort) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 
                 //Byte value of 3, cast the base to an nbt int and return its data
                 case 3:
-                    value = ((NBTTagInt) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagInt) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                
                 //Byte value of 4, cast the base to an nbt int and return its data
                 case 4:
-                    value = ((NBTTagLong) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagLong) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                  
                 //Byte value of 5, cast the base to an nbt float and return its data
                 case 5:
-                    value = ((NBTTagFloat) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagFloat) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                     
                 //Byte value of 6, cast the base to an nbt double and return its data
                 case 6:
-                    value = ((NBTTagDouble) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagDouble) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                     
                 //Byte value of 7, cast the base to an nbt byte array and return its data
                 case 7:
-                    value = ((NBTTagByteArray) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagByteArray) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                   
                 //Byte value of 8, cast the base to an nbt string and return its data
                 case 8:
-                    value = ((NBTTagString) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagString) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
                     
                 //Byte value of 9, cast the base to an nbt list and send it to another function for additional parsing
@@ -464,7 +586,15 @@ public class CraftBukkitUtils {
                  
                 //Byte value of 11, cast the base to an nbt int array and return its data
                 case 11:
-                    value = ((NBTTagIntArray) nbtbase).data;
+                    try {
+                        Field f = ((NBTTagIntArray) nbtbase).getClass().getDeclaredField("data");
+                        f.setAccessible(true);
+                        value = f.get(nbtbase);
+                    } catch (NoSuchFieldException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
         } catch (ClassCastException exception) {
@@ -482,7 +612,7 @@ public class CraftBukkitUtils {
      * @throws FileNotFoundException 
      */
     public static JSONObject getPlayerDataJson(File file) throws FileNotFoundException {
-        return parseNBTCompound(NBTCompressedStreamTools.a((InputStream) (new FileInputStream(file))).c().iterator());
+        return parseNBTCompound(NBTCompressedStreamTools.a(new FileInputStream(file)).c().iterator());
     }
 
 }
