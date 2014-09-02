@@ -41,38 +41,4 @@ public class EncodedConfiguration extends EnhancedConfiguration {
         super(file, plugin);
         this.charset = Charset.forName(charset);
     }
-
-    @Override
-    public void load(InputStream stream) throws IOException, InvalidConfigurationException {
-        Validate.notNull(stream, "Stream cannot be null");
-        InputStreamReader reader = new InputStreamReader(stream, charset);
-        StringBuilder builder = new StringBuilder();
-        BufferedReader input = new BufferedReader(reader);
-        try {
-            String line;
-            while ((line = input.readLine()) != null) {
-                builder.append(line).append('\n');
-            }
-        } finally {
-            input.close();
-        }
-        loadFromString(builder.toString());
-    }
-
-    @Override
-    public void save(File file) throws IOException {
-        Validate.notNull(file, "File cannot be null");
-
-        Files.createParentDirs(file);
-
-        String data = saveToString();
-
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
-
-        try {
-            writer.write(data);
-        } finally {
-            writer.close();
-        }
-    }
 }
