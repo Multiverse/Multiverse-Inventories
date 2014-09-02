@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.util.CraftBukkitUtils;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -980,12 +979,6 @@ public class DataStrings {
 
             if (!hasCraftBukkit() || itemData == null) {
                 return;
-            }
-
-            try {
-                item = CraftBukkitUtils.applyToStack(item, itemData);
-            } catch (Throwable t) {
-                Logging.warning("Error attempting to apply json nbt compound to stack", t);
             }
         }
 
