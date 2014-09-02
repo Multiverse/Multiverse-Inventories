@@ -105,3 +105,6 @@ commands:
   mvinvd:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
+
+awareness:
+- !@UTF8
