@@ -69,6 +69,11 @@ public class MockPlayerInventory implements PlayerInventory {
     }
 
     @Override
+    public void setHeldItemSlot(int i) {
+
+    }
+
+    @Override
     public ItemStack getItemInHand() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

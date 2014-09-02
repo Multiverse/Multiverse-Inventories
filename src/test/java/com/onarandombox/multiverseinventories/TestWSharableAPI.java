@@ -81,22 +81,22 @@ public class TestWSharableAPI {
         }
     }
 
-    public final static Sharable<Integer> CUSTOM = new Sharable.Builder<Integer>("custom", Integer.class,
-            new SharableHandler<Integer>() {
+    public final static Sharable<Double> CUSTOM = new Sharable.Builder<Double>("custom", Double.class,
+            new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(CUSTOM, player.getMaximumNoDamageTicks());
+                    profile.set(CUSTOM, (double) player.getMaximumNoDamageTicks());
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Integer value = profile.get(CUSTOM);
+                    Double value = profile.get(CUSTOM);
                     if (value == null) {
                         // Specify default value
                         player.setMaximumNoDamageTicks(0);
                         return false;
                     }
-                    player.setMaximumNoDamageTicks(value);
+                    player.setMaximumNoDamageTicks((int) Double.doubleToLongBits(value));
                     return true;
                 }
             }).defaultSerializer(new ProfileEntry(false, "custom")).build();
@@ -109,7 +109,7 @@ public class TestWSharableAPI {
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Integer value = profile.get(CUSTOM);
+                    Double value = profile.get(CUSTOM);
                     if (value == null) {
                         // Specify default value
                         player.setLastDamage(0);

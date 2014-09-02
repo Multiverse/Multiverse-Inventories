@@ -60,8 +60,8 @@ public class MIPlayerFileLoader {
     /**
      * @return The player's health.
      */
-    public int getHealth() {
-        int health = playerFile.getInt("health", PlayerStats.HEALTH);
+    public double getHealth() {
+        double health = playerFile.getDouble("health", PlayerStats.HEALTH);
         if (health <= 0 || health > PlayerStats.HEALTH) {
             health = PlayerStats.HEALTH;
         }

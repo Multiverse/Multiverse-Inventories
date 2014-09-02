@@ -10,7 +10,6 @@ public interface PlayerData {
      *
      *
      * @param playerProfile The profile for the player that is being updated.
-     * @return True if successfully updated.
      */
     void updatePlayerData(PlayerProfile playerProfile);
 

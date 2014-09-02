@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * This is meant to wrap an ItemStack so that it can easily be serialized/deserialized in String format.
- * @deprecated Moved class to {@link DataStrings.ItemWrapper}
+ * @deprecated Moved class to {@link ItemWrapper}
  */
 @Deprecated
 public final class ItemWrapper {
