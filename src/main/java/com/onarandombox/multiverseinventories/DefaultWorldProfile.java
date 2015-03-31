@@ -39,7 +39,7 @@ final class DefaultWorldProfile extends WeakProfileContainer implements WorldPro
      */
     @Override
     public void setWorld(String worldName) {
-        this.worldName = this.worldName;
+        this.worldName = worldName;
     }
 
     /**

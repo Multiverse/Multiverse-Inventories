@@ -283,7 +283,7 @@ public class MockPlayerInventory implements PlayerInventory {
     private static Map<String, Object> makeMap(ItemStack[] items) {
         Map<String, Object> contents = new LinkedHashMap<String, Object>(items.length);
         for (int i = 0; i < items.length; i++) {
-            if (items[i] != null && items[i].getTypeId() != 0) {
+            if (items[i] != null && items[i].getType() != Material.AIR) {
                 contents.put(Integer.valueOf(i).toString(), items[i]);
             }
         }

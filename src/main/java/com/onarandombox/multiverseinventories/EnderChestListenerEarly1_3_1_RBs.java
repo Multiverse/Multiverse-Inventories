@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class EnderChestListenerEarly1_3_1_RBs implements Listener {
 
@@ -28,7 +29,9 @@ public class EnderChestListenerEarly1_3_1_RBs implements Listener {
 
     private boolean hasBeenWarned = false;
 
-    private final Map<String, Inventory> openInventories = new HashMap<String, Inventory>();
+    private final Map<String, Inventory> _openInventories = new HashMap<String, Inventory>();
+    private final Map<UUID, Inventory> openInventories = new HashMap<UUID, Inventory>();
+
 
     EnderChestListenerEarly1_3_1_RBs(final Inventories plugin) {
         this.plugin = plugin;
@@ -75,7 +78,7 @@ public class EnderChestListenerEarly1_3_1_RBs implements Listener {
             Logging.finest("Creating blank inventory for ender chest");
         }
         event.getInventory().setContents(contents);
-        openInventories.put(player.getName(), event.getInventory());
+        openInventories.put(player.getUniqueId(), event.getInventory());
         Logging.finest("Loaded ender chest from '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
     }
 
@@ -102,15 +105,15 @@ public class EnderChestListenerEarly1_3_1_RBs implements Listener {
         playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
         playerProfile.set(Sharables.ENDER_CHEST, event.getInventory().getContents());
         plugin.getData().updatePlayerData(playerProfile);
-        openInventories.remove(player.getName());
+        openInventories.remove(player.getUniqueId());
         Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
     }
 
     @EventHandler
     public void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
-        if (openInventories.containsKey(player.getName())) {
-            final Inventory inventory = openInventories.get(player.getName());
+        if (openInventories.containsKey(player.getUniqueId())) {
+            final Inventory inventory = openInventories.get(player.getUniqueId());
             final String world = player.getWorld().getName();
             PlayerProfile playerProfile = null;
             final List<WorldGroupProfile> groupsForWorld = plugin.getGroupManager().getGroupsForWorld(world);
@@ -125,7 +128,7 @@ public class EnderChestListenerEarly1_3_1_RBs implements Listener {
             playerProfile = plugin.getWorldManager().getWorldProfile(world).getPlayerData(player);
             playerProfile.set(Sharables.ENDER_CHEST, inventory.getContents());
             plugin.getData().updatePlayerData(playerProfile);
-            openInventories.remove(player.getName());
+            openInventories.remove(player.getUniqueId());
             Logging.finest("Saved ender chest for '" + playerProfile.getContainerType() + ":" + playerProfile.getContainerName() + "' for player '" + player.getName() + "' and gamemode profile '" + playerProfile.getProfileType() + "'");
         }
     }

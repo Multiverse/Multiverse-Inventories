@@ -40,7 +40,7 @@ public class MockPlayer implements Player {
     int food_level = PlayerStats.FOOD_LEVEL;
     double health = PlayerStats.HEALTH;
 
-    Map<Integer, PotionEffect> potionEffects = new HashMap<Integer, PotionEffect>();
+    Map<String, PotionEffect> potionEffects = new HashMap<String, PotionEffect>();
 
     int max_no_damage_ticks = 0;
     int max_air = 20;
@@ -196,6 +196,11 @@ public class MockPlayer implements Player {
     @Override
     public double getHealthScale() {
         return 0;
+    }
+
+    @Override
+    public Spigot spigot() {
+        return null;
     }
 
     @Override
@@ -466,7 +471,7 @@ public class MockPlayer implements Player {
 
     @Override
     public boolean addPotionEffect(PotionEffect potionEffect) {
-        potionEffects.put(potionEffect.getType().getId(), potionEffect);
+        potionEffects.put(potionEffect.getType().getName(), potionEffect);
         return true;
     }
 
@@ -487,7 +492,7 @@ public class MockPlayer implements Player {
 
     @Override
     public void removePotionEffect(PotionEffectType potionEffectType) {
-        potionEffects.remove(potionEffectType.getId());
+        potionEffects.remove(potionEffectType.getName());
     }
 
     @Override
@@ -921,13 +926,28 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public List<Block> getLineOfSight(Set<Material> set, int i) {
+        return null;
+    }
+
+    @Override
     public Block getTargetBlock(HashSet<Byte> bytes, int i) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
+    public Block getTargetBlock(Set<Material> set, int i) {
+        return null;
+    }
+
+    @Override
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> bytes, int i) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i) {
+        return null;
     }
 
     @Override

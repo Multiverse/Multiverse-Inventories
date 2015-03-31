@@ -14,14 +14,15 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 /**
  * Implementation of ProfileContainer using WeakHashMaps to keep memory usage to a minimum.
  */
 abstract class WeakProfileContainer implements ProfileContainer {
-
-    private Map<String, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<String, Map<ProfileType, PlayerProfile>>();
+    private Map<String, Map<ProfileType, PlayerProfile>> _playerData = new WeakHashMap<String, Map<ProfileType, PlayerProfile>>();
+    private Map<UUID, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<UUID, Map<ProfileType, PlayerProfile>>();
     private Inventories inventories;
     private ContainerType type;
 
@@ -36,11 +37,27 @@ abstract class WeakProfileContainer implements ProfileContainer {
      * @param name The name of player to get profile map for.
      * @return The profile map for the given player.
      */
+    @Deprecated
     protected Map<ProfileType, PlayerProfile> getPlayerData(String name) {
-        Map<ProfileType, PlayerProfile> data = this.playerData.get(name);
+        Map<ProfileType, PlayerProfile> data = this._playerData.get(name);
         if (data == null) {
             data = new HashMap<ProfileType, PlayerProfile>();
-            this.playerData.put(name, data);
+            this._playerData.put(name, data);
+        }
+        return data;
+    }
+
+    /**
+     * Gets the stored profiles for this player, mapped by ProfileType.
+     *
+     * @param playerUUID The UUID of player to get profile map for.
+     * @return The profile map for the given player.
+     */
+    protected Map<ProfileType, PlayerProfile> getPlayerData(UUID playerUUID) {
+        Map<ProfileType, PlayerProfile> data = this.playerData.get(playerUUID);
+        if (data == null) {
+            data = new HashMap<ProfileType, PlayerProfile>();
+            this.playerData.put(playerUUID, data);
         }
         return data;
     }
@@ -92,13 +109,13 @@ abstract class WeakProfileContainer implements ProfileContainer {
      */
     @Override
     public PlayerProfile getPlayerData(ProfileType profileType, OfflinePlayer player) {
-        Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getName());
+        Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getUniqueId());
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
             playerProfile = this.getData().getPlayerData(this.type,
-                    this.getDataName(), profileType, player.getName());
+                    this.getDataName(), profileType, player.getUniqueId());
             Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
-                    profileType, type, playerProfile.getContainerName(), player.getName());
+                    profileType, type, playerProfile.getContainerName(), player.getUniqueId());
             profileMap.put(profileType, playerProfile);
         }
         return playerProfile;
@@ -109,7 +126,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
      */
     @Override
     public void addPlayerData(PlayerProfile playerProfile) {
-        this.getPlayerData(playerProfile.getPlayer().getName()).put(playerProfile.getProfileType(), playerProfile);
+        this.getPlayerData(playerProfile.getPlayer().getUniqueId()).put(playerProfile.getProfileType(), playerProfile);
     }
 
     /**
@@ -118,7 +135,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
     @Override
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        this.getData().removePlayerData(this.type, this.getDataName(), null, player.getName());
+        this.getData().removePlayerData(this.type, this.getDataName(), null, player.getUniqueId());
     }
 
     /**
@@ -127,7 +144,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
     @Override
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        this.getData().removePlayerData(this.type, this.getDataName(), profileType, player.getName());
+        this.getData().removePlayerData(this.type, this.getDataName(), profileType, player.getUniqueId());
     }
 }
 

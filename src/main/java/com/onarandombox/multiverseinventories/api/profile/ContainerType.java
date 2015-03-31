@@ -13,6 +13,6 @@ public enum ContainerType {
     /**
      * Indicates Group type profiles.
      */
-    GROUP;
+    GROUP
 }
 

@@ -102,13 +102,13 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getUniqueId());
         final String world = globalProfile.getWorld();
         if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
             ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldManager().getWorldProfile(world).getPlayerData(player)));
         }
-        inventories.getData().setLoadOnLogin(player.getName(), false);
+        inventories.getData().setLoadOnLogin(player.getUniqueId(), false);
         verifyCorrectWorld(player, player.getWorld().getName());
     }
 
@@ -121,24 +121,24 @@ public class InventoriesListener implements Listener {
     public void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
-        inventories.getData().updateWorld(player.getName(), world);
+        inventories.getData().updateWorld(player.getUniqueId(), world);
         if (inventories.getMVIConfig().usingLoggingSaveLoad()) {
             ShareHandler.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldManager().getWorldProfile(world).getPlayerData(player)));
-            inventories.getData().setLoadOnLogin(player.getName(), true);
+            inventories.getData().setLoadOnLogin(player.getUniqueId(), true);
         }
     }
 
     private void verifyCorrectWorld(Player player, String world) {
-        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getUniqueId());
         if (globalProfile.getWorld() == null) {
-            inventories.getData().updateWorld(player.getName(), world);
+            inventories.getData().updateWorld(player.getUniqueId(), world);
         } else {
             if (!world.equals(globalProfile.getWorld())) {
                 Logging.fine("Player did not spawn in the world they were last reported to be in!");
                 new WorldChangeShareHandler(this.inventories, player,
                         globalProfile.getWorld(), world).handleSharing();
-                inventories.getData().updateWorld(player.getName(), world);
+                inventories.getData().updateWorld(player.getUniqueId(), world);
             }
         }
     }
@@ -181,7 +181,7 @@ public class InventoriesListener implements Listener {
         }
 
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
-        inventories.getData().updateWorld(player.getName(), toWorld.getName());
+        inventories.getData().updateWorld(player.getUniqueId(), toWorld.getName());
     }
 
     /**

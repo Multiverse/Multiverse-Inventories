@@ -37,6 +37,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -342,7 +343,7 @@ public class TestWorldChanged {
         Assert.assertNotSame(satTest, player.getSaturation());
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
-        File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
+        File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", UUID.fromString("a48d201ae9504f7aa1c4a7afe92bcb51"));
         FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
         playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
         playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_ARMOR_CONTENTS, "");

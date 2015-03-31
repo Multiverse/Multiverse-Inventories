@@ -142,7 +142,7 @@ public class TestInstanceCreator {
                 }
             };
             when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
-            when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
+            when(mockServer.getOfflinePlayer(any(UUID.class))).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayers()).thenAnswer(new Answer<OfflinePlayer[]>() {
                 public OfflinePlayer[] answer(InvocationOnMock invocation) throws Throwable {
                     return players.values().toArray(new Player[players.values().size()]);

@@ -19,6 +19,7 @@ import org.json.simple.parser.ParseException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -46,7 +47,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         armorContents = MinecraftTools.fillWithAir(armorContents);
         inventoryContents = MinecraftTools.fillWithAir(inventoryContents);
     }
-
+    @Deprecated
     public DefaultPlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, String playerName, Map playerData) {
         this(containerType, containerName, profileType, Bukkit.getOfflinePlayer(playerName));
         for (Object keyObj : playerData.keySet()) {
@@ -82,6 +83,43 @@ class DefaultPlayerProfile implements PlayerProfile {
             }
         }
         Logging.finer("Created player profile from map for '" + playerName + "'.");
+    }
+
+    public DefaultPlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, UUID playerUUID, Map playerData) {
+        this(containerType, containerName, profileType, Bukkit.getOfflinePlayer(playerUUID));
+        for (Object keyObj : playerData.keySet()) {
+            String key = keyObj.toString();
+            if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
+                final Object statsObject = playerData.get(key);
+                if (statsObject instanceof String) {
+                    this.parsePlayerStats(statsObject.toString());
+                } else {
+                    if (statsObject instanceof Map) {
+                        parsePlayerStats((Map) statsObject);
+                    } else {
+                        Logging.warning("Could not parse stats for " + playerUUID);
+                    }
+                }
+            } else {
+                if (playerData.get(key) == null) {
+                    Logging.fine("Player data '" + key + "' is null for: " + playerUUID);
+                    continue;
+                }
+                try {
+                    Sharable sharable = ProfileEntry.lookup(false, key);
+                    if (sharable == null) {
+                        Logging.fine("Player fileTag '" + key + "' is unrecognized!");
+                        continue;
+                    }
+                    this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key)));
+                } catch (Exception e) {
+                    Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key) + "'");
+                    Logging.getLogger().log(Level.FINE, "Exception: ", e);
+                    e.printStackTrace();
+                }
+            }
+        }
+        Logging.finer("Created player profile from map for '" + playerUUID + "'.");
     }
 
     /**

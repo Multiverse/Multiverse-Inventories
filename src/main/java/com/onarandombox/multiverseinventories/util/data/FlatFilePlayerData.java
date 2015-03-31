@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -110,6 +111,7 @@ public class FlatFilePlayerData implements PlayerData {
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
      */
+    @Deprecated
     File getPlayerFile(ContainerType type, String dataName, String playerName) {
         File jsonPlayerFile = new File(this.getFolder(type, dataName), playerName + JSON);
         File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
@@ -133,13 +135,44 @@ public class FlatFilePlayerData implements PlayerData {
         }
         return jsonPlayerFile;
     }
-
+    /**
+     * Retrieves the yaml data file for a player based on a given world/group name.
+     *
+     * @param type       Indicates whether data is for group or world.
+     * @param dataName   The name of the group or world.
+     * @param playerUUID The name of the player.
+     * @return The yaml data file for a player.
+     */
+    File getPlayerFile(ContainerType type, String dataName, UUID playerUUID) {
+        File jsonPlayerFile = new File(this.getFolder(type, dataName), playerUUID + JSON);
+        File playerFile = new File(this.getFolder(type, dataName), playerUUID + YML);
+        if (jsonPlayerFile.exists()) {
+            return jsonPlayerFile;
+        } else {
+            if (playerFile.exists()) {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException ignore) { }
+                return playerFile;
+            } else {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException e) {
+                    Logging.severe("Could not create necessary player file: " + playerUUID + JSON);
+                    Logging.severe("Your data may not be saved!");
+                    Logging.severe(e.getMessage());
+                }
+            }
+        }
+        return jsonPlayerFile;
+    }
     /**
      * Retrieves the yaml data file for a player for their global data.
      *
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
      */
+    @Deprecated
     File getGlobalFile(String playerName, boolean forceJson) {
         File jsonPlayerFile = new File(playerFolder, playerName + JSON);
         File playerFile = new File(playerFolder, playerName + YML);
@@ -170,10 +203,56 @@ public class FlatFilePlayerData implements PlayerData {
         return playerFile;
     }
 
+    /**
+     * Retrieves the yaml data file for a player for their global data.
+     *
+     * @param playerUUID The name of the player.
+     * @return The yaml data file for a player.
+     */
+    File getGlobalFile(UUID playerUUID, boolean forceJson) {
+        File jsonPlayerFile = new File(playerFolder, playerUUID + JSON);
+        File playerFile = new File(playerFolder, playerUUID + YML);
+        if (!jsonPlayerFile.exists()) {
+            if (forceJson) {
+                try {
+                    jsonPlayerFile.createNewFile();
+                } catch (IOException e) {
+                    Logging.severe("Could not create necessary player file: " + playerUUID + YML);
+                    Logging.severe("Your data may not be saved!");
+                    Logging.severe(e.getMessage());
+                }
+                return jsonPlayerFile;
+            }
+            if (playerFile.exists()) {
+                return playerFile;
+            }
+        }
+        if (!playerFile.exists()) {
+            try {
+                playerFile.createNewFile();
+            } catch (IOException e) {
+                Logging.severe("Could not create necessary player file: " + playerUUID + YML);
+                Logging.severe("Your data may not be saved!");
+                Logging.severe(e.getMessage());
+            }
+        }
+        return playerFile;
+    }
+
+    @Deprecated
     private String getPlayerName(File playerFile) {
         if (playerFile.getName().endsWith(YML)) {
             String fileName = playerFile.getName();
             return fileName.substring(0, fileName.length() - YML.length());
+        } else {
+            return null;
+        }
+    }
+
+    private UUID getPlayerUUID(File playerFile) {
+        if (playerFile.getName().endsWith(YML)) {
+            String fileName = playerFile.getName();
+            return UUID.fromString(fileName.substring(0, fileName.length() - YML.length()));
         } else {
             return null;
         }
@@ -262,6 +341,7 @@ public class FlatFilePlayerData implements PlayerData {
     /**
      * {@inheritDoc}
      */
+    @Deprecated
     @Override
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
         fileWriteThread.waitUntilEmpty();
@@ -283,6 +363,27 @@ public class FlatFilePlayerData implements PlayerData {
         return new DefaultPlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
     }
 
+    @Override
+    public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
+        fileWriteThread.waitUntilEmpty();
+        File playerFile = this.getPlayerFile(containerType, dataName, playerUUID);
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        if (convertConfig(playerData)) {
+            try {
+                playerData.save(playerFile);
+            } catch (IOException e) {
+                Logging.severe("Could not save data for player: " + playerUUID
+                        + " for " + containerType.toString() + ": " + dataName + " after conversion.");
+                Logging.severe(e.getMessage());
+            }
+        }
+        ConfigurationSection section = playerData.getConfigurationSection(profileType.getName());
+        if (section == null) {
+            section = playerData.createSection(profileType.getName());
+        }
+        return new DefaultPlayerProfile(containerType, dataName, profileType, playerUUID, convertSection(section));
+    }
+
     private boolean convertConfig(FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection("playerData");
         if (section != null) {
@@ -299,6 +400,7 @@ public class FlatFilePlayerData implements PlayerData {
     /**
      * {@inheritDoc}
      */
+    @Deprecated
     @Override
     public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
         if (profileType == null) {
@@ -320,6 +422,11 @@ public class FlatFilePlayerData implements PlayerData {
         }
     }
 
+    @Override
+    public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
+        return false;
+    }
+
     private Map<String, Object> convertSection(ConfigurationSection section) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         for (String key : section.getKeys(false)) {
@@ -336,6 +443,7 @@ public class FlatFilePlayerData implements PlayerData {
     /**
      * {@inheritDoc}
      */
+    @Deprecated
     @Override
     public GlobalProfile getGlobalProfile(String playerName) {
         // TODO use data caching to avoid excess object creation.
@@ -346,6 +454,11 @@ public class FlatFilePlayerData implements PlayerData {
             section = playerData.createSection("playerData");
         }
         return new DefaultGlobalProfile(playerName, convertSection(section));
+    }
+
+    @Override
+    public GlobalProfile getGlobalProfile(UUID playerUUID) {
+        return null;
     }
 
     /**
@@ -366,6 +479,7 @@ public class FlatFilePlayerData implements PlayerData {
         return true;
     }
 
+    @Deprecated
     @Override
     public void updateWorld(String playerName, String worldName) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
@@ -374,10 +488,21 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     @Override
+    public void updateWorld(UUID playerUUID, String worldName) {
+
+    }
+
+    @Deprecated
+    @Override
     public void setLoadOnLogin(final String playerName, final boolean loadOnLogin) {
         final GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setLoadOnLogin(loadOnLogin);
         updateGlobalProfile(globalProfile);
+    }
+
+    @Override
+    public void setLoadOnLogin(UUID playerUUID, boolean loadOnLogin) {
+
     }
 
     /*

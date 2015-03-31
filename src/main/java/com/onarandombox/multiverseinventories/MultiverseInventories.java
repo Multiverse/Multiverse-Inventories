@@ -79,7 +79,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             if (getMVIConfig().usingLoggingSaveLoad()) {
                 ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
                         getWorldManager().getWorldProfile(world).getPlayerData(player)));
-                getData().setLoadOnLogin(player.getName(), true);
+                getData().setLoadOnLogin(player.getUniqueId(), true);
             }
         }
         Logging.shutdown();

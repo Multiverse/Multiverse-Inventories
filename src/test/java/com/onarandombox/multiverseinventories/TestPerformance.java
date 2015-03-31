@@ -8,6 +8,7 @@ import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -89,7 +90,7 @@ public class TestPerformance {
 
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         for (int i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
-            ItemStack item = new ItemStack(98, 64, (short) 2);
+            ItemStack item = new ItemStack(Material.SMOOTH_BRICK, 64, (short) 2);
             Enchantment mockEnchantment = PowerMockito.mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Protection");
             item.addUnsafeEnchantment(mockEnchantment, 3);
