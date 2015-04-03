@@ -1,6 +1,6 @@
 name: Multiverse-Inventories
 main: com.onarandombox.multiverseinventories.MultiverseInventories
-version: maven-version-number
+version: 2.6
 author: dumptruckman
 depend: ['Multiverse-Core']
 softdepend: [MultiInv, WorldInventories, Multiverse-Adventure]
