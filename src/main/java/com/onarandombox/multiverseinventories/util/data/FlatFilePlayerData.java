@@ -12,6 +12,7 @@ import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
 import com.onarandombox.multiverseinventories.util.EncodedJsonConfiguration;
 import com.onarandombox.multiverseinventories.util.JsonConfiguration;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -144,27 +145,25 @@ public class FlatFilePlayerData implements PlayerData {
      * @return The yaml data file for a player.
      */
     File getPlayerFile(ContainerType type, String dataName, UUID playerUUID) {
-        File jsonPlayerFile = new File(this.getFolder(type, dataName), playerUUID + JSON);
-        File playerFile = new File(this.getFolder(type, dataName), playerUUID + YML);
-        if (jsonPlayerFile.exists()) {
-            return jsonPlayerFile;
-        } else {
-            if (playerFile.exists()) {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException ignore) { }
-                return playerFile;
-            } else {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException e) {
-                    Logging.severe("Could not create necessary player file: " + playerUUID + JSON);
-                    Logging.severe("Your data may not be saved!");
-                    Logging.severe(e.getMessage());
-                }
+        File playerFile;
+        OfflinePlayer player = inventories.getServer().getOfflinePlayer(playerUUID);
+        playerFile = new File(this.getFolder(type, dataName), playerUUID + JSON);
+        File ymlPlayerFile = new File(this.getFolder(type, dataName), player.getName() + YML);
+        File oldPlayerFile = new File(this.getFolder(type, dataName), player.getName() + JSON);
+        if(!playerFile.exists()){
+            try {
+                playerFile.createNewFile();
+            } catch (IOException e) {
+                Logging.severe("Could not create necessary player file: " + playerUUID + JSON);
+                Logging.severe("Your data may not be saved!");
+                Logging.severe(e.getMessage());
             }
+        }else if (oldPlayerFile.exists()) {
+            playerFile =  ymlPlayerFile;
+        } else if (ymlPlayerFile.exists()){
+            playerFile = oldPlayerFile;
         }
-        return jsonPlayerFile;
+        return playerFile;
     }
     /**
      * Retrieves the yaml data file for a player for their global data.
@@ -210,33 +209,29 @@ public class FlatFilePlayerData implements PlayerData {
      * @return The yaml data file for a player.
      */
     File getGlobalFile(UUID playerUUID, boolean forceJson) {
+        OfflinePlayer player = inventories.getServer().getOfflinePlayer(playerUUID);
         File jsonPlayerFile = new File(playerFolder, playerUUID + JSON);
-        File playerFile = new File(playerFolder, playerUUID + YML);
+        File playerFile = new File(playerFolder, player.getName() + YML);
+        File oldPlayerFile = new File(playerFolder, player.getName() + JSON);
         if (!jsonPlayerFile.exists()) {
-            if (forceJson) {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException e) {
-                    Logging.severe("Could not create necessary player file: " + playerUUID + YML);
-                    Logging.severe("Your data may not be saved!");
-                    Logging.severe(e.getMessage());
-                }
-                return jsonPlayerFile;
-            }
-            if (playerFile.exists()) {
-                return playerFile;
-            }
-        }
-        if (!playerFile.exists()) {
             try {
-                playerFile.createNewFile();
+                jsonPlayerFile.createNewFile();
             } catch (IOException e) {
                 Logging.severe("Could not create necessary player file: " + playerUUID + YML);
                 Logging.severe("Your data may not be saved!");
                 Logging.severe(e.getMessage());
             }
+            if (forceJson) {
+                return jsonPlayerFile;
+            }
+            if (oldPlayerFile.exists()) {
+                return oldPlayerFile;
+            }
+            if (playerFile.exists()) {
+                return playerFile;
+            }
         }
-        return playerFile;
+        return jsonPlayerFile;
     }
 
     @Deprecated
@@ -315,7 +310,7 @@ public class FlatFilePlayerData implements PlayerData {
     private void processProfileWrite(PlayerProfile playerProfile) {
         try {
             File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
-                    playerProfile.getContainerName(), playerProfile.getPlayer().getName());
+                    playerProfile.getContainerName(), playerProfile.getPlayer().getUniqueId());
             FileConfiguration playerData = this.getConfigHandle(playerFile);
             playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
             try {
@@ -424,7 +419,23 @@ public class FlatFilePlayerData implements PlayerData {
 
     @Override
     public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        return false;
+        if (profileType == null) {
+            File playerFile = this.getPlayerFile(containerType, dataName, playerUUID);
+            return playerFile.delete();
+        } else {
+            File playerFile = this.getPlayerFile(containerType, dataName, playerUUID);
+            FileConfiguration playerData = this.getConfigHandle(playerFile);
+            playerData.set(profileType.getName(), null);
+            try {
+                playerData.save(playerFile);
+            } catch (IOException e) {
+                Logging.severe("Could not delete data for player: " + playerUUID
+                        + " for " + containerType.toString() + ": " + dataName);
+                Logging.severe(e.getMessage());
+                return false;
+            }
+            return true;
+        }
     }
 
     private Map<String, Object> convertSection(ConfigurationSection section) {
@@ -458,7 +469,14 @@ public class FlatFilePlayerData implements PlayerData {
 
     @Override
     public GlobalProfile getGlobalProfile(UUID playerUUID) {
-        return null;
+        // TODO use data caching to avoid excess object creation.
+        File playerFile = this.getGlobalFile(playerUUID, false);
+        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        ConfigurationSection section = playerData.getConfigurationSection("playerData");
+        if (section == null) {
+            section = playerData.createSection("playerData");
+        }
+        return new DefaultGlobalProfile(playerUUID, convertSection(section));
     }
 
     /**
@@ -466,7 +484,7 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public boolean updateGlobalProfile(GlobalProfile globalProfile) {
-        File playerFile = this.getGlobalFile(globalProfile.getName(), true);
+        File playerFile = this.getGlobalFile(globalProfile.getUUID(), true);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", globalProfile.serialize());
         try {
@@ -489,7 +507,9 @@ public class FlatFilePlayerData implements PlayerData {
 
     @Override
     public void updateWorld(UUID playerUUID, String worldName) {
-
+        GlobalProfile globalProfile = getGlobalProfile(playerUUID);
+        globalProfile.setWorld(worldName);
+        updateGlobalProfile(globalProfile);
     }
 
     @Deprecated
@@ -502,7 +522,9 @@ public class FlatFilePlayerData implements PlayerData {
 
     @Override
     public void setLoadOnLogin(UUID playerUUID, boolean loadOnLogin) {
-
+        final GlobalProfile globalProfile = getGlobalProfile(playerUUID);
+        globalProfile.setLoadOnLogin(loadOnLogin);
+        updateGlobalProfile(globalProfile);
     }
 
     /*
