@@ -73,7 +73,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
      */
     @Override
     public void onDisable() {
-        for (Player player : getServer().getOnlinePlayers()) {
+        for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
             //getData().updateWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
