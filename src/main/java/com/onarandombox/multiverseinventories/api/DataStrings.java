@@ -547,13 +547,13 @@ public class DataStrings {
         for (Object obj : jsonPotions) {
             if (obj instanceof JSONObject) {
                 JSONObject jsonPotion = (JSONObject) obj;
-                int type = -1;
+                String type = "";
                 int duration = -1;
                 int amplifier = -1;
                 if (jsonPotion.containsKey(POTION_TYPE)) {
                     Object value = jsonPotion.get(POTION_TYPE);
-                    if (value instanceof Number) {
-                        type = ((Number) value).intValue();
+                    if (value instanceof String) {
+                        type = (String)value;
                     }
                 }
                 if (jsonPotion.containsKey(POTION_AMPLIFIER)) {
@@ -568,10 +568,10 @@ public class DataStrings {
                         duration = ((Number) value).intValue();
                     }
                 }
-                if (type == -1 || duration == -1 || amplifier == -1) {
+                if (type == "" || duration == -1 || amplifier == -1) {
                     Logging.fine("Could not parse potion effect string: " + obj);
                 } else {
-                    PotionEffectType pType = PotionEffectType.getById(type);
+                    PotionEffectType pType = PotionEffectType.getByName(type);
                     if (pType == null) {
                         Logging.warning("Could not parse potion effect type: " + type);
                         continue;
@@ -594,7 +594,7 @@ public class DataStrings {
     public static String valueOf(ItemStack[] items) {
         JSONObject jsonItems = new JSONObject();
         for (int i = 0; i < items.length; i++) {
-            if (items[i] != null && items[i].getTypeId() != 0) {
+            if (items[i] != null && items[i].getType() != Material.AIR) {
                 jsonItems.put(Integer.valueOf(i).toString(), new JSONItemWrapper(items[i]).asJSONObject());
             }
         }
@@ -610,7 +610,7 @@ public class DataStrings {
     public static JSONObject asJsonObject(ItemStack[] items) {
         JSONObject jsonItems = new JSONObject();
         for (int i = 0; i < items.length; i++) {
-            if (items[i] != null && items[i].getTypeId() != 0) {
+            if (items[i] != null && items[i].getType() != Material.AIR) {
                 jsonItems.put(Integer.valueOf(i).toString(), items[i]);
                 //jsonItems.put(Integer.valueOf(i).toString(), new JSONItemWrapper(items[i]).asJSONObject());
             }
@@ -621,7 +621,7 @@ public class DataStrings {
     private static String legacyValueOf(ItemStack[] items) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < items.length; i++) {
-            if (items[i] != null && items[i].getTypeId() != 0) {
+            if (items[i] != null && items[i].getType() != Material.AIR) {
                 if (!builder.toString().isEmpty()) {
                     builder.append(DataStrings.ITEM_DELIMITER);
                 }
@@ -678,7 +678,7 @@ public class DataStrings {
         JSONArray jsonPotions = new JSONArray();
         for (PotionEffect potion : potionEffects) {
             JSONObject jsonPotion = new JSONObject();
-            jsonPotion.put(DataStrings.POTION_TYPE, potion.getType().getId());
+            jsonPotion.put(DataStrings.POTION_TYPE, potion.getType().getName());
             jsonPotion.put(DataStrings.POTION_DURATION, potion.getDuration());
             jsonPotion.put(DataStrings.POTION_AMPLIFIER, potion.getAmplifier());
             jsonPotions.add(jsonPotion);
@@ -838,7 +838,7 @@ public class DataStrings {
         public String asString() {
             StringBuilder result = new StringBuilder();
 
-            result.append(DataStrings.createEntry(DataStrings.ITEM_TYPE_ID, this.getItem().getTypeId()));
+            result.append(DataStrings.createEntry(DataStrings.ITEM_TYPE_ID, this.getItem().getType()));
 
             if (this.getItem().getDurability() != 0) {
                 result.append(DataStrings.GENERAL_DELIMITER);
@@ -949,13 +949,13 @@ public class DataStrings {
                     Logging.warning("Could not parse item: " + obj);
                 }
             }
-            int type = 0;
+            String type = "";
             short damage = 0;
             int amount = 1;
             if (itemData != null) {
                 Object obj = itemData.get(ITEM_TYPE_ID);
                 if (obj != null && obj instanceof Number) {
-                    type = ((Number) obj).intValue();
+                    type = (String) obj;
                 }
                 obj = itemData.get(ITEM_AMOUNT);
                 if (obj != null && obj instanceof Number) {
@@ -966,7 +966,7 @@ public class DataStrings {
                     damage = ((Number) obj).shortValue();
                 }
             }
-            this.item = new ItemStack(type, amount, damage);
+            this.item = new ItemStack(Material.valueOf(type), amount, damage);
 
             if (itemData != null && itemData.containsKey(ITEM_ENCHANTS)) {
                 Object obj = itemData.get(ITEM_ENCHANTS);

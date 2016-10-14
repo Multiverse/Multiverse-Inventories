@@ -17,8 +17,12 @@
             <url>http://repo.onarandombox.com/content/groups/public</url>
         </repository>
         <repository>
-            <id>Official Bukkit</id>
-            <url>http://repo.bukkit.org/content/repositories/public</url>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
         </repository>
     </repositories>
 
@@ -195,12 +199,27 @@ and adjust the build number accordingly -->
         </plugins>
     </build>
     <dependencies>
+        <!--Spigot-API-->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
+        </dependency>
+
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <version>1.8-R0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>D:/Development/spigot/craftbukkit-1.8.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.8-R0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>D:/Development/spigot/spigot-1.8.jar</systemPath>
         </dependency>
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
@@ -209,6 +228,20 @@ and adjust the build number accordingly -->
             <version>2.5</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.milkbowl.vault</groupId>
+                    <artifactId>Vault</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
         <!-- Start of Logging Dependency -->

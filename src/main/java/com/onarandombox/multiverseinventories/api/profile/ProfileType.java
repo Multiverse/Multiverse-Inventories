@@ -6,6 +6,7 @@ package com.onarandombox.multiverseinventories.api.profile;
 public interface ProfileType {
 
     /**
+     *
      * @return The name of the profile.  The default profile type will return a blank string.
      */
     String getName();
