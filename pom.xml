@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.onarandombox.multiverseinventories</groupId>
     <artifactId>Multiverse-Inventories</artifactId>
-    <version>2.5</version>
+    <version>2.5.1</version>
     <name>Multiverse-Inventories</name>
     <description>Multiverse Multiworld Inventories Module</description>
     <properties>
@@ -17,8 +17,8 @@
             <url>http://repo.onarandombox.com/content/groups/public</url>
         </repository>
         <repository>
-            <id>Official Bukkit</id>
-            <url>http://repo.bukkit.org/content/repositories/public</url>
+            <id>spigot-repo</id>
+            url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -196,11 +196,10 @@ and adjust the build number accordingly -->
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.2</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.9-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
