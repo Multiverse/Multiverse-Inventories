@@ -213,6 +213,9 @@ public class InventoriesListener implements Listener {
                 playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
             }
         }
+
+        // Possibly prevents item duping exploit
+        player.closeInventory();
     }
 
     /**
