@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.InventoryType;
@@ -294,5 +295,52 @@ public class MockPlayerInventory implements PlayerInventory {
         return "{\"inventoryContents\":" + makeMap(getContents())
                 + ",\"armorContents\":" + makeMap(getArmorContents())
                 + "}";
+    }
+
+    // TODO update these once rest of MV-Inv is compatible.
+
+    @Override
+    public ItemStack[] getExtraContents() {
+        return new ItemStack[0];
+    }
+
+    @Override
+    public void setExtraContents(ItemStack[] itemStacks) {
+
+    }
+
+    @Override
+    public ItemStack getItemInMainHand() {
+        return null;
+    }
+
+    @Override
+    public void setItemInMainHand(ItemStack itemStack) {
+
+    }
+
+    @Override
+    public ItemStack getItemInOffHand() {
+        return null;
+    }
+
+    @Override
+    public void setItemInOffHand(ItemStack itemStack) {
+
+    }
+
+    @Override
+    public ItemStack[] getStorageContents() {
+        return new ItemStack[0];
+    }
+
+    @Override
+    public void setStorageContents(ItemStack[] itemStacks) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public Location getLocation() {
+        return null;
     }
 }

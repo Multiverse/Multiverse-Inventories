@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -931,21 +933,6 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public Egg throwEgg() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Snowball throwSnowball() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Arrow shootArrow() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> aClass) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1280,5 +1267,310 @@ public class MockPlayer implements Player {
     @Override
     public boolean getCanPickupItems() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Spigot spigot() {
+        return null;
+    }
+
+    @Override
+    public void playSound(Location location, Sound sound, SoundCategory soundCategory, float v, float v1) {
+
+    }
+
+    @Override
+    public void playSound(Location location, String s, SoundCategory soundCategory, float v, float v1) {
+
+    }
+
+    @Override
+    public void stopSound(Sound sound) {
+
+    }
+
+    @Override
+    public void stopSound(String s) {
+
+    }
+
+    @Override
+    public void stopSound(Sound sound, SoundCategory soundCategory) {
+
+    }
+
+    @Override
+    public void stopSound(String s, SoundCategory soundCategory) {
+
+    }
+
+    @Override
+    public void setResourcePack(String s, byte[] bytes) {
+
+    }
+
+    @Override
+    public Entity getSpectatorTarget() {
+        return null;
+    }
+
+    @Override
+    public void setSpectatorTarget(Entity entity) {
+
+    }
+
+    @Override
+    public void sendTitle(String s, String s1) {
+
+    }
+
+    @Override
+    public void sendTitle(String s, String s1, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void resetTitle() {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, Location location, int i) {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, double v, double v1, double v2, int i) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, Location location, int i, T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, T t) {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2) {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, T t) {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3) {
+
+    }
+
+    @Override
+    public void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, Location location, int i, double v, double v1, double v2, double v3, T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, T t) {
+
+    }
+
+    @Override
+    public MainHand getMainHand() {
+        return null;
+    }
+
+    @Override
+    public InventoryView openMerchant(Villager villager, boolean b) {
+        return null;
+    }
+
+    @Override
+    public InventoryView openMerchant(Merchant merchant, boolean b) {
+        return null;
+    }
+
+    @Override
+    public boolean hasCooldown(Material material) {
+        return false;
+    }
+
+    @Override
+    public int getCooldown(Material material) {
+        return 0;
+    }
+
+    @Override
+    public void setCooldown(Material material, int i) {
+
+    }
+
+    @Override
+    public boolean isHandRaised() {
+        return false;
+    }
+
+    @Override
+    public List<Block> getLineOfSight(Set<Material> set, int i) {
+        return null;
+    }
+
+    @Override
+    public Block getTargetBlock(Set<Material> set, int i) {
+        return null;
+    }
+
+    @Override
+    public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i) {
+        return null;
+    }
+
+    @Override
+    public PotionEffect getPotionEffect(PotionEffectType potionEffectType) {
+        return null;
+    }
+
+    @Override
+    public boolean isGliding() {
+        return false;
+    }
+
+    @Override
+    public void setGliding(boolean b) {
+
+    }
+
+    @Override
+    public void setAI(boolean b) {
+
+    }
+
+    @Override
+    public boolean hasAI() {
+        return false;
+    }
+
+    @Override
+    public void setCollidable(boolean b) {
+
+    }
+
+    @Override
+    public boolean isCollidable() {
+        return false;
+    }
+
+    @Override
+    public AttributeInstance getAttribute(Attribute attribute) {
+        return null;
+    }
+
+    @Override
+    public double getHeight() {
+        return 0;
+    }
+
+    @Override
+    public double getWidth() {
+        return 0;
+    }
+
+    @Override
+    public List<Entity> getPassengers() {
+        return null;
+    }
+
+    @Override
+    public boolean addPassenger(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public boolean removePassenger(Entity entity) {
+        return false;
+    }
+
+    @Override
+    public void setGlowing(boolean b) {
+
+    }
+
+    @Override
+    public boolean isGlowing() {
+        return false;
+    }
+
+    @Override
+    public void setInvulnerable(boolean b) {
+
+    }
+
+    @Override
+    public boolean isInvulnerable() {
+        return false;
+    }
+
+    @Override
+    public boolean isSilent() {
+        return false;
+    }
+
+    @Override
+    public void setSilent(boolean b) {
+
+    }
+
+    @Override
+    public boolean hasGravity() {
+        return false;
+    }
+
+    @Override
+    public void setGravity(boolean b) {
+
+    }
+
+    @Override
+    public int getPortalCooldown() {
+        return 0;
+    }
+
+    @Override
+    public void setPortalCooldown(int i) {
+
+    }
+
+    @Override
+    public Set<String> getScoreboardTags() {
+        return null;
+    }
+
+    @Override
+    public boolean addScoreboardTag(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean removeScoreboardTag(String s) {
+        return false;
     }
 }
