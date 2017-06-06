@@ -51,7 +51,7 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements Inventories {
 
-    private final int requiresProtocol = 12;
+    private final int requiresProtocol = 20;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
     private final AdventureListener adventureListener = new AdventureListener(this);
 
@@ -105,7 +105,7 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
 
         if (this.getCore().getProtocolVersion() < this.getRequiredProtocol()) {
             Logging.severe("Your Multiverse-Core is OUT OF DATE");
-            Logging.severe("This version of Profiles requires Protocol Level: " + this.getRequiredProtocol());
+            Logging.severe("This version of Multiverse-Inventories requires Protocol Level: " + this.getRequiredProtocol());
             Logging.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
             Logging.severe("Grab an updated copy at: ");
             Logging.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");

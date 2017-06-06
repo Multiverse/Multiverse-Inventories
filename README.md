@@ -1,3 +1,5 @@
+##Multiverse-Inventories is no longer supported. We highly recommend switching to [Per World Inventory](https://www.spigotmc.org/resources/per-world-inventory.4482/) which supports importing your inventories from Multiverse-Inventories.
+
 Copyright (c) 2011, The Multiverse Team All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

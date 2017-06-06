@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories.api.share;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.fernferret.allpay.multiverse.commons.GenericBank;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
@@ -530,18 +529,17 @@ public final class Sharables implements Shares {
             new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(ECONOMY, inventories.getCore().getBank().getBalance(player, -1));
+                    profile.set(ECONOMY, inventories.getCore().getEconomist().getBalance(player));
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Double money = profile.get(ECONOMY);
-                    GenericBank bank = inventories.getCore().getBank();
                     if (money == null) {
-                        bank.setBalance(player, -1, 0);
+                        inventories.getCore().getEconomist().setBalance(player, 0);
                         return false;
                     }
-                    bank.setBalance(player, -1, money);
+                    inventories.getCore().getEconomist().setBalance(player, money);
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(false, "balance")).optional()
