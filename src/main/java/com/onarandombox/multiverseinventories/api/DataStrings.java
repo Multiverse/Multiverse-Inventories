@@ -412,7 +412,7 @@ public class DataStrings {
                     Logging.warning("Invalid key: " + entry.getKey() + " while parsing inventory");
                     continue;
                 }
-                if (index > inventorySize) {
+                if (index >= inventorySize) {
                     Logging.warning("Invalid key: " + entry.getKey() + " while parsing inventory");
                     continue;
                 }
