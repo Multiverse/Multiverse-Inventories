@@ -170,6 +170,7 @@ and adjust the build number accordingly -->
                                 <includes>
                                     <include>com.feildmaster.lib:EnhancedConfiguration</include>
                                     <include>com.dumptruckman.minecraft:Logging</include>
+                                    <include>com.dumptruckman.minecraft:JsonConfiguration</include>
                                     <include>net.minidev:json-smart</include>
                                 </includes>
                             </artifactSet>
@@ -182,6 +183,10 @@ and adjust the build number accordingly -->
                                     <pattern>com.dumptruckman.minecraft.util.Logging</pattern>
                                     <shadedPattern>com.onarandombox.multiverseinventories.util.InvLogging
                                     </shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.dumptruckman.bukkit.configuration</pattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.util.configuration</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.dumptruckman.minecraft.util.DebugLog</pattern>
@@ -287,15 +292,13 @@ and adjust the build number accordingly -->
             <scope>provided</scope>
         </dependency>
         <!-- End of WorldInventories Dependency -->
-        <!-- Start of jsonsmart Dependency -->
         <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
-            <version>1.1.1</version>
+            <groupId>com.dumptruckman.minecraft</groupId>
+            <artifactId>JsonConfiguration</artifactId>
+            <version>1.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!-- End of jsonsmart Dependency -->
         <!-- Start of Test Dependencies -->
         <dependency>
             <groupId>junit</groupId>

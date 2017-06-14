@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.util.data;
 
+import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.ProfileTypes;
@@ -10,8 +11,6 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
-import com.onarandombox.multiverseinventories.util.EncodedJsonConfiguration;
-import com.onarandombox.multiverseinventories.util.JsonConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -74,9 +73,10 @@ public class FlatFilePlayerData implements PlayerData {
             }
         } else {
             try {
-                return new EncodedJsonConfiguration(file, "UTF-8");
+                return JsonConfiguration.loadConfiguration(file, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                return new JsonConfiguration(file);
+
+                return JsonConfiguration.loadConfiguration(file);
             }
         }
     }
