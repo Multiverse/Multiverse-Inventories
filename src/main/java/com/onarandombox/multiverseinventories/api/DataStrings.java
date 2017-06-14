@@ -607,9 +607,9 @@ public class DataStrings {
      * @param items The items you wish to "string-i-tize".
      * @return A string representation of an inventory.
      */
-    public static JSONObject asJsonObject(ItemStack[] items) {
+    public static JSONObject asJsonObject(ItemStack[] items, int inventorySize) {
         JSONObject jsonItems = new JSONObject();
-        for (int i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length && i < inventorySize; i++) {
             if (items[i] != null && items[i].getTypeId() != 0) {
                 jsonItems.put(Integer.valueOf(i).toString(), items[i]);
                 //jsonItems.put(Integer.valueOf(i).toString(), new JSONItemWrapper(items[i]).asJSONObject());
