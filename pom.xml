@@ -60,10 +60,10 @@ and adjust the build number accordingly -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.6.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <!-- Jar Plugin -->
@@ -204,6 +204,13 @@ and adjust the build number accordingly -->
         </plugins>
     </build>
     <dependencies>
+        <!-- Start of spigotmc Dependency -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.12-R0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- End of spigotmc Dependency -->
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
@@ -220,6 +227,14 @@ and adjust the build number accordingly -->
                     <groupId>com.dumptruckman.minecraft</groupId>
                     <artifactId>buscript</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- End of Multiverse Core Dependency -->
@@ -234,6 +249,10 @@ and adjust the build number accordingly -->
                 <exclusion>
                     <groupId>org.bukkit</groupId>
                     <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -265,6 +284,10 @@ and adjust the build number accordingly -->
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- End of Multiverse Adventure Dependency -->
@@ -279,6 +302,10 @@ and adjust the build number accordingly -->
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
