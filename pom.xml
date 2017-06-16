@@ -248,10 +248,6 @@ and adjust the build number accordingly -->
             <exclusions>
                 <exclusion>
                     <groupId>org.bukkit</groupId>
-                    <artifactId>craftbukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
                     <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
@@ -284,10 +280,6 @@ and adjust the build number accordingly -->
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>spigot-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
         <!-- End of Multiverse Adventure Dependency -->
@@ -302,10 +294,6 @@ and adjust the build number accordingly -->
                 <exclusion>
                     <groupId>*</groupId>
                     <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
