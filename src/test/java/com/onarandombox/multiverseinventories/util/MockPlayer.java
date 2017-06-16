@@ -2,9 +2,12 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.PistonMoveReaction;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.*;
@@ -201,16 +204,6 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public int _INVALID_getLastDamage() {
-        return 0;
-    }
-
-    @Override
-    public void _INVALID_setLastDamage(int i) {
-
-    }
-
-    @Override
     public void setCustomName(String s) {
 
     }
@@ -243,36 +236,6 @@ public class MockPlayer implements Player {
     @Override
     public boolean setLeashHolder(Entity entity) {
         return false;
-    }
-
-    @Override
-    public void _INVALID_damage(int i) {
-
-    }
-
-    @Override
-    public void _INVALID_damage(int i, Entity entity) {
-
-    }
-
-    @Override
-    public int _INVALID_getHealth() {
-        return 0;
-    }
-
-    @Override
-    public void _INVALID_setHealth(int i) {
-
-    }
-
-    @Override
-    public int _INVALID_getMaxHealth() {
-        return 0;
-    }
-
-    @Override
-    public void _INVALID_setMaxHealth(int i) {
-
     }
 
     @Override
@@ -901,7 +864,6 @@ public class MockPlayer implements Player {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
     @Override
     public double getEyeHeight() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
@@ -914,11 +876,6 @@ public class MockPlayer implements Player {
 
     @Override
     public Location getEyeLocation() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public List<Block> getLineOfSight(HashSet<Byte> bytes, int i) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -1116,11 +1073,6 @@ public class MockPlayer implements Player {
     @Override
     public boolean isBanned() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setBanned(boolean b) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -1572,5 +1524,42 @@ public class MockPlayer implements Player {
     @Override
     public boolean removeScoreboardTag(String s) {
         return false;
+    }
+
+    @Override
+    public AdvancementProgress getAdvancementProgress(Advancement a)
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public String getLocale()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Entity getShoulderEntityLeft(){
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setShoulderEntityLeft(Entity entity){
+        
+    }
+
+    @Override
+    public Entity getShoulderEntityRight(){
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setShoulderEntityRight(Entity entity){
+	
+    }
+
+    @Override
+    public PistonMoveReaction getPistonMoveReaction(){
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
