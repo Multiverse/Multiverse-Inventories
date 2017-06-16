@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -126,8 +127,8 @@ class DefaultMessageProvider implements LazyLocaleMessageProvider {
 
         messages.put(l, new HashMap<Message, List<String>>(Message.values().length));
 
-        FileConfiguration resconfig = (resstream == null) ? null : YamlConfiguration.loadConfiguration(resstream);
-        FileConfiguration fileconfig = (filestream == null) ? null : YamlConfiguration.loadConfiguration(filestream);
+        FileConfiguration resconfig = (resstream == null) ? null : YamlConfiguration.loadConfiguration(new InputStreamReader(resstream));
+        FileConfiguration fileconfig = (filestream == null) ? null : YamlConfiguration.loadConfiguration(new InputStreamReader(filestream));
         for (Message m : Message.values()) {
             List<String> values = m.getDefault();
 
