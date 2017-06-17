@@ -148,9 +148,9 @@ public class TestInstanceCreator {
                     return players.values().toArray(new Player[players.values().size()]);
                 }
             });
-            when(mockServer.getOnlinePlayers()).thenAnswer(new Answer<Player[]>() {
-                public Player[] answer(InvocationOnMock invocation) throws Throwable {
-                    return players.values().toArray(new Player[players.values().size()]);
+            when(mockServer.getOnlinePlayers()).thenAnswer(new Answer<Collection<Player>>() {
+                public Collection<Player> answer(InvocationOnMock invocation) throws Throwable {
+                    return players.values();
                 }
             });
 

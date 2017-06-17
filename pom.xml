@@ -204,6 +204,12 @@ and adjust the build number accordingly -->
         </plugins>
     </build>
     <dependencies>
+        <!-- Temporary spigot-api dependency until caught up with core. -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.12-R0.1-SNAPSHOT</version>
+        </dependency>
         <!-- Start of Multiverse Core Dependency -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
