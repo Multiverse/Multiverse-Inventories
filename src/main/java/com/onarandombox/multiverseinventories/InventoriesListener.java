@@ -4,7 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
-import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
+import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
@@ -102,7 +102,7 @@ public class InventoriesListener implements Listener {
     public void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
-        final String world = globalProfile.getWorld();
+        final String world = globalProfile.getLastWorld();
         if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
             ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldManager().getWorldProfile(world).getPlayerData(player)));
@@ -130,13 +130,13 @@ public class InventoriesListener implements Listener {
 
     private void verifyCorrectWorld(Player player, String world) {
         GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
-        if (globalProfile.getWorld() == null) {
+        if (globalProfile.getLastWorld() == null) {
             inventories.getData().updateWorld(player.getName(), world);
         } else {
-            if (!world.equals(globalProfile.getWorld())) {
+            if (!world.equals(globalProfile.getLastWorld())) {
                 Logging.fine("Player did not spawn in the world they were last reported to be in!");
                 new WorldChangeShareHandler(this.inventories, player,
-                        globalProfile.getWorld(), world).handleSharing();
+                        globalProfile.getLastWorld(), world).handleSharing();
                 inventories.getData().updateWorld(player.getName(), world);
             }
         }

@@ -1,5 +1,7 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
+import com.onarandombox.multiverseinventories.profile.GlobalProfile;
+
 /**
  * Interface for interacting with the persisted data of this plugin.
  */

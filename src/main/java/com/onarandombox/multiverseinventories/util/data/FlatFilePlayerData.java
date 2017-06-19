@@ -5,8 +5,9 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
+import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
-import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
+import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
@@ -345,7 +346,19 @@ public class FlatFilePlayerData implements PlayerData {
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return new DefaultGlobalProfile(playerName, convertSection(section));
+        return deserializeGlobalProfile(playerName, convertSection(section));
+    }
+
+    private GlobalProfile deserializeGlobalProfile(String playerName, Map<String, Object> playerData) {
+        GlobalProfile globalProfile = GlobalProfile.createGlobalProfile(playerName);
+        for (String key : playerData.keySet()) {
+            if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_WORLD)) {
+                globalProfile.setLastWorld(playerData.get(key).toString());
+            } else if (key.equalsIgnoreCase(DataStrings.PLAYER_SHOULD_LOAD)) {
+                globalProfile.setLoadOnLogin(Boolean.valueOf(playerData.get(key).toString()));
+            }
+        }
+        return globalProfile;
     }
 
     /**
@@ -353,23 +366,32 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public boolean updateGlobalProfile(GlobalProfile globalProfile) {
-        File playerFile = this.getGlobalFile(globalProfile.getName(), true);
+        File playerFile = this.getGlobalFile(globalProfile.getPlayerName(), true);
         FileConfiguration playerData = this.getConfigHandle(playerFile);
-        playerData.createSection("playerData", globalProfile.serialize());
+        playerData.createSection("playerData", serializeGlobalProfile(globalProfile));
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
-            Logging.severe("Could not save global data for player: " + globalProfile.getName());
+            Logging.severe("Could not save global data for player: " + globalProfile.getPlayerName());
             Logging.severe(e.getMessage());
             return false;
         }
         return true;
     }
 
+    private Map<String, Object> serializeGlobalProfile(GlobalProfile profile) {
+        Map<String, Object> result = new HashMap<String, Object>(2);
+        if (profile.getLastWorld() != null) {
+            result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
+        }
+        result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
+        return result;
+    }
+
     @Override
     public void updateWorld(String playerName, String worldName) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
-        globalProfile.setWorld(worldName);
+        globalProfile.setLastWorld(worldName);
         updateGlobalProfile(globalProfile);
     }
 
