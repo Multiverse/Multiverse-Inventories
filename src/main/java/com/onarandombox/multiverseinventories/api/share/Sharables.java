@@ -48,50 +48,30 @@ public final class Sharables implements Shares {
         }
     }
 
-    static {
-        boolean hasEnderChestMethod = false;
-        try {
-            Player.class.getMethod("getEnderChest");
-            hasEnderChestMethod = true;
-        } catch (NoSuchMethodException ignore) { }
-        if (hasEnderChestMethod) {
-            ENDER_CHEST = new Sharable.Builder<ItemStack[]>("ender_chest",
-                    ItemStack[].class, new SharableHandler<ItemStack[]>() {
-                @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(ENDER_CHEST, player.getEnderChest().getContents());
-                }
-
-                @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    ItemStack[] value = profile.get(ENDER_CHEST);
-                    if (value == null) {
-                        player.getEnderChest().setContents(MinecraftTools.fillWithAir(
-                                new ItemStack[PlayerStats.ENDER_CHEST_SIZE]));
-                        return false;
-                    }
-                    player.getEnderChest().setContents(value);
-                    return true;
-                }
-            }).nmsNBTTag(DataStrings.NMS_NBT_ENDER_CHEST)
-            .serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
-                    new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
-        } else {
-            // Maintain backwards compatability.
-            ENDER_CHEST = new Sharable.Builder<ItemStack[]>("ender_chest",
-                    ItemStack[].class, new SharableHandler<ItemStack[]>() {
-                @Override
-                public void updateProfile(PlayerProfile profile, Player player) { }
-
-                @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    return true;
-                }
-            }).nmsNBTTag(DataStrings.NMS_NBT_ENDER_CHEST)
-            .serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
-                    new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
+    /**
+     * Sharing Enderchest Inventory.
+     */
+    public static final Sharable<ItemStack[]> ENDER_CHEST = new Sharable.Builder<ItemStack[]>("ender_chest",
+            ItemStack[].class, new SharableHandler<ItemStack[]>() {
+        @Override
+        public void updateProfile(PlayerProfile profile, Player player) {
+            profile.set(ENDER_CHEST, player.getEnderChest().getContents());
         }
-    }
+
+        @Override
+        public boolean updatePlayer(Player player, PlayerProfile profile) {
+            ItemStack[] value = profile.get(ENDER_CHEST);
+            if (value == null) {
+                player.getEnderChest().setContents(MinecraftTools.fillWithAir(
+                        new ItemStack[PlayerStats.ENDER_CHEST_SIZE]));
+                return false;
+            }
+            player.getEnderChest().setContents(value);
+            return true;
+        }
+    }).nmsNBTTag(DataStrings.NMS_NBT_ENDER_CHEST)
+    .serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
+            new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
 
     /**
      * Sharing Inventory.
@@ -146,11 +126,6 @@ public final class Sharables implements Shares {
             }).nmsNBTTag(DataStrings.NMS_NBT_INVENTORY)
             .serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
                     new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
-
-    /**
-     * Sharing Enderchest Inventory.
-     */
-    public static final Sharable<ItemStack[]> ENDER_CHEST;
 
     /**
      * Sharing Health.

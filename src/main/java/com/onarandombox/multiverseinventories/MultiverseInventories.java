@@ -136,19 +136,6 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
             Bukkit.getPluginManager().registerEvents(adventureListener, this);
         }
 
-        try {
-            InventoryType.ENDER_CHEST.getClass();
-            try {
-                Player.class.getMethod("getEnderChest");
-                Logging.fine("Ender chest supported through proper Bukkit and Multiverse-Inventories API!");
-            } catch (NoSuchMethodException ignore) {
-                Bukkit.getPluginManager().registerEvents(new EnderChestListenerEarly1_3_1_RBs(this), this);
-                Logging.fine("Ender chest supported for early releases of Bukkit for MC 1.3.1.");
-            }
-        } catch (NoSuchFieldError ignore) {
-            Logging.fine("No ender chest support for pre MC 1.3!");
-        }
-
         // Register Commands
         this.registerCommands();
 
