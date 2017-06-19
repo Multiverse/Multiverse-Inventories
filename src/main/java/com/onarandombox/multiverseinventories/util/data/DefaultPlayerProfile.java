@@ -95,11 +95,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         if (stats.isEmpty()) {
             return;
         }
-        if (stats.startsWith("{")) {
-            jsonParsePlayerStats(stats);
-        } else {
-            legacyParsePlayerStats(stats);
-        }
+        jsonParsePlayerStats(stats);
     }
 
     protected void parsePlayerStats(final Map stats) {
@@ -110,21 +106,6 @@ class DefaultPlayerProfile implements PlayerProfile {
             } else {
                 Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
-            }
-        }
-    }
-
-    private void legacyParsePlayerStats(String stats) {
-        String[] statsArray = stats.split(DataStrings.GENERAL_DELIMITER);
-        for (String stat : statsArray) {
-            try {
-                String[] statValues = DataStrings.splitEntry(stat);
-                Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
-                this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(statValues[1])));
-            } catch (Exception e) {
-                Logging.warning("Could not parse stat: '" + stat + "' for player '" + getPlayer().getName() + "' for "
-                        + getContainerType() + " '" + getContainerName() + "'");
-                Logging.warning("Exception: " + e.getClass() + " Message: " + e.getMessage());
             }
         }
     }
@@ -145,15 +126,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                     getContainerType() + " '" + getContainerName() + "'");
             return;
         }
-        for (Object key : jsonStats.keySet()) {
-            Sharable sharable = ProfileEntry.lookup(true, key.toString());
-            if (sharable != null) {
-                this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(jsonStats.get(key).toString())));
-            } else {
-                Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
-                        + getContainerType() + " '" + getContainerName() + "'");
-            }
-        }
+        parsePlayerStats(jsonStats);
     }
 
     /**
