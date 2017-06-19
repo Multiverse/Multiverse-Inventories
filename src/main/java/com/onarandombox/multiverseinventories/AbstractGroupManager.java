@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
+import com.onarandombox.multiverseinventories.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
@@ -215,7 +215,7 @@ abstract class AbstractGroupManager implements GroupManager {
                                 || worldGroup.getWorlds().containsAll(checkingGroup.getWorlds())) {
                             continue;
                         }
-                        conflicts.add(new DefaultGroupingConflict(checkingGroup, worldGroup,
+                        conflicts.add(new GroupingConflict(checkingGroup, worldGroup,
                                 Sharables.fromShares(conflictingShares)));
                     }
                 }

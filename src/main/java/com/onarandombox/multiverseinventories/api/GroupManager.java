@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api;
 
-import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
+import com.onarandombox.multiverseinventories.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.command.CommandSender;
