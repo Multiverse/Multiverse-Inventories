@@ -15,11 +15,6 @@ import java.util.Map;
 public interface PlayerProfile extends Cloneable, Iterable<SharableEntry> {
 
     /**
-     * @return A map containing all the player data to be saved to disk.
-     */
-    Map<String, Object> serialize();
-
-    /**
      * @return The container type of profile, a group or world.
      */
     ContainerType getContainerType();

@@ -6,11 +6,14 @@ import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
+import net.minidev.json.JSONObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -18,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -238,7 +242,7 @@ public class FlatFilePlayerData implements PlayerData {
             File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
                     playerProfile.getContainerName(), playerProfile.getPlayer().getName());
             FileConfiguration playerData = this.getConfigHandle(playerFile);
-            playerData.createSection(playerProfile.getProfileType().getName(), playerProfile.serialize());
+            playerData.createSection(playerProfile.getProfileType().getName(), serializePlayerProfile(playerProfile));
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
@@ -249,6 +253,30 @@ public class FlatFilePlayerData implements PlayerData {
         } catch (final Exception e) {
             Logging.getLogger().log(Level.WARNING, "Error while attempting to write profile data.", e);
         }
+    }
+
+    private Map<String, Object> serializePlayerProfile(PlayerProfile playerProfile) {
+        Map<String, Object> playerData = new LinkedHashMap<String, Object>();
+        JSONObject jsonStats = new JSONObject();
+        for (SharableEntry entry : playerProfile) {
+            if (entry.getValue() != null) {
+                if (entry.getSharable().getSerializer() == null) {
+                    continue;
+                }
+                Sharable sharable = entry.getSharable();
+                if (sharable.getProfileEntry().isStat()) {
+                    jsonStats.put(sharable.getProfileEntry().getFileTag(),
+                            sharable.getSerializer().serialize(entry.getValue()));
+                } else {
+                    playerData.put(sharable.getProfileEntry().getFileTag(),
+                            sharable.getSerializer().serialize(entry.getValue()));
+                }
+            }
+        }
+        if (!jsonStats.isEmpty()) {
+            playerData.put(DataStrings.PLAYER_STATS, jsonStats);
+        }
+        return playerData;
     }
 
     /**

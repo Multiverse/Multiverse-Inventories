@@ -42,7 +42,7 @@ class DefaultPlayerProfile implements PlayerProfile {
     private String containerName;
     private ProfileType profileType;
 
-    public DefaultPlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, OfflinePlayer player) {
+    DefaultPlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, OfflinePlayer player) {
         this.containerType = containerType;
         this.profileType = profileType;
         this.containerName = containerName;
@@ -154,34 +154,6 @@ class DefaultPlayerProfile implements PlayerProfile {
                         + getContainerType() + " '" + getContainerName() + "'");
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> playerData = new LinkedHashMap<String, Object>();
-        JSONObject jsonStats = new JSONObject();
-        for (SharableEntry entry : this.data.values()) {
-            if (entry.getValue() != null) {
-                if (entry.getSharable().getSerializer() == null) {
-                    continue;
-                }
-                Sharable sharable = entry.getSharable();
-                if (sharable.getProfileEntry().isStat()) {
-                    jsonStats.put(sharable.getProfileEntry().getFileTag(),
-                            sharable.getSerializer().serialize(entry.getValue()));
-                } else {
-                    playerData.put(sharable.getProfileEntry().getFileTag(),
-                            sharable.getSerializer().serialize(entry.getValue()));
-                }
-            }
-        }
-        if (!jsonStats.isEmpty()) {
-            playerData.put(DataStrings.PLAYER_STATS, jsonStats);
-        }
-        return playerData;
     }
 
     /**
