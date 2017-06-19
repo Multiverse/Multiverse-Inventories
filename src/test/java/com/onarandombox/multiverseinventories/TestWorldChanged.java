@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import com.onarandombox.multiverseinventories.api.profile.ContainerType;
+import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;

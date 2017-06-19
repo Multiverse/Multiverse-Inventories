@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.util.data;
 
-import com.onarandombox.multiverseinventories.api.profile.ContainerType;
+import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 
 import java.io.File;

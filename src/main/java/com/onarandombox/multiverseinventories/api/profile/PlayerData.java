@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
+import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 
 /**

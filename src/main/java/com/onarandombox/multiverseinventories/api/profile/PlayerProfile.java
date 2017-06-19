@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
 import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.profile.ContainerType;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Map;
