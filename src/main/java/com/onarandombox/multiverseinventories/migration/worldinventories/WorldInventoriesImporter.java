@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.migration.worldinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -33,9 +33,9 @@ import java.util.Set;
 public class WorldInventoriesImporter implements DataImporter {
 
     private WorldInventories wiPlugin;
-    private Inventories inventories;
+    private MultiverseInventories inventories;
 
-    public WorldInventoriesImporter(Inventories inventories, WorldInventories wiPlugin) {
+    public WorldInventoriesImporter(MultiverseInventories inventories, WorldInventories wiPlugin) {
         this.inventories = inventories;
         this.wiPlugin = wiPlugin;
     }

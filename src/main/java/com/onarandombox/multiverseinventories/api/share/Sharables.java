@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.api.share;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.DataStrings;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -35,14 +35,14 @@ public final class Sharables implements Shares {
      */
     static final Map<String, Shares> LOOKUP_MAP = new HashMap<String, Shares>();
 
-    private static Inventories inventories = null;
+    private static MultiverseInventories inventories = null;
 
     /**
      * Initialize this class with the instance of Inventories.
      *
      * @param inventories the instance of Inventories.
      */
-    public static void init(Inventories inventories) {
+    public static void init(MultiverseInventories inventories) {
         if (Sharables.inventories == null) {
             Sharables.inventories = inventories;
         }

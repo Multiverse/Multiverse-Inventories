@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
@@ -26,7 +25,7 @@ final class YamlGroupManager extends AbstractGroupManager {
 
     private final CommentedYamlConfiguration groupsConfig;
 
-    YamlGroupManager(final Inventories inventories, final File groupConfigFile, final Configuration config)
+    YamlGroupManager(final MultiverseInventories inventories, final File groupConfigFile, final Configuration config)
             throws IOException {
         super(inventories);
 

@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
@@ -20,10 +19,10 @@ import org.bukkit.entity.Player;
 abstract class ShareHandler {
 
     protected final MVInventoryHandlingEvent event;
-    protected final Inventories inventories;
+    protected final MultiverseInventories inventories;
     protected boolean hasBypass = false;
 
-    public ShareHandler(Inventories inventories, Player player, Cause cause,
+    public ShareHandler(MultiverseInventories inventories, Player player, Cause cause,
                         String fromWorld, String toWorld,
                         GameMode fromGameMode, GameMode toGameMode) {
         this.event = new MVInventoryHandlingEvent(player, cause, fromWorld, toWorld, fromGameMode, toGameMode);
@@ -91,7 +90,7 @@ abstract class ShareHandler {
         Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
     }
 
-    static void updateProfile(final Inventories inventories, final Player player, final PersistingProfile profile) {
+    static void updateProfile(final MultiverseInventories inventories, final Player player, final PersistingProfile profile) {
         int debug = inventories.getMVIConfig().getGlobalDebug();
         StringBuilder persisted = new StringBuilder();
         for (Sharable sharable : profile.getShares()) {
@@ -122,7 +121,7 @@ abstract class ShareHandler {
         inventories.getData().updatePlayerData(profile.getProfile());
     }
 
-    static void updatePlayer(final Inventories inventories, final Player player, final PersistingProfile profile) {
+    static void updatePlayer(final MultiverseInventories inventories, final Player player, final PersistingProfile profile) {
         StringBuilder defaulted = new StringBuilder();
         StringBuilder loaded = new StringBuilder();
         player.closeInventory();

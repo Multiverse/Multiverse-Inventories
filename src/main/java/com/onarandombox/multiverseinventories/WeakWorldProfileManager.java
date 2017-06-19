@@ -1,6 +1,5 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 
@@ -13,13 +12,13 @@ import java.util.WeakHashMap;
 final class WeakWorldProfileManager implements WorldProfileManager {
 
     private Map<String, WorldProfile> worldProfiles = new WeakHashMap<String, WorldProfile>();
-    private Inventories inventories;
+    private MultiverseInventories inventories;
 
-    public WeakWorldProfileManager(Inventories inventories) {
+    public WeakWorldProfileManager(MultiverseInventories inventories) {
         this.inventories = inventories;
     }
 
-    private Inventories getInventories() {
+    private MultiverseInventories getInventories() {
         return this.inventories;
     }
 

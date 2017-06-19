@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 final class GameModeShareHandler extends ShareHandler {
 
-    public GameModeShareHandler(Inventories inventories, Player player,
+    public GameModeShareHandler(MultiverseInventories inventories, Player player,
                                 GameMode fromGameMode, GameMode toGameMode) {
         super(inventories, player, Cause.GAME_MODE_CHANGE, player.getWorld().getName(),
                 player.getWorld().getName(), fromGameMode, toGameMode);

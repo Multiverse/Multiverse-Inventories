@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -26,9 +25,9 @@ import java.util.Map;
 abstract class AbstractGroupManager implements GroupManager {
 
     protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<String, WorldGroupProfile>();
-    protected final Inventories plugin;
+    protected final MultiverseInventories plugin;
 
-    public AbstractGroupManager(final Inventories plugin) {
+    public AbstractGroupManager(final MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

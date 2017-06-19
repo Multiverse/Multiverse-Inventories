@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories.migration;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.migration.multiinv.MultiInvImporter;
 import com.onarandombox.multiverseinventories.migration.worldinventories.WorldInventoriesImporter;
 import me.drayshak.WorldInventories.WorldInventories;
@@ -15,7 +14,7 @@ public class ImportManager {
 
     private MultiInvImporter multiInvImporter = null;
     private WorldInventoriesImporter worldInventoriesImporter = null;
-    private Inventories inventories;
+    private MultiverseInventories inventories;
 
     public ImportManager(MultiverseInventories inventories) {
         this.inventories = inventories;

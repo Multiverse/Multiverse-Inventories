@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
@@ -22,10 +21,10 @@ import java.util.WeakHashMap;
 abstract class WeakProfileContainer implements ProfileContainer {
 
     private Map<String, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<String, Map<ProfileType, PlayerProfile>>();
-    private Inventories inventories;
+    private MultiverseInventories inventories;
     private ContainerType type;
 
-    public WeakProfileContainer(Inventories inventories, ContainerType type) {
+    public WeakProfileContainer(MultiverseInventories inventories, ContainerType type) {
         this.inventories = inventories;
         this.type = type;
     }
@@ -69,7 +68,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
     /**
      * @return The instance of MultiverseInventories.
      */
-    protected Inventories getInventories() {
+    protected MultiverseInventories getInventories() {
         return this.inventories;
     }
 

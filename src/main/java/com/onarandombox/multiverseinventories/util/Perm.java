@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -180,14 +180,14 @@ public enum Perm {
         return sender.hasPermission(perm);
     }
 
-    private static Inventories inventories = null;
+    private static MultiverseInventories inventories = null;
 
     /**
      * Registers all Permission to the plugin.
      *
      * @param plugin Plugin to register permissions to.
      */
-    public static void register(Inventories plugin) {
+    public static void register(MultiverseInventories plugin) {
         inventories = plugin;
         BYPASS_WORLD_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);
         BYPASS_GROUP_ALL.getPermission().addParent(BYPASS_ALL.getPermission(), true);

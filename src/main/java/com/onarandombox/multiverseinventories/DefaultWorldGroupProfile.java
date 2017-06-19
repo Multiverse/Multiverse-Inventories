@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
@@ -33,12 +32,12 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
 
-    public DefaultWorldGroupProfile(final Inventories inventories, final String name) {
+    public DefaultWorldGroupProfile(final MultiverseInventories inventories, final String name) {
         super(inventories, ContainerType.GROUP);
         this.name = name;
     }
 
-    public DefaultWorldGroupProfile(final Inventories inventories, final String name,
+    public DefaultWorldGroupProfile(final MultiverseInventories inventories, final String name,
                                     final Map<String, Object> dataMap) throws DeserializationException {
         this(inventories, name);
         if (dataMap.containsKey("worlds")) {

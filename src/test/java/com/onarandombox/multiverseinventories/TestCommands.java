@@ -7,7 +7,6 @@
 
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
@@ -54,7 +53,7 @@ public class TestCommands {
     public void testDebugReload() {
         // Pull a core instance from the server.
         Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
-        Inventories inventories = (Inventories) plugin;
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
 
         // Make sure Core is not null
         assertNotNull(plugin);
@@ -93,7 +92,7 @@ public class TestCommands {
     public void testInfoCommand() {
         // Pull a core instance from the server.
         Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
-        Inventories inventories = (Inventories) plugin;
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
 
         // Make sure Core is not null
         assertNotNull(plugin);
@@ -114,7 +113,7 @@ public class TestCommands {
     public void testToggleCommand() {
         // Pull a core instance from the server.
         Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
-        Inventories inventories = (Inventories) plugin;
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
 
         // Make sure Core is not null
         assertNotNull(plugin);
@@ -143,7 +142,7 @@ public class TestCommands {
     public void testGroupNoWorlds() {
         // Pull a core instance from the server.
         Plugin plugin = mockServer.getPluginManager().getPlugin("Multiverse-Inventories");
-        Inventories inventories = (Inventories) plugin;
+        MultiverseInventories inventories = (MultiverseInventories) plugin;
 
         // Make sure Core is not null
         assertNotNull(plugin);

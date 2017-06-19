@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ import org.bukkit.conversations.Prompt;
 
 class GroupEditPrompt extends InventoriesPrompt {
 
-    public GroupEditPrompt(final Inventories plugin, final CommandSender sender) {
+    public GroupEditPrompt(final MultiverseInventories plugin, final CommandSender sender) {
         super(plugin, sender);
     }
 

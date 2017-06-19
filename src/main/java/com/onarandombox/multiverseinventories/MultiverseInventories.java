@@ -2,9 +2,9 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
@@ -24,6 +24,7 @@ import com.onarandombox.multiverseinventories.command.SpawnCommand;
 import com.onarandombox.multiverseinventories.command.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
+import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.util.data.FlatFilePlayerData;
@@ -49,7 +50,7 @@ import java.util.logging.Level;
 /**
  * Multiverse-Inventories plugin main class.
  */
-public class MultiverseInventories extends JavaPlugin implements Inventories {
+public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
     private final int requiresProtocol = 20;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
@@ -181,9 +182,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return A class used for managing importing data from other similar plugins.
      */
-    @Override
     public ImportManager getImportManager() {
         return this.importManager;
     }
@@ -248,9 +248,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return The pastebin version string.
      */
-    @Override
     public String getVersionInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
@@ -274,15 +273,14 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return the Config object which contains settings for this plugin.
      */
-    @Override
     public InventoriesConfig getMVIConfig() {
         return this.config;
     }
 
     /**
-     * {@inheritDoc}
+     * Nulls the config object and reloads a new one, also resetting the world groups in memory.
      */
     @Override
     public void reloadConfig() {
@@ -320,9 +318,8 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return the PlayerData object which contains data for this plugin.
      */
-    @Override
     public PlayerData getData() {
         if (this.data == null) {
             // Loads the data
@@ -358,41 +355,41 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return The required protocol version of core.
      */
-    @Override
     public int getRequiredProtocol() {
         return this.requiresProtocol;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The World Group manager for this plugin.
      */
-    @Override
     public GroupManager getGroupManager() {
         return this.groupManager;
     }
 
     /**
-     * {@inheritDoc}
+     * @return The World/Group Profile manager for this plugin.
+     * This is where you find access to individual player data.
      */
-    @Override
     public WorldProfileManager getWorldManager() {
         return this.worldProfileManager;
     }
 
     /**
-     * {@inheritDoc}
+     * Gets the server's root-folder as {@link File}.
+     *
+     * @return The server's root-folder
      */
-    @Override
     public File getServerFolder() {
         return serverFolder;
     }
 
     /**
-     * {@inheritDoc}
+     * Sets this server's root-folder.
+     *
+     * @param newServerFolder The new server-root
      */
-    @Override
     public void setServerFolder(File newServerFolder) {
         if (!newServerFolder.isDirectory()) {
             throw new IllegalArgumentException("That's not a folder!");
@@ -401,9 +398,9 @@ public class MultiverseInventories extends JavaPlugin implements Inventories {
     }
 
     /**
-     * {@inheritDoc}
+     * @return The ProfileType manager which will manage loading all profile types and retrieving the different types
+     * from memory.
      */
-    @Override
     public ProfileTypeManager getProfileTypeManager() {
         return profileTypeManager;
     }

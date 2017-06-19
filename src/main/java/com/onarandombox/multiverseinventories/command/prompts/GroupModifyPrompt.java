@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
@@ -11,7 +11,7 @@ class GroupModifyPrompt extends InventoriesPrompt {
 
     protected final WorldGroupProfile group;
 
-    public GroupModifyPrompt(final Inventories plugin, final CommandSender sender,
+    public GroupModifyPrompt(final MultiverseInventories plugin, final CommandSender sender,
                              final WorldGroupProfile group) {
         super(plugin, sender);
         this.group = group;

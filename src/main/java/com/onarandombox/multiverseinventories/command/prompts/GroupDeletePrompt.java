@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.ChatColor;
@@ -10,7 +10,7 @@ import org.bukkit.conversations.Prompt;
 
 class GroupDeletePrompt extends InventoriesPrompt {
 
-    public GroupDeletePrompt(final Inventories plugin, final CommandSender sender) {
+    public GroupDeletePrompt(final MultiverseInventories plugin, final CommandSender sender) {
         super(plugin, sender);
     }
 

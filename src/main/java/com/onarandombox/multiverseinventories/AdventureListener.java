@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -13,9 +12,9 @@ import org.bukkit.event.Listener;
  */
 public class AdventureListener implements Listener {
 
-    private Inventories inventories;
+    private MultiverseInventories inventories;
 
-    public AdventureListener(Inventories inventories) {
+    public AdventureListener(MultiverseInventories inventories) {
         this.inventories = inventories;
     }
 

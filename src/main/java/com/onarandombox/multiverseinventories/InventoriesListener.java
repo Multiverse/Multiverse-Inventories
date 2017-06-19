@@ -4,7 +4,6 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
@@ -31,11 +30,11 @@ import java.util.List;
  */
 public class InventoriesListener implements Listener {
 
-    private Inventories inventories;
+    private MultiverseInventories inventories;
     private List<WorldGroupProfile> currentGroups;
     private Location spawnLoc = null;
 
-    public InventoriesListener(Inventories inventories) {
+    public InventoriesListener(MultiverseInventories inventories) {
         this.inventories = inventories;
     }
 

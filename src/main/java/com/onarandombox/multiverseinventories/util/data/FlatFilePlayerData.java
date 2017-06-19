@@ -3,8 +3,8 @@ package com.onarandombox.multiverseinventories.util.data;
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.feildmaster.lib.configuration.EnhancedConfiguration;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.api.profile.PlayerData;
@@ -33,10 +33,10 @@ public class FlatFilePlayerData implements PlayerData {
     private final File worldFolder;
     private final File groupFolder;
     private final File playerFolder;
-    private final Inventories inventories;
+    private final MultiverseInventories inventories;
     private final FileWriteThread fileWriteThread;
 
-    public FlatFilePlayerData(Inventories plugin) throws IOException {
+    public FlatFilePlayerData(MultiverseInventories plugin) throws IOException {
         this.inventories = plugin;
         // Make the data folders
         plugin.getDataFolder().mkdirs();

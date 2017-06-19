@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ class GroupWorldsPrompt extends InventoriesPrompt {
     protected final boolean isCreating;
     protected final Set<String> worlds;
 
-    public GroupWorldsPrompt(final Inventories plugin, final CommandSender sender,
+    public GroupWorldsPrompt(final MultiverseInventories plugin, final CommandSender sender,
                              final WorldGroupProfile group, final Prompt nextPrompt,
                              final boolean creatingGroup) {
         super(plugin, sender);

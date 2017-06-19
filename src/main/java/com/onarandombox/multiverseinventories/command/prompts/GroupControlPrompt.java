@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
-import com.onarandombox.multiverseinventories.api.Inventories;
+import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
@@ -8,7 +8,7 @@ import org.bukkit.conversations.Prompt;
 
 public class GroupControlPrompt extends InventoriesPrompt {
 
-    public GroupControlPrompt(final Inventories plugin, final CommandSender sender) {
+    public GroupControlPrompt(final MultiverseInventories plugin, final CommandSender sender) {
         super(plugin, sender);
     }
 

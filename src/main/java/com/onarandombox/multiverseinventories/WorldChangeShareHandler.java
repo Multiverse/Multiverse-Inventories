@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.Inventories;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 final class WorldChangeShareHandler extends ShareHandler {
 
-    public WorldChangeShareHandler(Inventories inventories, Player player,
+    public WorldChangeShareHandler(MultiverseInventories inventories, Player player,
                                    String fromWorld, String toWorld) {
         super(inventories, player, Cause.WORLD_CHANGE, fromWorld, toWorld,
                 player.getGameMode(), player.getGameMode());
