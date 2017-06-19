@@ -6,7 +6,7 @@ import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
-import com.onarandombox.multiverseinventories.api.profile.PlayerData;
+import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
 import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
@@ -34,7 +34,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,7 +75,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     public void onDisable() {
         for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
-            //getData().updateWorld(player.getName(), world);
+            //getData().updateLastWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
                 ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
                         getWorldManager().getWorldProfile(world).getPlayerData(player)));

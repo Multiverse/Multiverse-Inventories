@@ -8,7 +8,6 @@ import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
-import com.onarandombox.multiverseinventories.api.profile.PlayerData;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
@@ -389,7 +388,7 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     @Override
-    public void updateWorld(String playerName, String worldName) {
+    public void updateLastWorld(String playerName, String worldName) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setLastWorld(worldName);
         updateGlobalProfile(globalProfile);

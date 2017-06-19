@@ -1,10 +1,12 @@
-package com.onarandombox.multiverseinventories.api.profile;
+package com.onarandombox.multiverseinventories.util.data;
 
+import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 
 /**
- * Interface for interacting with the persisted data of this plugin.
+ * Interface for interacting with all of the persistent Multiverse-Inventories data for all players.
  */
 public interface PlayerData {
 
@@ -62,7 +64,7 @@ public interface PlayerData {
      * @param playerName The player whose global profile this will update.
      * @param worldName The world to update the global profile with.
      */
-    void updateWorld(String playerName, String worldName);
+    void updateLastWorld(String playerName, String worldName);
 
     /**
      * A convenience method for setting whether player data should be loaded on login for the specified player.
@@ -71,7 +73,5 @@ public interface PlayerData {
      * @param loadOnLogin Whether or not to load on login.
      */
     void setLoadOnLogin(String playerName, boolean loadOnLogin);
-
-    //void updateProfileType(String playerName, ProfileType profileType);
 }
 
