@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.util.data;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
@@ -17,8 +18,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -28,7 +32,7 @@ class DefaultPlayerProfile implements PlayerProfile {
 
     private static final JSONParser JSON_PARSER = new JSONParser();
 
-    private Map<Sharable, Object> data = new HashMap<Sharable, Object>();
+    private Map<Sharable, SharableEntry> data = new HashMap<Sharable, SharableEntry>();
 
     private ItemStack[] inventoryContents = new ItemStack[PlayerStats.INVENTORY_SIZE];
     private ItemStack[] armorContents = new ItemStack[PlayerStats.ARMOR_SIZE];
@@ -73,7 +77,7 @@ class DefaultPlayerProfile implements PlayerProfile {
                         Logging.fine("Player fileTag '" + key + "' is unrecognized!");
                         continue;
                     }
-                    this.data.put(sharable, sharable.getSerializer().deserialize(playerData.get(key)));
+                    this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(playerData.get(key))));
                 } catch (Exception e) {
                     Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key) + "'");
                     Logging.getLogger().log(Level.FINE, "Exception: ", e);
@@ -102,7 +106,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (Object key : stats.keySet()) {
             Sharable sharable = ProfileEntry.lookup(true, key.toString());
             if (sharable != null) {
-                this.data.put(sharable, sharable.getSerializer().deserialize(stats.get(key).toString()));
+                this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(stats.get(key).toString())));
             } else {
                 Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
@@ -116,7 +120,7 @@ class DefaultPlayerProfile implements PlayerProfile {
             try {
                 String[] statValues = DataStrings.splitEntry(stat);
                 Sharable sharable = ProfileEntry.lookup(true, statValues[0]);
-                this.data.put(sharable, sharable.getSerializer().deserialize(statValues[1]));
+                this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(statValues[1])));
             } catch (Exception e) {
                 Logging.warning("Could not parse stat: '" + stat + "' for player '" + getPlayer().getName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
@@ -144,7 +148,7 @@ class DefaultPlayerProfile implements PlayerProfile {
         for (Object key : jsonStats.keySet()) {
             Sharable sharable = ProfileEntry.lookup(true, key.toString());
             if (sharable != null) {
-                this.data.put(sharable, sharable.getSerializer().deserialize(jsonStats.get(key).toString()));
+                this.data.put(sharable, new SharableEntry(sharable, sharable.getSerializer().deserialize(jsonStats.get(key).toString())));
             } else {
                 Logging.warning("Could not parse stat: '" + key + "' for player '" + getPlayer().getName() + "' for "
                         + getContainerType() + " '" + getContainerName() + "'");
@@ -159,12 +163,12 @@ class DefaultPlayerProfile implements PlayerProfile {
     public Map<String, Object> serialize() {
         Map<String, Object> playerData = new LinkedHashMap<String, Object>();
         JSONObject jsonStats = new JSONObject();
-        for (Map.Entry<Sharable, Object> entry : this.data.entrySet()) {
+        for (SharableEntry entry : this.data.values()) {
             if (entry.getValue() != null) {
-                if (entry.getKey().getSerializer() == null) {
+                if (entry.getSharable().getSerializer() == null) {
                     continue;
                 }
-                Sharable sharable = entry.getKey();
+                Sharable sharable = entry.getSharable();
                 if (sharable.getProfileEntry().isStat()) {
                     jsonStats.put(sharable.getProfileEntry().getFileTag(),
                             sharable.getSerializer().serialize(entry.getValue()));
@@ -206,12 +210,13 @@ class DefaultPlayerProfile implements PlayerProfile {
 
     @Override
     public <T> T get(Sharable<T> sharable) {
-        return sharable.getType().cast(this.data.get(sharable));
+        SharableEntry entry = this.data.get(sharable);
+        return sharable.getType().cast(entry != null ? entry.getValue() : null);
     }
 
     @Override
     public <T> void set(Sharable<T> sharable, T value) {
-        this.data.put(sharable, value);
+        this.data.put(sharable, new SharableEntry<T>(sharable, value));
     }
 
     @Override
@@ -222,6 +227,35 @@ class DefaultPlayerProfile implements PlayerProfile {
     @Override
     public PlayerProfile clone() throws CloneNotSupportedException {
         return (PlayerProfile) super.clone();
+    }
+
+    @Override
+    public Iterator<SharableEntry> iterator() {
+        return new SharablesIterator(data.values().iterator());
+    }
+
+    private static class SharablesIterator implements Iterator<SharableEntry> {
+
+        private final Iterator<SharableEntry> backingIterator;
+
+        private SharablesIterator(Iterator<SharableEntry> backingIterator) {
+            this.backingIterator = backingIterator;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return backingIterator.hasNext();
+        }
+
+        @Override
+        public SharableEntry next() {
+            return backingIterator.next();
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }
 

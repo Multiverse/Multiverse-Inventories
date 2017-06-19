@@ -1,16 +1,18 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
 import com.onarandombox.multiverseinventories.api.share.Sharable;
+import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import org.bukkit.OfflinePlayer;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Interface for a PlayerProfile which controls all the world/group specific data for a player.
  * This represents what is saved/loaded to/from persistence.
  */
-public interface PlayerProfile extends Cloneable {
+public interface PlayerProfile extends Cloneable, Iterable<SharableEntry> {
 
     /**
      * @return A map containing all the player data to be saved to disk.
