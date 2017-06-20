@@ -5,7 +5,7 @@ import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

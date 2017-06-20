@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import org.bukkit.GameMode;
@@ -37,7 +37,7 @@ public final class ProfileTypes {
     }
 
     static void resetProfileTypes() {
-        profileTypeMap = new HashMap<String, ProfileType>();
+        profileTypeMap = new HashMap<>();
         profileTypeMap.put(SURVIVAL.getName(), SURVIVAL);
     }
 

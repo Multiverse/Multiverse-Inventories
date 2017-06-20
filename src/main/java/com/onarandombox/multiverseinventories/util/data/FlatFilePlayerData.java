@@ -11,7 +11,7 @@ import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileType;
+import com.onarandombox.multiverseinventories.profile.ProfileType;
 import net.minidev.json.JSONObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -341,6 +341,7 @@ public class FlatFilePlayerData implements PlayerData {
         parsePlayerStatsIntoProfile(jsonStats, profile);
     }
 
+    // TODO Remove this conversion
     private boolean convertConfig(FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection("playerData");
         if (section != null) {

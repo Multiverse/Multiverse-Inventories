@@ -7,7 +7,6 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
-import com.onarandombox.multiverseinventories.api.profile.ProfileTypeManager;
 import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -58,7 +57,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private Messager messager = new DefaultMessager(this);
     private GroupManager groupManager = null;
     private WorldProfileManager worldProfileManager = null;
-    private ProfileTypeManager profileTypeManager = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
@@ -122,8 +120,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
-        this.getProfileTypeManager();
 
         // Initialize data class
         //this.getWorldManager().setWorldProfiles(this.getData().getWorldProfiles());
@@ -288,7 +284,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             this.groupManager = new YamlGroupManager(this, new File(getDataFolder(), "groups.yml"),
                     ((YamlInventoriesConfig) config).getConfig());
             this.worldProfileManager = new WeakWorldProfileManager(this);
-            this.profileTypeManager = new DefaultProfileTypeManager(new File(this.getDataFolder(), "profiles.yml"));
             //this.data = null;
             Logging.fine("Loaded config file!");
         } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
@@ -299,7 +294,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         }
 
         ProfileTypes.resetProfileTypes();
-        this.getProfileTypeManager();
 
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
@@ -394,14 +388,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             throw new IllegalArgumentException("That's not a folder!");
         }
         this.serverFolder = newServerFolder;
-    }
-
-    /**
-     * @return The ProfileType manager which will manage loading all profile types and retrieving the different types
-     * from memory.
-     */
-    public ProfileTypeManager getProfileTypeManager() {
-        return profileTypeManager;
     }
 }
 
