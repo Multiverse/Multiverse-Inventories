@@ -1,8 +1,7 @@
-package com.onarandombox.multiverseinventories.profile;
+package com.onarandombox.multiverseinventories.profile.container;
 
 /**
- * A Enum for getting/updating profiles by their type.  Which reduces the need to use multiple methods
- * for the same thing.
+ * Used to describe whether a {@link ProfileContainer} represents a single world or a group of worlds.
  */
 public enum ContainerType {
 

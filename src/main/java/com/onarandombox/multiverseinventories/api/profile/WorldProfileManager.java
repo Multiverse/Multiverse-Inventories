@@ -1,5 +1,7 @@
 package com.onarandombox.multiverseinventories.api.profile;
 
+import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
+
 /**
  * Manager class for manipulating the profiles of this plugin that are contained in memory.
  */

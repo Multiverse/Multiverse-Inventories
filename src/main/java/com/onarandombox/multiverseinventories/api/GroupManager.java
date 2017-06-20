@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.profile.GroupingConflict;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.command.CommandSender;
 
@@ -95,24 +95,12 @@ public interface GroupManager {
      * <p/>
      * Please note if you do not add worlds to this group it will not persist very well.
      * This does not automatically persist the new group.  It must bed added via
-     * {@link #updateGroup(com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile)}
+     * {@link #updateGroup(WorldGroupProfile)}
      *
      * @param name A name for the new group.
      * @return The newly created world group.
      */
     WorldGroupProfile newEmptyGroup(String name);
-
-    /**
-     * Creates a new world group filled with the data provided in dataMap.
-     *
-     * @param name    A name for the new group.
-     * @param dataMap A map of the data that pertains to this world group.
-     * @return The newly created WorldGroupProfile.
-     * @throws DeserializationException If the dataMap is not formatted correctly.
-     * @deprecated This method is no longer appropriate as part of the api.  It has no realistic outside function.
-     */
-    @Deprecated
-    WorldGroupProfile newGroupFromMap(String name, Map<String, Object> dataMap) throws DeserializationException;
 
     /**
      * Creates a default world group including all of the loaded MV worlds sharing everything.

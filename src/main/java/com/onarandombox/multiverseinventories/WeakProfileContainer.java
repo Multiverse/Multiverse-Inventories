@@ -2,10 +2,9 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
-import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
 import org.bukkit.OfflinePlayer;
@@ -20,13 +19,11 @@ import java.util.WeakHashMap;
  */
 abstract class WeakProfileContainer implements ProfileContainer {
 
-    private Map<String, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<String, Map<ProfileType, PlayerProfile>>();
-    private MultiverseInventories inventories;
-    private ContainerType type;
+    private Map<String, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<>();
+    private final MultiverseInventories inventories;
 
-    public WeakProfileContainer(MultiverseInventories inventories, ContainerType type) {
+    WeakProfileContainer(MultiverseInventories inventories) {
         this.inventories = inventories;
-        this.type = type;
     }
 
     /**
@@ -36,45 +33,25 @@ abstract class WeakProfileContainer implements ProfileContainer {
      * @return The profile map for the given player.
      */
     protected Map<ProfileType, PlayerProfile> getPlayerData(String name) {
-        Map<ProfileType, PlayerProfile> data = this.playerData.get(name);
-        if (data == null) {
-            data = new HashMap<ProfileType, PlayerProfile>();
-            this.playerData.put(name, data);
-        }
-        return data;
+        return this.playerData.computeIfAbsent(name, k -> new HashMap<>());
     }
 
-    /**
-     * @return The data class for MultiverseInventories.
-     */
-    protected PlayerData getData() {
+    protected PlayerData getDataSource() {
         return this.getInventories().getData();
     }
 
-    /**
-     * @return The GroupManager for MultiverseInventories.
-     */
     protected GroupManager getGroupManager() {
         return this.getInventories().getGroupManager();
     }
 
-    /**
-     * @return The WorldProfileManager for MultiverseInventories.
-     */
     protected WorldProfileManager getProfileManager() {
         return this.getInventories().getWorldManager();
     }
 
-    /**
-     * @return The instance of MultiverseInventories.
-     */
     protected MultiverseInventories getInventories() {
         return this.inventories;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PlayerProfile getPlayerData(Player player) {
         ProfileType type;
@@ -86,47 +63,35 @@ abstract class WeakProfileContainer implements ProfileContainer {
         return getPlayerData(type, player);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PlayerProfile getPlayerData(ProfileType profileType, OfflinePlayer player) {
         Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getName());
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
-            playerProfile = this.getData().getPlayerData(this.type,
-                    this.getDataName(), profileType, player.getName());
+            playerProfile = getDataSource().getPlayerData(getContainerType(),
+                    getContainerName(), profileType, player.getName());
             Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
-                    profileType, type, playerProfile.getContainerName(), player.getName());
+                    profileType, getContainerType(), playerProfile.getContainerName(), player.getName());
             profileMap.put(profileType, playerProfile);
         }
         return playerProfile;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addPlayerData(PlayerProfile playerProfile) {
         this.getPlayerData(playerProfile.getPlayer().getName()).put(playerProfile.getProfileType(), playerProfile);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        this.getData().removePlayerData(this.type, this.getDataName(), null, player.getName());
+        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), null, player.getName());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        this.getData().removePlayerData(this.type, this.getDataName(), profileType, player.getName());
+        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), profileType, player.getName());
     }
 }
 

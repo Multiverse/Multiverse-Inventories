@@ -4,9 +4,9 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.profile.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.api.profile.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
@@ -171,7 +171,7 @@ public class WorldInventoriesImporter implements DataImporter {
             playerProfile.set(Sharables.FOOD_LEVEL, wiStats.getFoodLevel());
         }
         this.inventories.getData().updatePlayerData(playerProfile);
-        Logging.finest("Player's data imported successfully for group: " + profileContainer.getDataName());
+        Logging.finest("Player's data imported successfully for group: " + profileContainer.getContainerName());
     }
 
     private File getFile(OfflinePlayer player, Group group, DataType dataType) {

@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 
 import java.util.ArrayList;
 import java.util.List;

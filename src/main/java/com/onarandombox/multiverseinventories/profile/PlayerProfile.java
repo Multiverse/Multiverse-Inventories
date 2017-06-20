@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.profile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SharableEntry;
+import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 

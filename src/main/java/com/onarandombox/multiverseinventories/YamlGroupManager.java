@@ -1,17 +1,23 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.google.common.collect.Lists;
+import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventPriority;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,7 +108,7 @@ final class YamlGroupManager extends AbstractGroupManager {
                     Logging.warning("Group: '" + groupName + "' is not formatted correctly!");
                     continue;
                 }
-                worldGroup = newGroup(groupName, groupSection.getValues(true));
+                worldGroup = deserializeGroup(groupName, groupSection.getValues(true));
             } catch (DeserializationException e) {
                 Logging.warning("Unable to load world group: " + groupName);
                 Logging.warning("Reason: " + e.getMessage());
@@ -114,13 +120,91 @@ final class YamlGroupManager extends AbstractGroupManager {
         return worldGroups;
     }
 
-    private WorldGroupProfile newGroup(final String name, final Map<String, Object> dataMap) throws DeserializationException {
-        return new DefaultWorldGroupProfile(this.plugin, name, dataMap);
+    private WorldGroupProfile deserializeGroup(final String name, final Map<String, Object> dataMap)
+            throws DeserializationException {
+        WorldGroupProfile profile = new DefaultWorldGroupProfile(this.plugin, name);
+        if (dataMap.containsKey("worlds")) {
+            Object worldListObj = dataMap.get("worlds");
+            if (worldListObj == null) {
+                Logging.fine("No worlds for group: " + name);
+            } else {
+                if (!(worldListObj instanceof List)) {
+                    Logging.fine("World list formatted incorrectly for world group: " + name);
+                } else {
+                    final StringBuilder builder = new StringBuilder();
+                    for (Object worldNameObj : (List) worldListObj) {
+                        if (worldNameObj == null) {
+                            Logging.fine("Error with a world listed in group: " + name);
+                            continue;
+                        }
+                        profile.addWorld(worldNameObj.toString(), false);
+                        World world = Bukkit.getWorld(worldNameObj.toString());
+                        if (world == null) {
+                            if (builder.length() != 0) {
+                                builder.append(", ");
+                            }
+                            builder.append(worldNameObj.toString());
+                        }
+                    }
+                    if (builder.length() > 0) {
+                        Logging.config("The following worlds for group '%s' are not loaded: %s", name, builder.toString());
+                    }
+                }
+            }
+        }
+        if (dataMap.containsKey("shares")) {
+            Object sharesListObj = dataMap.get("shares");
+            if (sharesListObj instanceof List) {
+                profile.getShares().mergeShares(Sharables.fromList((List) sharesListObj));
+                profile.getShares().removeAll(Sharables.negativeFromList((List) sharesListObj));
+            } else {
+                Logging.warning("Shares formatted incorrectly for group: " + name);
+            }
+        }
+        if (dataMap.containsKey("spawn")) {
+            Object spawnPropsObj = dataMap.get("spawn");
+            if (spawnPropsObj instanceof ConfigurationSection) {
+                // Le sigh, bukkit.
+                spawnPropsObj = ((ConfigurationSection) spawnPropsObj).getValues(true);
+            }
+            if (spawnPropsObj instanceof Map) {
+                Map spawnProps = (Map) spawnPropsObj;
+                if (spawnProps.containsKey("world")) {
+                    profile.setSpawnWorld(spawnProps.get("world").toString());
+                }
+                if (spawnProps.containsKey("priority")) {
+                    EventPriority priority = EventPriority.valueOf(
+                            spawnProps.get("priority").toString().toUpperCase());
+                    if (priority != null) {
+                        profile.setSpawnPriority(priority);
+                    }
+                }
+            } else {
+                Logging.warning("Spawn settings for group formatted incorrectly");
+            }
+        }
+        return profile;
     }
 
     private void updateWorldGroup(WorldGroupProfile worldGroup) {
         Logging.finer("Updating group in config: " + worldGroup.getName());
-        getConfig().createSection("groups." + worldGroup.getName(), worldGroup.serialize());
+        getConfig().createSection("groups." + worldGroup.getName(), serializeWorldGroupProfile(worldGroup));
+    }
+
+    private Map<String, Object> serializeWorldGroupProfile(WorldGroupProfile profile) {
+        Map<String, Object> results = new LinkedHashMap<>();
+        results.put("worlds", Lists.newArrayList(profile.getWorlds()));
+        List<String> sharesList = profile.getShares().toStringList();
+        if (!sharesList.isEmpty()) {
+            results.put("shares", sharesList);
+        }
+        Map<String, Object> spawnProps = new LinkedHashMap<String, Object>();
+        if (profile.getSpawnWorld() != null) {
+            spawnProps.put("world", profile.getSpawnWorld());
+            spawnProps.put("priority", profile.getSpawnPriority().toString());
+            results.put("spawn", spawnProps);
+        }
+        return results;
     }
 
     private void removeWorldGroup(WorldGroupProfile worldGroup) {

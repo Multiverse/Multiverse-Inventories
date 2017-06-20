@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.profile;
+package com.onarandombox.multiverseinventories.profile.container;
 
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Shares;
@@ -13,6 +13,7 @@ import java.util.Set;
  * including the worlds making up the group and the things those worlds share.  Also extends
  * Profile container which allows World Groups to hold player profiles.
  */
+// TODO This class has too many responsibilities...
 public interface WorldGroupProfile extends ProfileContainer {
 
     /**
@@ -21,15 +22,6 @@ public interface WorldGroupProfile extends ProfileContainer {
      * @return Name of this World Group.
      */
     String getName();
-
-    /**
-     * Sets the name of this World Group.
-     *
-     * @param name The new name for this World Group.
-     * @deprecated As this method is dangerous.
-     */
-    @Deprecated
-    void setName(String name);
 
     /**
      * Adds a world to this world group and updates it in the Config.
@@ -101,11 +93,6 @@ public interface WorldGroupProfile extends ProfileContainer {
     Shares getShares();
 
     /**
-     * @return A map containing all the world group data to be saved to disk.
-     */
-    Map<String, Object> serialize();
-
-    /**
      * @param worldName Name of world to check for.
      * @return True if specified world is part of this group.
      */
@@ -143,5 +130,13 @@ public interface WorldGroupProfile extends ProfileContainer {
     //Set<ProfileType> getProfileTypes();
 
     // ItemBlacklist getItemBlacklist(String worldName);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default ContainerType getContainerType() {
+        return ContainerType.GROUP;
+    }
 }
 

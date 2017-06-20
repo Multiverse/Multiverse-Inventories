@@ -3,11 +3,10 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.GroupManager;
 import com.onarandombox.multiverseinventories.profile.GroupingConflict;
-import com.onarandombox.multiverseinventories.api.profile.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -24,7 +23,8 @@ import java.util.Map;
  */
 abstract class AbstractGroupManager implements GroupManager {
 
-    protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<String, WorldGroupProfile>();
+    static final String DEFAULT_GROUP_NAME = "default";
+    protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
 
     public AbstractGroupManager(final MultiverseInventories plugin) {
@@ -126,18 +126,6 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     @Deprecated
-    public WorldGroupProfile newGroupFromMap(String name, Map<String, Object> dataMap) throws DeserializationException {
-        if (getGroup(name) != null) {
-            return null;
-        }
-        return new DefaultWorldGroupProfile(this.plugin, name, dataMap);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
     public void setGroups(List<WorldGroupProfile> worldGroups) {
     }
 
@@ -146,13 +134,13 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public void createDefaultGroup() {
-        if (this.getGroup(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME) != null) {
+        if (this.getGroup(DEFAULT_GROUP_NAME) != null) {
             return;
         }
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
+        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -175,9 +163,9 @@ abstract class AbstractGroupManager implements GroupManager {
      */
     @Override
     public WorldGroupProfile getDefaultGroup() {
-        WorldGroupProfile group = this.getGroupNames().get(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
+        WorldGroupProfile group = this.getGroupNames().get(DEFAULT_GROUP_NAME);
         if (group == null) {
-            group = newEmptyGroup(DefaultWorldGroupProfile.DEFAULT_GROUP_NAME);
+            group = newEmptyGroup(DEFAULT_GROUP_NAME);
             group.getShares().setSharing(Sharables.allOf(), true);
             this.updateGroup(group);
         }

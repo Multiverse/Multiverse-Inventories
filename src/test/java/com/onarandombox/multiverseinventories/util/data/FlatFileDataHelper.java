@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.util.data;
 
-import com.onarandombox.multiverseinventories.profile.ContainerType;
+import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
 import java.io.File;
 import java.io.IOException;
