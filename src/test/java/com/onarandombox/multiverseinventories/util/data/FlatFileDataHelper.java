@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.util.data;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FlatFileDataHelper {
 
@@ -15,7 +16,7 @@ public class FlatFileDataHelper {
         this.data = (FlatFilePlayerData) data;
     }
 
-    public File getPlayerFile(ContainerType type, String dataName, String playerName) {
+    public File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
         return data.getPlayerFile(type, dataName, playerName);
     }
 }

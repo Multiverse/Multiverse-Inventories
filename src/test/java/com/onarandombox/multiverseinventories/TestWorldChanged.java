@@ -258,7 +258,7 @@ public class TestWorldChanged {
     }
 
     @Test
-    public void testGroupedSharesWorldChange() {
+    public void testGroupedSharesWorldChange() throws Exception {
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);

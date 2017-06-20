@@ -14,6 +14,7 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
 import net.minidev.json.JSONObject;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -32,7 +33,6 @@ import java.util.logging.Level;
  */
 public class FlatFilePlayerData implements PlayerData {
 
-    private static final String YML = ".yml";
     private static final String JSON = ".json";
     private final File worldFolder;
     private final File groupFolder;
@@ -69,19 +69,10 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     private FileConfiguration getConfigHandle(File file) {
-        if (file.getName().endsWith(YML)) {
-            try {
-                return new EncodedConfiguration(file, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return new EnhancedConfiguration(file);
-            }
-        } else {
-            try {
-                return JsonConfiguration.loadConfiguration(file, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-
-                return JsonConfiguration.loadConfiguration(file);
-            }
+        try {
+            return JsonConfiguration.loadConfiguration(file, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return JsonConfiguration.loadConfiguration(file);
         }
     }
 
@@ -107,42 +98,34 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     /**
-     * Retrieves the yaml data file for a player based on a given world/group name.
+     * Retrieves the data file for a player based on a given world/group name, creating it if necessary.
      *
      * @param type       Indicates whether data is for group or world.
      * @param dataName   The name of the group or world.
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
+     * @throws IOException if there was a problem creating the file.
      */
-    File getPlayerFile(ContainerType type, String dataName, String playerName) {
+    File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
         File jsonPlayerFile = new File(this.getFolder(type, dataName), playerName + JSON);
-        File playerFile = new File(this.getFolder(type, dataName), playerName + YML);
-        if (jsonPlayerFile.exists()) {
-            return jsonPlayerFile;
-        } else {
-            if (playerFile.exists()) {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException ignore) { }
-                return playerFile;
-            } else {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException e) {
-                    Logging.severe("Could not create necessary player file: " + playerName + JSON);
-                    Logging.severe("Your data may not be saved!");
-                    Logging.severe(e.getMessage());
-                }
+        if (!jsonPlayerFile.exists()) {
+            try {
+                jsonPlayerFile.createNewFile();
+            } catch (IOException e) {
+                throw new IOException("Could not create necessary player data file: " + jsonPlayerFile.getPath()
+                        + ". Data for " + playerName + " in " + type.name().toLowerCase() + " " + dataName
+                        + " may not be saved.", e);
             }
         }
         return jsonPlayerFile;
     }
 
     /**
-     * Retrieves the yaml data file for a player for their global data.
+     * Retrieves the yaml data file for a player for their global data, creating it if necessary.
      *
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
+     * @throws IOException if there was a problem creating the file.
      */
     File getGlobalFile(String playerName) throws IOException {
         File jsonPlayerFile = new File(playerFolder, playerName + JSON);
@@ -150,23 +133,12 @@ public class FlatFilePlayerData implements PlayerData {
             try {
                 jsonPlayerFile.createNewFile();
             } catch (IOException e) {
-                throw new IOException("Could not create necessary player file: " + playerName + JSON + ". "
+                throw new IOException("Could not create necessary player file: " + jsonPlayerFile.getPath() + ". "
                         + "There may be issues with " + playerName + "'s metadata", e);
             }
         }
         return jsonPlayerFile;
     }
-
-    /*
-    private File[] getWorldFolders() {
-        return this.worldFolder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(YML);
-            }
-        });
-    }
-    */
 
     private class FileWriteThread extends Thread {
 
@@ -267,7 +239,14 @@ public class FlatFilePlayerData implements PlayerData {
     @Override
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
         fileWriteThread.waitUntilEmpty();
-        File playerFile = this.getPlayerFile(containerType, dataName, playerName);
+        File playerFile = null;
+        try {
+            playerFile = getPlayerFile(containerType, dataName, playerName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Return an empty profile
+            return new DefaultPlayerProfile(containerType, dataName, profileType, Bukkit.getOfflinePlayer(playerName));
+        }
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         if (convertConfig(playerData)) {
             try {
@@ -304,10 +283,24 @@ public class FlatFilePlayerData implements PlayerData {
     @Override
     public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
         if (profileType == null) {
-            File playerFile = this.getPlayerFile(containerType, dataName, playerName);
-            return playerFile.delete();
+            try {
+                File playerFile = getPlayerFile(containerType, dataName, playerName);
+                return playerFile.delete();
+            } catch (IOException ignore) {
+                Logging.warning("Attempted to delete file that did not exist for player " + playerName
+                        + " in " + containerType.name().toLowerCase() + " " + dataName);
+                return false;
+            }
         } else {
-            File playerFile = this.getPlayerFile(containerType, dataName, playerName);
+            File playerFile;
+            try {
+                playerFile = getPlayerFile(containerType, dataName, playerName);
+            } catch (IOException e) {
+                Logging.warning("Attempted to delete " + playerName + "'s data for "
+                        + profileType.getName().toLowerCase() + " mode in "  + containerType.name().toLowerCase()
+                        + " " + dataName + " but the file did not exist.");
+                return false;
+            }
             FileConfiguration playerData = this.getConfigHandle(playerFile);
             playerData.set(profileType.getName(), null);
             try {
