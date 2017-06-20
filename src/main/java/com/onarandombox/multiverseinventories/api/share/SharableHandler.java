@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api.share;
 
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import org.bukkit.entity.Player;
 
 /**
@@ -13,7 +13,7 @@ public interface SharableHandler<T> {
 
     /**
      * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
-     * the {@link com.onarandombox.multiverseinventories.api.profile.PlayerProfile} based on the data contained in the {@link org.bukkit.entity.Player}
+     * the {@link PlayerProfile} based on the data contained in the {@link org.bukkit.entity.Player}
      *
      * @param profile Updates the data of this profile according to the Sharable
      *                with the values of the player.

@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.api.share;
 
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 
 /**
  * Simple interface for groups that are going to be saved/loaded.  This is used specifically for when a user's world

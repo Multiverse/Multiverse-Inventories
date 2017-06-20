@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories.util.data;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
-import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.DataStrings;
@@ -11,12 +10,9 @@ import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
-import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
-import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.ParseException;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.json.simple.parser.JSONParser;
@@ -251,7 +247,7 @@ public class FlatFilePlayerData implements PlayerData {
         } catch (IOException e) {
             e.printStackTrace();
             // Return an empty profile
-            return new DefaultPlayerProfile(containerType, dataName, profileType, Bukkit.getOfflinePlayer(playerName));
+            return PlayerProfile.createPlayerProfile(containerType, dataName, profileType, playerName);
         }
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         if (convertConfig(playerData)) {
@@ -270,10 +266,10 @@ public class FlatFilePlayerData implements PlayerData {
         return deserializePlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
     }
 
-    private DefaultPlayerProfile deserializePlayerProfile(ContainerType containerType, String containerName,
+    private PlayerProfile deserializePlayerProfile(ContainerType containerType, String containerName,
                                                           ProfileType profileType, String playerName, Map playerData) {
-        DefaultPlayerProfile profile = new DefaultPlayerProfile(containerType, containerName, profileType,
-                Bukkit.getOfflinePlayer(playerName));
+        PlayerProfile profile = PlayerProfile.createPlayerProfile(containerType, containerName,
+                profileType, playerName);
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
