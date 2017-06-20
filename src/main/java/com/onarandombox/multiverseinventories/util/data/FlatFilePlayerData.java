@@ -6,6 +6,7 @@ import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.ProfileTypes;
 import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.api.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.ContainerType;
@@ -14,9 +15,11 @@ import com.onarandombox.multiverseinventories.api.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.api.profile.ProfileType;
 import com.onarandombox.multiverseinventories.util.EncodedConfiguration;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.ParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +37,9 @@ import java.util.logging.Level;
 public class FlatFilePlayerData implements PlayerData {
 
     private static final String JSON = ".json";
+
+    private final JSONParser JSON_PARSER = new JSONParser();
+
     private final File worldFolder;
     private final File groupFolder;
     private final File playerFolder;
@@ -261,7 +267,82 @@ public class FlatFilePlayerData implements PlayerData {
         if (section == null) {
             section = playerData.createSection(profileType.getName());
         }
-        return new DefaultPlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
+        return deserializePlayerProfile(containerType, dataName, profileType, playerName, convertSection(section));
+    }
+
+    private DefaultPlayerProfile deserializePlayerProfile(ContainerType containerType, String containerName,
+                                                          ProfileType profileType, String playerName, Map playerData) {
+        DefaultPlayerProfile profile = new DefaultPlayerProfile(containerType, containerName, profileType,
+                Bukkit.getOfflinePlayer(playerName));
+        for (Object keyObj : playerData.keySet()) {
+            String key = keyObj.toString();
+            if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
+                final Object statsObject = playerData.get(key);
+                if (statsObject instanceof String) {
+                    parseJsonPlayerStatsIntoProfile(statsObject.toString(), profile);
+                } else {
+                    if (statsObject instanceof Map) {
+                        parsePlayerStatsIntoProfile((Map) statsObject, profile);
+                    } else {
+                        Logging.warning("Could not parse stats for " + playerName);
+                    }
+                }
+            } else {
+                if (playerData.get(key) == null) {
+                    Logging.fine("Player data '" + key + "' is null for: " + playerName);
+                    continue;
+                }
+                try {
+                    Sharable sharable = ProfileEntry.lookup(false, key);
+                    if (sharable == null) {
+                        Logging.fine("Player fileTag '" + key + "' is unrecognized!");
+                        continue;
+                    }
+                    profile.set(sharable, sharable.getSerializer().deserialize(playerData.get(key)));
+                } catch (Exception e) {
+                    Logging.fine("Could not parse fileTag: '" + key + "' with value '" + playerData.get(key) + "'");
+                    Logging.getLogger().log(Level.FINE, "Exception: ", e);
+                    e.printStackTrace();
+                }
+            }
+        }
+        Logging.finer("Created player profile from map for '" + playerName + "'.");
+        return profile;
+    }
+
+    protected void parsePlayerStatsIntoProfile(Map stats, PlayerProfile profile) {
+        for (Object key : stats.keySet()) {
+            Sharable sharable = ProfileEntry.lookup(true, key.toString());
+            if (sharable != null) {
+                profile.set(sharable, sharable.getSerializer().deserialize(stats.get(key).toString()));
+            } else {
+                Logging.warning("Could not parse stat: '" + key + "' for player '"
+                        + profile.getPlayer().getName() + "' for " + profile.getContainerType() + " '"
+                        + profile.getContainerName() + "'");
+            }
+        }
+    }
+
+    private void parseJsonPlayerStatsIntoProfile(String stats, PlayerProfile profile) {
+        if (stats.isEmpty()) {
+            return;
+        }
+        org.json.simple.JSONObject jsonStats = null;
+        try {
+            jsonStats = (org.json.simple.JSONObject) JSON_PARSER.parse(stats);
+        } catch (org.json.simple.parser.ParseException e) {
+            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
+                    profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
+        } catch (ClassCastException e) {
+            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
+                    profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
+        }
+        if (jsonStats == null) {
+            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
+                    profile.getContainerType() + " '" + profile.getContainerName() + "'");
+            return;
+        }
+        parsePlayerStatsIntoProfile(jsonStats, profile);
     }
 
     private boolean convertConfig(FileConfiguration config) {
