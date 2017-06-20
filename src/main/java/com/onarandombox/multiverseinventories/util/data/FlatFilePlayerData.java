@@ -144,43 +144,17 @@ public class FlatFilePlayerData implements PlayerData {
      * @param playerName The name of the player.
      * @return The yaml data file for a player.
      */
-    File getGlobalFile(String playerName, boolean forceJson) {
+    File getGlobalFile(String playerName) throws IOException {
         File jsonPlayerFile = new File(playerFolder, playerName + JSON);
-        File playerFile = new File(playerFolder, playerName + YML);
         if (!jsonPlayerFile.exists()) {
-            if (forceJson) {
-                try {
-                    jsonPlayerFile.createNewFile();
-                } catch (IOException e) {
-                    Logging.severe("Could not create necessary player file: " + playerName + YML);
-                    Logging.severe("Your data may not be saved!");
-                    Logging.severe(e.getMessage());
-                }
-                return jsonPlayerFile;
-            }
-            if (playerFile.exists()) {
-                return playerFile;
-            }
-        }
-        if (!playerFile.exists()) {
             try {
-                playerFile.createNewFile();
+                jsonPlayerFile.createNewFile();
             } catch (IOException e) {
-                Logging.severe("Could not create necessary player file: " + playerName + YML);
-                Logging.severe("Your data may not be saved!");
-                Logging.severe(e.getMessage());
+                throw new IOException("Could not create necessary player file: " + playerName + JSON + ". "
+                        + "There may be issues with " + playerName + "'s metadata", e);
             }
         }
-        return playerFile;
-    }
-
-    private String getPlayerName(File playerFile) {
-        if (playerFile.getName().endsWith(YML)) {
-            String fileName = playerFile.getName();
-            return fileName.substring(0, fileName.length() - YML.length());
-        } else {
-            return null;
-        }
+        return jsonPlayerFile;
     }
 
     /*
@@ -367,7 +341,13 @@ public class FlatFilePlayerData implements PlayerData {
     @Override
     public GlobalProfile getGlobalProfile(String playerName) {
         // TODO use data caching to avoid excess object creation.
-        File playerFile = this.getGlobalFile(playerName, false);
+        File playerFile;
+        try {
+            playerFile = getGlobalFile(playerName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return GlobalProfile.createGlobalProfile(playerName);
+        }
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
@@ -393,7 +373,13 @@ public class FlatFilePlayerData implements PlayerData {
      */
     @Override
     public boolean updateGlobalProfile(GlobalProfile globalProfile) {
-        File playerFile = this.getGlobalFile(globalProfile.getPlayerName(), true);
+        File playerFile = null;
+        try {
+            playerFile = this.getGlobalFile(globalProfile.getPlayerName());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         playerData.createSection("playerData", serializeGlobalProfile(globalProfile));
         try {
