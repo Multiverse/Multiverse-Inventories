@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.Bukkit;
@@ -60,14 +60,14 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         groupsConfig.save();
 
         // Setup groups in memory
-        final List<WorldGroupProfile> worldGroups = getGroupsFromConfig();
+        final List<GroupProfileContainer> worldGroups = getGroupsFromConfig();
         if (worldGroups == null) {
             Logging.info("No world groups have been configured!");
             Logging.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
             return;
         }
 
-        for (final WorldGroupProfile worldGroup : worldGroups) {
+        for (final GroupProfileContainer worldGroup : worldGroups) {
             getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
         }
     }
@@ -88,7 +88,7 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         return this.groupsConfig.getConfig();
     }
 
-    private List<WorldGroupProfile> getGroupsFromConfig() {
+    private List<GroupProfileContainer> getGroupsFromConfig() {
         Logging.finer("Getting world groups from config file");
         ConfigurationSection groupsSection = getConfig().getConfigurationSection("groups");
         if (groupsSection == null) {
@@ -97,10 +97,10 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         }
         Set<String> groupNames = groupsSection.getKeys(false);
         Logging.finer("Loading groups: " + groupNames.toString());
-        List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>(groupNames.size());
+        List<GroupProfileContainer> worldGroups = new ArrayList<GroupProfileContainer>(groupNames.size());
         for (String groupName : groupNames) {
             Logging.finer("Attempting to load group: " + groupName + "...");
-            WorldGroupProfile worldGroup;
+            GroupProfileContainer worldGroup;
             try {
                 ConfigurationSection groupSection =
                         getConfig().getConfigurationSection("groups." + groupName);
@@ -120,9 +120,9 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         return worldGroups;
     }
 
-    private WorldGroupProfile deserializeGroup(final String name, final Map<String, Object> dataMap)
+    private GroupProfileContainer deserializeGroup(final String name, final Map<String, Object> dataMap)
             throws DeserializationException {
-        WorldGroupProfile profile = new DefaultWorldGroupProfile(this.plugin, name);
+        GroupProfileContainer profile = new DefaultGroupProfileContainer(this.plugin, name);
         if (dataMap.containsKey("worlds")) {
             Object worldListObj = dataMap.get("worlds");
             if (worldListObj == null) {
@@ -186,12 +186,12 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         return profile;
     }
 
-    private void updateWorldGroup(WorldGroupProfile worldGroup) {
+    private void updateWorldGroup(GroupProfileContainer worldGroup) {
         Logging.finer("Updating group in config: " + worldGroup.getName());
         getConfig().createSection("groups." + worldGroup.getName(), serializeWorldGroupProfile(worldGroup));
     }
 
-    private Map<String, Object> serializeWorldGroupProfile(WorldGroupProfile profile) {
+    private Map<String, Object> serializeWorldGroupProfile(GroupProfileContainer profile) {
         Map<String, Object> results = new LinkedHashMap<>();
         results.put("worlds", Lists.newArrayList(profile.getWorlds()));
         List<String> sharesList = profile.getShares().toStringList();
@@ -207,7 +207,7 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
         return results;
     }
 
-    private void removeWorldGroup(WorldGroupProfile worldGroup) {
+    private void removeWorldGroup(GroupProfileContainer worldGroup) {
         Logging.finer("Removing group from config: " + worldGroup.getName());
         getConfig().set("groups." + worldGroup.getName(), null);
     }
@@ -217,14 +217,14 @@ final class YamlGroupProfileManager extends AbstractGroupProfileManager {
     }
 
     @Override
-    public void updateGroup(final WorldGroupProfile worldGroup) {
+    public void updateGroup(final GroupProfileContainer worldGroup) {
         super.updateGroup(worldGroup);
         updateWorldGroup(worldGroup);
         save();
     }
 
     @Override
-    public boolean removeGroup(WorldGroupProfile worldGroup) {
+    public boolean removeGroup(GroupProfileContainer worldGroup) {
         if (super.removeGroup(worldGroup)) {
             removeWorldGroup(worldGroup);
             save();

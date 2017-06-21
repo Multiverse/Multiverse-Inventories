@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
@@ -9,10 +9,10 @@ import org.bukkit.conversations.Prompt;
 
 class GroupModifyPrompt extends InventoriesPrompt {
 
-    protected final WorldGroupProfile group;
+    protected final GroupProfileContainer group;
 
     public GroupModifyPrompt(final MultiverseInventories plugin, final CommandSender sender,
-                             final WorldGroupProfile group) {
+                             final GroupProfileContainer group) {
         super(plugin, sender);
         this.group = group;
     }

@@ -30,7 +30,7 @@ class YamlToJsonConverter {
                 }
             }
         } else {
-            Logging.warning("There was an issue converting per-world profiles!");
+            Logging.warning("There was an issue converting per-world profile containers!");
         }
         files = groupsFolder.listFiles();
         if (files != null) {

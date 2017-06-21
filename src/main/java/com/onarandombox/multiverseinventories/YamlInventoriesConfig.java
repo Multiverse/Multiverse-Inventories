@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
@@ -206,7 +206,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
      */
     @Override
     @Deprecated
-    public List<WorldGroupProfile> getWorldGroups() {
+    public List<GroupProfileContainer> getWorldGroups() {
         return plugin.getGroupManager().getGroups();
     }
 
@@ -309,7 +309,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
      */
     @Override
     @Deprecated
-    public void updateWorldGroup(WorldGroupProfile worldGroup) {
+    public void updateWorldGroup(GroupProfileContainer worldGroup) {
     }
 
     /**
@@ -317,7 +317,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
      */
     @Override
     @Deprecated
-    public void removeWorldGroup(WorldGroupProfile worldGroup) {
+    public void removeWorldGroup(GroupProfileContainer worldGroup) {
     }
 
     /**

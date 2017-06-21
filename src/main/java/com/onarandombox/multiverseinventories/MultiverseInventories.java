@@ -7,8 +7,8 @@ import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.profile.WorldProfileManager;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.profile.WorldProfileContainerStore;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
@@ -56,7 +56,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private Messager messager = new DefaultMessager(this);
     private GroupProfileManager groupProfileManager = null;
-    private WorldProfileManager worldProfileManager = null;
+    private WorldProfileContainerStore worldProfileContainerStore = null;
     private ImportManager importManager = new ImportManager(this);
 
     private CommandHandler commandHandler = null;
@@ -76,7 +76,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             //getData().updateLastWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
                 ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
-                        getWorldManager().getWorldProfile(world).getPlayerData(player)));
+                        getWorldManager().getWorldProfileContainer(world).getPlayerData(player)));
                 getData().setLoadOnLogin(player.getName(), true);
             }
         }
@@ -256,7 +256,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         builder.append(this.logAndAddToPasteBinBuffer("Using GameMode Profiles: "
                 + this.getMVIConfig().isUsingGameModeProfiles()));
         builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
-        for (WorldGroupProfile group : this.getGroupManager().getGroups()) {
+        for (GroupProfileContainer group : this.getGroupManager().getGroups()) {
             builder.append(this.logAndAddToPasteBinBuffer(group.toString()));
         }
         return builder.toString();
@@ -283,7 +283,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             this.config = new YamlInventoriesConfig(this);
             this.groupProfileManager = new YamlGroupProfileManager(this, new File(getDataFolder(), "groups.yml"),
                     ((YamlInventoriesConfig) config).getConfig());
-            this.worldProfileManager = new WeakWorldProfileManager(this);
+            this.worldProfileContainerStore = new WeakWorldProfileContainerStore(this);
             //this.data = null;
             Logging.fine("Loaded config file!");
         } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
@@ -363,8 +363,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * @return The World/Group Profile manager for this plugin.
      * This is where you find access to individual player data.
      */
-    public WorldProfileManager getWorldManager() {
-        return this.worldProfileManager;
+    public WorldProfileContainerStore getWorldManager() {
+        return this.worldProfileContainerStore;
     }
 
     /**

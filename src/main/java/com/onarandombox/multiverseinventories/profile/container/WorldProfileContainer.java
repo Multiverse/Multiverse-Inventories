@@ -5,7 +5,7 @@ import org.bukkit.World;
 /**
  * Contains all the player profiles for a world.
  */
-public interface WorldProfile extends ProfileContainer {
+public interface WorldProfileContainer extends ProfileContainer {
 
     /**
      * @return The world associated with this player.

@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.api.share.Shares;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.List;
  */
 public final class GroupingConflict {
 
-    private WorldGroupProfile groupOne;
-    private WorldGroupProfile groupTwo;
+    private GroupProfileContainer groupOne;
+    private GroupProfileContainer groupTwo;
     private Shares conflictingShares;
 
-    public GroupingConflict(WorldGroupProfile groupOne, WorldGroupProfile groupTwo, Shares conflictingShares) {
+    public GroupingConflict(GroupProfileContainer groupOne, GroupProfileContainer groupTwo, Shares conflictingShares) {
         this.groupOne = groupOne;
         this.groupTwo = groupTwo;
         this.conflictingShares = conflictingShares;
@@ -24,14 +24,14 @@ public final class GroupingConflict {
     /**
      * @return The first group in the conflict.
      */
-    public WorldGroupProfile getFirstGroup() {
+    public GroupProfileContainer getFirstGroup() {
         return this.groupOne;
     }
 
     /**
      * @return The second group in the conflict.
      */
-    public WorldGroupProfile getSecondGroup() {
+    public GroupProfileContainer getSecondGroup() {
         return this.groupTwo;
     }
 

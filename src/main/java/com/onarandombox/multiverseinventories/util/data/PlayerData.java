@@ -11,7 +11,7 @@ import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 public interface PlayerData {
 
     /**
-     * Updates the persisted data for a player for a specific world profile.
+     * Updates the persisted data for a player for a specific profile.
      *
      *
      * @param playerProfile The profile for the player that is being updated.
@@ -31,7 +31,7 @@ public interface PlayerData {
     PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName);
 
     /**
-     * Removes the persisted data for a player for a specific world profile.
+     * Removes the persisted data for a player for a specific profile.
      *
      * @param containerType The type of container this profile is part of, world or group.
      * @param dataName   The name of the world/group the player's data is associated with.

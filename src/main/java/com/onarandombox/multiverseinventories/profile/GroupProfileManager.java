@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.List;
 /**
  * Manager class for manipulating the groups of this plugin that are contained in the groups configuration.
  */
+// TODO Needs to be changed with GroupProfileContainer into 2 classes for 2 different responsibilities
 public interface GroupProfileManager {
 
     /**
@@ -18,7 +19,7 @@ public interface GroupProfileManager {
      * @param groupName Name of world group to retrieve. Casing is ignored.
      * @return The world group by the name given or null if one doesn't exist by that name.
      */
-    WorldGroupProfile getGroup(String groupName);
+    GroupProfileContainer getGroup(String groupName);
 
     /**
      * Returns a list of all the world groups defined in Multiverse-Inventories's groups configuration.
@@ -27,7 +28,7 @@ public interface GroupProfileManager {
      *
      * @return An unmodifiable list of all world groups.
      */
-    List<WorldGroupProfile> getGroups();
+    List<GroupProfileContainer> getGroups();
 
     /**
      * Retrieves all of the world groups associated with the given world.
@@ -35,7 +36,7 @@ public interface GroupProfileManager {
      * @param worldName Name of the world to get groups for.
      * @return List of World Groups associated with the world or null if none.
      */
-    List<WorldGroupProfile> getGroupsForWorld(String worldName);
+    List<GroupProfileContainer> getGroupsForWorld(String worldName);
 
     /**
      * Check if the given world has any configured groups.
@@ -52,7 +53,7 @@ public interface GroupProfileManager {
      * @deprecated This feature is now completely unused.
      */
     @Deprecated
-    void setGroups(List<WorldGroupProfile> worldGroups);
+    void setGroups(List<GroupProfileContainer> worldGroups);
 
     /**
      * Adds a World Group to the collection in memory, also writing it to the groups configuration.
@@ -62,7 +63,7 @@ public interface GroupProfileManager {
      * @deprecated
      */
     @Deprecated
-    void addGroup(WorldGroupProfile worldGroup, boolean persist);
+    void addGroup(GroupProfileContainer worldGroup, boolean persist);
 
     /**
      * Adds or updates a world group in Multiverse-Inventories.
@@ -72,12 +73,12 @@ public interface GroupProfileManager {
      * <p/>
      * If the group does not exist it will be added to the groups configuration.
      * <p/>
-     * If worldGroup's name matches the name of a different WorldGroupProfile object that is already
+     * If worldGroup's name matches the name of a different WorldGroupProfileContainer object that is already
      * known, the previous object will be overwritten with worldGroup parameter.
      *
      * @param worldGroup the world group to add.
      */
-    void updateGroup(WorldGroupProfile worldGroup);
+    void updateGroup(GroupProfileContainer worldGroup);
 
     /**
      * Removes a world group from the collection in memory AND from the groups configuration.
@@ -85,19 +86,19 @@ public interface GroupProfileManager {
      * @param worldGroup the world group to remove.
      * @return true if group was removed.
      */
-    boolean removeGroup(WorldGroupProfile worldGroup);
+    boolean removeGroup(GroupProfileContainer worldGroup);
 
     /**
      * Creates a new empty world group.
      * <p/>
      * Please note if you do not add worlds to this group it will not persist very well.
      * This does not automatically persist the new group.  It must bed added via
-     * {@link #updateGroup(WorldGroupProfile)}
+     * {@link #updateGroup(GroupProfileContainer)}
      *
      * @param name A name for the new group.
      * @return The newly created world group.
      */
-    WorldGroupProfile newEmptyGroup(String name);
+    GroupProfileContainer newEmptyGroup(String name);
 
     /**
      * Creates a default world group including all of the loaded MV worlds sharing everything.
@@ -107,7 +108,7 @@ public interface GroupProfileManager {
     /**
      * @return The default world group which may be empty.
      */
-    WorldGroupProfile getDefaultGroup();
+    GroupProfileContainer getDefaultGroup();
 
     /**
      * Checks all the world groups to see if there are any potential issues.

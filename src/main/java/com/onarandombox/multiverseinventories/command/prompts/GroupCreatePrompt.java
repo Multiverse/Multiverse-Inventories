@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
@@ -20,13 +20,13 @@ class GroupCreatePrompt extends InventoriesPrompt {
 
     @Override
     public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
-        final WorldGroupProfile group = plugin.getGroupManager().getGroup(s);
+        final GroupProfileContainer group = plugin.getGroupManager().getGroup(s);
         if (group == null) {
             if (s.isEmpty() || !s.matches("^[a-zA-Z0-9][a-zA-Z0-9_]*$")) {
                 messager.normal(Message.GROUP_INVALID_NAME, sender);
                 return this;
             }
-            final WorldGroupProfile newGroup = plugin.getGroupManager().newEmptyGroup(s);
+            final GroupProfileContainer newGroup = plugin.getGroupManager().newEmptyGroup(s);
             return new GroupWorldsPrompt(plugin, sender, newGroup,
                     new GroupSharesPrompt(plugin, sender, newGroup, Prompt.END_OF_CONVERSATION, true), true);
         } else {

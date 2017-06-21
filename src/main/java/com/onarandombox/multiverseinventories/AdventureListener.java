@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
-import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.container.WorldProfileContainer;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,9 +23,9 @@ public class AdventureListener implements Listener {
      */
     @EventHandler
     public void worldReset(MVAResetFinishedEvent event) {
-        WorldProfile worldProfile = inventories.getWorldManager().getWorldProfile(event.getWorld());
+        WorldProfileContainer container = inventories.getWorldManager().getWorldProfileContainer(event.getWorld());
         for (OfflinePlayer player : inventories.getServer().getOfflinePlayers()) {
-            worldProfile.removeAllPlayerData(player);
+            container.removeAllPlayerData(player);
         }
         Logging.info("Removed all inventories for Multiverse-Adventure world.");
     }

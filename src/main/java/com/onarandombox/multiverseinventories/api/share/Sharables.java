@@ -5,7 +5,7 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -606,7 +606,7 @@ public final class Sharables implements Shares {
         if (!ALL_SHARABLES.contains(sharable)) {
             // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
             if (inventories != null) {
-                for (WorldGroupProfile group : inventories.getGroupManager().getGroups()) {
+                for (GroupProfileContainer group : inventories.getGroupManager().getGroups()) {
                     if (group.getShares().isSharing(Sharables.all())) {
                         group.getShares().setSharing(sharable, true);
 

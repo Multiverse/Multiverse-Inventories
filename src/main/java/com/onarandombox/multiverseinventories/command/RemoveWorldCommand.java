@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
@@ -41,7 +41,7 @@ public class RemoveWorldCommand extends InventoriesCommand {
             this.messager.normal(Message.ERROR_NO_WORLD, sender, args.get(0));
             return;
         }
-        WorldGroupProfile worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
+        GroupProfileContainer worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
         if (worldGroup == null) {
             this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;

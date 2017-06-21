@@ -14,7 +14,7 @@ import java.util.Set;
  * Profile container which allows World Groups to hold player profiles.
  */
 // TODO This class has too many responsibilities...
-public interface WorldGroupProfile extends ProfileContainer {
+public interface GroupProfileContainer extends ProfileContainer {
 
     /**
      * Get the name of this World Group.

@@ -5,8 +5,8 @@ import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.WorldProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
@@ -76,7 +76,7 @@ public class WorldInventoriesImporter implements DataImporter {
         }
 
         if (!wiGroups.isEmpty()) {
-            WorldGroupProfile defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
+            GroupProfileContainer defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
             if (defaultWorldGroup != null) {
                 this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
                 Logging.info("Removed automatically created world group in favor of imported groups.");
@@ -84,7 +84,7 @@ public class WorldInventoriesImporter implements DataImporter {
         }
 
         this.createGroups(wiGroups);
-        Set<WorldProfile> noGroupWorlds = this.getWorldsWithoutGroups();
+        Set<WorldProfileContainer> noGroupWorlds = this.getWorldsWithoutGroups();
         this.inventories.getMVIConfig().save();
 
         OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
@@ -96,7 +96,7 @@ public class WorldInventoriesImporter implements DataImporter {
             Logging.finer("(" + playerCount + "/" + offlinePlayers.length
                     + ")Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
-                WorldGroupProfile worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
+                GroupProfileContainer worldGroup = this.inventories.getGroupManager().getGroup(wiGroup.getName());
                 if (worldGroup == null) {
                     Logging.finest("Could not import player data for WorldInventories group: " + wiGroup.getName()
                             + " because there is no Multiverse-Inventories group by that name.");
@@ -104,8 +104,8 @@ public class WorldInventoriesImporter implements DataImporter {
                 }
                 this.transferData(player, wiGroup, worldGroup);
             }
-            for (WorldProfile worldProfile : noGroupWorlds) {
-                this.transferData(player, null, worldProfile);
+            for (WorldProfileContainer container : noGroupWorlds) {
+                this.transferData(player, null, container);
             }
         }
 
@@ -119,7 +119,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 Logging.warning("Group '" + wiGroup.getName() + "' has no worlds."
                         + "  You may need to add these manually!");
             }
-            WorldGroupProfile newGroup = this.inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
+            GroupProfileContainer newGroup = this.inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
             }
@@ -142,13 +142,13 @@ public class WorldInventoriesImporter implements DataImporter {
         }
     }
 
-    private Set<WorldProfile> getWorldsWithoutGroups() {
-        Set<WorldProfile> noGroupWorlds = new LinkedHashSet<WorldProfile>();
+    private Set<WorldProfileContainer> getWorldsWithoutGroups() {
+        Set<WorldProfileContainer> noGroupWorlds = new LinkedHashSet<WorldProfileContainer>();
         for (World world : Bukkit.getWorlds()) {
             if (this.inventories.getGroupManager().getGroupsForWorld(world.getName()).isEmpty()) {
                 Logging.fine("Added ungrouped world for importing.");
-                WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(world.getName());
-                noGroupWorlds.add(worldProfile);
+                WorldProfileContainer container = this.inventories.getWorldManager().getWorldProfileContainer(world.getName());
+                noGroupWorlds.add(container);
             }
         }
         return noGroupWorlds;

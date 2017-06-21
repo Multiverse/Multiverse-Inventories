@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
 import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public interface InventoriesConfig {
      *             {@link GroupProfileManager}
      */
     @Deprecated
-    List<WorldGroupProfile> getWorldGroups();
+    List<GroupProfileContainer> getWorldGroups();
 
     /**
      * Updates the data of the specified world group in the config.  This will create a
@@ -51,7 +51,7 @@ public interface InventoriesConfig {
      *             {@link GroupProfileManager}
      */
     @Deprecated
-    void updateWorldGroup(WorldGroupProfile worldGroup);
+    void updateWorldGroup(GroupProfileContainer worldGroup);
 
     /**
      * Removes the specified world group in the config.
@@ -61,7 +61,7 @@ public interface InventoriesConfig {
      *             {@link GroupProfileManager}
      */
     @Deprecated
-    void removeWorldGroup(WorldGroupProfile worldGroup);
+    void removeWorldGroup(GroupProfileContainer worldGroup);
 
     /**
      * Tells whether this is the first time the plugin has run as set by a config flag.

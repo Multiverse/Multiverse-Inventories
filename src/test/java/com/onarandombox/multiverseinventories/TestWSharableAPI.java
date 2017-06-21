@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.SharableHandler;
@@ -165,7 +165,7 @@ public class TestWSharableAPI {
         String[] cmdArgs = new String[]{"debug", "3"};
         inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
 
-        WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
+        GroupProfileContainer newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         newGroup.getShares().remove(OPTIONAL);

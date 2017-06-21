@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.command.CommandSender;
@@ -27,11 +27,11 @@ public class ListCommand extends InventoriesCommand {
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        Collection<WorldGroupProfile> groups = this.plugin.getGroupManager().getGroups();
+        Collection<GroupProfileContainer> groups = this.plugin.getGroupManager().getGroups();
         String groupsString = "N/A";
         if (!groups.isEmpty()) {
             StringBuilder builder = new StringBuilder();
-            for (WorldGroupProfile group : groups) {
+            for (GroupProfileContainer group : groups) {
                 if (!builder.toString().isEmpty()) {
                     builder.append(", ");
                 }

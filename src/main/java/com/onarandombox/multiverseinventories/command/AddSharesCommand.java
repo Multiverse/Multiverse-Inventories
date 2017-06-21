@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -66,7 +66,7 @@ public class AddSharesCommand extends InventoriesCommand {
             this.messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender, args.get(0));
             return;
         }
-        WorldGroupProfile worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
+        GroupProfileContainer worldGroup = this.plugin.getGroupManager().getGroup(args.get(1));
         if (worldGroup == null) {
             this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;

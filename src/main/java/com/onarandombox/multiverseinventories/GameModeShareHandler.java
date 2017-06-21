@@ -3,8 +3,8 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.WorldProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
 import com.onarandombox.multiverseinventories.util.Perm;
@@ -33,22 +33,22 @@ final class GameModeShareHandler extends ShareHandler {
         Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
-        WorldProfile worldProfile = this.inventories.getWorldManager().getWorldProfile(world);
-        this.addFromProfile(worldProfile, Sharables.allOf(), worldProfile.getPlayerData(fromType, player));
+        WorldProfileContainer worldProfileContainer = this.inventories.getWorldManager().getWorldProfileContainer(world);
+        this.addFromProfile(worldProfileContainer, Sharables.allOf(), worldProfileContainer.getPlayerData(fromType, player));
 
         if (Perm.BYPASS_WORLD.hasBypass(player, world)) {
             this.hasBypass = true;
             return;
         }
 
-        List<WorldGroupProfile> worldGroups = this.inventories.getGroupManager().getGroupsForWorld(world);
-        for (WorldGroupProfile worldGroup : worldGroups) {
+        List<GroupProfileContainer> worldGroups = this.inventories.getGroupManager().getGroupsForWorld(world);
+        for (GroupProfileContainer worldGroup : worldGroups) {
             this.addFromProfile(worldGroup, Sharables.allOf(), worldGroup.getPlayerData(fromType, player));
             this.addToProfile(worldGroup, Sharables.allOf(), worldGroup.getPlayerData(toType, player));
         }
         if (worldGroups.isEmpty()) {
             Logging.finer("No groups for world.");
-            this.addToProfile(worldProfile, Sharables.allOf(), worldProfile.getPlayerData(toType, player));
+            this.addToProfile(worldProfileContainer, Sharables.allOf(), worldProfileContainer.getPlayerData(toType, player));
         }
     }
 }

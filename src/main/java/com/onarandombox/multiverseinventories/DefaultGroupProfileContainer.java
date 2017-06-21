@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * Implementation of WorldGroupProfile.
  */
-class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGroupProfile {
+class DefaultGroupProfileContainer extends WeakProfileContainer implements GroupProfileContainer {
 
     private final String name;
     private final HashSet<String> worlds = new HashSet<String>();
@@ -22,7 +22,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
 
-    DefaultWorldGroupProfile(final MultiverseInventories inventories, final String name) {
+    DefaultGroupProfileContainer(final MultiverseInventories inventories, final String name) {
         super(inventories);
         this.name = name;
     }

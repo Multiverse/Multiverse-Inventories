@@ -3,7 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.profile.GroupingConflict;
-import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
+import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -24,7 +24,7 @@ import java.util.Map;
 abstract class AbstractGroupProfileManager implements GroupProfileManager {
 
     static final String DEFAULT_GROUP_NAME = "default";
-    protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<>();
+    protected final Map<String, GroupProfileContainer> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
 
     public AbstractGroupProfileManager(final MultiverseInventories plugin) {
@@ -35,7 +35,7 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public WorldGroupProfile getGroup(String groupName) {
+    public GroupProfileContainer getGroup(String groupName) {
         return this.groupNamesMap.get(groupName.toLowerCase());
     }
 
@@ -43,18 +43,18 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public List<WorldGroupProfile> getGroups() {
-        return Collections.unmodifiableList(new ArrayList<WorldGroupProfile>(this.getGroupNames().values()));
+    public List<GroupProfileContainer> getGroups() {
+        return Collections.unmodifiableList(new ArrayList<GroupProfileContainer>(this.getGroupNames().values()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<WorldGroupProfile> getGroupsForWorld(String worldName) {
+    public List<GroupProfileContainer> getGroupsForWorld(String worldName) {
         worldName = worldName.toLowerCase();
-        List<WorldGroupProfile> worldGroups = new ArrayList<WorldGroupProfile>();
-        for (WorldGroupProfile worldGroup : this.getGroupNames().values()) {
+        List<GroupProfileContainer> worldGroups = new ArrayList<GroupProfileContainer>();
+        for (GroupProfileContainer worldGroup : this.getGroupNames().values()) {
             if (worldGroup.containsWorld(worldName)) {
                 worldGroups.add(worldGroup);
             }
@@ -81,7 +81,7 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      *
      * @return Map of Group Name -> World Group
      */
-    protected Map<String, WorldGroupProfile> getGroupNames() {
+    protected Map<String, GroupProfileContainer> getGroupNames() {
         return this.groupNamesMap;
     }
 
@@ -90,23 +90,23 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     @Deprecated
-    public void addGroup(final WorldGroupProfile worldGroup, final boolean persist) {
+    public void addGroup(final GroupProfileContainer worldGroup, final boolean persist) {
         updateGroup(worldGroup);
     }
 
     @Override
-    public void updateGroup(final WorldGroupProfile worldGroup) {
+    public void updateGroup(final GroupProfileContainer worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
     }
 
-    protected void persistGroup(final WorldGroupProfile worldGroup) {
+    protected void persistGroup(final GroupProfileContainer worldGroup) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean removeGroup(final WorldGroupProfile worldGroup) {
+    public boolean removeGroup(final GroupProfileContainer worldGroup) {
         return getGroupNames().remove(worldGroup.getName().toLowerCase()) != null;
     }
 
@@ -114,11 +114,11 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public WorldGroupProfile newEmptyGroup(String name) {
+    public GroupProfileContainer newEmptyGroup(String name) {
         if (getGroup(name) != null) {
             return null;
         }
-        return new DefaultWorldGroupProfile(this.plugin, name);
+        return new DefaultGroupProfileContainer(this.plugin, name);
     }
 
     /**
@@ -126,7 +126,7 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     @Deprecated
-    public void setGroups(List<WorldGroupProfile> worldGroups) {
+    public void setGroups(List<GroupProfileContainer> worldGroups) {
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroupProfile worldGroup = new DefaultWorldGroupProfile(this.plugin, DEFAULT_GROUP_NAME);
+        GroupProfileContainer worldGroup = new DefaultGroupProfileContainer(this.plugin, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -162,8 +162,8 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public WorldGroupProfile getDefaultGroup() {
-        WorldGroupProfile group = this.getGroupNames().get(DEFAULT_GROUP_NAME);
+    public GroupProfileContainer getDefaultGroup() {
+        GroupProfileContainer group = this.getGroupNames().get(DEFAULT_GROUP_NAME);
         if (group == null) {
             group = newEmptyGroup(DEFAULT_GROUP_NAME);
             group.getShares().setSharing(Sharables.allOf(), true);
@@ -178,10 +178,10 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
     @Override
     public List<GroupingConflict> checkGroups() {
         List<GroupingConflict> conflicts = new ArrayList<GroupingConflict>();
-        Map<WorldGroupProfile, WorldGroupProfile> previousConflicts = new HashMap<WorldGroupProfile, WorldGroupProfile>();
-        for (WorldGroupProfile checkingGroup : this.getGroupNames().values()) {
+        Map<GroupProfileContainer, GroupProfileContainer> previousConflicts = new HashMap<GroupProfileContainer, GroupProfileContainer>();
+        for (GroupProfileContainer checkingGroup : this.getGroupNames().values()) {
             for (String worldName : checkingGroup.getWorlds()) {
-                for (WorldGroupProfile worldGroup : this.getGroupsForWorld(worldName)) {
+                for (GroupProfileContainer worldGroup : this.getGroupsForWorld(worldName)) {
                     if (checkingGroup.equals(worldGroup)) {
                         continue;
                     }
