@@ -3,16 +3,37 @@ package com.onarandombox.multiverseinventories.profile;
 /**
  * Used to differentiate between profiles in the same world or world group, primarily for game modes.
  */
-public interface ProfileType {
+public final class ProfileType {
+
+    static ProfileType createProfileType(String name) {
+        return new ProfileType(name);
+    }
+
+    private String name;
+
+    private ProfileType(String name) {
+        this.name = name;
+    }
 
     /**
      * @return The name of the profile.  The default profile type will return a blank string.
      */
-    String getName();
+    public String getName() {
+        return name;
+    }
 
-    /**
-     * @return The {@link com.onarandombox.multiverseinventories.api.share.Sharable}s this Profile will handle.
-     * When not set up in the config, this should return {@link com.onarandombox.multiverseinventories.api.share.Sharables#allOf()}
-     */
-    //Shares getShares();
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof ProfileType && ((ProfileType) o).getName().equals(this.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "ProfileType:" + getName();
+    }
 }

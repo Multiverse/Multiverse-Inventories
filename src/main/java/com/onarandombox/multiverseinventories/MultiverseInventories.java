@@ -293,8 +293,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             return;
         }
 
-        ProfileTypes.resetProfileTypes();
-
         this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
             @Override
             public void run() {
