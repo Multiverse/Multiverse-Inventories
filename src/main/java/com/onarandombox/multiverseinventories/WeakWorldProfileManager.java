@@ -1,20 +1,17 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
-import com.onarandombox.multiverseinventories.api.profile.WorldProfileManager;
+import com.onarandombox.multiverseinventories.profile.WorldProfileManager;
 
 import java.util.Map;
 import java.util.WeakHashMap;
 
-/**
- * Simple implementation of WorldProfileManager.
- */
 final class WeakWorldProfileManager implements WorldProfileManager {
 
     private Map<String, WorldProfile> worldProfiles = new WeakHashMap<String, WorldProfile>();
     private MultiverseInventories inventories;
 
-    public WeakWorldProfileManager(MultiverseInventories inventories) {
+    WeakWorldProfileManager(MultiverseInventories inventories) {
         this.inventories = inventories;
     }
 
@@ -22,17 +19,11 @@ final class WeakWorldProfileManager implements WorldProfileManager {
         return this.inventories;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void addWorldProfile(WorldProfile worldProfile) {
         this.worldProfiles.put(worldProfile.getWorld().toLowerCase(), worldProfile);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WorldProfile getWorldProfile(String worldName) {
         WorldProfile worldProfile = this.worldProfiles.get(worldName.toLowerCase());

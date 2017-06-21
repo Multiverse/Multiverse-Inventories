@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.profile;
+package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.profile.container.WorldProfile;
 
