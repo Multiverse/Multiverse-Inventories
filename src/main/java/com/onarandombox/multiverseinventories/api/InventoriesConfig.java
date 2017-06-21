@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.api;
 
+import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
@@ -36,7 +37,7 @@ public interface InventoriesConfig {
      *
      * @return List of world groups or null if there are none.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupManager}
+     *             {@link GroupProfileManager}
      */
     @Deprecated
     List<WorldGroupProfile> getWorldGroups();
@@ -47,7 +48,7 @@ public interface InventoriesConfig {
      *
      * @param worldGroup Group to update.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupManager}
+     *             {@link GroupProfileManager}
      */
     @Deprecated
     void updateWorldGroup(WorldGroupProfile worldGroup);
@@ -57,7 +58,7 @@ public interface InventoriesConfig {
      *
      * @param worldGroup Group to remove.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupManager}
+     *             {@link GroupProfileManager}
      */
     @Deprecated
     void removeWorldGroup(WorldGroupProfile worldGroup);

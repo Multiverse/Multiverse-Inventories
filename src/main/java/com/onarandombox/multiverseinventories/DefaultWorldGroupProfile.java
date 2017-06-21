@@ -183,7 +183,7 @@ class DefaultWorldGroupProfile extends WeakProfileContainer implements WorldGrou
      */
     @Override
     public boolean isDefault() {
-        return AbstractGroupManager.DEFAULT_GROUP_NAME.equals(getName());
+        return AbstractGroupProfileManager.DEFAULT_GROUP_NAME.equals(getName());
     }
 }
 

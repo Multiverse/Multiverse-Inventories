@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
@@ -21,13 +21,13 @@ import java.util.Map;
 /**
  * Abstract implementation of GroupManager with no persistence of groups.
  */
-abstract class AbstractGroupManager implements GroupManager {
+abstract class AbstractGroupProfileManager implements GroupProfileManager {
 
     static final String DEFAULT_GROUP_NAME = "default";
     protected final Map<String, WorldGroupProfile> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
 
-    public AbstractGroupManager(final MultiverseInventories plugin) {
+    public AbstractGroupProfileManager(final MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

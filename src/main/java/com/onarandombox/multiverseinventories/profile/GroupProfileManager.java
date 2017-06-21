@@ -1,17 +1,14 @@
-package com.onarandombox.multiverseinventories.api;
+package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.profile.GroupingConflict;
 import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
-import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Manager class for manipulating the groups of this plugin that are contained in the groups configuration.
  */
-public interface GroupManager {
+public interface GroupProfileManager {
 
     /**
      * Retrieves the world group associated with the given name.

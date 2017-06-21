@@ -4,7 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
-import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.container.WorldGroupProfile;
@@ -55,7 +55,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private final AdventureListener adventureListener = new AdventureListener(this);
 
     private Messager messager = new DefaultMessager(this);
-    private GroupManager groupManager = null;
+    private GroupProfileManager groupProfileManager = null;
     private WorldProfileManager worldProfileManager = null;
     private ImportManager importManager = new ImportManager(this);
 
@@ -281,7 +281,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     public void reloadConfig() {
         try {
             this.config = new YamlInventoriesConfig(this);
-            this.groupManager = new YamlGroupManager(this, new File(getDataFolder(), "groups.yml"),
+            this.groupProfileManager = new YamlGroupProfileManager(this, new File(getDataFolder(), "groups.yml"),
                     ((YamlInventoriesConfig) config).getConfig());
             this.worldProfileManager = new WeakWorldProfileManager(this);
             //this.data = null;
@@ -355,8 +355,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * @return The World Group manager for this plugin.
      */
-    public GroupManager getGroupManager() {
-        return this.groupManager;
+    public GroupProfileManager getGroupManager() {
+        return this.groupProfileManager;
     }
 
     /**

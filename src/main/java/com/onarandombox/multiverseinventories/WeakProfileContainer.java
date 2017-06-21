@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.GroupManager;
+import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
@@ -41,7 +41,7 @@ abstract class WeakProfileContainer implements ProfileContainer {
         return this.getInventories().getData();
     }
 
-    protected GroupManager getGroupManager() {
+    protected GroupProfileManager getGroupManager() {
         return this.getInventories().getGroupManager();
     }
 

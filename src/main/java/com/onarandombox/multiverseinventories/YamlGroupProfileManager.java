@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-final class YamlGroupManager extends AbstractGroupManager {
+final class YamlGroupProfileManager extends AbstractGroupProfileManager {
 
     private final List<String> groupSectionComments = Collections.unmodifiableList(new ArrayList<String>() {{
         add("# To ADD, DELETE, and EDIT groups use the command /mvinv group.");
@@ -31,7 +31,7 @@ final class YamlGroupManager extends AbstractGroupManager {
 
     private final CommentedYamlConfiguration groupsConfig;
 
-    YamlGroupManager(final MultiverseInventories inventories, final File groupConfigFile, final Configuration config)
+    YamlGroupProfileManager(final MultiverseInventories inventories, final File groupConfigFile, final Configuration config)
             throws IOException {
         super(inventories);
 
