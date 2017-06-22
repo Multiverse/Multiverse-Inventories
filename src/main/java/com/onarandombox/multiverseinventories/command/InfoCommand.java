@@ -1,8 +1,8 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
-import com.onarandombox.multiverseinventories.profile.container.WorldProfileContainer;
+import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
@@ -42,14 +42,14 @@ public class InfoCommand extends InventoriesCommand {
             name = args.get(0);
         }
 
-        WorldProfileContainer worldProfileContainer = this.plugin.getWorldManager().getWorldProfileContainer(name);
-        this.messager.normal(Message.INFO_WORLD, sender, name);
-        if (worldProfileContainer != null && Bukkit.getWorld(worldProfileContainer.getWorld()) != null) {
-            this.worldInfo(sender, worldProfileContainer);
+        ProfileContainer worldProfileContainer = this.plugin.getWorldProfileContainerStore().getContainer(name);
+        messager.normal(Message.INFO_WORLD, sender, name);
+        if (worldProfileContainer != null && Bukkit.getWorld(worldProfileContainer.getContainerName()) != null) {
+            worldInfo(sender, worldProfileContainer);
         } else {
-            this.messager.normal(Message.ERROR_NO_WORLD_PROFILE, sender, name);
+            messager.normal(Message.ERROR_NO_WORLD_PROFILE, sender, name);
         }
-        GroupProfileContainer worldGroup = this.plugin.getGroupManager().getGroup(name);
+        WorldGroup worldGroup = this.plugin.getGroupManager().getGroup(name);
         this.messager.normal(Message.INFO_GROUP, sender, name);
         if (worldGroup != null) {
             this.groupInfo(sender, worldGroup);
@@ -58,7 +58,7 @@ public class InfoCommand extends InventoriesCommand {
         }
     }
 
-    private void groupInfo(CommandSender sender, GroupProfileContainer worldGroup) {
+    private void groupInfo(CommandSender sender, WorldGroup worldGroup) {
         StringBuilder worldsString = new StringBuilder();
         Set<String> worlds = worldGroup.getWorlds();
         if (worlds.isEmpty()) {
@@ -75,14 +75,15 @@ public class InfoCommand extends InventoriesCommand {
                 sender, worldsString, worldGroup.getShares().toString());
     }
 
-    private void worldInfo(CommandSender sender, WorldProfileContainer worldProfileContainer) {
+    private void worldInfo(CommandSender sender, ProfileContainer worldProfileContainer) {
         StringBuilder groupsString = new StringBuilder();
-        List<GroupProfileContainer> worldGroups = this.plugin.getGroupManager().getGroupsForWorld(worldProfileContainer.getWorld());
+        List<WorldGroup> worldGroups = this.plugin.getGroupManager()
+                .getGroupsForWorld(worldProfileContainer.getContainerName());
 
         if (worldGroups.isEmpty()) {
             groupsString.append("N/A");
         } else {
-            for (GroupProfileContainer worldGroup : worldGroups) {
+            for (WorldGroup worldGroup : worldGroups) {
                 if (!groupsString.toString().isEmpty()) {
                     groupsString.append(", ");
                 }

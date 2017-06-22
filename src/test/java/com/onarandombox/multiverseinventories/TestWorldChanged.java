@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
@@ -372,7 +371,7 @@ public class TestWorldChanged {
         String[] cmdArgs = new String[]{"rmworld", "world2", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        GroupProfileContainer group = inventories.getGroupManager().newEmptyGroup("test");
+        WorldGroup group = inventories.getGroupManager().newEmptyGroup("test");
         group.addWorld("world");
         group.addWorld("world_nether");
         group.addWorld("world_the_end");

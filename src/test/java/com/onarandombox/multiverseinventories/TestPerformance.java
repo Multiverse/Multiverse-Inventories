@@ -2,7 +2,6 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
@@ -116,7 +115,7 @@ public class TestPerformance {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
-        GroupProfileContainer newGroup = inventories.getGroupManager().newEmptyGroup("test");
+        WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         inventories.getGroupManager().updateGroup(newGroup);
@@ -226,7 +225,7 @@ public class TestPerformance {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
-        GroupProfileContainer newGroup = inventories.getGroupManager().newEmptyGroup("test");
+        WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         inventories.getGroupManager().updateGroup(newGroup);
@@ -242,7 +241,7 @@ public class TestPerformance {
 
         Map<Sharable, Double> averageUpdatePlayer = new HashMap<Sharable, Double>();
         Map<Sharable, Double> averageUpdateProfile = new HashMap<Sharable, Double>();
-        PlayerProfile profile = inventories.getGroupManager().getDefaultGroup().getPlayerData(player);
+        PlayerProfile profile = inventories.getGroupManager().getDefaultGroup().getGroupProfileContainer().getPlayerData(player);
         for (Sharable share : Sharables.all()) {
             if (share.isOptional()) {
                 continue;

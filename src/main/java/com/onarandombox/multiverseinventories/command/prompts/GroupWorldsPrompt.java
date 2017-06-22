@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,13 +15,13 @@ import java.util.Set;
 
 class GroupWorldsPrompt extends InventoriesPrompt {
 
-    protected final GroupProfileContainer group;
+    protected final WorldGroup group;
     protected final Prompt nextPrompt;
     protected final boolean isCreating;
     protected final Set<String> worlds;
 
     public GroupWorldsPrompt(final MultiverseInventories plugin, final CommandSender sender,
-                             final GroupProfileContainer group, final Prompt nextPrompt,
+                             final WorldGroup group, final Prompt nextPrompt,
                              final boolean creatingGroup) {
         super(plugin, sender);
         this.group = group;

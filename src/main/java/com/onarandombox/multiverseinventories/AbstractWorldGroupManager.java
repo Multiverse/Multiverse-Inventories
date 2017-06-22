@@ -1,9 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
+import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.GroupingConflict;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -21,13 +20,13 @@ import java.util.Map;
 /**
  * Abstract implementation of GroupManager with no persistence of groups.
  */
-abstract class AbstractGroupProfileManager implements GroupProfileManager {
+abstract class AbstractWorldGroupManager implements WorldGroupManager {
 
     static final String DEFAULT_GROUP_NAME = "default";
-    protected final Map<String, GroupProfileContainer> groupNamesMap = new LinkedHashMap<>();
+    protected final Map<String, WorldGroup> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
 
-    public AbstractGroupProfileManager(final MultiverseInventories plugin) {
+    public AbstractWorldGroupManager(final MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 
@@ -35,33 +34,33 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public GroupProfileContainer getGroup(String groupName) {
-        return this.groupNamesMap.get(groupName.toLowerCase());
+    public WorldGroup getGroup(String groupName) {
+        return groupNamesMap.get(groupName.toLowerCase());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<GroupProfileContainer> getGroups() {
-        return Collections.unmodifiableList(new ArrayList<GroupProfileContainer>(this.getGroupNames().values()));
+    public List<WorldGroup> getGroups() {
+        return Collections.unmodifiableList(new ArrayList<WorldGroup>(getGroupNames().values()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<GroupProfileContainer> getGroupsForWorld(String worldName) {
+    public List<WorldGroup> getGroupsForWorld(String worldName) {
         worldName = worldName.toLowerCase();
-        List<GroupProfileContainer> worldGroups = new ArrayList<GroupProfileContainer>();
-        for (GroupProfileContainer worldGroup : this.getGroupNames().values()) {
+        List<WorldGroup> worldGroups = new ArrayList<>();
+        for (WorldGroup worldGroup : getGroupNames().values()) {
             if (worldGroup.containsWorld(worldName)) {
                 worldGroups.add(worldGroup);
             }
         }
         // Only use the default group for worlds managed by MV-Core
-        if (worldGroups.isEmpty() && this.plugin.getMVIConfig().isDefaultingUngroupedWorlds() && 
-                this.plugin.getCore().getMVWorldManager().isMVWorld(worldName)) {
+        if (worldGroups.isEmpty() && plugin.getMVIConfig().isDefaultingUngroupedWorlds() &&
+                plugin.getCore().getMVWorldManager().isMVWorld(worldName)) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());
         }
@@ -81,8 +80,8 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      *
      * @return Map of Group Name -> World Group
      */
-    protected Map<String, GroupProfileContainer> getGroupNames() {
-        return this.groupNamesMap;
+    protected Map<String, WorldGroup> getGroupNames() {
+        return groupNamesMap;
     }
 
     /**
@@ -90,23 +89,23 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     @Deprecated
-    public void addGroup(final GroupProfileContainer worldGroup, final boolean persist) {
+    public void addGroup(final WorldGroup worldGroup, final boolean persist) {
         updateGroup(worldGroup);
     }
 
     @Override
-    public void updateGroup(final GroupProfileContainer worldGroup) {
+    public void updateGroup(final WorldGroup worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
     }
 
-    protected void persistGroup(final GroupProfileContainer worldGroup) {
+    protected void persistGroup(final WorldGroup worldGroup) {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean removeGroup(final GroupProfileContainer worldGroup) {
+    public boolean removeGroup(final WorldGroup worldGroup) {
         return getGroupNames().remove(worldGroup.getName().toLowerCase()) != null;
     }
 
@@ -114,11 +113,11 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public GroupProfileContainer newEmptyGroup(String name) {
+    public WorldGroup newEmptyGroup(String name) {
         if (getGroup(name) != null) {
             return null;
         }
-        return new DefaultGroupProfileContainer(this.plugin, name);
+        return new WorldGroup(plugin, name);
     }
 
     /**
@@ -126,7 +125,7 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     @Deprecated
-    public void setGroups(List<GroupProfileContainer> worldGroups) {
+    public void setGroups(List<WorldGroup> worldGroups) {
     }
 
     /**
@@ -134,13 +133,13 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     public void createDefaultGroup() {
-        if (this.getGroup(DEFAULT_GROUP_NAME) != null) {
+        if (getGroup(DEFAULT_GROUP_NAME) != null) {
             return;
         }
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        GroupProfileContainer worldGroup = new DefaultGroupProfileContainer(this.plugin, DEFAULT_GROUP_NAME);
+        WorldGroup worldGroup = new WorldGroup(plugin, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -152,9 +151,9 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
             worldGroup.addWorld(defaultEnd);
             worlds.append(", ").append(defaultEnd.getName());
         }
-        this.updateGroup(worldGroup);
-        this.plugin.getMVIConfig().setFirstRun(false);
-        this.plugin.getMVIConfig().save();
+        updateGroup(worldGroup);
+        plugin.getMVIConfig().setFirstRun(false);
+        plugin.getMVIConfig().save();
         Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
     }
 
@@ -162,12 +161,12 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      * {@inheritDoc}
      */
     @Override
-    public GroupProfileContainer getDefaultGroup() {
-        GroupProfileContainer group = this.getGroupNames().get(DEFAULT_GROUP_NAME);
+    public WorldGroup getDefaultGroup() {
+        WorldGroup group = getGroupNames().get(DEFAULT_GROUP_NAME);
         if (group == null) {
             group = newEmptyGroup(DEFAULT_GROUP_NAME);
             group.getShares().setSharing(Sharables.allOf(), true);
-            this.updateGroup(group);
+            updateGroup(group);
         }
         return group;
     }
@@ -178,10 +177,10 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
     @Override
     public List<GroupingConflict> checkGroups() {
         List<GroupingConflict> conflicts = new ArrayList<GroupingConflict>();
-        Map<GroupProfileContainer, GroupProfileContainer> previousConflicts = new HashMap<GroupProfileContainer, GroupProfileContainer>();
-        for (GroupProfileContainer checkingGroup : this.getGroupNames().values()) {
+        Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<>();
+        for (WorldGroup checkingGroup : getGroupNames().values()) {
             for (String worldName : checkingGroup.getWorlds()) {
-                for (GroupProfileContainer worldGroup : this.getGroupsForWorld(worldName)) {
+                for (WorldGroup worldGroup : getGroupsForWorld(worldName)) {
                     if (checkingGroup.equals(worldGroup)) {
                         continue;
                     }
@@ -218,31 +217,31 @@ abstract class AbstractGroupProfileManager implements GroupProfileManager {
      */
     @Override
     public void checkForConflicts(CommandSender sender) {
-        String message = this.plugin.getMessager().getMessage(Message.CONFLICT_CHECKING);
+        String message = plugin.getMessager().getMessage(Message.CONFLICT_CHECKING);
         if (sender != null) {
-            this.plugin.getMessager().sendMessage(sender, message);
+            plugin.getMessager().sendMessage(sender, message);
         }
         Logging.fine(message);
-        List<GroupingConflict> conflicts = this.plugin.getGroupManager().checkGroups();
+        List<GroupingConflict> conflicts = plugin.getGroupManager().checkGroups();
         for (GroupingConflict conflict : conflicts) {
-            message = this.plugin.getMessager().getMessage(Message.CONFLICT_RESULTS,
+            message = plugin.getMessager().getMessage(Message.CONFLICT_RESULTS,
                     conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),
                     conflict.getConflictingShares().toString(), conflict.getWorldsString());
             if (sender != null) {
-                this.plugin.getMessager().sendMessage(sender, message);
+                plugin.getMessager().sendMessage(sender, message);
             }
             Logging.info(message);
         }
         if (!conflicts.isEmpty()) {
-            message = this.plugin.getMessager().getMessage(Message.CONFLICT_FOUND);
+            message = plugin.getMessager().getMessage(Message.CONFLICT_FOUND);
             if (sender != null) {
-                this.plugin.getMessager().sendMessage(sender, message);
+                plugin.getMessager().sendMessage(sender, message);
             }
             Logging.info(message);
         } else {
-            message = this.plugin.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
+            message = plugin.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
             if (sender != null) {
-                this.plugin.getMessager().sendMessage(sender, message);
+                plugin.getMessager().sendMessage(sender, message);
             }
             Logging.fine(message);
         }

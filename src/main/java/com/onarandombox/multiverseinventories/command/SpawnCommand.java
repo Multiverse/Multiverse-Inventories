@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -82,7 +82,7 @@ public class SpawnCommand extends InventoriesCommand {
 
     private void spawnAccurately(Player player) {
         World world = null;
-        for (GroupProfileContainer group : this.plugin.getGroupManager().getGroupsForWorld(player.getWorld().getName())) {
+        for (WorldGroup group : this.plugin.getGroupManager().getGroupsForWorld(player.getWorld().getName())) {
             if (group.getSpawnWorld() != null) {
                 world = Bukkit.getWorld(group.getSpawnWorld());
                 if (world != null) {

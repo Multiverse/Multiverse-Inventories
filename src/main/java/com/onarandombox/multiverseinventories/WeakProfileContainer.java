@@ -1,13 +1,14 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
+import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
+import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.util.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
-import com.onarandombox.multiverseinventories.profile.WorldProfileContainerStore;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -18,13 +19,17 @@ import java.util.WeakHashMap;
 /**
  * Implementation of ProfileContainer using WeakHashMaps to keep memory usage to a minimum.
  */
-abstract class WeakProfileContainer implements ProfileContainer {
+final class WeakProfileContainer implements ProfileContainer {
 
     private Map<String, Map<ProfileType, PlayerProfile>> playerData = new WeakHashMap<>();
     private final MultiverseInventories inventories;
+    private final String name;
+    private final ContainerType type;
 
-    WeakProfileContainer(MultiverseInventories inventories) {
+    WeakProfileContainer(MultiverseInventories inventories, String name, ContainerType type) {
         this.inventories = inventories;
+        this.name = name;
+        this.type = type;
     }
 
     /**
@@ -41,12 +46,12 @@ abstract class WeakProfileContainer implements ProfileContainer {
         return this.getInventories().getData();
     }
 
-    protected GroupProfileManager getGroupManager() {
+    protected WorldGroupManager getGroupManager() {
         return this.getInventories().getGroupManager();
     }
 
-    protected WorldProfileContainerStore getProfileManager() {
-        return this.getInventories().getWorldManager();
+    protected ProfileContainerStore getProfileManager() {
+        return this.getInventories().getWorldProfileContainerStore();
     }
 
     protected MultiverseInventories getInventories() {
@@ -93,6 +98,16 @@ abstract class WeakProfileContainer implements ProfileContainer {
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
         this.getDataSource().removePlayerData(getContainerType(), getContainerName(), profileType, player.getName());
+    }
+
+    @Override
+    public String getContainerName() {
+        return name;
+    }
+
+    @Override
+    public ContainerType getContainerType() {
+        return type;
     }
 }
 

@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.api;
 
-import com.onarandombox.multiverseinventories.profile.GroupProfileManager;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 
 import java.util.List;
@@ -37,10 +37,10 @@ public interface InventoriesConfig {
      *
      * @return List of world groups or null if there are none.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupProfileManager}
+     *             {@link WorldGroupManager}
      */
     @Deprecated
-    List<GroupProfileContainer> getWorldGroups();
+    List<WorldGroup> getWorldGroups();
 
     /**
      * Updates the data of the specified world group in the config.  This will create a
@@ -48,20 +48,20 @@ public interface InventoriesConfig {
      *
      * @param worldGroup Group to update.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupProfileManager}
+     *             {@link WorldGroupManager}
      */
     @Deprecated
-    void updateWorldGroup(GroupProfileContainer worldGroup);
+    void updateWorldGroup(WorldGroup worldGroup);
 
     /**
      * Removes the specified world group in the config.
      *
      * @param worldGroup Group to remove.
      * @deprecated World groups have been migrated out of the config and out of the InventoriesConfig class into
-     *             {@link GroupProfileManager}
+     *             {@link WorldGroupManager}
      */
     @Deprecated
-    void removeWorldGroup(GroupProfileContainer worldGroup);
+    void removeWorldGroup(WorldGroup worldGroup);
 
     /**
      * Tells whether this is the first time the plugin has run as set by a config flag.

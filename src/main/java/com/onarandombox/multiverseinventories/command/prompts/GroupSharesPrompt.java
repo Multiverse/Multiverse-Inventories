@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
+import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.api.share.Sharable;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
@@ -13,13 +13,13 @@ import org.bukkit.conversations.Prompt;
 
 class GroupSharesPrompt extends InventoriesPrompt {
 
-    protected final GroupProfileContainer group;
+    protected final WorldGroup group;
     protected final Prompt nextPrompt;
     protected final boolean isCreating;
     protected final Shares shares;
 
     public GroupSharesPrompt(final MultiverseInventories plugin, final CommandSender sender,
-                             final GroupProfileContainer group, final Prompt nextPrompt,
+                             final WorldGroup group, final Prompt nextPrompt,
                              final boolean creatingGroup) {
         super(plugin, sender);
         this.group = group;

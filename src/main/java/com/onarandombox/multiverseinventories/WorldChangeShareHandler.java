@@ -1,8 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.profile.container.GroupProfileContainer;
-import com.onarandombox.multiverseinventories.profile.container.WorldProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.api.share.Sharables;
 import com.onarandombox.multiverseinventories.api.share.Shares;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
@@ -27,8 +26,8 @@ final class WorldChangeShareHandler extends ShareHandler {
         Logging.finer("=== " + event.getPlayer().getName() + " traveling from world: " + event.getFromWorld()
                 + " to " + "world: " + event.getToWorld() + " ===");
         // Grab the player from the world they're coming from to save their stuff to every time.
-        WorldProfileContainer fromWorldProfileContainer = this.inventories.getWorldManager()
-                .getWorldProfileContainer(event.getFromWorld());
+        ProfileContainer fromWorldProfileContainer = inventories.getWorldProfileContainerStore()
+                .getContainer(event.getFromWorld());
         this.addFromProfile(fromWorldProfileContainer, Sharables.allOf(),
                 fromWorldProfileContainer.getPlayerData(event.getPlayer()));
 
@@ -38,17 +37,17 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         // Get any groups we need to save stuff to.
-        List<GroupProfileContainer> fromWorldGroups = this.inventories.getGroupManager()
+        List<WorldGroup> fromWorldGroups = this.inventories.getGroupManager()
                 .getGroupsForWorld(event.getFromWorld());
-        for (GroupProfileContainer fromWorldGroup : fromWorldGroups) {
+        for (WorldGroup fromWorldGroup : fromWorldGroups) {
+            ProfileContainer container = fromWorldGroup.getGroupProfileContainer();
             if (!fromWorldGroup.containsWorld(event.getToWorld())) {
-                this.addFromProfile(fromWorldGroup,
-                        Sharables.fromShares(fromWorldGroup.getShares()),
-                        fromWorldGroup.getPlayerData(event.getPlayer()));
+                addFromProfile(container, Sharables.fromShares(fromWorldGroup.getShares()),
+                        container.getPlayerData(event.getPlayer()));
             } else {
                 if (!fromWorldGroup.getShares().isSharing(Sharables.all())) {
-                    this.addFromProfile(fromWorldGroup, Sharables.fromShares(fromWorldGroup.getShares()),
-                            fromWorldGroup.getPlayerData(event.getPlayer()));
+                    addFromProfile(container, Sharables.fromShares(fromWorldGroup.getShares()),
+                            container.getPlayerData(event.getPlayer()));
                 }
             }
         }
@@ -57,23 +56,23 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
         Shares sharesToUpdate = Sharables.noneOf();
         //Shares optionalSharesToUpdate = Sharables.noneOptional();
-        List<GroupProfileContainer> toWorldGroups = this.inventories.getGroupManager()
+        List<WorldGroup> toWorldGroups = this.inventories.getGroupManager()
                 .getGroupsForWorld(event.getToWorld());
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
-            for (GroupProfileContainer toWorldGroup : toWorldGroups) {
+            for (WorldGroup toWorldGroup : toWorldGroups) {
                 if (Perm.BYPASS_GROUP.hasBypass(event.getPlayer(), toWorldGroup.getName())) {
                     this.hasBypass = true;
                 } else {
+                    ProfileContainer container = toWorldGroup.getGroupProfileContainer();
                     if (!toWorldGroup.containsWorld(event.getFromWorld())) {
                         Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                        this.addToProfile(toWorldGroup,
-                                sharesToAdd, toWorldGroup.getPlayerData(event.getPlayer()));
+                        addToProfile(container, sharesToAdd, container.getPlayerData(event.getPlayer()));
                         sharesToUpdate.addAll(sharesToAdd);
                     } else {
                         if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                            this.addToProfile(toWorldGroup, sharesToAdd, toWorldGroup.getPlayerData(event.getPlayer()));
+                            addToProfile(container, sharesToAdd, container.getPlayerData(event.getPlayer()));
                             sharesToUpdate.addAll(sharesToAdd);
                         } else {
                             sharesToUpdate = Sharables.allOf();
@@ -84,9 +83,9 @@ final class WorldChangeShareHandler extends ShareHandler {
         } else {
             // Get world we need to load from.
             Logging.finer("No groups for toWorld.");
-            WorldProfileContainer toWorldProfileContainer = this.inventories.getWorldManager()
-                    .getWorldProfileContainer(event.getToWorld());
-            this.addToProfile(toWorldProfileContainer, Sharables.allOf(),
+            ProfileContainer toWorldProfileContainer = this.inventories.getWorldProfileContainerStore()
+                    .getContainer(event.getToWorld());
+            addToProfile(toWorldProfileContainer, Sharables.allOf(),
                     toWorldProfileContainer.getPlayerData(event.getPlayer()));
             sharesToUpdate = Sharables.allOf();
         }
@@ -97,9 +96,9 @@ final class WorldChangeShareHandler extends ShareHandler {
 
             // Get world we need to load from.
             Logging.finer(sharesToUpdate.toString() + " are left unhandled, defaulting to toWorld");
-            WorldProfileContainer toWorldProfileContainer = this.inventories.getWorldManager()
-                    .getWorldProfileContainer(event.getToWorld());
-            this.addToProfile(toWorldProfileContainer, sharesToUpdate,
+            ProfileContainer toWorldProfileContainer = this.inventories.getWorldProfileContainerStore()
+                    .getContainer(event.getToWorld());
+            addToProfile(toWorldProfileContainer, sharesToUpdate,
                     toWorldProfileContainer.getPlayerData(event.getPlayer()));
         }
     }
