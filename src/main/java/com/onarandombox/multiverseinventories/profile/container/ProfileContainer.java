@@ -6,14 +6,14 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 /**
- * A container for player profiles in a given world or world group (based on {@link #getContainerType()}.
+ * A container for player profiles in a given world or world group (based on {@link #getContainerType()}).
  * <p>Players may have separate profiles per game mode within this container if game mode profiles are enabled.</p>
  */
 public interface ProfileContainer {
 
     /**
      * Returns the name of this profile container which is primarily used for persistence purposes.
-     * <p>The name reflects the world name if this is a world profile container, or an arbitrary group name if
+     * <p>The name reflects the world name if this is a world profile container, or the arbitrary group name if
      * this is a world group profile container.</p>
      *
      * @return The name to use to look up Data.
