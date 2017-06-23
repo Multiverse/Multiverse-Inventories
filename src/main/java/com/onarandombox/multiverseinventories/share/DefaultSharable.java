@@ -13,18 +13,15 @@ final class DefaultSharable<T> implements Sharable<T> {
     private final ProfileEntry profileEntry;
     private final boolean optional;
     private final Class<T> type;
-    private final String nmsNBTTag;
 
     DefaultSharable(final String[] names, final Class<T> type, final SharableHandler<T> handler,
-                    final SharableSerializer<T> serializer, final ProfileEntry entry, final boolean optional,
-                    final String nmsNBTTag) {
+                    final SharableSerializer<T> serializer, final ProfileEntry entry, final boolean optional) {
         this.names = names;
         this.handler = handler;
         this.serializer = serializer;
         this.profileEntry = entry;
         this.optional = optional;
         this.type = type;
-        this.nmsNBTTag = nmsNBTTag;
         Sharables.register(this);
     }
 
@@ -82,13 +79,5 @@ final class DefaultSharable<T> implements Sharable<T> {
     @Override
     public boolean isOptional() {
         return this.optional;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getNMSNBTTag() {
-        return nmsNBTTag;
     }
 }

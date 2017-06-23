@@ -69,8 +69,7 @@ public final class Sharables implements Shares {
             player.getEnderChest().setContents(value);
             return true;
         }
-    }).nmsNBTTag(DataStrings.NMS_NBT_ENDER_CHEST)
-    .serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
+    }).serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
             new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
 
     /**
@@ -96,8 +95,7 @@ public final class Sharables implements Shares {
                     player.updateInventory();
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_INVENTORY)
-            .serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
                     new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
 
     /**
@@ -123,8 +121,7 @@ public final class Sharables implements Shares {
                     player.updateInventory();
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_INVENTORY)
-            .serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
                     new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
 
     /**
@@ -153,8 +150,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_HEALTH)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
             .altName("health").altName("hp").altName("hitpoints").build();
 
     /**
@@ -183,8 +179,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_AIR)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
 
     /**
      * Sharing Health.
@@ -240,8 +235,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_FALL_DISTANCE)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FALL_DISTANCE))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FALL_DISTANCE))
             .altName("falling").build();
 
     /**
@@ -270,8 +264,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_FIRE_TICKS)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FIRE_TICKS))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FIRE_TICKS))
             .altName("fire").altName("burning").build();
 
 
@@ -301,8 +294,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_EXPERIENCE)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
 
     /**
      * Sharing Experience.
@@ -330,8 +322,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_EXPERIENCE_LEVEL)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
 
     /**
      * Sharing Experience.
@@ -359,8 +350,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_EXPERIENCE_TOTAL)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE)).build();
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_TOTAL_EXPERIENCE)).build();
 
     /**
      * Sharing Hunger.
@@ -388,8 +378,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_FOOD_LEVEL)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_FOOD_LEVEL))
             .altName("food").build();
 
     /**
@@ -418,8 +407,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_FOOD_EXHAUSTION_LEVEL)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXHAUSTION))
             .altName("exhaust").altName("exh").build();
 
     /**
@@ -448,8 +436,7 @@ public final class Sharables implements Shares {
                     }
                     return true;
                 }
-            }).nmsNBTTag(DataStrings.NMS_NBT_FOOD_SATURATION_LEVEL)
-            .stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_SATURATION))
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_SATURATION))
             .altName("sat").build();
 
     /**

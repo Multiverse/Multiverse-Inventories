@@ -52,13 +52,6 @@ public interface Sharable<T> {
     boolean isOptional();
 
     /**
-     * Returns the net.minecraft.server NBT tag for this Sharable IF there is one.
-     *
-     * @return the net.minecraft.server NBT tag for this Sharable or null if not applicable.
-     */
-    String getNMSNBTTag();
-
-    /**
      * This class is used to build new {@link Sharable}s.  Simply instantiate this and use method chaining to set
      * all the options for your Sharable.
      *
@@ -72,7 +65,6 @@ public interface Sharable<T> {
         private SharableSerializer<T> serializer = null;
         private boolean optional = false;
         private Class<T> type;
-        private String nmsNBTTag = null;
 
         /**
          * @param name The primary name of the new Sharable.
@@ -121,18 +113,6 @@ public interface Sharable<T> {
         }
 
         /**
-         * Adds a tag for identifying the NMS version of the NBT tag for this sharable.  If this is not supplied, it
-         * will be assumed that this Sharable is not stored in the NBT data.
-         *
-         * @param nmsNBTTag the identifying tag for net.minecraft.server NBT data.
-         * @return This builder object for method chaining.
-         */
-        public Builder<T> nmsNBTTag(final String nmsNBTTag) {
-            this.nmsNBTTag = nmsNBTTag;
-            return this;
-        }
-
-        /**
          * This will make the Sharable use the default serializer which simply passes the data as is to the persistence
          * object for persistence.  This will only work depending on the data type this Sharable represents and further
          * depending on the types the persistence methods accept.  Generally, boxed primitives are okay as well as
@@ -168,7 +148,7 @@ public interface Sharable<T> {
          */
         public Sharable<T> build() {
             Sharable<T> sharable = new DefaultSharable<T>(names.toArray(new String[names.size()]), type,
-                    handler, serializer, profileEntry, optional, nmsNBTTag);
+                    handler, serializer, profileEntry, optional);
             ProfileEntry.register(sharable);
             return sharable;
         }
