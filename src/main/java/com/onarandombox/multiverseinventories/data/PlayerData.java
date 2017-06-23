@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.util.data;
+package com.onarandombox.multiverseinventories.data;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;

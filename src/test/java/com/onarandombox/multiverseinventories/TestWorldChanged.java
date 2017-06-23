@@ -5,7 +5,7 @@ import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
-import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
+import com.onarandombox.multiverseinventories.data.FlatFileDataHelper;
 import junit.framework.Assert;
 import org.bukkit.Color;
 import org.bukkit.Location;

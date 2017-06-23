@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.util.data;
+package com.onarandombox.multiverseinventories.data;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;

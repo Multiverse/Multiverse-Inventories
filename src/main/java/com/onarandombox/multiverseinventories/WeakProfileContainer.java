@@ -4,7 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.util.data.PlayerData;
+import com.onarandombox.multiverseinventories.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
