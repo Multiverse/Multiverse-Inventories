@@ -1,5 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
+import com.onarandombox.multiverseinventories.InventoriesConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public interface Sharable<T> {
     /**
      * @return True if this Sharable is optional.  That is to say that it is completely ignored when share handling
      * takes place UNLESS it is present in
-     * {@link com.onarandombox.multiverseinventories.api.InventoriesConfig#getOptionalShares()}.
+     * {@link InventoriesConfig#getOptionalShares()}.
      */
     boolean isOptional();
 

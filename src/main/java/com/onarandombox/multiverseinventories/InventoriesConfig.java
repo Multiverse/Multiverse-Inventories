@@ -1,7 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
@@ -14,9 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Implementation of Config.
+ * Provides methods for interacting with the configuration of Multiverse-Inventories.
  */
-class YamlInventoriesConfig implements InventoriesConfig {
+public final class InventoriesConfig {
 
     /**
      * Enum for easily keeping track of config paths, defaults and comments.
@@ -112,7 +111,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
     private CommentedYamlConfiguration config;
     private MultiverseInventories plugin;
 
-    public YamlInventoriesConfig(MultiverseInventories plugin) throws IOException {
+    InventoriesConfig(MultiverseInventories plugin) throws IOException {
         this.plugin = plugin;
         // Make the data folders
         if (plugin.getDataFolder().mkdirs()) {
@@ -146,7 +145,7 @@ class YamlInventoriesConfig implements InventoriesConfig {
      * Loads default settings for any missing config values.
      */
     private void setDefaults() {
-        for (YamlInventoriesConfig.Path path : YamlInventoriesConfig.Path.values()) {
+        for (InventoriesConfig.Path path : InventoriesConfig.Path.values()) {
             config.addComment(path.getPath(), path.getComments());
             if (this.getConfig().get(path.getPath()) == null) {
                 if (path.getDefault() != null) {
@@ -177,89 +176,90 @@ class YamlInventoriesConfig implements InventoriesConfig {
     }
 
     /**
-     * {@inheritDoc}
+     * Sets globalDebug level.
+     *
+     * @param globalDebug The new value. 0 = off.
      */
-    @Override
     public void setGlobalDebug(int globalDebug) {
         plugin.getCore().getMVConfig().setGlobalDebug(globalDebug);
     }
 
     /**
-     * {@inheritDoc}
+     * Gets globalDebug level.
+     *
+     * @return globalDebug.
      */
-    @Override
     public int getGlobalDebug() {
         return plugin.getCore().getMVConfig().getGlobalDebug();
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves the locale string from the config.
+     *
+     * @return The locale string.
      */
-    @Override
     public String getLocale() {
         return this.getString(Path.LANGUAGE_FILE_NAME);
     }
 
     /**
-     * {@inheritDoc}
+     * Tells whether this is the first time the plugin has run as set by a config flag.
+     *
+     * @return True if first_run is set to true in config.
      */
-    @Override
-    @Deprecated
-    public List<WorldGroup> getWorldGroups() {
-        return plugin.getGroupManager().getGroups();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isFirstRun() {
         return this.getBoolean(Path.FIRST_RUN);
     }
 
     /**
-     * {@inheritDoc}
+     * Sets the first_run flag in the config so that the plugin no longer thinks it is the first run.
+     *
+     * @param firstRun What to set the flag to in the config.
      */
-    @Override
-    public void setFirstRun(boolean firstRun) {
+    void setFirstRun(boolean firstRun) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
     }
 
     /**
-     * {@inheritDoc}
+     * @return True if we should check for bypass permissions.
      */
-    @Override
     public boolean isUsingBypass() {
         return this.getBoolean(Path.USE_BYPASS);
     }
 
     /**
-     * {@inheritDoc}
+     * @param useBypass Whether or not to check for bypass permissions.
      */
-    @Override
     public void setUsingBypass(boolean useBypass) {
         this.getConfig().set(Path.USE_BYPASS.getPath(), useBypass);
     }
 
     /**
-     * {@inheritDoc}
+     * Tells whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @return True if should save and load on player log out and in.
      */
-    @Override
     public boolean usingLoggingSaveLoad() {
         return this.getBoolean(Path.LOGGING_SAVE_LOAD);
     }
 
     /**
-     * {@inheritDoc}
+     * Sets whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @param useLoggingSaveLoad true if should save and load on player log out and in.
      */
-    @Override
     public void setUsingLoggingSaveLoad(boolean useLoggingSaveLoad) {
         this.getConfig().set(Path.LOGGING_SAVE_LOAD.getPath(), useLoggingSaveLoad);
     }
 
     private Shares optionalSharables = null;
 
-    @Override
+    /**
+     * @return A list of optional {@link com.onarandombox.multiverseinventories.share.Sharable}s to be treated as
+     *         regular {@link com.onarandombox.multiverseinventories.share.Sharable}s throughout the code.
+     *         A {@link com.onarandombox.multiverseinventories.share.Sharable} marked as optional is ignored if it is not
+     *         contained in this list.
+     */
     public Shares getOptionalShares() {
         if (this.optionalSharables == null) {
             List list = this.getConfig().getList(Path.OPTIONAL_SHARES.getPath());
@@ -273,56 +273,57 @@ class YamlInventoriesConfig implements InventoriesConfig {
         return this.optionalSharables;
     }
 
-    @Override
+    /**
+     * @return true if worlds with no group should be considered part of the default group.
+     */
     public boolean isDefaultingUngroupedWorlds() {
         return this.getBoolean(Path.DEFAULT_UNGROUPED_WORLDS);
     }
 
-    @Override
+    /**
+     * @param useDefaultGroup Set this to true to use the default group for ungrouped worlds.
+     */
     public void setDefaultingUngroupedWorlds(boolean useDefaultGroup) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), useDefaultGroup);
     }
 
-    @Override
+    /**
+     * @return True if using separate data for game modes.
+     */
     public boolean isUsingGameModeProfiles() {
         return this.getBoolean(Path.USE_GAME_MODE_PROFILES);
     }
 
-    @Override
+    /**
+     * @param useGameModeProfile whether to use separate data for game modes.
+     */
     public void setUsingGameModeProfiles(boolean useGameModeProfile) {
         this.getConfig().set(Path.USE_GAME_MODE_PROFILES.getPath(), useGameModeProfile);
     }
 
-    @Override
+    /**
+     * Whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @return true if should utilize optional shares in worlds that are not grouped.
+     */
     public boolean usingOptionalsForUngrouped() {
         return this.getBoolean(Path.USE_OPTIONALS_UNGROUPED);
     }
 
-    @Override
+    /**
+     * Sets whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @param usingOptionalsForUngrouped true if should utilize optional shares in worlds that are not grouped.
+     */
     public void setUsingOptionalsForUngrouped(final boolean usingOptionalsForUngrouped) {
         this.getConfig().set(Path.USE_OPTIONALS_UNGROUPED.getPath(), usingOptionalsForUngrouped);
     }
 
     /**
-     * {@inheritDoc}
+     * Saves the configuration file to disk.
      */
-    @Override
-    @Deprecated
-    public void updateWorldGroup(WorldGroup worldGroup) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
-    public void removeWorldGroup(WorldGroup worldGroup) {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+    // TODO remove need for this method.
+    // TODO Figure out what I meant by the above todo message...
     public void save() {
         if (this.optionalSharables != null) {
             this.getConfig().set(Path.OPTIONAL_SHARES.getPath(), this.optionalSharables.toStringList());

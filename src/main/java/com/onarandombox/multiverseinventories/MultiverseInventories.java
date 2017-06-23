@@ -5,7 +5,6 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
-import com.onarandombox.multiverseinventories.api.InventoriesConfig;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
@@ -281,9 +280,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     @Override
     public void reloadConfig() {
         try {
-            this.config = new YamlInventoriesConfig(this);
+            this.config = new InventoriesConfig(this);
             this.worldGroupManager = new YamlWorldGroupManager(this, new File(getDataFolder(), "groups.yml"),
-                    ((YamlInventoriesConfig) config).getConfig());
+                    ((InventoriesConfig) config).getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
             //this.data = null;
