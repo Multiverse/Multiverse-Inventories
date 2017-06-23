@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.api.share.Sharable;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;

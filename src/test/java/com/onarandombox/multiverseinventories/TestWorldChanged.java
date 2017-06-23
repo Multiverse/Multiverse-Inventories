@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.multiverseinventories.api.DataStrings;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import com.onarandombox.multiverseinventories.util.data.FlatFileDataHelper;
 import junit.framework.Assert;

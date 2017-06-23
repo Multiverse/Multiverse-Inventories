@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.share;
+package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import org.bukkit.entity.Player;

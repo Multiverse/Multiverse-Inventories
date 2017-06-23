@@ -2,7 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
 import org.bukkit.Bukkit;

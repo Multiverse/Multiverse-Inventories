@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.share;
+package com.onarandombox.multiverseinventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;

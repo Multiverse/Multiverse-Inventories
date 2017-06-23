@@ -7,7 +7,7 @@ import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

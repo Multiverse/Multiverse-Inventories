@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.entity.Player;

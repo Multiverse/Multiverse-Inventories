@@ -6,7 +6,7 @@ import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.migration.MigrationException;
 import me.drayshak.WorldInventories.Group;

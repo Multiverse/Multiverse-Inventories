@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.api.InventoriesConfig;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 

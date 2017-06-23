@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.WorldGroup;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.command.CommandSender;

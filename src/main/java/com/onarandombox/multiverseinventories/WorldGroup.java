@@ -1,9 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.api.share.Sharable;
-import com.onarandombox.multiverseinventories.api.share.Sharables;
-import com.onarandombox.multiverseinventories.api.share.Shares;
-import com.onarandombox.multiverseinventories.profile.container.ContainerType;
+import com.onarandombox.multiverseinventories.share.Sharable;
+import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;

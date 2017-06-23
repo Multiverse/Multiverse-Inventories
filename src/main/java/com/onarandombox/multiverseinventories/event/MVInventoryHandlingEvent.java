@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.event;
 
-import com.onarandombox.multiverseinventories.api.share.PersistingProfile;
+import com.onarandombox.multiverseinventories.share.PersistingProfile;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;

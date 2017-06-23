@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api.share;
+package com.onarandombox.multiverseinventories.share;
 
 public final class SharableEntry<T> {
 
