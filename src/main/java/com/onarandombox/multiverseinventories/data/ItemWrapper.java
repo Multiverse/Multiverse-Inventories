@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.data;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.DataStrings;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 

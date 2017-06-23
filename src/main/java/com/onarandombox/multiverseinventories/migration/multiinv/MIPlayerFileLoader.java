@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.multiinv;
 
-import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.PlayerStats;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;

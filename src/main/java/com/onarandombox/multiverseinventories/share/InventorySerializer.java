@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
-import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.DataStrings;
 import org.bukkit.inventory.ItemStack;
 
 /**

@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.api;
+package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;

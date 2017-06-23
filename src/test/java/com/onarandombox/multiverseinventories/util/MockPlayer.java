@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.PlayerStats;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;

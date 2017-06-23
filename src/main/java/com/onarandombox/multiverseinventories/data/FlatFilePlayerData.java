@@ -4,7 +4,7 @@ import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
-import com.onarandombox.multiverseinventories.api.DataStrings;
+import com.onarandombox.multiverseinventories.DataStrings;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SharableEntry;

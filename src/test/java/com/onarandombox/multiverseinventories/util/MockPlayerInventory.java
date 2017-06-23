@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.api.PlayerStats;
+import com.onarandombox.multiverseinventories.PlayerStats;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
