@@ -105,7 +105,7 @@ public class FlatFilePlayerData implements PlayerData {
      * @param type       Indicates whether data is for group or world.
      * @param dataName   The name of the group or world.
      * @param playerName The name of the player.
-     * @return The yaml data file for a player.
+     * @return The data file for a player.
      * @throws IOException if there was a problem creating the file.
      */
     File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
@@ -123,10 +123,10 @@ public class FlatFilePlayerData implements PlayerData {
     }
 
     /**
-     * Retrieves the yaml data file for a player for their global data, creating it if necessary.
+     * Retrieves the data file for a player for their global data, creating it if necessary.
      *
      * @param playerName The name of the player.
-     * @return The yaml data file for a player.
+     * @return The data file for a player.
      * @throws IOException if there was a problem creating the file.
      */
     File getGlobalFile(String playerName) throws IOException {

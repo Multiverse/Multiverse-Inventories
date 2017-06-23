@@ -28,13 +28,13 @@ public interface Sharable<T> {
 
     /**
      * @return The object that will handle serializing a profile's data for this sharable for saving/loading in the
-     * profile's yaml file.  If this is null it means that persistence is not handled by Multiverse-Inventories for
+     * profile's data file.  If this is null it means that persistence is not handled by Multiverse-Inventories for
      * this Sharable.
      */
     SharableSerializer<T> getSerializer();
 
     /**
-     * @return The profile entry that describes how to store this Sharable in a profile's yaml file.  This may NOT be
+     * @return The profile entry that describes how to store this Sharable in a profile's data file.  This may NOT be
      * null if this Sharable getSerializer() is not null.  If getSerializer() IS null, this method is never called.
      */
     ProfileEntry getProfileEntry();
@@ -106,7 +106,7 @@ public interface Sharable<T> {
         }
 
         /**
-         * Sets this sharable to be serialized as a string in the profile yaml file.  To use this, the class type
+         * Sets this sharable to be serialized as a string in the profile data file.  To use this, the class type
          * indicates in the Builder's constructor MUST have a static .valueOf(String) method that returns it's type.
          *
          * @param entry The profile entry describing where this Sharable is located in the profile file.
