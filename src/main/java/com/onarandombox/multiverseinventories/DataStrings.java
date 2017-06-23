@@ -153,7 +153,9 @@ public class DataStrings {
     /**
      * @param locString Parses this string and creates Location.
      * @return New location object or null if no location could be created.
+     * @deprecated Locations do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
      */
+    @Deprecated
     public static Location parseLocation(String locString) {
         if (locString.isEmpty()) {
             return null;
@@ -171,10 +173,15 @@ public class DataStrings {
         return parseLocMap(jsonLoc);
     }
 
+    /**
+     * @deprecated Locations do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
+     */
+    @Deprecated
     public static Location parseLocation(Map locMap) {
         return parseLocMap(locMap);
     }
 
+    @Deprecated
     private static Location parseLocMap(Map locMap) {
         World world = null;
         double x = 0;
@@ -224,7 +231,9 @@ public class DataStrings {
     /**
      * @param potionsString A player's potion effects in string form to be parsed into Collection<PotionEffect>.
      * @return a collection of potion effects parsed from potionsString.
+     * @deprecated PotionEffect do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
      */
+    @Deprecated
     public static PotionEffect[] parsePotionEffects(String potionsString) {
         List<PotionEffect> potionEffectList = new LinkedList<PotionEffect>();
         if (potionsString.isEmpty()) {
@@ -279,35 +288,6 @@ public class DataStrings {
             }
         }
         return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
-    }
-
-    public static JSONObject valueOfLocation(Location location) {
-        JSONObject jsonLoc = new JSONObject();
-        jsonLoc.put(LOCATION_WORLD, location.getWorld().getName());
-        jsonLoc.put(DataStrings.LOCATION_X, location.getX());
-        jsonLoc.put(DataStrings.LOCATION_Y, location.getY());
-        jsonLoc.put(DataStrings.LOCATION_Z, location.getZ());
-        jsonLoc.put(DataStrings.LOCATION_PITCH, location.getPitch());
-        jsonLoc.put(DataStrings.LOCATION_YAW, location.getYaw());
-        return jsonLoc;
-    }
-
-    /**
-     * Converts a Collection of {@link PotionEffect} into a String for easy persistence.
-     *
-     * @param potionEffects The potion effects you wish to "string-i-tize".
-     * @return A String representation of a Collection<{@link PotionEffect}>
-     */
-    public static String valueOf(PotionEffect[] potionEffects) {
-        JSONArray jsonPotions = new JSONArray();
-        for (PotionEffect potion : potionEffects) {
-            JSONObject jsonPotion = new JSONObject();
-            jsonPotion.put(DataStrings.POTION_TYPE, potion.getType().getId());
-            jsonPotion.put(DataStrings.POTION_DURATION, potion.getDuration());
-            jsonPotion.put(DataStrings.POTION_AMPLIFIER, potion.getAmplifier());
-            jsonPotions.add(jsonPotion);
-        }
-        return jsonPotions.toJSONString();
     }
 
     private static final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);

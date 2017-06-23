@@ -8,12 +8,17 @@ import java.util.Map;
 /**
  * A simple {@link SharableSerializer} usable with {@link Location} which converts the {@link Location} to the string
  * format that is used by default in Multiverse-Inventories.
+ * @deprecated Locations no longer need a special serializer because they are
+ * {@link org.bukkit.configuration.serialization.ConfigurationSerializable}. This remains to convert legacy data.
  */
+@Deprecated
 public final class LocationSerializer implements SharableSerializer<Location> {
 
     @Override
     public Location deserialize(Object obj) {
-        if (obj instanceof String) {
+        if (obj instanceof Location) {
+            return (Location) obj;
+        } else if (obj instanceof String) {
             return DataStrings.parseLocation(obj.toString());
         } else {
             if (obj instanceof Map) {
@@ -26,6 +31,6 @@ public final class LocationSerializer implements SharableSerializer<Location> {
 
     @Override
     public Object serialize(Location location) {
-        return DataStrings.valueOfLocation(location);
+        return location;
     }
 }
