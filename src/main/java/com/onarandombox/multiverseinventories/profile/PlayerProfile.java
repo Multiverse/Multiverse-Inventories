@@ -20,6 +20,9 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
         return new PlayerProfile(containerType, containerName, profileType, player);
     }
 
+    /**
+     * @deprecated Needs to use UUID for players
+     */
     @Deprecated
     public static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
                                                     ProfileType profileType, String playerName) {

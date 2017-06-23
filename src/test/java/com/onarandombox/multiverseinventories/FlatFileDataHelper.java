@@ -1,5 +1,6 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseinventories;
 
+import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
 import java.io.File;
@@ -7,13 +8,13 @@ import java.io.IOException;
 
 public class FlatFileDataHelper {
 
-    private FlatFilePlayerData data;
+    private FlatFileProfileDataSource data;
 
-    public FlatFileDataHelper(PlayerData data) {
-        if (!(data instanceof FlatFilePlayerData)) {
+    public FlatFileDataHelper(ProfileDataSource data) {
+        if (!(data instanceof FlatFileProfileDataSource)) {
             throw new ClassCastException("Must be instance of FlatFilePlayerData");
         }
-        this.data = (FlatFilePlayerData) data;
+        this.data = (FlatFileProfileDataSource) data;
     }
 
     public File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {

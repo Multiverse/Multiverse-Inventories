@@ -1,10 +1,10 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
@@ -42,7 +42,7 @@ final class WeakProfileContainer implements ProfileContainer {
         return this.playerData.computeIfAbsent(name, k -> new HashMap<>());
     }
 
-    protected PlayerData getDataSource() {
+    protected ProfileDataSource getDataSource() {
         return this.getInventories().getData();
     }
 

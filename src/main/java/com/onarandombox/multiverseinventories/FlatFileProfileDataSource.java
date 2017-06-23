@@ -1,10 +1,9 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
-import com.onarandombox.multiverseinventories.DataStrings;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SharableEntry;
@@ -27,10 +26,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
-/**
- * Implementation of PlayerData.
- */
-public class FlatFilePlayerData implements PlayerData {
+class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
@@ -39,11 +35,9 @@ public class FlatFilePlayerData implements PlayerData {
     private final File worldFolder;
     private final File groupFolder;
     private final File playerFolder;
-    private final MultiverseInventories inventories;
     private final FileWriteThread fileWriteThread;
 
-    public FlatFilePlayerData(MultiverseInventories plugin) throws IOException {
-        this.inventories = plugin;
+    FlatFileProfileDataSource(MultiverseInventories plugin) throws IOException {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
 
@@ -163,7 +157,7 @@ public class FlatFilePlayerData implements PlayerData {
             }
         }
 
-        public void queue(final PlayerProfile profile) {
+        void queue(final PlayerProfile profile) {
             try {
                 final PlayerProfile clonedProfile = profile.clone();
                 if (waiting) {
@@ -176,7 +170,7 @@ public class FlatFilePlayerData implements PlayerData {
             }
         }
 
-        public void waitUntilEmpty() {
+        void waitUntilEmpty() {
             waiting = true;
             while(!profileWriteQueue.isEmpty()) { }
             waiting = false;
@@ -306,7 +300,7 @@ public class FlatFilePlayerData implements PlayerData {
         return profile;
     }
 
-    protected void parsePlayerStatsIntoProfile(Map stats, PlayerProfile profile) {
+    private void parsePlayerStatsIntoProfile(Map stats, PlayerProfile profile) {
         for (Object key : stats.keySet()) {
             Sharable sharable = ProfileEntry.lookup(true, key.toString());
             if (sharable != null) {
@@ -485,14 +479,5 @@ public class FlatFilePlayerData implements PlayerData {
         globalProfile.setLoadOnLogin(loadOnLogin);
         updateGlobalProfile(globalProfile);
     }
-
-    /*
-    @Override
-    public void updateProfileType(String playerName, ProfileType profileType) {
-        GlobalProfile globalProfile = getGlobalProfile(playerName);
-        globalProfile.setProfileType(profileType);
-        updateGlobalProfile(playerName, globalProfile);
-    }
-    */
 }
 

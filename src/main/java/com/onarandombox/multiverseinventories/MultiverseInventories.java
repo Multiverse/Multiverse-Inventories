@@ -4,9 +4,9 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.data.PlayerData;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
@@ -25,7 +25,6 @@ import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.util.Perm;
-import com.onarandombox.multiverseinventories.data.FlatFilePlayerData;
 import com.pneumaticraft.commandhandler.multiverse.CommandHandler;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -62,7 +61,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
     private InventoriesConfig config = null;
-    private PlayerData data = null;
+    private ProfileDataSource data = null;
 
     private File serverFolder = new File(System.getProperty("user.dir"));
 
@@ -312,11 +311,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     /**
      * @return the PlayerData object which contains data for this plugin.
      */
-    public PlayerData getData() {
+    public ProfileDataSource getData() {
         if (this.data == null) {
             // Loads the data
             try {
-                this.data = new FlatFilePlayerData(this);
+                this.data = new FlatFileProfileDataSource(this);
             } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
                 Logging.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
                 Logging.severe(e.getMessage());

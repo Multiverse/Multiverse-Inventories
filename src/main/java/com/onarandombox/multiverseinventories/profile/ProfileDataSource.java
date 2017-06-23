@@ -1,14 +1,11 @@
-package com.onarandombox.multiverseinventories.data;
+package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 
 /**
- * Interface for interacting with all of the persistent Multiverse-Inventories data for all players.
+ * A source for updating and retrieving player profiles via persistence.
  */
-public interface PlayerData {
+public interface ProfileDataSource {
 
     /**
      * Updates the persisted data for a player for a specific profile.
