@@ -51,6 +51,7 @@ public final class InventorySerializer implements SharableSerializer<ItemStack[]
                     result[i] = new ItemStack(Material.AIR);
                 }
             }
+            return result;
         }
         return MinecraftTools.fillWithAir(result);
     }
