@@ -40,7 +40,7 @@ public final class InventorySerializer implements SharableSerializer<ItemStack[]
     }
 
     private ItemStack[] unmapSlots(Object obj) {
-        ItemStack[] result = new ItemStack[inventorySize];
+        ItemStack[] result = MinecraftTools.fillWithAir(result);
         if (obj instanceof Map) {
             Map<?, ?> invMap = (Map) obj;
             for (int i = 0; i < result.length; i++) {
@@ -52,6 +52,6 @@ public final class InventorySerializer implements SharableSerializer<ItemStack[]
                 }
             }
         }
-        return MinecraftTools.fillWithAir(result);
+        return result;
     }
 }
