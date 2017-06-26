@@ -4,6 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
+import com.onarandombox.multiverseinventories.command.MigrateCommand;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
@@ -156,6 +157,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.getCommandHandler().registerCommand(new SpawnCommand(this));
         this.getCommandHandler().registerCommand(new GroupCommand(this));
         this.getCommandHandler().registerCommand(new ToggleCommand(this));
+        this.getCommandHandler().registerCommand(new MigrateCommand(this));
         for (com.pneumaticraft.commandhandler.multiverse.Command c : this.commandHandler.getAllCommands()) {
             if (c instanceof HelpCommand) {
                 c.addKey("mvinv");

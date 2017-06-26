@@ -87,7 +87,10 @@ public enum Message {
     // Toggle Command
     NOW_USING_OPTIONAL("&f%1 &6will now be considered when player's change world."),
     NOW_NOT_USING_OPTIONAL("&f%1 &6will no longer be considered when player's change world."),
-    NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!");
+    NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!"),
+    // Migrate Command
+    MIGRATE_FAILED("Failed to migrate data from %1 to %2! Check logs for error details."),
+    MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
