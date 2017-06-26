@@ -42,6 +42,10 @@ public class DataStrings {
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
     /**
+     * Player armor contents identifier.
+     */
+    public static final String PLAYER_OFF_HAND_ITEM = "offHandItem";
+    /**
      * Ender chest inventory contents identifier.
      */
     public static final String ENDER_CHEST_CONTENTS = "enderChestContents";

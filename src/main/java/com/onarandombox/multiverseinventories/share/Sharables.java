@@ -8,6 +8,7 @@ import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -123,6 +124,31 @@ public final class Sharables implements Shares {
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
                     new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
+
+    /**
+     * Sharing Offhand.
+     */
+    public static final Sharable<ItemStack> OFF_HAND = new Sharable.Builder<ItemStack>("off_hand",
+            ItemStack.class, new SharableHandler<ItemStack>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(OFF_HAND, player.getInventory().getItemInOffHand());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    ItemStack value = profile.get(OFF_HAND);
+                    if (value == null) {
+                        player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                        player.updateInventory();
+                        return false;
+                    }
+                    player.getInventory().setItemInOffHand(value);
+                    player.updateInventory();
+                    return true;
+                }
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_OFF_HAND_ITEM),
+                    new DefaultSerializer<>(ItemStack.class)).altName("shield").build();
 
     /**
      * Sharing Health.
@@ -539,7 +565,7 @@ public final class Sharables implements Shares {
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
-            fromSharables(INVENTORY, ARMOR, ENDER_CHEST), "inv", "inventories");
+            fromSharables(INVENTORY, ARMOR, ENDER_CHEST, OFF_HAND), "inv", "inventories");
 
     /**
      * Grouping for experience sharables.
@@ -578,8 +604,8 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST), "*",
-            "everything");
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
+            "*", "everything");
 
 
     /**
