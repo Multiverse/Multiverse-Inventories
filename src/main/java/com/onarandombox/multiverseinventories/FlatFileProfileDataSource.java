@@ -12,6 +12,7 @@ import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import net.minidev.json.JSONObject;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.json.simple.parser.JSONParser;
@@ -22,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
@@ -119,18 +121,19 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     /**
      * Retrieves the data file for a player for their global data, creating it if necessary.
      *
-     * @param playerName The name of the player.
+     * @param fileName The name of the file (player name or UUID) without extension.
+     * @param createIfMissing If true, the file will be created it it does not exist.
      * @return The data file for a player.
      * @throws IOException if there was a problem creating the file.
      */
-    File getGlobalFile(String playerName) throws IOException {
-        File jsonPlayerFile = new File(playerFolder, playerName + JSON);
-        if (!jsonPlayerFile.exists()) {
+    File getGlobalFile(String fileName, boolean createIfMissing) throws IOException {
+        File jsonPlayerFile = new File(playerFolder, fileName + JSON);
+        if (createIfMissing && !jsonPlayerFile.exists()) {
             try {
                 jsonPlayerFile.createNewFile();
             } catch (IOException e) {
                 throw new IOException("Could not create necessary player file: " + jsonPlayerFile.getPath() + ". "
-                        + "There may be issues with " + playerName + "'s metadata", e);
+                        + "There may be issues with " + fileName + "'s metadata", e);
             }
         }
         return jsonPlayerFile;
@@ -400,34 +403,67 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         return resultMap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
+    @Deprecated
     public GlobalProfile getGlobalProfile(String playerName) {
+        return getGlobalProfile(playerName, Bukkit.getOfflinePlayer(playerName).getUniqueId());
+    }
+
+    @Override
+    public GlobalProfile getGlobalProfile(String playerName, UUID playerUUID) {
         // TODO use data caching to avoid excess object creation.
         File playerFile;
+
+        // Migrate old data if necessary
         try {
-            playerFile = getGlobalFile(playerName);
+            playerFile = getGlobalFile(playerName, false);
         } catch (IOException e) {
+            // This won't ever happen
             e.printStackTrace();
             return GlobalProfile.createGlobalProfile(playerName);
         }
+        if (playerFile.exists()) {
+            GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
+            if (!migrateGlobalProfileToUUID(profile, playerFile)) {
+                Logging.warning("Could not properly migrate player global data file for " + playerName);
+            }
+            return profile;
+        }
+
+        // Load current format
+        try {
+            playerFile = getGlobalFile(playerUUID.toString(), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return GlobalProfile.createGlobalProfile(playerName, playerUUID);
+        }
+        return loadGlobalProfile(playerFile, playerName, playerUUID);
+    }
+
+    private boolean migrateGlobalProfileToUUID(GlobalProfile profile, File playerFile) {
+        updateGlobalProfile(profile);
+        return playerFile.delete();
+    }
+
+    private GlobalProfile loadGlobalProfile(File playerFile, String playerName, UUID playerUUID) {
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
             section = playerData.createSection("playerData");
         }
-        return deserializeGlobalProfile(playerName, convertSection(section));
+        return deserializeGlobalProfile(playerName, playerUUID, convertSection(section));
     }
 
-    private GlobalProfile deserializeGlobalProfile(String playerName, Map<String, Object> playerData) {
-        GlobalProfile globalProfile = GlobalProfile.createGlobalProfile(playerName);
+    private GlobalProfile deserializeGlobalProfile(String playerName, UUID playerUUID,
+                                                   Map<String, Object> playerData) {
+        GlobalProfile globalProfile = GlobalProfile.createGlobalProfile(playerName, playerUUID);
         for (String key : playerData.keySet()) {
             if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_WORLD)) {
                 globalProfile.setLastWorld(playerData.get(key).toString());
             } else if (key.equalsIgnoreCase(DataStrings.PLAYER_SHOULD_LOAD)) {
                 globalProfile.setLoadOnLogin(Boolean.valueOf(playerData.get(key).toString()));
+            } else if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_KNOWN_NAME)) {
+                globalProfile.setLastKnownName(playerData.get(key).toString());
             }
         }
         return globalProfile;
@@ -440,7 +476,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     public boolean updateGlobalProfile(GlobalProfile globalProfile) {
         File playerFile = null;
         try {
-            playerFile = this.getGlobalFile(globalProfile.getPlayerName());
+            playerFile = this.getGlobalFile(globalProfile.getPlayerUUID().toString(), true);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -463,6 +499,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
         }
         result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
+        result.put(DataStrings.PLAYER_LAST_KNOWN_NAME, profile.getLastKnownName());
         return result;
     }
 

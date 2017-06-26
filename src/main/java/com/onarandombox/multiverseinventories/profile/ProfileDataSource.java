@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
+import java.util.UUID;
+
 /**
  * A source for updating and retrieving player profiles via persistence.
  */
@@ -40,12 +42,23 @@ public interface ProfileDataSource {
     boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName);
 
     /**
-     * Retrieves the GlobalProfile for a player which contains Multiverse-Inventories meta-data for the player.
+     * Retrieves the global profile for a player which contains meta-data for the player.
      *
      * @param playerName The name of player to retrieve for.
      * @return The global profile for the specified player.
+     * @deprecated UUID must be supported now.
      */
+    @Deprecated
     GlobalProfile getGlobalProfile(String playerName);
+
+    /**
+     * Retrieves the global profile for a player which contains meta-data for the player.
+     *
+     * @param playerName The name of the player to retrieve for. This is required for updating name last known as.
+     * @param playerUUID The UUID of the player.
+     * @return the global profile for the player with the given UUID.
+     */
+    GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
 
     /**
      * Update the file for a player's global profile.

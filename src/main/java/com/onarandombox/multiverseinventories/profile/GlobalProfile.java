@@ -1,5 +1,9 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import org.bukkit.Bukkit;
+
+import java.util.UUID;
+
 /**
  * The global profile for a player which contains meta-data for the player.
  */
@@ -10,17 +14,34 @@ public final class GlobalProfile {
      *
      * @param playerName the player to create the profile object for.
      * @return a new GlobalProfile for the given player.
+     * @deprecated Needs to use UUID.
      */
+    @Deprecated
     public static GlobalProfile createGlobalProfile(String playerName) {
-        return new GlobalProfile(playerName);
+        return new GlobalProfile(playerName, Bukkit.getOfflinePlayer(playerName).getUniqueId());
+    }
+
+    /**
+     * Creates a global profile object for the given player with default values.
+     *
+     * @param playerName the player to create the profile object for.
+     * @param playerUUID the UUID of the player to create the profile for.
+     * @return a new GlobalProfile for the given player.
+     */
+    public static GlobalProfile createGlobalProfile(String playerName, UUID playerUUID) {
+        return new GlobalProfile(playerName, playerUUID);
     }
 
     private final String name;
+    private final UUID uuid;
     private String lastWorld = null;
+    private String lastKnownName;
     private boolean loadOnLogin = false;
 
-    private GlobalProfile(String name) {
+    private GlobalProfile(String name, UUID uuid) {
         this.name = name;
+        this.uuid = uuid;
+        this.lastKnownName = name;
     }
 
     /**
@@ -30,6 +51,35 @@ public final class GlobalProfile {
      */
     public String getPlayerName() {
         return this.name;
+    }
+
+    /**
+     * Returns the UUID of the player.
+     *
+     * @return the UUID of the player.
+     */
+    public UUID getPlayerUUID() {
+        return uuid;
+    }
+
+    /**
+     * Returns the last name the player was known to have.
+     *
+     * @return the last name the player was known to have.
+     */
+    public String getLastKnownName() {
+        return lastKnownName;
+    }
+
+    /**
+     * Sets the last name that the player was seen having.
+     * <p>This should be updated when a player's name is changed through Mojang but only after their data has been
+     * migrated to the new name.</p>
+     *
+     * @param lastKnownName the last known name for the player.
+     */
+    public void setLastKnownName(String lastKnownName) {
+        this.lastKnownName = lastKnownName;
     }
 
     /**

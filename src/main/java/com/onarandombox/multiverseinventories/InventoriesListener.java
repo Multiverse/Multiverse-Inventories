@@ -100,7 +100,7 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId());
         final String world = globalProfile.getLastWorld();
         if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
             ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
