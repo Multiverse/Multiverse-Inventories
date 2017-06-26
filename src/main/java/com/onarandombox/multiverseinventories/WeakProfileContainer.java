@@ -75,7 +75,7 @@ final class WeakProfileContainer implements ProfileContainer {
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
             playerProfile = getDataSource().getPlayerData(getContainerType(),
-                    getContainerName(), profileType, player.getName());
+                    getContainerName(), profileType, player.getUniqueId());
             Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
                     profileType, getContainerType(), playerProfile.getContainerName(), player.getName());
             profileMap.put(profileType, playerProfile);

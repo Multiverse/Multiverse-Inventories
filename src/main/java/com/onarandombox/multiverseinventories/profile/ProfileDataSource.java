@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.profile;
 
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -23,11 +24,11 @@ public interface ProfileDataSource {
      * @param containerType The type of container this profile is part of, world or group.
      * @param dataName   World/Group to retrieve from.
      * @param profileType The type of profile to load data for, typically based on game mode.
-     * @param playerName Player to retrieve for.
+     * @param playerUUID UUID of the player to retrieve for.
      * @return The player as returned from data.  If no data was found, a new PlayerProfile will be
      *         created.
      */
-    PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName);
+    PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID);
 
     /**
      * Removes the persisted data for a player for a specific profile.
@@ -83,5 +84,16 @@ public interface ProfileDataSource {
      * @param loadOnLogin Whether or not to load on login.
      */
     void setLoadOnLogin(String playerName, boolean loadOnLogin);
+
+    /**
+     * Copies all the data belonging to oldName to newName and removes the old data.
+     *
+     * @param oldName the previous name of the player.
+     * @param newName the new name of the player.
+     * @param playerUUID the UUID of the player.
+     * @param removeOldData whether or not to remove the data belonging to oldName.
+     * @throws IOException Thrown if something goes wrong while migrating the files.
+     */
+    void migratePlayerData(String oldName, String newName, UUID playerUUID, boolean removeOldData) throws IOException;
 }
 

@@ -18,10 +18,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -89,6 +91,28 @@ public class InventoriesListener implements Listener {
                 this.inventories.getImportManager().unHookWorldInventories();
             }
         } catch (NoClassDefFoundError ignore) {
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != Result.ALLOWED) {
+            return;
+        }
+        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(event.getName(), event.getUniqueId());
+        if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
+            // Data must be migrated
+            try {
+                inventories.getData().migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
+                        event.getUniqueId(), true);
+            } catch (IOException e) {
+                Logging.severe("Could not migrate data from name " + globalProfile.getLastKnownName()
+                        + " to " + event.getName());
+                e.printStackTrace();
+            }
+
+            globalProfile.setLastKnownName(event.getName());
+            inventories.getData().updateGlobalProfile(globalProfile);
         }
     }
 
