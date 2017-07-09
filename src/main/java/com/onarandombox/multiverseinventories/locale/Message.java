@@ -52,13 +52,13 @@ public enum Message {
     INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
     INFO_GROUPS_INFO("&6Worlds:&f %1", "&bShares:&f %2"),
     // Group Command
-    GROUP_COMMAND_PROMPT("&6What would you like to do? &fCreate&6, &fEdit &6or &fDelete&6.  Enter &f##&6 at any time to cancel."),
+    GROUP_COMMAND_PROMPT("&6What would you like to do? &fCreate&6, &fEdit &6or &fDelete&6. Enter &f##&6 at any time to cancel."),
     GROUP_CREATE_PROMPT("&6Please name your new group: "),
     GROUP_EDIT_PROMPT("&6Edit which group? %1"),
     GROUP_DELETE_PROMPT("&6Delete which group? %1"),
-    GROUP_MODIFY_PROMPT("&6Which would you like to change for &e%1&6? &fWorlds &6or &fShares&6.  Enter &f##&6 to finish."),
-    GROUP_WORLDS_PROMPT("&6Enter the name of a world to add to group &f%1&6 or enter &f@&6 to continue.  To worlds by precede the name with the minus symbol. (ex: &f-worldname&6).  Current worlds: %2"),
-    GROUP_SHARES_PROMPT("&6Enter &fall&6 or a specific share to add to group &f%1&6 or enter &f@&6 to continue.  To remove shares precede the name with the minus symbol (ex: &f-inventory&6).  Current shares: %2"),
+    GROUP_MODIFY_PROMPT("&6Which would you like to change for &e%1&6? &fWorlds &6or &fShares&6. Enter &f##&6 to finish."),
+    GROUP_WORLDS_PROMPT("&6Enter the name of a world to add to group &f%1&6 or enter &f@&6 to continue. To remove a world, precede the name with the minus symbol. (ex: &f-worldname&6). Current worlds: %2"),
+    GROUP_SHARES_PROMPT("&6Enter &fall&6 or a specific share to add to group &f%1&6 or enter &f@&6 to continue. To remove shares, precede the name with the minus symbol (ex: &f-inventory&6). Current shares: %2"),
     GROUP_INVALID_NAME("&cThat name is not valid!  May only contain letters, numbers, and underscores."),
     GROUP_EXISTS("&cThat group already exists! (&f%1&c)"),
     GROUP_REMOVED("&2Removed group: &f%1"),
@@ -82,7 +82,7 @@ public enum Message {
     TELEPORTED_BY("You were teleported by: %1"),
     TELEPORT_CONSOLE_ERROR("From the console, you must provide a PLAYER"),
     // DebugCommand
-    INVALID_DEBUG("&fInvalid debug level.  Please use number 0-3.  &b(3 being many many messages!)"),
+    INVALID_DEBUG("&fInvalid debug level. Please use number 0-3.  &b(3 being many many messages!)"),
     DEBUG_SET("Debug mode is %1"),
     // Toggle Command
     NOW_USING_OPTIONAL("&f%1 &6will now be considered when player's change world."),
