@@ -12,19 +12,24 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.inventory.InventoryHolder;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * PlayerListener for MultiverseInventories.
@@ -377,6 +382,50 @@ public class InventoriesListener implements Listener {
         if (event.getRespawnLocation().equals(this.spawnLoc)) {
             event.getPlayer().setCompassTarget(this.spawnLoc);
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void entityPortal(EntityPortalEvent event) {
+        Entity entity = event.getEntity();
+        if (!(entity instanceof Item) && !(entity instanceof InventoryHolder)) {
+            return;
+        }
+
+        World fromWorld = event.getFrom().getWorld();
+        Location toLocation = event.getTo();
+        if (toLocation == null) {
+            // Apparently this happens sometimes.
+            Logging.fine("Entity %s attempted to go to null location", entity);
+            return;
+        }
+        World toWorld = toLocation.getWorld();
+        if (toWorld == null) {
+            // Apparently this also happens sometimes.
+            Logging.fine("Entity %s attempted to go to null world", entity);
+            return;
+        }
+
+        if (fromWorld.equals(toWorld)) {
+            return;
+        }
+
+        List<WorldGroup> fromGroups = inventories.getGroupManager().getGroupsForWorld(fromWorld.getName());
+        List<WorldGroup> toGroups = inventories.getGroupManager().getGroupsForWorld(toWorld.getName());
+        // We only care about the groups that have the inventory sharable
+        fromGroups = fromGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
+        toGroups = toGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
+        for (WorldGroup fromGroup : fromGroups) {
+            if (toGroups.contains(fromGroup)) {
+                Logging.finest("Allowing item or inventory holding %s to go from world %s to world %s", entity,
+                        fromWorld.getName(), toWorld.getName());
+                // The from and to destinations share at least one group that has the inventory sharable.
+                return;
+            }
+        }
+
+        Logging.finest("Disallowing item or inventory holding %s to go from world %s to world %s since these" +
+                        "worlds do not share inventories", entity, fromWorld.getName(), toWorld.getName());
+        event.setCancelled(true);
     }
 }
 
