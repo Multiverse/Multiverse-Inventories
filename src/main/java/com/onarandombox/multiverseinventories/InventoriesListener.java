@@ -136,7 +136,7 @@ public class InventoriesListener implements Listener {
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
         }
         inventories.getData().setLoadOnLogin(player.getName(), false);
-        verifyCorrectWorld(player, player.getWorld().getName());
+        verifyCorrectWorld(player, player.getWorld().getName(), globalProfile);
     }
 
     /**
@@ -156,8 +156,7 @@ public class InventoriesListener implements Listener {
         }
     }
 
-    private void verifyCorrectWorld(Player player, String world) {
-        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName());
+    private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
         if (globalProfile.getLastWorld() == null) {
             inventories.getData().updateLastWorld(player.getName(), world);
         } else {
@@ -280,7 +279,8 @@ public class InventoriesListener implements Listener {
         final Player player = event.getPlayer();
         Bukkit.getScheduler().scheduleSyncDelayedTask(inventories, new Runnable() {
             public void run() {
-                verifyCorrectWorld(player, player.getWorld().getName());
+                verifyCorrectWorld(player, player.getWorld().getName(),
+                        inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId()));
             }
         }, 2L);
     }

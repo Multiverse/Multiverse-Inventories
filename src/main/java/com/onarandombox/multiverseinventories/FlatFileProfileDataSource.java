@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.ProfileKey;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
@@ -30,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 class FlatFileProfileDataSource implements ProfileDataSource {
@@ -37,6 +40,18 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     private static final String JSON = ".json";
 
     private final JSONParser JSON_PARSER = new JSONParser();
+
+    private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
+
+    // TODO these probably need configurable max sizes
+    private final Cache<ProfileKey, PlayerProfile> profileCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .maximumSize(1000)
+            .build();
+    private final Cache<UUID, GlobalProfile> globalProfileCache = CacheBuilder.newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .maximumSize(500)
+            .build();
 
     private final File worldFolder;
     private final File groupFolder;
@@ -164,8 +179,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         return jsonPlayerFile;
     }
 
-    private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
-
     private void queueWrite(PlayerProfile profile) {
         fileIOExecutorService.submit(new FileWriter(profile.clone()));
     }
@@ -235,6 +248,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private PlayerProfile getPlayerData(ProfileKey key) {
+        PlayerProfile cached = profileCache.getIfPresent(key);
+        if (cached != null) {
+            return cached;
+        }
         File playerFile = null;
         try {
             playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
@@ -258,7 +275,9 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (section == null) {
             section = playerData.createSection(key.getProfileType().getName());
         }
-        return deserializePlayerProfile(key, convertSection(section));
+        PlayerProfile result = deserializePlayerProfile(key, convertSection(section));
+        profileCache.put(key, result);
+        return result;
     }
 
     @Override
@@ -413,7 +432,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     @Override
     public GlobalProfile getGlobalProfile(String playerName, UUID playerUUID) {
-        // TODO use data caching to avoid excess object creation.
+        GlobalProfile cached = globalProfileCache.getIfPresent(playerUUID);
+        if (cached != null) {
+            return cached;
+        }
         File playerFile;
 
         // Migrate old data if necessary
@@ -429,6 +451,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             if (!migrateGlobalProfileToUUID(profile, playerFile)) {
                 Logging.warning("Could not properly migrate player global data file for " + playerName);
             }
+            globalProfileCache.put(playerUUID, profile);
             return profile;
         }
 
@@ -439,7 +462,9 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             e.printStackTrace();
             return GlobalProfile.createGlobalProfile(playerName, playerUUID);
         }
-        return loadGlobalProfile(playerFile, playerName, playerUUID);
+        GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
+        globalProfileCache.put(playerUUID, profile);
+        return profile;
     }
 
     private boolean migrateGlobalProfileToUUID(GlobalProfile profile, File playerFile) {
@@ -506,6 +531,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
+    @Deprecated
+    // TODO replace for UUID
     public void updateLastWorld(String playerName, String worldName) {
         GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setLastWorld(worldName);
@@ -513,6 +540,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
+    @Deprecated
+    // TODO replace for UUID
     public void setLoadOnLogin(final String playerName, final boolean loadOnLogin) {
         final GlobalProfile globalProfile = getGlobalProfile(playerName);
         globalProfile.setLoadOnLogin(loadOnLogin);
