@@ -19,22 +19,17 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
 class FlatFileProfileDataSource implements ProfileDataSource {
@@ -72,7 +67,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         }
     }
 
-    private FileConfiguration getConfigHandle(File file) {
+    private FileConfiguration waitForConfigHandle(File file) {
         Future<FileConfiguration> future = fileIOExecutorService.submit(new ConfigLoader(file));
         while (true) {
             try {
@@ -80,6 +75,14 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private static FileConfiguration getConfigHandleNow(File file) {
+        try {
+            return JsonConfiguration.loadConfiguration(file, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return JsonConfiguration.loadConfiguration(file);
         }
     }
 
@@ -92,11 +95,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
         @Override
         public FileConfiguration call() throws Exception {
-            try {
-                return JsonConfiguration.loadConfiguration(file, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return JsonConfiguration.loadConfiguration(file);
-            }
+            return getConfigHandleNow(file);
         }
     }
 
@@ -189,7 +188,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         try {
             File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
                     playerProfile.getContainerName(), playerProfile.getPlayer().getName());
-            FileConfiguration playerData = this.getConfigHandle(playerFile);
+            FileConfiguration playerData = getConfigHandleNow(playerFile);
             playerData.createSection(playerProfile.getProfileType().getName(), serializePlayerProfile(playerProfile));
             try {
                 playerData.save(playerFile);
@@ -245,7 +244,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             return PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(), key.getProfileType(),
                     Bukkit.getOfflinePlayer(key.getPlayerUUID()));
         }
-        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        FileConfiguration playerData = this.waitForConfigHandle(playerFile);
         if (convertConfig(playerData)) {
             try {
                 playerData.save(playerFile);
@@ -379,7 +378,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                         + " " + dataName + " but the file did not exist.");
                 return false;
             }
-            FileConfiguration playerData = this.getConfigHandle(playerFile);
+            FileConfiguration playerData = this.waitForConfigHandle(playerFile);
             playerData.set(profileType.getName(), null);
             try {
                 playerData.save(playerFile);
@@ -449,7 +448,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private GlobalProfile loadGlobalProfile(File playerFile, String playerName, UUID playerUUID) {
-        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        FileConfiguration playerData = this.waitForConfigHandle(playerFile);
         ConfigurationSection section = playerData.getConfigurationSection("playerData");
         if (section == null) {
             section = playerData.createSection("playerData");
@@ -484,7 +483,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             e.printStackTrace();
             return false;
         }
-        FileConfiguration playerData = this.getConfigHandle(playerFile);
+        FileConfiguration playerData = this.waitForConfigHandle(playerFile);
         playerData.createSection("playerData", serializeGlobalProfile(globalProfile));
         try {
             playerData.save(playerFile);
