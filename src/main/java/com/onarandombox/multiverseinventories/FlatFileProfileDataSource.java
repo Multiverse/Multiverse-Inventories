@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
+import com.onarandombox.multiverseinventories.profile.ProfileKey;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
@@ -234,44 +235,41 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         queueWrite(playerProfile);
     }
 
-    private PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType,
-                                        String playerName, UUID playerUUID) {
+    private PlayerProfile getPlayerData(ProfileKey key) {
         File playerFile = null;
         try {
-            playerFile = getPlayerFile(containerType, dataName, playerName);
+            playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
         } catch (IOException e) {
             e.printStackTrace();
             // Return an empty profile
-            return PlayerProfile.createPlayerProfile(containerType, dataName, profileType,
-                    Bukkit.getOfflinePlayer(playerUUID));
+            return PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(), key.getProfileType(),
+                    Bukkit.getOfflinePlayer(key.getPlayerUUID()));
         }
         FileConfiguration playerData = this.getConfigHandle(playerFile);
         if (convertConfig(playerData)) {
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
-                Logging.severe("Could not save data for player: " + playerName
-                        + " for " + containerType.toString() + ": " + dataName + " after conversion.");
+                Logging.severe("Could not save data for player: " + key.getPlayerName()
+                        + " for " + key.getContainerType().toString() + ": " + key.getDataName() + " after conversion.");
                 Logging.severe(e.getMessage());
             }
         }
-        ConfigurationSection section = playerData.getConfigurationSection(profileType.getName());
+        ConfigurationSection section = playerData.getConfigurationSection(key.getProfileType().getName());
         if (section == null) {
-            section = playerData.createSection(profileType.getName());
+            section = playerData.createSection(key.getProfileType().getName());
         }
-        return deserializePlayerProfile(containerType, dataName, profileType, playerName, playerUUID, convertSection(section));
+        return deserializePlayerProfile(key, convertSection(section));
     }
 
     @Override
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        return getPlayerData(containerType, dataName, profileType, Bukkit.getOfflinePlayer(playerUUID).getName(), playerUUID);
+        return getPlayerData(ProfileKey.createProfileKey(containerType, dataName, profileType, playerUUID));
     }
 
-    private PlayerProfile deserializePlayerProfile(ContainerType containerType, String containerName,
-                                                  ProfileType profileType, String playerName, UUID playerUUID,
-                                                   Map playerData) {
-        PlayerProfile profile = PlayerProfile.createPlayerProfile(containerType, containerName,
-                profileType, Bukkit.getOfflinePlayer(playerUUID));
+    private PlayerProfile deserializePlayerProfile(ProfileKey pKey, Map playerData) {
+        PlayerProfile profile = PlayerProfile.createPlayerProfile(pKey.getContainerType(), pKey.getDataName(),
+                pKey.getProfileType(), Bukkit.getOfflinePlayer(pKey.getPlayerUUID()));
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             if (key.equalsIgnoreCase(DataStrings.PLAYER_STATS)) {
@@ -282,12 +280,12 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                     if (statsObject instanceof Map) {
                         parsePlayerStatsIntoProfile((Map) statsObject, profile);
                     } else {
-                        Logging.warning("Could not parse stats for " + playerName);
+                        Logging.warning("Could not parse stats for " + pKey.getPlayerName());
                     }
                 }
             } else {
                 if (playerData.get(key) == null) {
-                    Logging.fine("Player data '" + key + "' is null for: " + playerName);
+                    Logging.fine("Player data '" + key + "' is null for: " + pKey.getPlayerName());
                     continue;
                 }
                 try {
@@ -304,7 +302,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                 }
             }
         }
-        Logging.finer("Created player profile from map for '" + playerName + "'.");
+        Logging.finer("Created player profile from map for '" + pKey.getPlayerName() + "'.");
         return profile;
     }
 
@@ -532,15 +530,20 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (groupFolders == null) {
             throw new IOException("Could not enumerate group folders");
         }
+
         for (File worldFolder : worldFolders) {
-            updatePlayerData(getPlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName, uuid));
-            updatePlayerData(getPlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.CREATIVE, oldName, uuid));
-            updatePlayerData(getPlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.SURVIVAL, oldName, uuid));
+            ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, worldFolder.getName(),
+                    ProfileTypes.ADVENTURE, uuid, oldName);
+            updatePlayerData(getPlayerData(key));
+            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
+            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
         for (File groupFolder : groupFolders) {
-            updatePlayerData(getPlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.ADVENTURE, oldName, uuid));
-            updatePlayerData(getPlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.CREATIVE, oldName, uuid));
-            updatePlayerData(getPlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldName, uuid));
+            ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, groupFolder.getName(),
+                    ProfileTypes.ADVENTURE, uuid, oldName);
+            updatePlayerData(getPlayerData(key));
+            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
+            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
         if (removeOldData) {
             for (File worldFolder : worldFolders) {
