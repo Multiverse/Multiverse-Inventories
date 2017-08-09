@@ -94,8 +94,12 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
         this.data.put(sharable, new SharableEntry<T>(sharable, value));
     }
 
-    public PlayerProfile clone() throws CloneNotSupportedException {
-        return (PlayerProfile) super.clone();
+    public PlayerProfile clone() {
+        try {
+            return (PlayerProfile) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
