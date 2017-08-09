@@ -21,11 +21,18 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
 
@@ -38,7 +45,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     private final File worldFolder;
     private final File groupFolder;
     private final File playerFolder;
-    private final FileWriteThread fileWriteThread;
 
     FlatFileProfileDataSource(MultiverseInventories plugin) throws IOException {
         // Make the data folders
@@ -63,15 +69,33 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                 throw new IOException("Could not create player folder!");
             }
         }
-        fileWriteThread = new FileWriteThread();
-        fileWriteThread.start();
     }
 
     private FileConfiguration getConfigHandle(File file) {
-        try {
-            return JsonConfiguration.loadConfiguration(file, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return JsonConfiguration.loadConfiguration(file);
+        Future<FileConfiguration> future = fileIOExecutorService.submit(new ConfigLoader(file));
+        while (true) {
+            try {
+                return future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static class ConfigLoader implements Callable<FileConfiguration> {
+        private final File file;
+
+        private ConfigLoader(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public FileConfiguration call() throws Exception {
+            try {
+                return JsonConfiguration.loadConfiguration(file, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                return JsonConfiguration.loadConfiguration(file);
+            }
         }
     }
 
@@ -140,46 +164,23 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         return jsonPlayerFile;
     }
 
-    private class FileWriteThread extends Thread {
+    private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 
-        FileWriteThread() {
-            super("MV-Inv Profile Write Thread");
+    private void queueWrite(PlayerProfile profile) {
+        fileIOExecutorService.submit(new FileWriter(profile.clone()));
+    }
+
+    private class FileWriter implements Callable<Void> {
+        private final PlayerProfile profile;
+
+        private FileWriter(PlayerProfile profile) {
+            this.profile = profile;
         }
-
-        private final BlockingQueue<PlayerProfile> profileWriteQueue = new LinkedBlockingQueue<PlayerProfile>();
-        private final BlockingQueue<PlayerProfile> waitingQueue = new LinkedBlockingQueue<PlayerProfile>();
-        
-        private volatile boolean waiting = false;
 
         @Override
-        public void run() {
-            while(true) {
-                try {
-                    final PlayerProfile profile = profileWriteQueue.take();
-                    processProfileWrite(profile);
-                } catch (InterruptedException ignore) { }
-            }
-        }
-
-        void queue(final PlayerProfile profile) {
-            try {
-                final PlayerProfile clonedProfile = profile.clone();
-                if (waiting) {
-                    waitingQueue.add(clonedProfile);
-                } else {
-                    profileWriteQueue.add(clonedProfile);
-                }
-            } catch (CloneNotSupportedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        void waitUntilEmpty() {
-            waiting = true;
-            while(!profileWriteQueue.isEmpty()) { }
-            waiting = false;
-            profileWriteQueue.addAll(waitingQueue);
-            waitingQueue.clear();
+        public Void call() throws Exception {
+            processProfileWrite(profile);
+            return null;
         }
     }
 
@@ -230,12 +231,11 @@ class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public void updatePlayerData(PlayerProfile playerProfile) {
-        fileWriteThread.queue(playerProfile);
+        queueWrite(playerProfile);
     }
 
     private PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType,
                                         String playerName, UUID playerUUID) {
-        fileWriteThread.waitUntilEmpty();
         File playerFile = null;
         try {
             playerFile = getPlayerFile(containerType, dataName, playerName);
@@ -542,7 +542,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             updatePlayerData(getPlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.CREATIVE, oldName, uuid));
             updatePlayerData(getPlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldName, uuid));
         }
-        fileWriteThread.waitUntilEmpty();
         if (removeOldData) {
             for (File worldFolder : worldFolders) {
                 removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName);
