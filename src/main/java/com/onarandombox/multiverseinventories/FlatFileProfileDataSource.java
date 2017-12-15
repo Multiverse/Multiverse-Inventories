@@ -94,11 +94,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private static FileConfiguration getConfigHandleNow(File file) {
-        try {
-            return JsonConfiguration.loadConfiguration(file, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return JsonConfiguration.loadConfiguration(file);
-        }
+        return JsonConfiguration.loadConfiguration(file);
     }
 
     private static class ConfigLoader implements Callable<FileConfiguration> {
