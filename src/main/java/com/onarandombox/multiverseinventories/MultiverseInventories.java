@@ -33,8 +33,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.File;
@@ -65,6 +67,21 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private ProfileDataSource data = null;
 
     private File serverFolder = new File(System.getProperty("user.dir"));
+
+    public MultiverseInventories() {
+        super();
+    }
+
+    /**
+     * This is for unit testing.
+     * @param loader The PluginLoader to use.
+     * @param description The Description file to use.
+     * @param dataFolder The folder that other datafiles can be found in.
+     * @param file The location of the plugin.
+     */
+    public MultiverseInventories(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
+        super(loader, description, dataFolder, file);
+    }
 
     /**
      * {@inheritDoc}

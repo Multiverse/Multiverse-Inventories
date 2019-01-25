@@ -7,7 +7,9 @@ import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.*;
@@ -24,6 +26,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.net.InetSocketAddress;
@@ -33,6 +37,7 @@ public class MockPlayer implements Player {
 
     String name;
     Server server;
+    UUID uuid;
 
     Location compassTarget = null;
     Location bedSpawn = null;
@@ -54,8 +59,10 @@ public class MockPlayer implements Player {
     PlayerInventory inventory = new MockPlayerInventory();
     PlayerInventory enderChest = new MockPlayerInventory();
 
-    public MockPlayer(String name, Server server) {
+    public MockPlayer(String name, UUID uuid, Server server) {
         this.name = name;
+        this.uuid = uuid;
+        this.server = server;
     }
 
     @Override
@@ -664,11 +671,6 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public void sendBlockChange(Location location, int i, byte b) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public void sendMap(MapView mapView) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -881,16 +883,6 @@ public class MockPlayer implements Player {
     }
 
     @Override
-    public Block getTargetBlock(HashSet<Byte> bytes, int i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public List<Block> getLastTwoTargetBlocks(HashSet<Byte> bytes, int i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public <T extends Projectile> T launchProjectile(Class<? extends T> aClass) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -1017,7 +1009,7 @@ public class MockPlayer implements Player {
 
     @Override
     public UUID getUniqueId() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return uuid;
     }
 
 
@@ -1220,11 +1212,6 @@ public class MockPlayer implements Player {
     @Override
     public boolean getCanPickupItems() {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Spigot spigot() {
-        return null;
     }
 
     @Override
@@ -1559,6 +1546,146 @@ public class MockPlayer implements Player {
 
     @Override
     public PistonMoveReaction getPistonMoveReaction() {
+        return null;
+    }
+
+    @Override
+    public String getPlayerListHeader() {
+        return null;
+    }
+
+    @Override
+    public String getPlayerListFooter() {
+        return null;
+    }
+
+    @Override
+    public void setPlayerListHeader(String s) {
+
+    }
+
+    @Override
+    public void setPlayerListFooter(String s) {
+
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(String s, String s1) {
+
+    }
+
+    @Override
+    public void sendBlockChange(Location location, BlockData blockData) {
+
+    }
+
+    @Override
+    public void hidePlayer(Plugin plugin, Player player) {
+
+    }
+
+    @Override
+    public void showPlayer(Plugin plugin, Player player) {
+
+    }
+
+    @Override
+    public int getClientViewDistance() {
+        return 0;
+    }
+
+    @Override
+    public void updateCommands() {
+
+    }
+
+    @Override
+    public boolean sleep(Location location, boolean b) {
+        return false;
+    }
+
+    @Override
+    public void wakeup(boolean b) {
+
+    }
+
+    @Override
+    public Location getBedLocation() {
+        return null;
+    }
+
+    @Override
+    public boolean discoverRecipe(NamespacedKey namespacedKey) {
+        return false;
+    }
+
+    @Override
+    public int discoverRecipes(Collection<NamespacedKey> collection) {
+        return 0;
+    }
+
+    @Override
+    public boolean undiscoverRecipe(NamespacedKey namespacedKey) {
+        return false;
+    }
+
+    @Override
+    public int undiscoverRecipes(Collection<NamespacedKey> collection) {
+        return 0;
+    }
+
+    @Override
+    public Block getTargetBlockExact(int i) {
+        return null;
+    }
+
+    @Override
+    public Block getTargetBlockExact(int i, FluidCollisionMode fluidCollisionMode) {
+        return null;
+    }
+
+    @Override
+    public RayTraceResult rayTraceBlocks(double v) {
+        return null;
+    }
+
+    @Override
+    public RayTraceResult rayTraceBlocks(double v, FluidCollisionMode fluidCollisionMode) {
+        return null;
+    }
+
+    @Override
+    public boolean isSwimming() {
+        return false;
+    }
+
+    @Override
+    public void setSwimming(boolean b) {
+
+    }
+
+    @Override
+    public boolean isRiptiding() {
+        return false;
+    }
+
+    @Override
+    public BoundingBox getBoundingBox() {
+        return null;
+    }
+
+    @Override
+    public boolean isPersistent() {
+        return false;
+    }
+
+    @Override
+    public void setPersistent(boolean b) {
+
+    }
+
+    @Override
+    public BlockFace getFacing() {
         return null;
     }
 }

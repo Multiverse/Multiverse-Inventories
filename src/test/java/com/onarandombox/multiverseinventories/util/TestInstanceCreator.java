@@ -20,18 +20,24 @@ import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFactory;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionEffectTypeWrapper;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.MockGateway;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.reflect.Whitebox;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -48,7 +54,8 @@ public class TestInstanceCreator {
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
-    public Map<String, Player> players = new HashMap<String, Player>();
+    public Map<String, Player> players = new HashMap<>();
+    public Map<UUID, Player> uuidPlayers = new HashMap<>();
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -65,28 +72,36 @@ public class TestInstanceCreator {
 
             MockGateway.MOCK_STANDARD_METHODS = false;
 
-            plugin = PowerMockito.spy(new MultiverseInventories());
-            core = PowerMockito.spy(new MultiverseCore());
-
-            // Let's let all MV files go to bin/test
-            doReturn(invDirectory).when(plugin).getDataFolder();
-            // Let's let all MV files go to bin/test
-            doReturn(coreDirectory).when(core).getDataFolder();
+            // Initialize the Mock server.
+            mockServer = mock(Server.class);
+            JavaPluginLoader mockPluginLoader = PowerMock.createMock(JavaPluginLoader.class);
+            Whitebox.setInternalState(mockPluginLoader, "server", mockServer);
+            when(mockServer.getName()).thenReturn("TestBukkit");
+            Logger.getLogger("Minecraft").setParent(Util.logger);
+            when(mockServer.getLogger()).thenReturn(Util.logger);
+            when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
 
             // Return a fake PDF file.
             PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
                     "com.onarandombox.multiverseinventories.MultiverseInventories"));
             when(pdf.getAuthors()).thenReturn(new ArrayList<String>());
+            plugin = PowerMockito.spy(new MultiverseInventories(mockPluginLoader, pdf, invDirectory, new File(invDirectory, "testPluginFile")));
             doReturn(pdf).when(plugin).getDescription();
-            doReturn(core).when(plugin).getCore();
             doReturn(true).when(plugin).isEnabled();
             PluginDescriptionFile pdfCore = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
                     "com.onarandombox.MultiverseCore.MultiverseCore"));
             when(pdfCore.getAuthors()).thenReturn(new ArrayList<String>());
+            core = PowerMockito.spy(new MultiverseCore(mockPluginLoader, pdf, coreDirectory, new File(coreDirectory, "testPluginFile")));
             doReturn(pdfCore).when(core).getDescription();
             doReturn(true).when(core).isEnabled();
-	    doReturn(Util.logger).when(core).getLogger();
+            doReturn(Util.logger).when(core).getLogger();
             plugin.setServerFolder(serverDirectory);
+            doReturn(core).when(plugin).getCore();
+
+            // Let's let all MV files go to bin/test
+            doReturn(invDirectory).when(plugin).getDataFolder();
+            // Let's let all MV files go to bin/test
+            doReturn(coreDirectory).when(core).getDataFolder();
 
             // Add Core to the list of loaded plugins
             JavaPlugin[] plugins = new JavaPlugin[]{plugin, core};
@@ -135,8 +150,10 @@ public class TestInstanceCreator {
                     }
                     Player player = players.get(arg);
                     if (player == null) {
-                        player = new MockPlayer(arg, mockServer);
+                        UUID uuid = UUID.randomUUID();
+                        player = new MockPlayer(arg, uuid, mockServer);
                         players.put(arg, player);
+                        uuidPlayers.put(uuid, player);
                     }
                     return player;
                 }
@@ -153,6 +170,36 @@ public class TestInstanceCreator {
                     return players.values();
                 }
             });
+            Answer<Player> uuidPlayerAnswer = invocationOnMock -> {
+                UUID uuid = invocationOnMock.getArgument(0);
+                Player player = uuidPlayers.get(uuid);
+                if (player == null) {
+                    String name = uuid != null ? uuid.toString() : null;
+                    player = new MockPlayer(name, uuid, mockServer);
+                    players.put(name, player);
+                    uuidPlayers.put(uuid, player);
+                }
+                return player;
+            };
+            doAnswer(uuidPlayerAnswer).when(mockServer).getPlayer(any(UUID.class));
+            doAnswer(uuidPlayerAnswer).when(mockServer).getOfflinePlayer(any(UUID.class));
+
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(1, "SPEED"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(2, "SLOW"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(3, "FAST_DIGGING"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(4, "SLOW_DIGGING"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(5, "INCREASE_DAMAGE"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(6, "HEAL"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(7, "HARM"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(8, "JUMP"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(9, "CONFUSION"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(10, "REGENERATION"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(11, "DAMAGE_RESISTANCE"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(12, "FIRE_RESISTANCE"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(13, "WATER_BREATHING"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(14, "INVISIBILITY"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(15, "BLINDNESS"));
+            PotionEffectType.registerPotionEffectType(mockPotionEffectType(16, "NIGHT_VISION"));
 
             // Give the server some worlds
             when(mockServer.getWorld(anyString())).thenAnswer(new Answer<World>() {
@@ -238,6 +285,9 @@ public class TestInstanceCreator {
                     });
             when(mockServer.getScheduler()).thenReturn(mockScheduler);
 
+            ItemFactory itemFactory = MockItemMeta.mockItemFactory();
+            when(mockServer.getItemFactory()).thenReturn(itemFactory);
+
             // Set InventoriesListener
             InventoriesListener il = PowerMockito.spy(new InventoriesListener(plugin));
             Field inventoriesListenerField = MultiverseInventories.class.getDeclaredField("inventoriesListener");
@@ -297,7 +347,9 @@ public class TestInstanceCreator {
             when(commandSender.addAttachment(plugin)).thenReturn(null);
             when(commandSender.isOp()).thenReturn(true);
 
-            Bukkit.setServer(mockServer);
+            Field singletonServerField = Bukkit.class.getDeclaredField("server");
+            singletonServerField.setAccessible(true);
+            singletonServerField.set(null, mockServer);
 
             // Load Multiverse Core
             core.onLoad();
@@ -362,5 +414,15 @@ public class TestInstanceCreator {
 
     public CommandSender getCommandSender() {
         return commandSender;
+    }
+
+    private PotionEffectType mockPotionEffectType(int id, String name) throws Exception {
+        PotionEffectType potionEffectType = mock(PotionEffectType.class);
+        Field idField = PotionEffectType.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(potionEffectType, id);
+        when(potionEffectType.getId()).thenReturn(id);
+        when(potionEffectType.getName()).thenReturn(name);
+        return potionEffectType;
     }
 }

@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 public class MockPlayerInventory implements PlayerInventory {
     
@@ -90,11 +92,6 @@ public class MockPlayerInventory implements PlayerInventory {
     }
 
     @Override
-    public int clear(int i, int i2) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public HumanEntity getHolder() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -152,22 +149,12 @@ public class MockPlayerInventory implements PlayerInventory {
     }
 
     @Override
-    public boolean contains(int i) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public boolean contains(Material material) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public boolean contains(ItemStack itemStack) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean contains(int i, int i1) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
@@ -182,11 +169,6 @@ public class MockPlayerInventory implements PlayerInventory {
     }
 
     @Override
-    public HashMap<Integer, ? extends ItemStack> all(int i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public HashMap<Integer, ? extends ItemStack> all(Material material) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -194,11 +176,6 @@ public class MockPlayerInventory implements PlayerInventory {
     @Override
     public HashMap<Integer, ? extends ItemStack> all(ItemStack itemStack) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public int first(int i) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -214,11 +191,6 @@ public class MockPlayerInventory implements PlayerInventory {
     @Override
     public int firstEmpty() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void remove(int i) {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -284,7 +256,7 @@ public class MockPlayerInventory implements PlayerInventory {
     private static Map<String, Object> makeMap(ItemStack[] items) {
         Map<String, Object> contents = new LinkedHashMap<String, Object>(items.length);
         for (int i = 0; i < items.length; i++) {
-            if (items[i] != null && items[i].getTypeId() != 0) {
+            if (items[i] != null && items[i].getType() != Material.AIR) {
                 contents.put(Integer.valueOf(i).toString(), items[i]);
             }
         }
@@ -341,6 +313,16 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public Location getLocation() {
+        return null;
+    }
+
+    @Override
+    public void forEach(Consumer<? super ItemStack> action) {
+
+    }
+
+    @Override
+    public Spliterator<ItemStack> spliterator() {
         return null;
     }
 }
