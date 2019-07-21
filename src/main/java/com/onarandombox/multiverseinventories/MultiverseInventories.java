@@ -66,6 +66,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private InventoriesConfig config = null;
     private ProfileDataSource data = null;
 
+    private InventoriesDupingPatch dupingPatch;
+
     private File serverFolder = new File(System.getProperty("user.dir"));
 
     public MultiverseInventories() {
@@ -97,6 +99,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 getData().setLoadOnLogin(player.getName(), true);
             }
         }
+
+        this.dupingPatch.disable();
+
         Logging.shutdown();
     }
 
@@ -156,6 +161,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.hookImportables();
 
         Sharables.init(this);
+
+        this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
 
         // Display enable message/version info
         Logging.log(true, Level.INFO, "enabled.");
