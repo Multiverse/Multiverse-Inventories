@@ -1688,4 +1688,9 @@ public class MockPlayer implements Player {
     public BlockFace getFacing() {
         return null;
     }
+
+    @Override
+    public void setRotation(float v, float v1) {
+
+    }
 }
