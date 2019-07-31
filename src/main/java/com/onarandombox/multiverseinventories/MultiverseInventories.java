@@ -274,12 +274,20 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         StringBuilder builder = new StringBuilder();
         builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
                 + this.getDescription().getVersion()));
+        builder.append(this.logAndAddToPasteBinBuffer("=== Settings ==="));
         builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
         builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass()));
         builder.append(this.logAndAddToPasteBinBuffer("Default Ungrouped Worlds: "
                 + this.getMVIConfig().isDefaultingUngroupedWorlds()));
+        builder.append(this.logAndAddToPasteBinBuffer("Save and Load on Log In and Out: "
+                + this.getMVIConfig().usingLoggingSaveLoad()));
         builder.append(this.logAndAddToPasteBinBuffer("Using GameMode Profiles: "
                 + this.getMVIConfig().isUsingGameModeProfiles()));
+        builder.append(this.logAndAddToPasteBinBuffer("=== Shares ==="));
+        builder.append(this.logAndAddToPasteBinBuffer("Optionals for Ungrouped Worlds: "
+                + this.getMVIConfig().usingOptionalsForUngrouped()));
+        builder.append(this.logAndAddToPasteBinBuffer("Enabled Optionals: "
+                + this.getMVIConfig().getOptionalShares()));
         builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
         for (WorldGroup group : this.getGroupManager().getGroups()) {
             builder.append(this.logAndAddToPasteBinBuffer(group.toString()));
