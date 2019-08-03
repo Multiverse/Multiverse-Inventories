@@ -146,12 +146,17 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Initialize data class
         //this.getWorldProfileContainerStore().setWorldProfiles(this.getData().getWorldProfiles());
 
+        Logging.setDebugLevel(getCore().getMVConfig().getGlobalDebug());
+
         this.getCore().incrementPluginCount();
 
         // Register Events
         Bukkit.getPluginManager().registerEvents(inventoriesListener, this);
         if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
             Bukkit.getPluginManager().registerEvents(adventureListener, this);
+        }
+        if (getCore().getProtocolVersion() >= 24) {
+            new CoreDebugListener(this);
         }
 
         // Register Commands
