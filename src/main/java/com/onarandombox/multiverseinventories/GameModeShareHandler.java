@@ -38,6 +38,9 @@ final class GameModeShareHandler extends ShareHandler {
         if (Perm.BYPASS_WORLD.hasBypass(player, world)) {
             this.hasBypass = true;
             return;
+        } else if (Perm.BYPASS_GAME_MODE.hasBypass(player, event.getToGameMode().name().toLowerCase())) {
+            this.hasBypass = true;
+            return;
         }
 
         List<WorldGroup> worldGroups = this.inventories.getGroupManager().getGroupsForWorld(world);

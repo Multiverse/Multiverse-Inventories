@@ -93,6 +93,18 @@ public enum Perm {
         }
     },
     /**
+     * Permission for bypassing all worlds.
+     */
+    BYPASS_GAME_MODE_ALL(new Permission("mvinv.bypass.gamemode.*", "", PermissionDefault.FALSE)),
+    /**
+     * Permission prefix for bypassing worlds.
+     */
+    BYPASS_GAME_MODE("mvinv.bypass.gamemode.") {
+        private String getBypassMessage(Player player, String name) {
+            return "Player: " + player.getName() + " has bypass perms for game mode: " + name;
+        }
+    },
+    /**
      * Permissions for bypassing all world/groups inventory handling.
      */
     BYPASS_ALL(new Permission("mvinv.bypass.*", "Allows bypassing all of your groups/worlds and constantly use "
@@ -140,6 +152,9 @@ public enum Perm {
                     break;
                 case BYPASS_WORLD:
                     permission.addParent(BYPASS_WORLD_ALL.getPermission(), true);
+                    break;
+                case BYPASS_GAME_MODE:
+                    permission.addParent(BYPASS_GAME_MODE_ALL.getPermission(), true);
                     break;
                 default:
             }
