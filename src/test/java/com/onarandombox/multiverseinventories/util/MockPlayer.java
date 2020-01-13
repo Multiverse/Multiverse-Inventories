@@ -13,6 +13,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.*;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.*;
@@ -22,6 +23,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -29,6 +31,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -72,6 +76,11 @@ public class MockPlayer implements Player {
 
     @Override
     public void sendSignChange(Location location, String[] strings) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public void sendSignChange(@NotNull Location location, @Nullable String[] strings, @NotNull DyeColor dyeColor) throws IllegalArgumentException {
 
     }
 
@@ -389,6 +398,16 @@ public class MockPlayer implements Player {
     @Override
     public void setHealth(double i) {
         this.health = i;
+    }
+
+    @Override
+    public double getAbsorptionAmount() {
+        return 0;
+    }
+
+    @Override
+    public void setAbsorptionAmount(double v) {
+
     }
 
     @Override
@@ -1420,6 +1439,16 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public <T> @Nullable T getMemory(@NotNull MemoryKey<T> memoryKey) {
+        return null;
+    }
+
+    @Override
+    public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T t) {
+
+    }
+
+    @Override
     public AttributeInstance getAttribute(Attribute attribute) {
         return null;
     }
@@ -1600,6 +1629,11 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public void openBook(@NotNull ItemStack itemStack) {
+
+    }
+
+    @Override
     public boolean sleep(Location location, boolean b) {
         return false;
     }
@@ -1690,7 +1724,17 @@ public class MockPlayer implements Player {
     }
 
     @Override
+    public @NotNull Pose getPose() {
+        return null;
+    }
+
+    @Override
     public void setRotation(float v, float v1) {
 
+    }
+
+    @Override
+    public @NotNull PersistentDataContainer getPersistentDataContainer() {
+        return null;
     }
 }
