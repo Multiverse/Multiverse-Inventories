@@ -188,10 +188,6 @@ and adjust the build number accordingly -->
                                     <pattern>net.minidev.json</pattern>
                                     <shadedPattern>com.onarandombox.multiverseinventories.util.json</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.json.simple</pattern>
-                                    <shadedPattern>com.onarandombox.multiverseinventories.utils.json-simple</shadedPattern>
-                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
