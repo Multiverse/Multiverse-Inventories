@@ -14,7 +14,7 @@
     <repositories>
         <repository>
             <id>onarandombox</id>
-            <url>http://repo.onarandombox.com/content/groups/public</url>
+            <url>https://repo.onarandombox.com/content/groups/public</url>
         </repository>
         <repository>
             <id>spigot</id>
@@ -30,7 +30,7 @@
         <pluginRepository>
             <id>doodleproject-repo</id>
             <name>DoodleProject Maven 2 Repository</name>
-            <url>http://doodleproject.sourceforge.net/maven2/release</url>
+            <url>https://doodleproject.sourceforge.net/maven2/release</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -314,11 +314,11 @@ and adjust the build number accordingly -->
     <distributionManagement>
         <repository>
             <id>OnARandomBox</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse</url>
         </repository>
         <snapshotRepository>
             <id>OnARandomBox</id>
-            <url>http://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
+            <url>https://repo.onarandombox.com/content/repositories/multiverse-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
