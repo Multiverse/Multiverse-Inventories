@@ -7,7 +7,6 @@ import com.onarandombox.multiverseinventories.DataStrings;
 import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -643,7 +642,7 @@ public final class Sharables implements Shares {
             Float pitch = primitive.get(PITCH_KEY, PersistentDataType.FLOAT);
             Float yaw = primitive.get(YAW_KEY, PersistentDataType.FLOAT);
 
-            return new Location(worldUid != null ? Bukkit.getWorld(worldUid) : null,
+            return new Location(worldUid != null ? inventories.getServer().getWorld(worldUid) : null,
                     x != null ? x : 0D, y != null ? y : 0D, z != null ? z : 0D,
                     pitch != null ? pitch : 0F, yaw != null ? yaw : 0F);
         }
@@ -731,7 +730,8 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND,
+            SPAWN_LOCATION),
             "*", "everything");
 
 
