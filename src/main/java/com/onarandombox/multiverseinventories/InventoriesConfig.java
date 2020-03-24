@@ -56,13 +56,13 @@ public final class InventoriesConfig {
         USE_OPTIONALS_UNGROUPED("shares.optionals_for_ungrouped_worlds", true,
                 "# When set to true, optional shares WILL be utilized in cases where a group does not cover their uses for a world.",
                 "# An example of this in action would be an ungrouped world using last_location.  When this is true, players will return to their last location in that world.",
-                "# When set to false, optional shares WILL NOt be utilized in these cases, effectively disabling it for ungrouped worlds."),
+                "# When set to false, optional shares will not be utilized in these cases, effectively disabling it for ungrouped worlds."),
         /**
          * First Run flag config path, default and comments.
          */
         OPTIONAL_SHARES("shares.use_optionals", new ArrayList<String>(),
                 "# You must specify optional shares you wish to use here or they will be ignored.",
-                "# The only built in optional share is \"economy\""),
+                "# The two built in optional shares are \"economy\" and \"last_location\"."),
         /**
          * Whether or not to split data based on game modes.
          */
