@@ -42,7 +42,7 @@ public class DataStrings {
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
     /**
-     * Player armor contents identifier.
+     * Player off hand item identifier.
      */
     public static final String PLAYER_OFF_HAND_ITEM = "offHandItem";
     /**
@@ -54,7 +54,7 @@ public class DataStrings {
      */
     public static final String PLAYER_BED_SPAWN_LOCATION = "bedSpawnLocation";
     /**
-     * Player bed spawn location identifier.
+     * Player last location identifier.
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
@@ -70,7 +70,7 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_KNOWN_NAME = "lastKnownName";
     /**
-     * Player bed spawn location identifier.
+     * Player profile type identifier.
      */
     public static final String PLAYER_PROFILE_TYPE = "profileType";
     /**
@@ -114,7 +114,7 @@ public class DataStrings {
      */
     public static final String PLAYER_REMAINING_AIR = "ra";
     /**
-     * Player saturation identifier.
+     * Player max air identifier.
      */
     public static final String PLAYER_MAX_AIR = "ma";
     /**
@@ -300,4 +300,3 @@ public class DataStrings {
 
     private static final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);
 }
-
