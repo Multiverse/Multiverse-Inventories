@@ -231,8 +231,10 @@ public class InventoriesListener implements Listener {
         List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
         for (WorldGroup fromGroup : fromGroups) {
             playerProfile = fromGroup.getGroupProfileContainer().getPlayerData(event.getPlayer());
-            if (fromGroup.containsWorld(toWorldName) && fromGroup.isSharing(Sharables.LAST_LOCATION)) {
-                playerProfile.set(Sharables.LAST_LOCATION, event.getTo());
+            if (fromGroup.containsWorld(toWorldName)) {
+                if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
+                    playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
+                }
             } else {
                 playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
             }
