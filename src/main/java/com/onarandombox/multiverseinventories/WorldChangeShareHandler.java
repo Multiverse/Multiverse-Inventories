@@ -61,7 +61,6 @@ final class WorldChangeShareHandler extends ShareHandler {
         if (!toWorldGroups.isEmpty()) {
             // Get groups we need to load from
             for (WorldGroup toWorldGroup : toWorldGroups) {
-                if (fromWorldGroups.contains(toWorldGroup)) continue;
                 if (Perm.BYPASS_GROUP.hasBypass(event.getPlayer(), toWorldGroup.getName())) {
                     this.hasBypass = true;
                 } else {
