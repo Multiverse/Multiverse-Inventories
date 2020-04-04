@@ -72,7 +72,6 @@ final class WorldChangeShareHandler extends ShareHandler {
                     } else {
                         if (!toWorldGroup.getShares().isSharing(Sharables.all())) {
                             Shares sharesToAdd = Sharables.fromShares(toWorldGroup.getShares());
-                            addToProfile(container, sharesToAdd, container.getPlayerData(event.getPlayer()));
                             sharesToUpdate.addAll(sharesToAdd);
                         } else {
                             sharesToUpdate = Sharables.allOf();
