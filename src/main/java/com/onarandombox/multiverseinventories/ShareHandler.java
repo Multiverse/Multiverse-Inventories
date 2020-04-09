@@ -1,93 +1,123 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.profile.container.ContainerType;
+import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
+import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Shares;
-import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent;
-import com.onarandombox.multiverseinventories.event.MVInventoryHandlingEvent.Cause;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import static com.onarandombox.multiverseinventories.share.Sharables.allOf;
 
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
  */
-abstract class ShareHandler {
+public abstract class ShareHandler {
 
-    protected final MVInventoryHandlingEvent event;
     protected final MultiverseInventories inventories;
-    protected boolean hasBypass = false;
+    protected final Player player;
+    final AffectedProfiles affectedProfiles;
 
-    public ShareHandler(MultiverseInventories inventories, Player player, Cause cause,
-                        String fromWorld, String toWorld,
-                        GameMode fromGameMode, GameMode toGameMode) {
-        this.event = new MVInventoryHandlingEvent(player, cause, fromWorld, toWorld, fromGameMode, toGameMode);
+    ShareHandler(MultiverseInventories inventories, Player player) {
         this.inventories = inventories;
+        this.player = player;
+        this.affectedProfiles = new AffectedProfiles();
+    }
+
+    final void setAlwaysWriteProfile(PlayerProfile profile) {
+        affectedProfiles.setAlwaysWriteProfile(profile);
     }
 
     /**
-     * @param container The group/world the player's data is associated with.
+     * @param profile   The player profile that will need data saved to.
      * @param shares    What from this group needs to be saved.
-     * @param profile   The player player that will need data saved to.
      */
-    public final void addFromProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        event.getFromProfiles().add(new DefaultPersistingProfile(shares, profile));
+    final void addWriteProfile(PlayerProfile profile, Shares shares) {
+        affectedProfiles.addWriteProfile(profile, shares);
     }
 
     /**
-     * @param container The group/world the player's data is associated with.
+     * @param profile   The player profile that will need data loaded from.
      * @param shares    What from this group needs to be loaded.
-     * @param profile   The player player that will need data loaded from.
      */
-    public final void addToProfile(ProfileContainer container, Shares shares, PlayerProfile profile) {
-        event.getToProfiles().add(new DefaultPersistingProfile(shares, profile));
+    final void addReadProfile(PlayerProfile profile, Shares shares) {
+        affectedProfiles.addReadProfile(profile, shares);
     }
 
     /**
      * Finalizes the transfer from one world to another.  This handles the switching
      * inventories/stats for a player and persisting the changes.
      */
-    public final void handleSharing() {
-        this.handle();
+    final void handleSharing() {
+        prepareProfiles();
+        ShareHandlingEvent event = this.createEvent();
 
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            this.completeSharing();
+            this.completeSharing(event);
         }
     }
 
-    protected abstract void handle();
+    protected abstract void prepareProfiles();
 
-    void completeSharing() {
-        Logging.finer("Change affected by " + event.getFromProfiles().size() + " fromProfiles and "
-                + event.getToProfiles().size() + " toProfiles");
-        // This if statement should never happen, really.
-        if (event.getToProfiles().isEmpty()) {
-            if (hasBypass) {
-                Logging.fine(event.getPlayer().getName() + " has bypass permission for 1 or more world/groups!");
-            } else {
-                Logging.finer("No toProfiles...");
-            }
-            if (!event.getFromProfiles().isEmpty()) {
-                updateProfile(inventories, event.getPlayer(), event.getFromProfiles().get(0));
-            } else {
-                Logging.warning("No fromWorld to save to");
-            }
-            Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
-            return;
-        }
+    protected abstract ShareHandlingEvent createEvent();
 
-        for (PersistingProfile persistingProfile : event.getFromProfiles()) {
-            updateProfile(inventories, event.getPlayer(), persistingProfile);
+    void logBypass() {
+        Logging.fine(player.getName() + " has bypass permission for 1 or more world/groups!");
+    }
+
+    private void completeSharing(ShareHandlingEvent event) {
+        logAffectedProfilesCount(event);
+        saveAlwaysWriteProfile(event);
+        handleProfileChanges(event);
+        logHandlingComplete(event);
+    }
+
+    private void logAffectedProfilesCount(ShareHandlingEvent event) {
+        PersistingProfile alwaysWriteProfile = event.getAlwaysWriteProfile();
+        int writeProfiles = event.getWriteProfiles().size() + (alwaysWriteProfile != null ? 1 : 0);
+
+        Logging.finer("Change affected by %d fromProfiles and %d toProfiles", writeProfiles,
+                event.getReadProfiles().size());
+    }
+
+    private void saveAlwaysWriteProfile(ShareHandlingEvent event) {
+        if (event.getAlwaysWriteProfile() != null) {
+            updateProfile(inventories, event.getPlayer(), event.getAlwaysWriteProfile());
+        } else {
+            Logging.warning("No fromWorld to save to");
         }
-        for (PersistingProfile persistingProfile : event.getToProfiles()) {
-            updatePlayer(inventories, event.getPlayer(), persistingProfile);
+    }
+
+    private void handleProfileChanges(ShareHandlingEvent event) {
+        if (event.getReadProfiles().isEmpty()) {
+            Logging.finest("No profiles to read from - nothing more to do.");
+        } else {
+            updateProfiles(event.getPlayer(), event.getWriteProfiles());
+            updatePlayer(event.getPlayer(), event.getReadProfiles());
         }
-        Logging.finer("=== " + event.getPlayer().getName() + "'s " + event.getCause() + " handling complete! ===");
+    }
+
+    private void updateProfiles(Player player, List<PersistingProfile> writeProfiles) {
+        for (PersistingProfile writeProfile : writeProfiles) {
+            updateProfile(inventories, player, writeProfile);
+        }
+    }
+
+    private void updatePlayer(Player player, List<PersistingProfile> readProfiles) {
+        for (PersistingProfile readProfile : readProfiles) {
+            updatePlayer(inventories, player, readProfile);
+        }
+    }
+
+    private void logHandlingComplete(ShareHandlingEvent event) {
+        Logging.finer("=== %s complete for %s ===", event.getPlayer().getName(), event.getEventName());
     }
 
     static void updateProfile(final MultiverseInventories inventories, final Player player, final PersistingProfile profile) {
@@ -161,5 +191,46 @@ abstract class ShareHandler {
                     + " (" + profile.getProfile().getProfileType() + ")");
         }
     }
-}
 
+    public static class AffectedProfiles {
+
+        private PersistingProfile alwaysWriteProfile;
+        private final List<PersistingProfile> writeProfiles = new LinkedList<>();
+        private final List<PersistingProfile> readProfiles = new LinkedList<>();
+
+        AffectedProfiles() { }
+
+        final void setAlwaysWriteProfile(PlayerProfile profile) {
+            alwaysWriteProfile = new DefaultPersistingProfile(allOf(), profile);
+        }
+
+        /**
+         * @param profile   The player profile that will need data saved to.
+         * @param shares    What from this group needs to be saved.
+         */
+        final void addWriteProfile(PlayerProfile profile, Shares shares) {
+            writeProfiles.add(new DefaultPersistingProfile(shares, profile));
+        }
+
+        /**
+         * @param profile   The player profile that will need data loaded from.
+         * @param shares    What from this group needs to be loaded.
+         */
+        final void addReadProfile(PlayerProfile profile, Shares shares) {
+            readProfiles.add(new DefaultPersistingProfile(shares, profile));
+        }
+
+        public PersistingProfile getAlwaysWriteProfile() {
+            return alwaysWriteProfile;
+        }
+
+        public List<PersistingProfile> getWriteProfiles() {
+            return writeProfiles;
+        }
+
+        public List<PersistingProfile> getReadProfiles() {
+            return readProfiles;
+        }
+    }
+
+}
