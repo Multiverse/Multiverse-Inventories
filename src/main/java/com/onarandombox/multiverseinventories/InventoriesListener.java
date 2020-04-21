@@ -132,7 +132,7 @@ public class InventoriesListener implements Listener {
         final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId());
         final String world = globalProfile.getLastWorld();
         if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
-            ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+            ShareHandlingUpdater.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
         }
         inventories.getData().setLoadOnLogin(player.getName(), false);
@@ -150,7 +150,7 @@ public class InventoriesListener implements Listener {
         final String world = event.getPlayer().getWorld().getName();
         inventories.getData().updateLastWorld(player.getName(), world);
         if (inventories.getMVIConfig().usingLoggingSaveLoad()) {
-            ShareHandler.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+            ShareHandlingUpdater.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
             inventories.getData().setLoadOnLogin(player.getName(), true);
         }

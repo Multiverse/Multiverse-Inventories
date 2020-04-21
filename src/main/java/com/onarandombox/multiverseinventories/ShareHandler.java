@@ -3,9 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
-import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.PersistingProfile;
-import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -89,7 +87,7 @@ public abstract class ShareHandler {
 
     private void saveAlwaysWriteProfile(ShareHandlingEvent event) {
         if (event.getAlwaysWriteProfile() != null) {
-            updateProfile(inventories, event.getPlayer(), event.getAlwaysWriteProfile());
+            ShareHandlingUpdater.updateProfile(inventories, event.getPlayer(), event.getAlwaysWriteProfile());
         } else {
             Logging.warning("No fromWorld to save to");
         }
@@ -106,90 +104,18 @@ public abstract class ShareHandler {
 
     private void updateProfiles(Player player, List<PersistingProfile> writeProfiles) {
         for (PersistingProfile writeProfile : writeProfiles) {
-            updateProfile(inventories, player, writeProfile);
+            ShareHandlingUpdater.updateProfile(inventories, player, writeProfile);
         }
     }
 
     private void updatePlayer(Player player, List<PersistingProfile> readProfiles) {
         for (PersistingProfile readProfile : readProfiles) {
-            updatePlayer(inventories, player, readProfile);
+            ShareHandlingUpdater.updatePlayer(inventories, player, readProfile);
         }
     }
 
     private void logHandlingComplete(ShareHandlingEvent event) {
         Logging.finer("=== %s complete for %s ===", event.getPlayer().getName(), event.getEventName());
-    }
-
-    static void updateProfile(final MultiverseInventories inventories, final Player player, final PersistingProfile profile) {
-        int debug = inventories.getMVIConfig().getGlobalDebug();
-        StringBuilder persisted = new StringBuilder();
-        for (Sharable sharable : profile.getShares()) {
-            if (sharable.isOptional()) {
-                if (!inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
-                    Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
-                    continue;
-                }
-                if (profile.getProfile().getContainerType() == ContainerType.WORLD && !inventories.getMVIConfig().usingOptionalsForUngrouped()) {
-                    Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
-                    continue;
-                }
-            }
-            if (debug > 0) {
-                if (persisted.length() > 0) {
-                    persisted.append(", ");
-                }
-                persisted.append(sharable.getNames()[0]);
-            }
-            sharable.getHandler().updateProfile(profile.getProfile(), player);
-        }
-        if (debug > 0) {
-            Logging.finer("Persisted: " + persisted.toString() + " to "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")"
-                    + " for player " + profile.getProfile().getPlayer().getName());
-        }
-        inventories.getData().updatePlayerData(profile.getProfile());
-    }
-
-    static void updatePlayer(final MultiverseInventories inventories, final Player player, final PersistingProfile profile) {
-        StringBuilder defaulted = new StringBuilder();
-        StringBuilder loaded = new StringBuilder();
-        player.closeInventory();
-        for (Sharable sharable : profile.getShares()) {
-            if (sharable.isOptional()) {
-                if (!inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
-                    Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
-                    continue;
-                }
-                if (profile.getProfile().getContainerType() == ContainerType.WORLD && !inventories.getMVIConfig().usingOptionalsForUngrouped()) {
-                    Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
-                    continue;
-                }
-            }
-            if (sharable.getHandler().updatePlayer(player, profile.getProfile())) {
-                if (loaded.length() > 0) {
-                    loaded.append(", ");
-                }
-                loaded.append(sharable.getNames()[0]);
-            } else {
-                if (defaulted.length() > 0) {
-                    defaulted.append(", ");
-                }
-                defaulted.append(sharable.getNames()[0]);
-            }
-        }
-        if (!loaded.toString().isEmpty()) {
-            Logging.finer("Updated: " + loaded.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")");
-        }
-        if (!defaulted.toString().isEmpty()) {
-            Logging.finer("Defaulted: " + defaulted.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")");
-        }
     }
 
     public static class AffectedProfiles {

@@ -198,7 +198,7 @@ public class TestPerformance {
         ShareHandlingEvent event = shareHandler.createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            ShareHandler.updateProfile(inventories, player, event.getWriteProfiles().get(0));
+            ShareHandlingUpdater.updateProfile(inventories, player, event.getWriteProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -212,7 +212,7 @@ public class TestPerformance {
         event = shareHandler.createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            ShareHandler.updatePlayer(inventories, player, event.getReadProfiles().get(0));
+            ShareHandlingUpdater.updatePlayer(inventories, player, event.getReadProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
