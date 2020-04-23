@@ -20,12 +20,26 @@ final class GameModeShareHandler extends ShareHandler {
 
     private final GameMode fromGameMode;
     private final GameMode toGameMode;
+    private final ProfileType fromType;
+    private final ProfileType toType;
+    private final String world;
+    private final ProfileContainer worldProfileContainer;
+    private final List<WorldGroup> worldGroups;
 
     GameModeShareHandler(MultiverseInventories inventories, Player player,
                                 GameMode fromGameMode, GameMode toGameMode) {
         super(inventories, player);
         this.fromGameMode = fromGameMode;
         this.toGameMode = toGameMode;
+        this.fromType = ProfileTypes.forGameMode(fromGameMode);
+        this.toType = ProfileTypes.forGameMode(toGameMode);
+        this.world = player.getWorld().getName();
+        this.worldProfileContainer = inventories.getWorldProfileContainerStore().getContainer(world);
+        this.worldGroups = getAffectedWorldGroups();
+    }
+
+    private List<WorldGroup> getAffectedWorldGroups() {
+        return this.inventories.getGroupManager().getGroupsForWorld(world);
     }
 
     @Override
@@ -35,34 +49,46 @@ final class GameModeShareHandler extends ShareHandler {
 
     @Override
     protected void prepareProfiles() {
-        ProfileType fromType = ProfileTypes.forGameMode(fromGameMode);
-        ProfileType toType = ProfileTypes.forGameMode(toGameMode);
-        String world = player.getWorld().getName();
         Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
 
-        // Grab the player from the world they're coming from to save their stuff to every time.
-        ProfileContainer worldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(world);
         setAlwaysWriteProfile(worldProfileContainer.getPlayerData(fromType, player));
 
-        if (Perm.BYPASS_WORLD.hasBypass(player, world)) {
-            logBypass();
-            return;
-        } else if (Perm.BYPASS_GAME_MODE.hasBypass(player, toGameMode.name().toLowerCase())) {
-            logBypass();
-            return;
+        if (isPlayerAffectedByChange()) {
+            addProfiles();
         }
+    }
 
-        List<WorldGroup> worldGroups = this.inventories.getGroupManager().getGroupsForWorld(world);
-        for (WorldGroup worldGroup : worldGroups) {
-            ProfileContainer container = worldGroup.getGroupProfileContainer();
-            addWriteProfile(container.getPlayerData(fromType, player), Sharables.allOf());
-            addReadProfile(container.getPlayerData(toType, player), Sharables.allOf());
+    private boolean isPlayerAffectedByChange() {
+        if (isPlayerBypassingChange()) {
+            logBypass();
+            return false;
         }
-        if (worldGroups.isEmpty()) {
+        return true;
+    }
+
+    private boolean isPlayerBypassingChange() {
+        return Perm.BYPASS_WORLD.hasBypass(player, world)
+                || Perm.BYPASS_GAME_MODE.hasBypass(player, toGameMode.name().toLowerCase());
+    }
+
+    private void addProfiles() {
+        if (hasWorldGroups()) {
+            worldGroups.forEach(this::addProfilesForWorldGroup);
+        } else {
             Logging.finer("No groups for world.");
             addReadProfile(worldProfileContainer.getPlayerData(toType, player), Sharables.allOf());
         }
+    }
+
+    private boolean hasWorldGroups() {
+        return !worldGroups.isEmpty();
+    }
+
+    private void addProfilesForWorldGroup(WorldGroup worldGroup) {
+        ProfileContainer container = worldGroup.getGroupProfileContainer();
+        addWriteProfile(container.getPlayerData(fromType, player), Sharables.allOf());
+        addReadProfile(container.getPlayerData(toType, player), Sharables.allOf());
     }
 }
 
