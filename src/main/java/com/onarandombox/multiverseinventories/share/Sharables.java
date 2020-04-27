@@ -592,7 +592,7 @@ public final class Sharables implements Shares {
             }
     ).defaultSerializer(new ProfileEntry(false, "spawnLocation")).altName("spawn").build();
 
-    private static final NamespacedKey SPAWN_LOCATION_KEY = new NamespacedKey(MultiverseInventories.getPlugin(MultiverseInventories.class), "spawn_location");
+    private static final NamespacedKey SPAWN_LOCATION_KEY = new NamespacedKey(MultiverseInventories.getPlugin(), "spawn_location");
 
     private static final LocationTagType LOCATION_TAG_TYPE = new LocationTagType();
 
