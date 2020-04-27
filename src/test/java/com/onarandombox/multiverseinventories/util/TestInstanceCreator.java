@@ -27,6 +27,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionEffectTypeWrapper;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -54,8 +55,6 @@ public class TestInstanceCreator {
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
-    public Map<String, Player> players = new HashMap<>();
-    public Map<UUID, Player> uuidPlayers = new HashMap<>();
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -140,66 +139,45 @@ public class TestInstanceCreator {
             when(plugin.getServer()).thenReturn(mockServer);
             when(core.getServer()).thenReturn(mockServer);
             when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
-            Answer<Player> playerAnswer = new Answer<Player>() {
-                public Player answer(InvocationOnMock invocation) throws Throwable {
-                    String arg;
-                    try {
-                        arg = (String) invocation.getArguments()[0];
-                    } catch (Exception e) {
-                        return null;
-                    }
-                    Player player = players.get(arg);
-                    if (player == null) {
-                        UUID uuid = UUID.randomUUID();
-                        player = new MockPlayer(arg, uuid, mockServer);
-                        players.put(arg, player);
-                        uuidPlayers.put(uuid, player);
-                    }
-                    return player;
-                }
+            Answer<Player> playerAnswer = invocationOnMock -> {
+                String name = invocationOnMock.getArgument(0);
+                if (name == null) return null;
+                return MockPlayerFactory.getOrCreateMockPlayer(name, mockServer);
             };
             when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
-            when(mockServer.getOfflinePlayers()).thenAnswer(new Answer<OfflinePlayer[]>() {
-                public OfflinePlayer[] answer(InvocationOnMock invocation) throws Throwable {
-                    return players.values().toArray(new Player[players.values().size()]);
-                }
-            });
-            when(mockServer.getOnlinePlayers()).thenAnswer(new Answer<Collection<Player>>() {
-                public Collection<Player> answer(InvocationOnMock invocation) throws Throwable {
-                    return players.values();
-                }
-            });
+            when(mockServer.getOfflinePlayers()).thenAnswer(
+                    (Answer<OfflinePlayer[]>) invocation -> MockPlayerFactory.getAllPlayers().toArray(new Player[0]));
+            when(mockServer.getOnlinePlayers()).thenAnswer(
+                    (Answer<Collection<Player>>) invocation -> MockPlayerFactory.getAllPlayers());
             Answer<Player> uuidPlayerAnswer = invocationOnMock -> {
                 UUID uuid = invocationOnMock.getArgument(0);
-                Player player = uuidPlayers.get(uuid);
-                if (player == null) {
-                    String name = uuid != null ? uuid.toString() : null;
-                    player = new MockPlayer(name, uuid, mockServer);
-                    players.put(name, player);
-                    uuidPlayers.put(uuid, player);
-                }
-                return player;
+                if (uuid == null) return null;
+                return MockPlayerFactory.getOrCreateMockPlayer(uuid, mockServer);
             };
             doAnswer(uuidPlayerAnswer).when(mockServer).getPlayer(any(UUID.class));
             doAnswer(uuidPlayerAnswer).when(mockServer).getOfflinePlayer(any(UUID.class));
 
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(1, "SPEED"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(2, "SLOW"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(3, "FAST_DIGGING"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(4, "SLOW_DIGGING"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(5, "INCREASE_DAMAGE"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(6, "HEAL"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(7, "HARM"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(8, "JUMP"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(9, "CONFUSION"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(10, "REGENERATION"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(11, "DAMAGE_RESISTANCE"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(12, "FIRE_RESISTANCE"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(13, "WATER_BREATHING"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(14, "INVISIBILITY"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(15, "BLINDNESS"));
-            PotionEffectType.registerPotionEffectType(mockPotionEffectType(16, "NIGHT_VISION"));
+            try {
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(1, "SPEED"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(2, "SLOW"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(3, "FAST_DIGGING"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(4, "SLOW_DIGGING"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(5, "INCREASE_DAMAGE"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(6, "HEAL"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(7, "HARM"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(8, "JUMP"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(9, "CONFUSION"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(10, "REGENERATION"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(11, "DAMAGE_RESISTANCE"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(12, "FIRE_RESISTANCE"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(13, "WATER_BREATHING"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(14, "INVISIBILITY"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(15, "BLINDNESS"));
+                PotionEffectType.registerPotionEffectType(mockPotionEffectType(16, "NIGHT_VISION"));
+            } catch (IllegalArgumentException ignore) {
+                // Already registered in this context.
+            }
 
             // Give the server some worlds
             when(mockServer.getWorld(anyString())).thenAnswer(new Answer<World>() {
@@ -287,6 +265,11 @@ public class TestInstanceCreator {
 
             ItemFactory itemFactory = MockItemMeta.mockItemFactory();
             when(mockServer.getItemFactory()).thenReturn(itemFactory);
+
+
+            UnsafeValues unsafeValues = mock(UnsafeValues.class);
+            doAnswer(i -> Material.getMaterial(i.getArgument(0))).when(unsafeValues).getMaterial(any(), anyInt());
+            when(mockServer.getUnsafe()).thenReturn(unsafeValues);
 
             // Set InventoriesListener
             InventoriesListener il = PowerMockito.spy(new InventoriesListener(plugin));
@@ -400,6 +383,8 @@ public class TestInstanceCreator {
             Assert.fail(e.getMessage());
             return false;
         }
+
+        FileUtils.deleteFolder(serverDirectory);
 
         return true;
     }

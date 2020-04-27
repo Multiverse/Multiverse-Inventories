@@ -51,6 +51,12 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
+    private static MultiverseInventories inventoriesPlugin;
+
+    public static MultiverseInventories getPlugin() {
+        return inventoriesPlugin;
+    }
+
     private final int requiresProtocol = 22;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
     private final AdventureListener adventureListener = new AdventureListener(this);
@@ -69,6 +75,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private InventoriesDupingPatch dupingPatch;
 
     private File serverFolder = new File(System.getProperty("user.dir"));
+
+    {
+        inventoriesPlugin = this;
+    }
 
     public MultiverseInventories() {
         super();
