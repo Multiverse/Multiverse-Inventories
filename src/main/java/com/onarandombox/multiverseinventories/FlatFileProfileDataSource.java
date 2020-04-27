@@ -581,5 +581,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             }
         }
     }
+
+    void clearCache() {
+        globalProfileCache.invalidateAll();
+        profileCache.invalidateAll();
+    }
 }
 

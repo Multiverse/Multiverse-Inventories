@@ -70,7 +70,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
     private InventoriesConfig config = null;
-    private ProfileDataSource data = null;
+    private FlatFileProfileDataSource data = null;
 
     private InventoriesDupingPatch dupingPatch;
 
@@ -333,6 +333,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                     ((InventoriesConfig) config).getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
+
+            if (data != null) {
+                this.data.clearCache();
+            }
+
             //this.data = null;
             Logging.fine("Loaded config file!");
         } catch (IOException e) {  // Catch errors loading the config file and exit out if found.

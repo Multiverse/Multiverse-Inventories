@@ -327,7 +327,7 @@ public class TestWorldChanged {
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(satTest, player.getSaturation());
 
-        changeWorld(player, "world_nether", "world2");
+        changeWorld(player, "world", "world2");
         originalInventory = player.getInventory().toString();
 
         Assert.assertNotSame(originalInventory, newInventory);
