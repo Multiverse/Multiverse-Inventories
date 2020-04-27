@@ -8,14 +8,18 @@ package com.onarandombox.multiverseinventories.util;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFactory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockItemMeta {
 
@@ -24,14 +28,57 @@ public class MockItemMeta {
     public static ItemFactory mockItemFactory() {
         ItemFactory itemFactory = mock(ItemFactory.class);
 
-        doAnswer(invocationOnMock -> MockItemMeta.mockItemMeta(invocationOnMock.getArgument(0)))
-                .when(itemFactory).getItemMeta(any(Material.class));
+        when(itemFactory.equals(any(), any())).thenReturn(true);
+        //doAnswer(i -> true).when(itemFactory).equals(any(ItemMeta.class), any(ItemMeta.class));
+
+        doAnswer(invocation -> {
+            return null;
+//            Material material = invocation.getArgument(0);
+//            switch (material) {
+//                case WRITTEN_BOOK:
+//                    return mockItemMeta(material, BookMeta.class);
+//                case LEATHER_BOOTS:
+//                    return mockItemMeta(material, LeatherArmorMeta.class);
+//                default:
+//                    return mockItemMeta(material, ItemMeta.class);
+//            }
+
+        }).when(itemFactory).getItemMeta(any(Material.class));
+
+        doReturn(true).when(itemFactory).isApplicable(any(ItemMeta.class), any(ItemStack.class));
+        doReturn(true).when(itemFactory).isApplicable(any(ItemMeta.class), any(Material.class));
+
+        doAnswer(invocation -> invocation.getArgument(0)).when(itemFactory).asMetaFor(any(ItemMeta.class), any(ItemStack.class));
+        doAnswer(invocation -> invocation.getArgument(0)).when(itemFactory).asMetaFor(any(ItemMeta.class), any(Material.class));
+
+        doAnswer(invocation -> invocation.getArgument(1)).when(itemFactory).updateMaterial(any(ItemMeta.class), any(Material.class));
 
         return itemFactory;
     }
 
-    private static ItemMeta mockItemMeta(Material type) {
-        ItemMeta itemMeta = mock(ItemMeta.class);
+    private static <T extends ItemMeta> T mockItemMeta(Material type, Class<T> itemMetaClass) {
+        Map<String, Object> data = new HashMap<>();
+
+        T itemMeta = mock(itemMetaClass, invocation -> {
+            String methodName = invocation.getMethod().getName();
+            if (methodName.startsWith("set")) {
+                if (invocation.getArguments().length > 1) {
+                    data.put(methodName.substring(3), Arrays.asList(invocation.getArguments()));
+                } else {
+                    data.put(methodName.substring(3), invocation.getArguments()[0]);
+                }
+            } else if (methodName.startsWith("get")) {
+                return data.get(methodName.substring(3));
+            }
+
+            return null;
+        });
+
+        when(itemMeta.toString()).thenAnswer(i -> data.toString());
+
+        when(itemMeta.serialize()).thenAnswer(i -> data);
+
+        when(itemMeta.clone()).thenReturn(itemMeta);
 
         MockItemMeta mockItemMeta = new MockItemMeta(type);
         itemMetaData.put(itemMeta, mockItemMeta);

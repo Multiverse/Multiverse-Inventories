@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
@@ -13,7 +14,6 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
@@ -97,17 +97,8 @@ public class TestWorldChanged {
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        BookMeta bookMeta = (BookMeta) book.getItemMeta();
-        bookMeta.setAuthor("dumptruckman");
-        bookMeta.setPages("This is my freaking", "book", "man");
-        bookMeta.setDisplayName("Super Book");
-        book.setItemMeta(bookMeta);
         fillerItems.put(1, book);
         ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
-        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
-        leatherMeta.setColor(Color.PURPLE);
-        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
-        leather.setItemMeta(leatherMeta);
         fillerItems.put(2, leather);
         return fillerItems;
     }
@@ -142,7 +133,7 @@ public class TestWorldChanged {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -209,9 +200,9 @@ public class TestWorldChanged {
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
-        int hpTest = 13;
+        double hpTest = 13D;
         player.setHealth(hpTest);
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -311,7 +302,7 @@ public class TestWorldChanged {
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         // Changing to world within same group, nothing should change.
@@ -344,9 +335,9 @@ public class TestWorldChanged {
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
         File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
-        FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
-        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_ARMOR_CONTENTS, "");
+        FileConfiguration playerConfig = JsonConfiguration.loadConfiguration(playerFile);
+        playerConfig.set("SURVIVAL." + DataStrings.PLAYER_INVENTORY_CONTENTS, null);
+        playerConfig.set("SURVIVAL." + DataStrings.PLAYER_ARMOR_CONTENTS, null);
         try {
             playerConfig.save(playerFile);
         } catch (IOException e) {
