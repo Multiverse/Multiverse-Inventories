@@ -140,46 +140,21 @@ public class TestInstanceCreator {
             when(plugin.getServer()).thenReturn(mockServer);
             when(core.getServer()).thenReturn(mockServer);
             when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
-            Answer<Player> playerAnswer = new Answer<Player>() {
-                public Player answer(InvocationOnMock invocation) throws Throwable {
-                    String arg;
-                    try {
-                        arg = (String) invocation.getArguments()[0];
-                    } catch (Exception e) {
-                        return null;
-                    }
-                    Player player = players.get(arg);
-                    if (player == null) {
-                        UUID uuid = UUID.randomUUID();
-                        player = new MockPlayer(arg, uuid, mockServer);
-                        players.put(arg, player);
-                        uuidPlayers.put(uuid, player);
-                    }
-                    return player;
-                }
+            Answer<Player> playerAnswer = invocationOnMock -> {
+                String name = invocationOnMock.getArgument(0);
+                if (name == null) return null;
+                return MockPlayerFactory.getOrCreateMockPlayer(name, mockServer);
             };
             when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
-            when(mockServer.getOfflinePlayers()).thenAnswer(new Answer<OfflinePlayer[]>() {
-                public OfflinePlayer[] answer(InvocationOnMock invocation) throws Throwable {
-                    return players.values().toArray(new Player[players.values().size()]);
-                }
-            });
-            when(mockServer.getOnlinePlayers()).thenAnswer(new Answer<Collection<Player>>() {
-                public Collection<Player> answer(InvocationOnMock invocation) throws Throwable {
-                    return players.values();
-                }
-            });
+            when(mockServer.getOfflinePlayers()).thenAnswer(
+                    (Answer<OfflinePlayer[]>) invocation -> MockPlayerFactory.getAllPlayers().toArray(new Player[0]));
+            when(mockServer.getOnlinePlayers()).thenAnswer(
+                    (Answer<Collection<Player>>) invocation -> MockPlayerFactory.getAllPlayers());
             Answer<Player> uuidPlayerAnswer = invocationOnMock -> {
                 UUID uuid = invocationOnMock.getArgument(0);
-                Player player = uuidPlayers.get(uuid);
-                if (player == null) {
-                    String name = uuid != null ? uuid.toString() : null;
-                    player = new MockPlayer(name, uuid, mockServer);
-                    players.put(name, player);
-                    uuidPlayers.put(uuid, player);
-                }
-                return player;
+                if (uuid == null) return null;
+                return MockPlayerFactory.getOrCreateMockPlayer(uuid, mockServer);
             };
             doAnswer(uuidPlayerAnswer).when(mockServer).getPlayer(any(UUID.class));
             doAnswer(uuidPlayerAnswer).when(mockServer).getOfflinePlayer(any(UUID.class));
