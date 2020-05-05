@@ -115,8 +115,9 @@ public interface Sharable<T> {
          * This will make the Sharable use the default serializer which simply passes the data as is to the persistence
          * object for persistence. This will only work depending on the data type this Sharable represents and further
          * depending on the types the persistence methods accept. Generally, boxed primitives are okay as well as
-         * Lists of boxed primitives and {@literal Map<String, Object>}. All other types will likely require a custom
-         * {@link SharableSerializer} indicated with {@link #serializer(ProfileEntry, SharableSerializer)}.
+         * Lists of boxed primitives and {@link java.util.Map}&lt;{@link String}, {@link Object}&gt;. All other types
+         * will likely require a custom {@link SharableSerializer} indicated with
+         * {@link #serializer(ProfileEntry, SharableSerializer)}.
          *
          * @param entry The profile entry describing where this Sharable is located in the profile file.
          * @return This builder object for method chaining.

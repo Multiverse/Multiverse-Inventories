@@ -20,7 +20,7 @@ public interface SharableSerializer<T> {
      * This serializes the data for a Sharable. The output is an Object but what you return is up to you, however,
      * this is limited by the constraints of the persistence method. Generally, returning a String is the safest way
      * to serialize your data. Most boxed primitives are accepted as well as Lists of boxed primitives and
-     * {@literal Map<String, Object>}.
+     * {@link java.util.Map}&lt;{@link String}, {@link Object}&gt;.
      *
      * @param t The value of the data represented by the Sharable.
      * @return The serialized form of the data.

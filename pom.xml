@@ -17,10 +17,6 @@
             <url>http://repo.onarandombox.com/content/groups/public</url>
         </repository>
         <repository>
-            <id>spigot</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -121,6 +117,12 @@ and adjust the build number accordingly -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.4</version>
+                <configuration>
+                    <links>
+                        <link>https://papermc.io/javadocs/paper/1.14/</link>
+                    </links>
+                    <additionalJOption>-J-Dhttp.agent=placeholder</additionalJOption>
+                </configuration>
                 <executions>
                     <execution>
                         <id>javadoc-jar</id>
