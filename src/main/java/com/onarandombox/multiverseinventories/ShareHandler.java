@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
  */
-abstract class ShareHandler {
+public abstract class ShareHandler {
 
     protected final MVInventoryHandlingEvent event;
     protected final MultiverseInventories inventories;

@@ -118,10 +118,9 @@ and adjust the build number accordingly -->
                     </execution>
                 </executions>
             </plugin>
-            <!-- javadocs are broken!
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>2.10.4</version>
                 <executions>
                     <execution>
                         <id>javadoc-jar</id>
@@ -132,7 +131,6 @@ and adjust the build number accordingly -->
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

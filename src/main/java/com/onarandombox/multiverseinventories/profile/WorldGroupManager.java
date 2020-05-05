@@ -11,8 +11,8 @@ import java.util.List;
 public interface WorldGroupManager {
 
     /**
-     * Retrieves the world group associated with the given name.
-     * <p/>
+     * <p>Retrieves the world group associated with the given name.</p>
+     *
      * These groups represent the groups that define a set of worlds and what they share.
      *
      * @param groupName Name of world group to retrieve. Casing is ignored.
@@ -21,8 +21,8 @@ public interface WorldGroupManager {
     WorldGroup getGroup(String groupName);
 
     /**
-     * Returns a list of all the world groups defined in Multiverse-Inventories's groups configuration.
-     * <p/>
+     * <p>Returns a list of all the world groups defined in Multiverse-Inventories's groups configuration.</p>
+     *
      * This list is unmodifiable.
      *
      * @return An unmodifiable list of all world groups.
@@ -57,7 +57,7 @@ public interface WorldGroupManager {
     /**
      * Adds a World Group to the collection in memory, also writing it to the groups configuration.
      *
-     * @param worldGroup World group to add.  Casing is ignored.
+     * @param worldGroup World group to add. Casing is ignored.
      * @param persist    This parameter is unused due to deprecation of the method.
      * @deprecated
      */
@@ -65,13 +65,13 @@ public interface WorldGroupManager {
     void addGroup(WorldGroup worldGroup, boolean persist);
 
     /**
-     * Adds or updates a world group in Multiverse-Inventories.
-     * <p/>
-     * This will update an existing group by persisting changes made to it in the groups configuration.
-     * This should be called when any of the facets of a group such as worlds or shares have been modified.
-     * <p/>
-     * If the group does not exist it will be added to the groups configuration.
-     * <p/>
+     * <p>Adds or updates a world group in Multiverse-Inventories.</p>
+     *
+     * <p>This will update an existing group by persisting changes made to it in the groups configuration.
+     * This should be called when any of the facets of a group such as worlds or shares have been modified.</p>
+     *
+     * <p>If the group does not exist it will be added to the groups configuration.</p>
+     *
      * If worldGroup's name matches the name of a different WorldGroupProfileContainer object that is already
      * known, the previous object will be overwritten with worldGroup parameter.
      *
@@ -88,11 +88,10 @@ public interface WorldGroupManager {
     boolean removeGroup(WorldGroup worldGroup);
 
     /**
-     * Creates a new empty world group.
-     * <p/>
+     * <p>Creates a new empty world group.</p>
+     *
      * Please note if you do not add worlds to this group it will not persist very well.
-     * This does not automatically persist the new group.  It must bed added via
-     * {@link #updateGroup(WorldGroup)}
+     * This does not automatically persist the new group. It must bed added via {@link #updateGroup(WorldGroup)}.
      *
      * @param name A name for the new group.
      * @return The newly created world group.
@@ -119,7 +118,7 @@ public interface WorldGroupManager {
     /**
      * Runs a check for conflicts between groups and displays them to console and sender if not null.
      *
-     * @param sender The sender to relay information to.  If null, info only displayed in console.
+     * @param sender The sender to relay information to. If null, info only displayed in console.
      */
     void checkForConflicts(CommandSender sender);
 }

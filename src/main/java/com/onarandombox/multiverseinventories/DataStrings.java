@@ -42,7 +42,7 @@ public class DataStrings {
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
     /**
-     * Player armor contents identifier.
+     * Player off hand item identifier.
      */
     public static final String PLAYER_OFF_HAND_ITEM = "offHandItem";
     /**
@@ -54,7 +54,7 @@ public class DataStrings {
      */
     public static final String PLAYER_BED_SPAWN_LOCATION = "bedSpawnLocation";
     /**
-     * Player bed spawn location identifier.
+     * Player last location identifier.
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
@@ -70,7 +70,7 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_KNOWN_NAME = "lastKnownName";
     /**
-     * Player bed spawn location identifier.
+     * Player profile type identifier.
      */
     public static final String PLAYER_PROFILE_TYPE = "profileType";
     /**
@@ -78,15 +78,15 @@ public class DataStrings {
      */
     public static final String PLAYER_HEALTH = "hp";
     /**
-     * Player exp identifier.
+     * Player experience identifier.
      */
     public static final String PLAYER_EXPERIENCE = "xp";
     /**
-     * Player total exp identifier.
+     * Player total experience identifier.
      */
     public static final String PLAYER_TOTAL_EXPERIENCE = "txp";
     /**
-     * Player exp level identifier.
+     * Player experience level identifier.
      */
     public static final String PLAYER_LEVEL = "el";
     /**
@@ -114,7 +114,7 @@ public class DataStrings {
      */
     public static final String PLAYER_REMAINING_AIR = "ra";
     /**
-     * Player saturation identifier.
+     * Player max air identifier.
      */
     public static final String PLAYER_MAX_AIR = "ma";
     /**
@@ -237,7 +237,7 @@ public class DataStrings {
     }
 
     /**
-     * @param potionsString A player's potion effects in string form to be parsed into Collection<PotionEffect>.
+     * @param potionsString A player's potion effects in string form to be parsed into {@literal Collection<PotionEffect>}.
      * @return a collection of potion effects parsed from potionsString.
      * @deprecated PotionEffect do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
      */
