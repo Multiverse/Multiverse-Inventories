@@ -66,7 +66,8 @@ public class TestWorldChanged {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
+        // Set player's initial location
+        mockServer.getPlayer("dumptruckman").teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
 
     }
 
@@ -404,9 +405,6 @@ public class TestWorldChanged {
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
 
-        // Set initial location (needed for last_location to work, otherwise we get an NPE)
-        player.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
-
         // Move player within group and to a different location than spawn
         changeWorld(player, "world", "world_nether");
         Location lastLocation = new Location(mockServer.getWorld("world_nether"), 10, 10, 10);
@@ -480,9 +478,6 @@ public class TestWorldChanged {
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         Player player = inventories.getServer().getPlayer("dumptruckman");
-
-        // Set initial location (needed for last_location to work, otherwise we get an NPE)
-        player.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
 
         // Move player within group and to a different location than spawn
         changeWorld(player, "world", "world_nether");
