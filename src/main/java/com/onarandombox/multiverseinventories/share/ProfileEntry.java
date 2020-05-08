@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Indicates how a Sharable should be stored in the profile file.  Serves as a lookup for finding a sharable based on
+ * Indicates how a Sharable should be stored in the profile file. Serves as a lookup for finding a sharable based on
  * it's file tag.
  */
 public final class ProfileEntry {

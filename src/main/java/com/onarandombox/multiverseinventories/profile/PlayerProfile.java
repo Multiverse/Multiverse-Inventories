@@ -76,7 +76,7 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
      *
      * @param sharable Represents the key for the data wanted from the profile.
      * @param <T>      This indicates the type of return value to be expected.
-     * @return The value of the sharable for this profile.  Null if no value is set.
+     * @return The value of the sharable for this profile. Null if no value is set.
      */
     public <T> T get(Sharable<T> sharable) {
         SharableEntry entry = this.data.get(sharable);

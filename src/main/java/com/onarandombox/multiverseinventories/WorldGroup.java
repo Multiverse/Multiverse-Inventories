@@ -106,7 +106,7 @@ public final class WorldGroup {
     }
 
     /**
-     * Checks if this group is sharing sharable.  This will check both shares and negative shares of the group.
+     * Checks if this group is sharing sharable. This will check both shares and negative shares of the group.
      * This is the preferred method for checking if a group shares something as shares may contain ALL shares while
      * ones indicated in negative shares means those aren't actually shared.
      *
@@ -118,7 +118,7 @@ public final class WorldGroup {
     }
 
     /**
-     * Retrieves the shares for this World Group.  Any changes to this group must be subsequently saved to the data
+     * Retrieves the shares for this World Group. Any changes to this group must be subsequently saved to the data
      * source for the changes to be permanent.
      *
      * @return The shares for this World Group.

@@ -736,7 +736,7 @@ public final class Sharables implements Shares {
 
 
     /**
-     * Registers a Sharable, which is required for it to function properly.  This method is called automatically when
+     * Registers a Sharable, which is required for it to function properly. This method is called automatically when
      * using the {@link Sharable.Builder} class and should not be called manually.
      *
      * @param sharable The sharable to register.
@@ -780,8 +780,8 @@ public final class Sharables implements Shares {
     }
 
     /**
-     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s.  This is NOT to be modified and
-     * serves only as a reference.  For a version you can do what you want with, see {@link #allOf()}.
+     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
      */
     public static Shares all() {
         return ALL_SHARABLES;
