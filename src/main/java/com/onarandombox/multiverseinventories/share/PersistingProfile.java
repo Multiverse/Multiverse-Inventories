@@ -3,14 +3,14 @@ package com.onarandombox.multiverseinventories.share;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 
 /**
- * Simple interface for groups that are going to be saved/loaded.  This is used specifically for when a user's world
+ * Simple interface for groups that are going to be saved/loaded. This is used specifically for when a user's world
  * change is being handled.
  */
 public interface PersistingProfile {
 
     /**
-     * @return The shares that will be saved/loaded for. This set are all the sharable things that will be acted upon
-     *         when passed through {@link com.onarandombox.multiverseinventories.ShareHandler}.
+     * @return The shares that will be saved/loaded for the profile. This is the set of all Sharables that will be acted
+     *         upon when passed through the ShareHandler class, or any of its subclasses.
      */
     Shares getShares();
 
