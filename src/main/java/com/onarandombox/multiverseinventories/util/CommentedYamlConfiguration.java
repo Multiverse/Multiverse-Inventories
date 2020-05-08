@@ -38,8 +38,12 @@ public final class CommentedYamlConfiguration {
     /**
      * Loads this Configuration object into memory.
      */
-    public void load() throws UnsupportedEncodingException {
-        config = new EnhancedConfiguration(file);
+    public void load() {
+        try {
+            config = new EncodedConfiguration(file, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            config = new EnhancedConfiguration(file);
+        }
     }
 
     /**
