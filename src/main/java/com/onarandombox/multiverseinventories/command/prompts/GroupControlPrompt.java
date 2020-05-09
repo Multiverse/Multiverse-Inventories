@@ -23,6 +23,8 @@ public class GroupControlPrompt extends InventoriesPrompt {
             return new GroupDeletePrompt(plugin, sender);
         } else if (s.equalsIgnoreCase("create")) {
             return new GroupCreatePrompt(plugin, sender);
+        } else if (s.equalsIgnoreCase("import")) {
+            return new GroupImportPrompt(plugin, sender);
         } else if (s.equalsIgnoreCase("edit")) {
             return new GroupEditPrompt(plugin, sender);
         } else {
