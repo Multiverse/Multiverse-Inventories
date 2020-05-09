@@ -29,7 +29,6 @@ public final class CommentedYamlConfiguration {
     private boolean doComments;
 
     public CommentedYamlConfiguration(File file, boolean doComments) {
-        super();
         comments = new HashMap<String, String>();
         this.file = file;
         this.doComments = doComments;
@@ -57,7 +56,7 @@ public final class CommentedYamlConfiguration {
      * Saves the file as per normal for YamlConfiguration and then parses the file and inserts
      * comments where necessary.
      *
-     * @return True if succesful.
+     * @return True if successful.
      */
     public boolean save() {
         boolean saved = true;
@@ -70,44 +69,36 @@ public final class CommentedYamlConfiguration {
         if (!doComments) {
             return saved;
         }
+
         // if there's comments to add and it saved fine, we need to add comments
         if (!comments.isEmpty() && saved) {
-            // String array of each line in the config file
-            String[] yamlContents =
-                    this.convertFileToString(file).split("[" + System.getProperty("line.separator") + "]");
-            // This will hold the entire newly formatted config
+            // convert config file to String
+            String stringConfig = this.convertFileToString(file);
+
+            // detect which kind of line endings it uses
+            String lineEnding;
+            if (stringConfig.contains("\r\n")) lineEnding = "\r\n";
+            else lineEnding = "\n";
+
+            // convert stringConfig to array, ignoring the header
+            String[] arrayConfig = stringConfig.substring(stringConfig.indexOf(lineEnding) + lineEnding.length()).split(lineEnding);
+
+            // begin building the new config, starting with the header
             StringBuilder newContents = new StringBuilder();
-            String initialContents = config.options().header();
-            if (initialContents == null) {
-                initialContents = "";
-            }
-            newContents.append(initialContents)
-                    .append(System.getProperty("line.separator"))
-                    .append(System.getProperty("line.separator"));
+            newContents.append("# ").append(config.options().header()).append(lineEnding);
+
             // This holds the current path the lines are at in the config
             StringBuilder currentPath = new StringBuilder();
-            // This tells if the specified path has already been commented
-            boolean commentedPath = false;
+
             // This flags if the line is a node or unknown text.
             boolean node = false;
             // The depth of the path. (number of words separated by periods - 1)
             int depth = 0;
 
-            // TODO find a better solution here?
-            // This will cause the first line to be ignored.
-            boolean firstLine = true;
             // Loop through the config lines
-            for (final String line : yamlContents) {
-                if (firstLine) {
-                    firstLine = false;
-                    if (line.startsWith("#")) {
-                        continue;
-                    }
-                }
+            for (final String line : arrayConfig) {
                 // If the line is a node (and not something like a list value)
                 if (line.contains(": ") || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
-                    // This is a new node so we need to mark it for commenting (if there are comments)
-                    commentedPath = false;
                     // This is a node so flag it as one
                     node = true;
 
@@ -132,7 +123,7 @@ public final class CommentedYamlConfiguration {
                         }
                         // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
                         if (whiteSpace / 2 > depth) {
-                            // Path is deeper.  Add a . and the node name
+                            // Path is deeper. Add a dot and the node name
                             currentPath.append(".").append(line.substring(whiteSpace, index));
                             depth++;
                         } else if (whiteSpace / 2 < depth) {
@@ -173,39 +164,21 @@ public final class CommentedYamlConfiguration {
                 }
                 StringBuilder newLine = new StringBuilder(line);
                 if (node) {
-                    String comment = null;
-                    if (!commentedPath) {
-                        // If there's a comment for the current path, retrieve it and flag that path as already commented
-                        comment = comments.get(currentPath.toString());
-                    }
+                    // get the comment for the current node
+                    String comment = comments.get(currentPath.toString());
                     if (comment != null && !comment.isEmpty()) {
                         // Add the comment to the beginning of the current line
                         newLine.insert(0, System.getProperty("line.separator")).insert(0, comment);
-                        comment = null;
-                        commentedPath = true;
+                        if (newLine.charAt(newLine.length() - 1) != ':' && !line.equals(arrayConfig[arrayConfig.length - 1]))
+                            newLine.append(System.getProperty("line.separator"));
                     }
-                    /* Old code for removing uncommented lines.
-                     * May need reworking.
-                    if (comment != null || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
-                        // Add the (modified) line to the total config String
-                        // This modified version will not write the config if a comment is not present
-                        newContents += line + System.getProperty("line.separator");
-                    }
-                    */
                 }
+
                 newLine.append(System.getProperty("line.separator"));
                 // Add the (modified) line to the total config String
                 newContents.append(newLine.toString());
             }
-            /*
-             * Due to a bukkit bug we need to strip any extra new lines from the
-             * beginning of this file, else they will multiply.
-             */
-            /*
-            while (newContents.startsWith(System.getProperty("line.separator"))) {
-                newContents = newContents.replaceFirst(System.getProperty("line.separator"), "");
-            }
-            */
+
             try {
                 // Write the string to the config file
                 this.stringToFile(newContents.toString(), file);
@@ -217,63 +190,52 @@ public final class CommentedYamlConfiguration {
     }
 
     /**
-     * Adds a comment just before the specified path.  The comment can be multiple lines.  An empty string will indicate a blank line.
+     * Adds a comment just before the specified path. The comment can be multiple lines. An empty string will indicate
+     * a blank line.
      *
      * @param path         Configuration path to add comment.
-     * @param commentLines Comments to add.  One String per line.
+     * @param commentLines Comments to add. One String per line.
      */
     public void addComment(String path, List<String> commentLines) {
-        StringBuilder commentstring = new StringBuilder();
-        String leadingSpaces = "";
+        StringBuilder commentString = new StringBuilder();
+        StringBuilder leadingSpaces = new StringBuilder();
         for (int n = 0; n < path.length(); n++) {
             if (path.charAt(n) == '.') {
-                leadingSpaces += "  ";
+                leadingSpaces.append("  ");
             }
         }
         for (String line : commentLines) {
             if (!line.isEmpty()) {
-                line = leadingSpaces + line;
-            } else {
-                line = " ";
+                line = leadingSpaces.toString() + line;
             }
-            if (commentstring.length() > 0) {
-                commentstring.append("\r\n");
+            if (commentString.length() > 0) {
+                commentString.append(System.getProperty("line.separator"));
             }
-            commentstring.append(line);
+            commentString.append(line);
         }
-        comments.put(path, commentstring.toString());
+        comments.put(path, commentString.toString());
     }
 
     /**
      * Pass a file and it will return it's contents as a string.
      *
      * @param file File to read.
-     * @return Contents of file.  String will be empty in case of any errors.
+     * @return Contents of file. String will be empty in case of any errors.
      */
     private String convertFileToString(File file) {
         final int bufferSize = 1024;
         if (file != null && file.exists() && file.canRead() && !file.isDirectory()) {
             Writer writer = new StringWriter();
-            InputStream is = null;
-
             char[] buffer = new char[bufferSize];
-            try {
-                is = new FileInputStream(file);
-                Reader reader = new BufferedReader(
-                        new InputStreamReader(is, "UTF-8"));
+
+            try (InputStream is = new FileInputStream(file)) {
                 int n;
+                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                 while ((n = reader.read(buffer)) != -1) {
                     writer.write(buffer, 0, n);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    } catch (IOException ignore) {
-                    }
-                }
             }
             return writer.toString();
         } else {
@@ -293,9 +255,6 @@ public final class CommentedYamlConfiguration {
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-
-            source.replaceAll("\n", System.getProperty("line.separator"));
-
             out.write(source);
             out.close();
             return true;

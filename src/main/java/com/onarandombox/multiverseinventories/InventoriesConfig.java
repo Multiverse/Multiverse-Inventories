@@ -22,10 +22,6 @@ public final class InventoriesConfig {
      */
     public enum Path {
         /**
-         * Add a comment to the top of file.
-         */
-        SETTINGS("settings", null, "# ===[ Multiverse Inventories Config ]==="),
-        /**
          * Locale name config path, default and comments.
          */
         LANGUAGE_FILE_NAME("settings.locale", "en", "# This is the locale you wish to use."),
@@ -62,7 +58,7 @@ public final class InventoriesConfig {
          */
         OPTIONAL_SHARES("shares.use_optionals", new ArrayList<String>(),
                 "# You must specify optional shares you wish to use here or they will be ignored.",
-                "# The only built in optional share is \"economy\""),
+                "# The only built in optional shares are \"economy\" and \"last_location\"."),
         /**
          * Whether or not to split data based on game modes.
          */
@@ -132,7 +128,7 @@ public final class InventoriesConfig {
         // Sets defaults config values
         this.setDefaults();
 
-        config.getConfig().options().header("# Multiverse-Inventories Settings");
+        config.getConfig().options().header("Multiverse-Inventories Settings");
 
         // Saves the configuration from memory to file
         config.save();

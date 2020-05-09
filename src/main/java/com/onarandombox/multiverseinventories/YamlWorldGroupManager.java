@@ -54,7 +54,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             this.getConfig().createSection("groups");
         }
 
-        groupsConfig.getConfig().options().header("# Multiverse-Inventories Groups");
+        groupsConfig.getConfig().options().header("Multiverse-Inventories Groups");
         // Saves the configuration from memory to file
         groupsConfig.save();
 
