@@ -40,9 +40,9 @@ public class PlayerDataImporter {
         // TODO: implement this method. it will handle enchantments, durability, etc...
     }
 
-    private void parseInventoryItems(Tag[] items, ItemStack[][] stacks) {
+    private void parseInventoryItems(Tag[] items, ItemStack[][] stacks, int size) {
         // TODO: do we need to fill these with air?
-        stacks[0] = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]);
+        stacks[0] = MinecraftTools.fillWithAir(new ItemStack[size]);
         stacks[1] = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
         stacks[2] = MinecraftTools.fillWithAir(new ItemStack[1]);
 
@@ -134,9 +134,13 @@ public class PlayerDataImporter {
                         case "foodExhaustionLevel":
                             pp.set(Sharables.EXHAUSTION, (float) tag.getValue());
                             break;
+                        case "EnderItems":
+                            ItemStack[][] enderItems = new ItemStack[3][];
+                            parseInventoryItems((Tag[]) tag.getValue(), enderItems, PlayerStats.ENDER_CHEST_SIZE);
+                            pp.set(Sharables.ENDER_CHEST, enderItems[0]);
                         case "Inventory":
                             ItemStack[][] stacks = new ItemStack[3][];
-                            parseInventoryItems((Tag[]) tag.getValue(), stacks);
+                            parseInventoryItems((Tag[]) tag.getValue(), stacks, PlayerStats.INVENTORY_SIZE);
                             pp.set(Sharables.INVENTORY, stacks[0]);
                             pp.set(Sharables.ARMOR, stacks[1]);
                             pp.set(Sharables.OFF_HAND, stacks[2][0]);
