@@ -116,13 +116,13 @@ public class PlayerDataImporter {
                             pp.set(Sharables.TOTAL_EXPERIENCE, (int) tag.getValue());
                             break;
                         case "Health":
-                            pp.set(Sharables.HEALTH, (double) tag.getValue());
+                            pp.set(Sharables.HEALTH, (double) (float) tag.getValue());
                             break;
                         case "foodSaturationLevel":
                             pp.set(Sharables.SATURATION, (float) tag.getValue());
                             break;
                         case "Air":
-                            pp.set(Sharables.REMAINING_AIR, (int) tag.getValue());
+                            pp.set(Sharables.REMAINING_AIR, (int) (short) tag.getValue());
                             break;
                         case "Fire":
                             pp.set(Sharables.FIRE_TICKS, (int) tag.getValue());
@@ -197,6 +197,7 @@ public class PlayerDataImporter {
                 }
 
                 group.getGroupProfileContainer().addPlayerData(pp);
+                this.plugin.getData().updatePlayerData(pp);
             } catch (IOException e) {
                 return false;
             }
