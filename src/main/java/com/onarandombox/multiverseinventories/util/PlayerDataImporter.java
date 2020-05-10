@@ -108,6 +108,7 @@ public class PlayerDataImporter {
 
                 // this is for imports that only need one value. imports that need more than one are dealt with later
                 for (Tag tag: (Tag[]) nbt.getValue()) {
+                    if (tag.getName() == null) continue;
                     switch (tag.getName()) {
                         case "FallDistance":
                             pp.set(Sharables.FALL_DISTANCE, (float) tag.getValue());
@@ -125,7 +126,7 @@ public class PlayerDataImporter {
                             pp.set(Sharables.REMAINING_AIR, (int) (short) tag.getValue());
                             break;
                         case "Fire":
-                            pp.set(Sharables.FIRE_TICKS, (int) tag.getValue());
+                            pp.set(Sharables.FIRE_TICKS, (int) (short) tag.getValue());
                             break;
                         case "foodLevel":
                             pp.set(Sharables.FOOD_LEVEL, (int) tag.getValue());
