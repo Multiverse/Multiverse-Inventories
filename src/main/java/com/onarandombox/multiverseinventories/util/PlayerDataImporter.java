@@ -7,7 +7,6 @@ import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class PlayerDataImporter {
@@ -39,31 +40,42 @@ public class PlayerDataImporter {
         // TODO: implement this method. it will handle enchantments, durability, etc...
     }
 
-    private ItemStack[] parseInventoryItems(Tag[] items, int size) {
-        // TODO: do we need to fill this with air?
-        ItemStack[] parsedItems = MinecraftTools.fillWithAir(new ItemStack[size]);
+    private void parseInventoryItems(Tag[] items, ItemStack[][] stacks) {
+        // TODO: do we need to fill these with air?
+        stacks[0] = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.INVENTORY_SIZE]);
+        stacks[1] = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
+        stacks[2] = MinecraftTools.fillWithAir(new ItemStack[1]);
 
         if (items != null) {
             for (Tag item: items) {
+                byte inv;
                 // this will not cause an NPE (it always appears in playerdata)
                 byte slot = (byte) item.findTagByName("Slot").getValue();
 
                 // we need to check this since armor and off hand item are also stored in the inventory
                 if (-1 < slot && slot < 36) {
+                    inv = 0;
+                } else if (99 < slot && slot < 104) {
+                    inv = 1;
+                    slot -= 100;
+                } else if (slot == -106) {
+                    inv = 2;
+                    slot = 0;
+                } else inv = -1;
+
+                if (inv != -1) {
                     // these will not cause NPEs (they always appear in playerdata)
                     String id = (String) item.findTagByName("id").getValue();
                     byte count = (byte) item.findTagByName("Count").getValue();
+                    stacks[inv][slot] = new ItemStack(Material.matchMaterial(id), count);
+
                     // this tag is not always present in playerdata! be mindful of NPEs!
                     Tag tag = item.findTagByName("tag");
-
-                    parsedItems[slot] = new ItemStack(Material.matchMaterial(id), count);
                     // TODO: this is currently broken
-                    //if (tag != null) parseItem(parsedItems[slot], (Tag) tag.getValue());
+                    // if (tag != null) parseItem(parsedItems[slot], (Tag) tag.getValue());
                 }
             }
         }
-
-        return parsedItems;
     }
 
     public boolean doImport() {
@@ -91,153 +103,97 @@ public class PlayerDataImporter {
                         break;
                 }
 
+                Map<String, Tag> tags = new HashMap<>();
                 pp = PlayerProfile.createPlayerProfile(ContainerType.GROUP, group.getName(), profileType, player);
 
-                for (Sharable sharable: Sharables.ALL_DEFAULT) {
-                    switch (sharable.getNames()[0]) {
-                        case "ender_chest":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            Tag[] enderItems = (Tag[]) nbt.findTagByName("EnderItems").getValue();
-                            ItemStack[] enderInv = parseInventoryItems(enderItems, PlayerStats.ENDER_CHEST_SIZE);
-                            pp.set(Sharables.ENDER_CHEST, enderInv);
+                // this is for imports that only need one value. imports that need more than one are dealt with later
+                for (Tag tag: (Tag[]) nbt.getValue()) {
+                    switch (tag.getName()) {
+                        case "FallDistance":
+                            pp.set(Sharables.FALL_DISTANCE, (float) tag.getValue());
                             break;
-                        case "inventory_contents":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            Tag[] invItems = (Tag[]) nbt.findTagByName("Inventory").getValue();
-                            ItemStack[] playerInv = parseInventoryItems(invItems, PlayerStats.INVENTORY_SIZE);
-                            pp.set(Sharables.INVENTORY, playerInv);
+                        case "XpTotal":
+                            pp.set(Sharables.TOTAL_EXPERIENCE, (int) tag.getValue());
                             break;
-                        case "armor_contents":
-                            // TODO: there's probably a more efficient way to do this (combine with inventory_contents)
-                            // this will not cause an NPE (it always appears in playerdata)
-                            Tag[] invItems2 = (Tag[]) nbt.findTagByName("Inventory").getValue();
-                            // TODO: do we need to fill this with air?
-                            ItemStack[] armorContents = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
-
-                            for (Tag item: invItems2) {
-                                // this will not cause an NPE (it always appears in playerdata)
-                                byte slot = (byte) item.findTagByName("Slot").getValue();
-
-                                // for some reason the armor slots are 100, 101, 102, and 103?
-                                // corroborated here: https://minecraft.gamepedia.com/Player.dat_format#Inventory_slot_numbers
-                                if (99 < slot && slot < 104) {
-                                    slot -= 100;
-
-                                    // these will not cause NPEs (they always appear in playerdata)
-                                    String id = (String) item.findTagByName("id").getValue();
-                                    byte count = (byte) item.findTagByName("Count").getValue();
-                                    // this tag is not always present in playerdata! be mindful of NPEs!
-                                    Tag tag = item.findTagByName("tag");
-
-                                    armorContents[slot] = new ItemStack(Material.matchMaterial(id), count);
-                                    // TODO: this is currently broken
-                                    //if (tag != null) parseItem(armorContents[slot], (Tag) tag.getValue());
-                                }
-                            }
-
-                            pp.set(Sharables.ARMOR, armorContents);
+                        case "Health":
+                            pp.set(Sharables.HEALTH, (double) tag.getValue());
                             break;
-                        case "off_hand":
-                            // TODO: there's probably a more efficient way to do this (combine with inventory_contents)
-                            // this will not cause an NPE (it always appears in playerdata)
-                            Tag[] invItems3 = (Tag[]) nbt.findTagByName("Inventory").getValue();
-                            // TODO: should this be air?
-                            ItemStack offHand = null;
-
-                            for (Tag item: invItems3) {
-                                // this will not cause an NPE (it always appears in playerdata)
-                                byte slot = (byte) item.findTagByName("Slot").getValue();
-
-                                // for some reason off hand item is in slot -106?
-                                // corroborated here: https://minecraft.gamepedia.com/Player.dat_format#Inventory_slot_numbers
-                                if (slot == -106) {
-                                    // these will not cause NPEs (they always appear in playerdata)
-                                    String id = (String) item.findTagByName("id").getValue();
-                                    byte count = (byte) item.findTagByName("Count").getValue();
-                                    // this tag is not always present in playerdata! be mindful of NPEs!
-                                    Tag tag = item.findTagByName("tag");
-
-                                    offHand = new ItemStack(Material.matchMaterial(id), count);
-                                    // TODO: this is currently broken
-                                    //if (tag != null) parseItem(offHand, (Tag) tag.getValue());
-                                }
-                            }
-
-                            pp.set(Sharables.OFF_HAND, offHand);
+                        case "foodSaturationLevel":
+                            pp.set(Sharables.SATURATION, (float) tag.getValue());
                             break;
-                        case "hit_points":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            // also, the casting to float is not a mistake! this is its type in playerdata
-                            double hp = (float) nbt.findTagByName("Health").getValue();
-                            pp.set(Sharables.HEALTH, hp);
+                        case "Air":
+                            pp.set(Sharables.REMAINING_AIR, (int) tag.getValue());
                             break;
-                        case "remaining_air":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            // also, the casting to short is not a mistake! this is its type in playerdata
-                            int air = (short) nbt.findTagByName("Air").getValue();
-                            pp.set(Sharables.REMAINING_AIR, air);
+                        case "Fire":
+                            pp.set(Sharables.FIRE_TICKS, (int) tag.getValue());
                             break;
-                        case "maximum_air":
+                        case "foodLevel":
+                            pp.set(Sharables.FOOD_LEVEL, (int) tag.getValue());
                             break;
-                        case "fall_distance":
+                        case "foodExhaustionLevel":
+                            pp.set(Sharables.EXHAUSTION, (float) tag.getValue());
                             break;
-                        case "fire_ticks":
+                        case "Inventory":
+                            ItemStack[][] stacks = new ItemStack[3][];
+                            parseInventoryItems((Tag[]) tag.getValue(), stacks);
+                            pp.set(Sharables.INVENTORY, stacks[0]);
+                            pp.set(Sharables.ARMOR, stacks[1]);
+                            pp.set(Sharables.OFF_HAND, stacks[2][0]);
                             break;
-                        case "xp":
+                        case "XpLevel":
+                            pp.set(Sharables.LEVEL, (int) tag.getValue());
                             break;
-                        case "lvl":
+                        case "XpP":
+                            pp.set(Sharables.EXPERIENCE, (float) tag.getValue());
                             break;
-                        case "total_xp":
-                            break;
-                        case "food_level":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            int foodLevel = (int) nbt.findTagByName("foodLevel").getValue();
-                            pp.set(Sharables.FOOD_LEVEL, foodLevel);
-                            break;
-                        case "exhaustion":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            float exhaustion = (float) nbt.findTagByName("foodExhaustionLevel").getValue();
-                            pp.set(Sharables.EXHAUSTION, exhaustion);
-                            break;
-                        case "saturation":
-                            // this will not cause an NPE (it always appears in playerdata)
-                            float saturation = (float) nbt.findTagByName("foodSaturationLevel").getValue();
-                            pp.set(Sharables.SATURATION, saturation);
-                            break;
-                        case "bed_spawn":
-                            // this tag is not always present in playerdata! be mindful of NPEs!
-                            break;
-                        case "last_location":
-                            long most, least;
-                            // these will not cause NPEs (they always appear in playerdata)
-                            most = (long) nbt.findTagByName("UUIDMost").getValue();
-                            least = (long) nbt.findTagByName("UUIDLeast").getValue();
-                            // TODO: for some reason this is always null
-                            World world = this.plugin.getServer().getWorld(new UUID(most, least));
-
-                            if (world != null && group.getWorlds().contains(world.getName())) {
-                                double x, y, z;
-                                float yaw, pitch;
-                                // these will not cause NPEs (they always appear in playerdata)
-                                Tag[] pos = (Tag[]) nbt.findTagByName("Pos").getValue();
-                                Tag[] rot = (Tag[]) nbt.findTagByName("Rotation").getValue();
-
-                                x = (double) pos[0].getValue();
-                                y = (double) pos[1].getValue();
-                                z = (double) pos[2].getValue();
-                                yaw = (float) rot[0].getValue();
-                                pitch = (float) rot[1].getValue();
-
-                                pp.set(Sharables.LAST_LOCATION, new Location(world, x, y, z, yaw, pitch));
-                            } else {
-                                // TODO: think of a better way to handle this case
-                                pp.set(Sharables.LAST_LOCATION,
-                                        this.plugin.getServer().getWorld(group.getWorlds().toArray(new String[0])[0]).getSpawnLocation());
-                            }
-                            break;
-                        case "potion_effects":
-                            break;
+                        case "Pos":
+                        case "Rotation":
+                        case "SpawnX":
+                        case "SpawnY":
+                        case "SpawnZ":
+                        case "UUIDLeast":
+                        case "UUIDMost":
+                            tags.put(tag.getName(), tag);
                     }
+                } // TODO: max air, and potion effects
+
+                // now we'll deal with the rest of the sharables
+
+                long most, least;
+                // these will not cause NPEs (they always appear in playerdata)
+                most = (long) tags.get("UUIDMost").getValue();
+                least = (long) tags.get("UUIDLeast").getValue();
+                // TODO: for some reason world is always null
+                World w = this.plugin.getServer().getWorld(new UUID(most, least));
+
+                if (w != null && group.getWorlds().contains(w.getName())) {
+                    double x, y, z;
+                    float yaw, pitch;
+                    Tag[] pos = (Tag[]) tags.get("Pos").getValue();
+                    Tag[] rot = (Tag[]) tags.get("Rotation").getValue();
+
+                    x = (double) pos[0].getValue();
+                    y = (double) pos[1].getValue();
+                    z = (double) pos[2].getValue();
+                    yaw = (float) rot[0].getValue();
+                    pitch = (float) rot[1].getValue();
+
+                    pp.set(Sharables.LAST_LOCATION, new Location(w, x, y, z, yaw, pitch));
+                } else {
+                    // TODO: think of a better way to handle this case
+                    pp.set(Sharables.LAST_LOCATION,
+                            this.plugin.getServer().getWorld(group.getWorlds().toArray(new String[0])[0]).getSpawnLocation());
+                }
+
+                Tag bedX, bedY, bedZ;
+                bedX = tags.get("SpawnX");
+                bedY = tags.get("SpawnY");
+                bedZ = tags.get("SpawnZ");
+
+                if (bedX != null && bedY != null && bedZ != null) {
+                    // TODO: this might not be the correct world!
+                    pp.set(Sharables.BED_SPAWN, new Location(this.plugin.getServer().getWorld(world),
+                            (int) bedX.getValue(), (int) bedY.getValue(), (int) bedZ.getValue()));
                 }
 
                 group.getGroupProfileContainer().addPlayerData(pp);
