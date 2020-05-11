@@ -1,13 +1,15 @@
-package com.onarandombox.multiverseinventories.util;
+package com.onarandombox.multiverseinventories.migration.vanilla;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.migration.MigrationException;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -16,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -78,7 +79,7 @@ public class PlayerDataImporter {
         }
     }
 
-    public boolean doImport() {
+    public void importData() throws MigrationException {
         File playerDataFolder = getPlayerDataFolder();
 
         for (File playerData: playerDataFolder.listFiles()) {
@@ -203,11 +204,9 @@ public class PlayerDataImporter {
 
                 group.getGroupProfileContainer().addPlayerData(pp);
                 this.plugin.getData().updatePlayerData(pp);
-            } catch (IOException e) {
-                return false;
+            } catch (Exception e) {
+                throw new MigrationException("An unhandled exception occurred while importing playerdata.").setCauseException(e);
             }
         }
-
-        return true;
     }
 }

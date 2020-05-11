@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.util;
+package com.onarandombox.multiverseinventories.migration.vanilla;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -4,7 +4,8 @@ import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.util.PlayerDataImporter;
+import com.onarandombox.multiverseinventories.migration.MigrationException;
+import com.onarandombox.multiverseinventories.migration.vanilla.PlayerDataImporter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
@@ -31,7 +32,7 @@ public class VanillaImportPrompt extends InventoriesPrompt {
             worlds.add(world.getName());
         }
 
-        // TODO: decide which for loop to use
+        // TODO: decide which for loop to use (this, or the above)
         //for (World world: plugin.getServer().getWorlds()) {
         //    worlds.add(world.getName());
         //} // based off GroupWorldsPrompt, we should be using this?
@@ -63,12 +64,15 @@ public class VanillaImportPrompt extends InventoriesPrompt {
         }
 
         if (found) {
-            if (new PlayerDataImporter(plugin, s, group).doImport()) {
-                messager.normal(Message.GROUP_CREATION_COMPLETE, sender);
+            try {
+                new PlayerDataImporter(plugin, s, group).importData();
+                messager.normal(Message.VANILLA_IMPORT_COMPLETE, sender);
                 return nextPrompt;
-            } else {
+            } catch (MigrationException e) {
                 messager.normal(Message.GENERIC_SORRY, sender);
                 messager.normal(Message.ERROR_PLAYERDATA_IMPORT, sender);
+                plugin.getGroupManager().removeGroup(group);
+                e.printStackTrace();
                 return Prompt.END_OF_CONVERSATION;
             }
         } else {

@@ -31,7 +31,7 @@ public enum Message {
     ERROR_DATA_LOAD("Encountered an error while loading the data file.  Disabling..."),
     ERROR_NO_GROUP("&6There is no group with the name: &f%1"),
     ERROR_NO_WORLD("&6There is no world with the name: &f%1"),
-    ERROR_PLAYERDATA_IMPORT("&6There was an error while importing the playerdata."),
+    ERROR_PLAYERDATA_IMPORT("&6There was an error while importing the playerdata. The group will now be deleted."),
     ERROR_NO_WORLD_PROFILE("&6There is no profile container for the world: &f%1"),
     ERROR_PLUGIN_NOT_ENABLED("&f%1 &6is not enabled so you may not import data from it!"),
     ERROR_UNSUPPORTED_IMPORT("&6Sorry, ''&f%1&6'' is not supported for importing."),
@@ -66,6 +66,7 @@ public enum Message {
     GROUP_REMOVED("&2Removed group: &f%1"),
     GROUP_WORLDS_EMPTY("&cYou may not have a group with no worlds, please add worlds or type &f##&c to cancel."),
     GROUP_CREATION_COMPLETE("&2You created a new group!"),
+    VANILLA_IMPORT_COMPLETE("&2Import Complete!"),
     GROUP_UPDATED("&2Group has been updated!"),
     // List Command
     LIST_GROUPS("&b===[ Group List ]===", "&6Groups:&f %1"),
