@@ -91,8 +91,8 @@ public class PlayerDataImporter {
                 OfflinePlayer player = this.plugin.getServer().getOfflinePlayer(uuid);
                 ProfileType profileType;
 
-                // this will not cause an NPE (it always appears in playerdata)
-                switch ((int) nbt.findTagByName("playerGameType").getValue()) {
+                Tag gamemode = nbt.findTagByName("playerGameType");
+                switch ((gamemode != null) ? (int) gamemode.getValue() : 0) {
                     default:
                         profileType = ProfileTypes.SURVIVAL;
                         break;
@@ -152,25 +152,55 @@ public class PlayerDataImporter {
                         case "XpP":
                             pp.set(Sharables.EXPERIENCE, (float) tag.getValue());
                             break;
+                        case "Dimension":
                         case "Pos":
                         case "Rotation":
                         case "SpawnX":
                         case "SpawnY":
                         case "SpawnZ":
-                        case "UUIDLeast":
-                        case "UUIDMost":
+                        // the following are only present on the main world of CraftBukkit servers and derivatives
+                        case "WorldUUIDLeast":
+                        case "WorldUUIDMost":
                             tags.put(tag.getName(), tag);
                     }
                 } // TODO: max air, and potion effects
 
-                // now we'll deal with the rest of the sharables
+                // bed_spawn
+                Tag bedX, bedY, bedZ;
+                bedX = tags.get("SpawnX");
+                bedY = tags.get("SpawnY");
+                bedZ = tags.get("SpawnZ");
 
-                long most, least;
-                // these will not cause NPEs (they always appear in playerdata)
-                most = (long) tags.get("UUIDMost").getValue();
-                least = (long) tags.get("UUIDLeast").getValue();
-                // TODO: for some reason world is always null
-                World w = this.plugin.getServer().getWorld(new UUID(most, least));
+                if (bedX != null && bedY != null && bedZ != null) {
+                    pp.set(Sharables.BED_SPAWN, new Location(this.plugin.getServer().getWorld(world),
+                            (int) bedX.getValue(), (int) bedY.getValue(), (int) bedZ.getValue()));
+                }
+
+                // last_location
+                World w = null;
+                Tag most, least;
+                most = tags.get("WorldUUIDMost");
+                least = tags.get("WorldUUIDLeast");
+
+                if (most != null && least != null) {
+                    w = this.plugin.getServer().getWorld(new UUID((long) most.getValue(), (long) least.getValue()));
+                } else {
+                    Tag dimension = tags.get("Dimension");
+
+                    if (dimension != null) {
+                        switch ((int) dimension.getValue()) {
+                            default:
+                                w = this.plugin.getServer().getWorld(world);
+                                break;
+                            case -1:
+                                w = this.plugin.getServer().getWorld(world + "_nether");
+                                break;
+                            case 1:
+                                w = this.plugin.getServer().getWorld(world + "_the_end");
+                                break;
+                        }
+                    }
+                }
 
                 if (w != null && group.getWorlds().contains(w.getName())) {
                     double x, y, z;
@@ -185,21 +215,6 @@ public class PlayerDataImporter {
                     pitch = (float) rot[1].getValue();
 
                     pp.set(Sharables.LAST_LOCATION, new Location(w, x, y, z, yaw, pitch));
-                } else {
-                    // TODO: think of a better way to handle this case
-                    pp.set(Sharables.LAST_LOCATION,
-                            this.plugin.getServer().getWorld(group.getWorlds().toArray(new String[0])[0]).getSpawnLocation());
-                }
-
-                Tag bedX, bedY, bedZ;
-                bedX = tags.get("SpawnX");
-                bedY = tags.get("SpawnY");
-                bedZ = tags.get("SpawnZ");
-
-                if (bedX != null && bedY != null && bedZ != null) {
-                    // TODO: this might not be the correct world!
-                    pp.set(Sharables.BED_SPAWN, new Location(this.plugin.getServer().getWorld(world),
-                            (int) bedX.getValue(), (int) bedY.getValue(), (int) bedZ.getValue()));
                 }
 
                 group.getGroupProfileContainer().addPlayerData(pp);
