@@ -72,7 +72,7 @@ public class VanillaImportPrompt extends InventoriesPrompt {
                 messager.normal(Message.GENERIC_SORRY, sender);
                 messager.normal(Message.ERROR_PLAYERDATA_IMPORT, sender);
                 plugin.getGroupManager().removeGroup(group);
-                e.printStackTrace();
+                e.getCauseException().printStackTrace();
                 return Prompt.END_OF_CONVERSATION;
             }
         } else {
