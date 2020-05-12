@@ -200,22 +200,16 @@ public class Tag {
                 byte lt = dis.readByte();
                 int ll = dis.readInt();
                 Tag[] lo = new Tag[ll];
-                for (int i = 0; i < ll; i++) {
-                    lo[i] = new Tag(Type.values()[lt], null, readPayload(dis, lt));
-                }
-                if (lo.length == 0)
-                    return Type.values()[lt];
-                else
-                    return lo;
+                for (int i = 0; i < ll; i++) lo[i] = new Tag(Type.values()[lt], null, readPayload(dis, lt));
+                if (lo.length == 0) return Type.values()[lt];
+                else return lo;
             case 10:
                 byte stt;
                 Tag[] tags = new Tag[0];
                 do {
                     stt = dis.readByte();
                     String name = null;
-                    if (stt != 0) {
-                        name = dis.readUTF();
-                    }
+                    if (stt != 0) name = dis.readUTF();
                     Tag[] newTags = new Tag[tags.length + 1];
                     System.arraycopy(tags, 0, newTags, 0, tags.length);
                     newTags[tags.length] = new Tag(Type.values()[stt], name, readPayload(dis, stt));
@@ -223,11 +217,15 @@ public class Tag {
                 } while (stt != 0);
                 return tags;
             case 11:
-                int len = dis.readInt();
-                int[] ia = new int[len];
-                for (int i=0;i<len;i++)
-                    ia[i] = dis.readInt();
+                int intLen = dis.readInt();
+                int[] ia = new int[intLen];
+                for (int i = 0; i < intLen; i++) ia[i] = dis.readInt();
                 return ia;
+            case 12:
+                int longLen = dis.readInt();
+                long[] la = new long[longLen];
+                for (int i = 0; i < longLen; i++) la[i] = dis.readLong();
+                return la;
         }
 
         return null;
