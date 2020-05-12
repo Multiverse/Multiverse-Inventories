@@ -16,9 +16,8 @@ import java.util.zip.GZIPInputStream;
  */
 public class Tag {
     private final Type type;
-    private Type listType = null;
     private final String name;
-    private Object value;
+    private final Object value;
 
     /**
      * Enum for the tag types.
@@ -60,62 +59,44 @@ public class Tag {
     public Tag(Type type, String name, Object value) {
         switch (type) {
             case TAG_End:
-                if (value != null)
-                    throw new IllegalArgumentException();
+                if (value != null) throw new IllegalArgumentException();
                 break;
             case TAG_Byte:
-                if (!(value instanceof Byte))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Byte)) throw new IllegalArgumentException();
                 break;
             case TAG_Short:
-                if (!(value instanceof Short))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Short)) throw new IllegalArgumentException();
                 break;
             case TAG_Int:
-                if (!(value instanceof Integer))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Integer)) throw new IllegalArgumentException();
                 break;
             case TAG_Long:
-                if (!(value instanceof Long))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Long)) throw new IllegalArgumentException();
                 break;
             case TAG_Float:
-                if (!(value instanceof Float))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Float)) throw new IllegalArgumentException();
                 break;
             case TAG_Double:
-                if (!(value instanceof Double))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Double)) throw new IllegalArgumentException();
                 break;
             case TAG_Byte_Array:
-                if (!(value instanceof byte[]))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof byte[])) throw new IllegalArgumentException();
                 break;
             case TAG_String:
-                if (!(value instanceof String))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof String)) throw new IllegalArgumentException();
                 break;
             case TAG_List:
-                if (value instanceof Type) {
-                    this.listType = (Type) value;
-                    value = new Tag[0];
-                } else {
-                    if (!(value instanceof Tag[]))
-                        throw new IllegalArgumentException();
-                    this.listType = (((Tag[]) value)[0]).getType();
-                }
+                if (value instanceof Type) value = new Tag[0];
+                else if (!(value instanceof Tag[]))throw new IllegalArgumentException();
                 break;
             case TAG_Compound:
-                if (!(value instanceof Tag[]))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof Tag[])) throw new IllegalArgumentException();
                 break;
             case TAG_Int_Array:
-                if (!(value instanceof int[]))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof int[])) throw new IllegalArgumentException();
                 break;
             case TAG_Long_Array:
-                if (!(value instanceof long[]))
-                    throw new IllegalArgumentException();
+                if (!(value instanceof long[])) throw new IllegalArgumentException();
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -136,78 +117,6 @@ public class Tag {
 
     public Object getValue() {
         return value;
-    }
-
-    public void setValue(Object newValue)
-    {
-        switch (type) {
-            case TAG_End:
-                if (value != null)
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Byte:
-                if (!(value instanceof Byte))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Short:
-                if (!(value instanceof Short))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Int:
-                if (!(value instanceof Integer))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Long:
-                if (!(value instanceof Long))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Float:
-                if (!(value instanceof Float))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Double:
-                if (!(value instanceof Double))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Byte_Array:
-                if (!(value instanceof byte[]))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_String:
-                if (!(value instanceof String))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_List:
-                if (value instanceof Type) {
-                    this.listType = (Type) value;
-                    value = new Tag[0];
-                } else {
-                    if (!(value instanceof Tag[]))
-                        throw new IllegalArgumentException();
-                    this.listType = (((Tag[]) value)[0]).getType();
-                }
-                break;
-            case TAG_Compound:
-                if (!(value instanceof Tag[]))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Int_Array:
-                if (!(value instanceof int[]))
-                    throw new IllegalArgumentException();
-                break;
-            case TAG_Long_Array:
-                if (!(value instanceof long[]))
-                    throw new IllegalArgumentException();
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-
-        value = newValue;
-    }
-
-    public Type getListType() {
-        return listType;
     }
 
     /**
