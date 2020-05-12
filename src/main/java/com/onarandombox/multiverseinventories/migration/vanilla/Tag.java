@@ -18,6 +18,7 @@ public class Tag {
     private final Type type;
     private final String name;
     private final Object value;
+    private Type listType = null;
 
     /**
      * Enum for the tag types.
@@ -86,8 +87,13 @@ public class Tag {
                 if (!(value instanceof String)) throw new IllegalArgumentException();
                 break;
             case TAG_List:
-                if (value instanceof Type) value = new Tag[0];
-                else if (!(value instanceof Tag[]))throw new IllegalArgumentException();
+                if (value instanceof Type) {
+                    this.listType = (Type) value;
+                    value = new Tag[0];
+                } else {
+                    if (!(value instanceof Tag[])) throw new IllegalArgumentException();
+                    this.listType = (((Tag[]) value)[0]).getType();
+                }
                 break;
             case TAG_Compound:
                 if (!(value instanceof Tag[])) throw new IllegalArgumentException();
@@ -117,6 +123,10 @@ public class Tag {
 
     public Object getValue() {
         return value;
+    }
+
+    public Type getListType() {
+        return listType;
     }
 
     /**
