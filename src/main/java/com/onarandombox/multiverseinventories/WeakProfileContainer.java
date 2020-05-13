@@ -75,7 +75,7 @@ final class WeakProfileContainer implements ProfileContainer {
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
             playerProfile = getDataSource().getPlayerData(getContainerType(),
-                    getContainerName(), profileType, player.getUniqueId());
+                    getContainerName(), profileType, player);
             Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
                     profileType, getContainerType(), playerProfile.getContainerName(), player.getName());
             profileMap.put(profileType, playerProfile);
@@ -91,13 +91,13 @@ final class WeakProfileContainer implements ProfileContainer {
     @Override
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), null, player.getName());
+        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), null, player);
     }
 
     @Override
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), profileType, player.getName());
+        this.getDataSource().removePlayerData(getContainerType(), getContainerName(), profileType, player);
     }
 
     @Override
