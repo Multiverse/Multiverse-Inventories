@@ -66,10 +66,6 @@ public class DataStrings {
      */
     public static final String PLAYER_SHOULD_LOAD = "shouldLoad";
     /**
-     * Player last known name identifier.
-     */
-    public static final String PLAYER_LAST_KNOWN_NAME = "lastKnownName";
-    /**
      * Player bed spawn location identifier.
      */
     public static final String PLAYER_PROFILE_TYPE = "profileType";

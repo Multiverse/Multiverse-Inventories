@@ -489,8 +489,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                 globalProfile.setLastWorld(playerData.get(key).toString());
             } else if (key.equalsIgnoreCase(DataStrings.PLAYER_SHOULD_LOAD)) {
                 globalProfile.setLoadOnLogin(Boolean.valueOf(playerData.get(key).toString()));
-            } else if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_KNOWN_NAME)) {
-                globalProfile.setLastKnownName(playerData.get(key).toString());
             }
         }
         return globalProfile;
@@ -526,7 +524,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
         }
         result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
-        result.put(DataStrings.PLAYER_LAST_KNOWN_NAME, profile.getLastKnownName());
         return result;
     }
 
