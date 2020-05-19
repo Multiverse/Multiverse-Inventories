@@ -91,7 +91,7 @@ public class PlayerDataImporter {
                 OfflinePlayer player = this.plugin.getServer().getOfflinePlayer(uuid);
                 ProfileType profileType;
 
-                Tag gamemode = nbt.findTagByName("playerGameType");
+                Tag gamemode = (this.plugin.getMVIConfig().isUsingGameModeProfiles()) ? nbt.findTagByName("playerGameType") : null;
                 switch ((gamemode != null) ? (int) gamemode.getValue() : 0) {
                     default:
                         profileType = ProfileTypes.SURVIVAL;
@@ -139,6 +139,7 @@ public class PlayerDataImporter {
                             ItemStack[][] enderItems = new ItemStack[3][];
                             parseInventoryItems((Tag[]) tag.getValue(), enderItems, PlayerStats.ENDER_CHEST_SIZE);
                             pp.set(Sharables.ENDER_CHEST, enderItems[0]);
+                            break;
                         case "Inventory":
                             ItemStack[][] stacks = new ItemStack[3][];
                             parseInventoryItems((Tag[]) tag.getValue(), stacks, PlayerStats.INVENTORY_SIZE);
@@ -152,6 +153,7 @@ public class PlayerDataImporter {
                         case "XpP":
                             pp.set(Sharables.EXPERIENCE, (float) tag.getValue());
                             break;
+                        // the following will be dealt with later
                         case "Dimension":
                         case "Pos":
                         case "Rotation":
@@ -188,6 +190,7 @@ public class PlayerDataImporter {
                     Tag dimension = tags.get("Dimension");
 
                     if (dimension != null) {
+                        // have you ever looked into a Minecraft world and seen DIM-1 and DIM1 ;)
                         switch ((int) dimension.getValue()) {
                             default:
                                 w = this.plugin.getServer().getWorld(world);
