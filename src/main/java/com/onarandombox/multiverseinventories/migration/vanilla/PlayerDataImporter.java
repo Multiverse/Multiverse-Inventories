@@ -111,34 +111,31 @@ public class PlayerDataImporter {
                 for (Tag tag: (Tag[]) nbt.getValue()) {
                     if (tag.getName() == null) continue;
                     switch (tag.getName()) {
-                        case "FallDistance":
-                            pp.set(Sharables.FALL_DISTANCE, (float) tag.getValue());
-                            break;
-                        case "XpTotal":
-                            pp.set(Sharables.TOTAL_EXPERIENCE, (int) tag.getValue());
-                            break;
-                        case "Health":
-                            pp.set(Sharables.HEALTH, (double) (float) tag.getValue());
-                            break;
-                        case "foodSaturationLevel":
-                            pp.set(Sharables.SATURATION, (float) tag.getValue());
-                            break;
                         case "Air":
                             pp.set(Sharables.REMAINING_AIR, (int) (short) tag.getValue());
-                            break;
-                        case "Fire":
-                            pp.set(Sharables.FIRE_TICKS, (int) (short) tag.getValue());
-                            break;
-                        case "foodLevel":
-                            pp.set(Sharables.FOOD_LEVEL, (int) tag.getValue());
-                            break;
-                        case "foodExhaustionLevel":
-                            pp.set(Sharables.EXHAUSTION, (float) tag.getValue());
                             break;
                         case "EnderItems":
                             ItemStack[][] enderItems = new ItemStack[3][];
                             parseInventoryItems((Tag[]) tag.getValue(), enderItems, PlayerStats.ENDER_CHEST_SIZE);
                             pp.set(Sharables.ENDER_CHEST, enderItems[0]);
+                            break;
+                        case "FallDistance":
+                            pp.set(Sharables.FALL_DISTANCE, (float) tag.getValue());
+                            break;
+                        case "Fire":
+                            pp.set(Sharables.FIRE_TICKS, (int) (short) tag.getValue());
+                            break;
+                        case "foodExhaustionLevel":
+                            pp.set(Sharables.EXHAUSTION, (float) tag.getValue());
+                            break;
+                        case "foodLevel":
+                            pp.set(Sharables.FOOD_LEVEL, (int) tag.getValue());
+                            break;
+                        case "foodSaturationLevel":
+                            pp.set(Sharables.SATURATION, (float) tag.getValue());
+                            break;
+                        case "Health":
+                            pp.set(Sharables.HEALTH, (double) (float) tag.getValue());
                             break;
                         case "Inventory":
                             ItemStack[][] stacks = new ItemStack[3][];
@@ -152,6 +149,9 @@ public class PlayerDataImporter {
                             break;
                         case "XpP":
                             pp.set(Sharables.EXPERIENCE, (float) tag.getValue());
+                            break;
+                        case "XpTotal":
+                            pp.set(Sharables.TOTAL_EXPERIENCE, (int) tag.getValue());
                             break;
                         // the following will be dealt with later
                         case "Dimension":
