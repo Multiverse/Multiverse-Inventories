@@ -11,14 +11,21 @@ import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.JSONValue;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,14 +46,143 @@ public class PlayerDataImporter {
         return new File(this.plugin.getServer().getWorldContainer() + File.separator + this.world + File.separator + "playerdata");
     }
 
-    private void parseItem(ItemStack item, Tag tag) {
-        // TODO: implement this method. it will handle enchantments, durability, etc...
+    private String parseLabel(JSONObject json, boolean isLore) {
+        StringBuilder finalString = new StringBuilder();
+
+        // by default, custom text is italic; check if we need to remove it
+        if (json.containsKey("italic") && !(boolean) json.get("italic")) {
+            finalString.append(ChatColor.RESET);
+            // by default, lore is dark_purple, so we might need to set it again since we reset
+            if (isLore && !json.containsKey("color")) finalString.append(ChatColor.DARK_PURPLE);
+        }
+
+        if (json.containsKey("bold") && (boolean) json.get("bold")) finalString.append(ChatColor.BOLD);
+        if (json.containsKey("obfuscated") && (boolean) json.get("obfuscated")) finalString.append(ChatColor.MAGIC);
+        if (json.containsKey("strikethrough") && (boolean) json.get("strikethrough")) finalString.append(ChatColor.STRIKETHROUGH);
+        if (json.containsKey("underlined") && (boolean) json.get("underlined")) finalString.append(ChatColor.UNDERLINE);
+        if (json.containsKey("color")) finalString.append(ChatColor.valueOf((String) json.get("color")));
+        if (json.containsKey("text")) finalString.append((String) json.get("text"));
+
+        return finalString.toString();
+    }
+
+    private void parseItem(ItemStack item, Tag[] tags) {
+        ItemMeta itemMeta = item.getItemMeta();
+
+        for (Tag tag: tags) {
+            if (tag.getName() == null) continue;
+            switch (tag.getName()) {
+                // these are generic
+                case "CanDestroy":
+                    // TODO
+                    break;
+                case "CustomModelData":
+                    // TODO
+                    break;
+                case "Damage":
+                    if (itemMeta instanceof Damageable) {
+                        Damageable d = (Damageable) itemMeta;
+                        d.setDamage((int) tag.getValue());
+                        itemMeta = (ItemMeta) d;
+                    }
+                    break;
+                case "Unbreakable":
+                    itemMeta.setUnbreakable((int) tag.getValue() == 1);
+                    break;
+                // these are only for blocks
+                case "BlockEntityTag":
+                    // TODO
+                    break;
+                case "BlockStateTag":
+                    // TODO
+                    break;
+                case "CanPlaceOn":
+                    // TODO
+                    break;
+                // these have to do with enchantments
+                case "Enchantments":
+                    // TODO
+                    break;
+                case "RepairCost":
+                    // TODO
+                    break;
+                case "StoredEnchantments":
+                    // TODO
+                    break;
+                // these apply to all items, except for "color" in "display" which is only for leather armor
+                case "AttributeModifiers":
+                    // TODO
+                    break;
+                case "display":
+                    for (Tag displayTag: (Tag[]) tag.getValue()) {
+                        if (displayTag.getName() == null) continue;
+                        switch (displayTag.getName()) {
+                            case "color":
+                                // TODO
+                                break;
+                            case "Lore":
+                                ArrayList<String> lore = new ArrayList<>();
+                                for (Tag loreTag: (Tag[]) displayTag.getValue()) {
+                                    JSONArray json = (JSONArray) JSONValue.parse((String) loreTag.getValue());
+                                    lore.add(parseLabel((JSONObject) json.get(0), true));
+                                }
+                                itemMeta.setLore(lore);
+                                break;
+                            case "Name":
+                                JSONArray json = (JSONArray) JSONValue.parse((String) displayTag.getValue());
+                                itemMeta.setDisplayName(parseLabel((JSONObject) json.get(0), false));
+                                break;
+                        }
+                    }
+                    break;
+                case "HideFlags":
+                    // TODO
+                    break;
+                // these are for potion effects
+                case "CustomPotionColor":
+                    // TODO
+                    break;
+                case "CustomPotionEffects":
+                    // TODO
+                    break;
+                case "Potion":
+                    // TODO
+                    break;
+                // these are only for crossbows
+                case "Charged":
+                    // TODO
+                    break;
+                case "ChargedProjectiles":
+                    // TODO
+                    break;
+                // the following are only for books
+                case "author":
+                    // TODO
+                    break;
+                case "generation":
+                    // TODO
+                    break;
+                case "pages":
+                    // TODO
+                    break;
+                case "resolved":
+                    // TODO
+                    break;
+                case "title":
+                    // TODO
+                    break;
+            } // TODO: Player Heads, Fireworks, Armor Stands and Spawn Eggs, Buckets of Fish, Maps, Suspicious Stew, Debug Sticks, Compasses
+        }
+
+        item.setItemMeta(itemMeta);
     }
 
     private void parseInventoryItems(Tag[] items, ItemStack[][] stacks, int size) {
-        // TODO: do we need to fill these with air?
+        // this is the main inventory
         stacks[0] = MinecraftTools.fillWithAir(new ItemStack[size]);
+        // this is the armor contents
         stacks[1] = MinecraftTools.fillWithAir(new ItemStack[PlayerStats.ARMOR_SIZE]);
+        // this is the off hand item
         stacks[2] = MinecraftTools.fillWithAir(new ItemStack[1]);
 
         if (items != null) {
@@ -74,8 +210,8 @@ public class PlayerDataImporter {
 
                     // this tag is not always present in playerdata! be mindful of NPEs!
                     Tag tag = item.findTagByName("tag");
-                    // TODO: this is currently broken
-                    // if (tag != null) parseItem(parsedItems[slot], (Tag) tag.getValue());
+                    // if tag exists, this item has some special data we need to read
+                    if (tag != null) parseItem(stacks[inv][slot], (Tag[]) tag.getValue());
                 }
             }
         }
@@ -185,7 +321,7 @@ public class PlayerDataImporter {
                         case "WorldUUIDMost":
                             tags.put(tag.getName(), tag);
                     }
-                } // TODO: max air, and potion effects
+                } // TODO: potion effects
 
                 // bed_spawn
                 Tag bedX, bedY, bedZ;
