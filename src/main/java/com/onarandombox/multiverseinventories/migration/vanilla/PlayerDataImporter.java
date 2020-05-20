@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.migration.vanilla;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.WorldGroup;
@@ -26,6 +27,7 @@ public class PlayerDataImporter {
     private final MultiverseInventories plugin;
     private final String world;
     private final WorldGroup group;
+    private final int[] dataVersions = new int[]{2230};
 
     public PlayerDataImporter(MultiverseInventories plugin, String world, WorldGroup group) {
         this.plugin = plugin;
@@ -86,10 +88,28 @@ public class PlayerDataImporter {
             try {
                 Tag nbt = Tag.readFrom(new FileInputStream(playerData));
 
+                int dataVersion;
+                Tag dataVersionTag = nbt.findTagByName("DataVersion");
+
+                boolean supported = false;
+                dataVersion = (dataVersionTag != null) ? (int) dataVersionTag.getValue() : -1;
+
+                for (int version : dataVersions) {
+                    if (dataVersion == version) {
+                        supported = true;
+                        break;
+                    }
+                }
+
                 PlayerProfile pp;
                 UUID uuid = UUID.fromString(playerData.getName().substring(0, playerData.getName().indexOf('.')));
                 OfflinePlayer player = this.plugin.getServer().getOfflinePlayer(uuid);
                 ProfileType profileType;
+
+                if (!supported) {
+                    Logging.warning("Player: " + ((player.getName() != null) ? player.getName() : player.getUniqueId())
+                            + "'s NBT uses an unsupported data version! We'll attempt to import it anyways, but it may not work!");
+                }
 
                 Tag gamemode = (this.plugin.getMVIConfig().isUsingGameModeProfiles()) ? nbt.findTagByName("playerGameType") : null;
                 switch ((gamemode != null) ? (int) gamemode.getValue() : 0) {
