@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -646,6 +647,41 @@ public final class Sharables implements Shares {
             }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").build();
 
     /**
+     * Sharing Statistics.
+     */
+    public static final Sharable<Map> GAME_STATISTICS = new Sharable.Builder<Map>("game_statistics", Map.class,
+            new SharableHandler<Map>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Map<String, Integer> playerStats = new HashMap<>();
+                    for (Statistic stat: Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            int val = player.getStatistic(stat);
+                            // no need to save values of 0, that's the default!
+                            if (val != 0) playerStats.put(stat.name(), val);
+                        }
+                    }
+                    profile.set(GAME_STATISTICS, playerStats);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Map<String, Integer> playerStats = profile.get(GAME_STATISTICS);
+                    for (Statistic stat : Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) player.setStatistic(stat, 0);
+                    }
+                    if (playerStats == null) {
+                        return false;
+                    }
+                    for (String stringStat : playerStats.keySet()) {
+                        Statistic stat = Statistic.valueOf(stringStat);
+                        if (stat.getType() == Statistic.Type.UNTYPED) player.setStatistic(stat, playerStats.get(stat.name()));
+                    }
+                    return true;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "game_statistics")).altName("game_stats").build();
+
+    /**
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
@@ -680,7 +716,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
-                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS));
+                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, GAME_STATISTICS));
 
     /**
      * Grouping for ALL default sharables.
@@ -689,7 +725,7 @@ public final class Sharables implements Shares {
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
             MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND,
-            ADVANCEMENTS),
+            ADVANCEMENTS, GAME_STATISTICS),
             "*", "everything");
 
 
