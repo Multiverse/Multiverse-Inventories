@@ -15,11 +15,12 @@ import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +40,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
-    private final JSONParser JSON_PARSER = new JSONParser();
+    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
 
     private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 
@@ -338,10 +339,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (stats.isEmpty()) {
             return;
         }
-        org.json.simple.JSONObject jsonStats = null;
+        JSONObject jsonStats = null;
         try {
-            jsonStats = (org.json.simple.JSONObject) JSON_PARSER.parse(stats);
-        } catch (org.json.simple.parser.ParseException e) {
+            jsonStats = (JSONObject) JSON_PARSER.parse(stats);
+        } catch (ParseException e) {
             Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
         } catch (ClassCastException e) {
