@@ -55,6 +55,16 @@ public enum Perm {
     COMMAND_RMSHARES(new Permission("multiverse.inventories.removeshares", "Removes share(s) from a world group",
             PermissionDefault.OP)),
     /**
+     * Permission for /mvinv creategroup.
+     */
+    COMMAND_CREATEGROUP(new Permission("multiverse.inventories.creategroup", "Creates a world group",
+            PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv deletegroup.
+     */
+    COMMAND_DELETEGROUP(new Permission("multiverse.inventories.deletegroup", "Deletes a world group",
+            PermissionDefault.OP)),
+    /**
      * Permissions for /mvinv spawn.
      */
     COMMAND_SPAWN(new Permission("multiverse.inventories.spawn.self", "teleport yourself to group spawn",
