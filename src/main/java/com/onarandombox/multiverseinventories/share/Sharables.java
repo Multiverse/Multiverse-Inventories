@@ -518,7 +518,8 @@ public final class Sharables implements Shares {
             new SharableHandler<Location>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    //profile.set(LAST_LOCATION, player.getLocation());
+                    /* It's too late to update the profile for last location here because the world change has already
+                       happened. The update occurs in the PlayerTeleportEvent handler in InventoriesListener. */
                 }
 
                 @Override
