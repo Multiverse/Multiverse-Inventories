@@ -487,7 +487,6 @@ public final class Sharables implements Shares {
                     } catch (NullPointerException e) {
                         // TODO this is a temporary fix for the bug occurring in 1.16.X CB/Spigot/Paper
                         Logging.warning("NullPointerException thrown by Player#getBedSpawnLocation - See https://github.com/Multiverse/Multiverse-Inventories/issues/374 for more details.");
-                        e.printStackTrace();
                     }
                     profile.set(BED_SPAWN, bedSpawnLocation);
                 }
