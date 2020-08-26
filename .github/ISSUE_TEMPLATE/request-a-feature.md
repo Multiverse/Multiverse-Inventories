@@ -17,10 +17,10 @@ If you are look for other submodules of Multiverse, go to their respective git r
     Multiverse-NetherPortals: https://github.com/Multiverse/Multiverse-NetherPortals/issues
     Multiverse-SignPortals: https://github.com/Multiverse/Multiverse-SignPortals/issues
 
-Not sure if your feature fits in Multiverse-Core? Feel free to ask on our Discord
+Not sure if your feature fits in Multiverse-Inventories? Feel free to ask on our Discord
 server: https://discord.gg/NZtfKky
 
-If you have a feature suggestion for Multiverse-Core, read the following tips:
+If you have a feature suggestion for Multiverse-Inventories, read the following tips:
 
 1.  Fill out the template.
       This will help us understand what you're requesting and why you want us
@@ -35,10 +35,10 @@ If you have a feature suggestion for Multiverse-Core, read the following tips:
       You can search the issue tracker to see if your feature has already been
       requested at https://github.com/Multiverse/Multiverse-Inventories/issues.
 
-4.  Ask yourself: "Does this belong in Multiverse-Core?"
+4.  Ask yourself: "Does this belong in Multiverse-Inventories?"
       There are lots of features that we reject because most servers won't
       need or use them. If your feature is very specific or already exists in
-      another plugin, it might not be a good fit for Multiverse-Core.
+      another plugin, it might not be a good fit for Multiverse-Inventories.
 
 5.  Delete this line and all above lines before posting your issue!       -->
 
