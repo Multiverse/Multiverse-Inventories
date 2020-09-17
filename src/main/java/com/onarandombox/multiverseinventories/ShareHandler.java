@@ -28,32 +28,11 @@ public abstract class ShareHandler {
         this.affectedProfiles = new AffectedProfiles();
     }
 
-    final void setAlwaysWriteProfile(PlayerProfile profile) {
-        affectedProfiles.setAlwaysWriteProfile(profile);
-    }
-
-    /**
-     * @param profile   The player profile that will need data saved to.
-     * @param shares    What from this group needs to be saved.
-     */
-    final void addWriteProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addWriteProfile(profile, shares);
-    }
-
-    /**
-     * @param profile   The player profile that will need data loaded from.
-     * @param shares    What from this group needs to be loaded.
-     */
-    final void addReadProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addReadProfile(profile, shares);
-    }
-
     /**
      * Finalizes the transfer from one world to another.  This handles the switching
      * inventories/stats for a player and persisting the changes.
      */
     final void handleSharing() {
-        prepareProfiles();
         ShareHandlingEvent event = this.createEvent();
 
         Bukkit.getPluginManager().callEvent(event);
@@ -62,11 +41,29 @@ public abstract class ShareHandler {
         }
     }
 
-    protected abstract void prepareProfiles();
+    protected final void setAlwaysWriteProfile(PlayerProfile profile) {
+        affectedProfiles.setAlwaysWriteProfile(profile);
+    }
+
+    /**
+     * @param profile   The player profile that will need data saved to.
+     * @param shares    What from this group needs to be saved.
+     */
+    protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
+        affectedProfiles.addWriteProfile(profile, shares);
+    }
+
+    /**
+     * @param profile   The player profile that will need data loaded from.
+     * @param shares    What from this group needs to be loaded.
+     */
+    protected final void addReadProfile(PlayerProfile profile, Shares shares) {
+        affectedProfiles.addReadProfile(profile, shares);
+    }
 
     protected abstract ShareHandlingEvent createEvent();
 
-    void logBypass() {
+    protected void logBypass() {
         Logging.fine(player.getName() + " has bypass permission for 1 or more world/groups!");
     }
 
@@ -126,7 +123,7 @@ public abstract class ShareHandler {
 
         AffectedProfiles() { }
 
-        final void setAlwaysWriteProfile(PlayerProfile profile) {
+        protected final void setAlwaysWriteProfile(PlayerProfile profile) {
             alwaysWriteProfile = new DefaultPersistingProfile(allOf(), profile);
         }
 
@@ -134,7 +131,7 @@ public abstract class ShareHandler {
          * @param profile   The player profile that will need data saved to.
          * @param shares    What from this group needs to be saved.
          */
-        final void addWriteProfile(PlayerProfile profile, Shares shares) {
+        protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
             writeProfiles.add(new DefaultPersistingProfile(shares, profile));
         }
 
@@ -142,7 +139,7 @@ public abstract class ShareHandler {
          * @param profile   The player profile that will need data loaded from.
          * @param shares    What from this group needs to be loaded.
          */
-        final void addReadProfile(PlayerProfile profile, Shares shares) {
+        protected final void addReadProfile(PlayerProfile profile, Shares shares) {
             readProfiles.add(new DefaultPersistingProfile(shares, profile));
         }
 

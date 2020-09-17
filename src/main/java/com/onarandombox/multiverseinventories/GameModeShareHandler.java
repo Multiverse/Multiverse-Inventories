@@ -36,6 +36,8 @@ final class GameModeShareHandler extends ShareHandler {
         this.world = player.getWorld().getName();
         this.worldProfileContainer = inventories.getWorldProfileContainerStore().getContainer(world);
         this.worldGroups = getAffectedWorldGroups();
+
+        prepareProfiles();
     }
 
     private List<WorldGroup> getAffectedWorldGroups() {
@@ -47,8 +49,7 @@ final class GameModeShareHandler extends ShareHandler {
         return new GameModeChangeShareHandlingEvent(player, affectedProfiles, fromGameMode, toGameMode);
     }
 
-    @Override
-    protected void prepareProfiles() {
+    private void prepareProfiles() {
         Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
 

@@ -68,8 +68,6 @@ public class TestPerformance {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
-
     }
 
     @After
@@ -182,9 +180,8 @@ public class TestPerformance {
         timeTaken = new double[numTests];
         total = 0;
         for (int i = 0; i < numTests; i++) {
-            ShareHandler shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
             startTime = System.nanoTime();
-            shareHandler.prepareProfiles();
+            new WorldChangeShareHandler(inventories, player, "world", "world2");
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -193,9 +190,7 @@ public class TestPerformance {
 
         timeTaken = new double[numTests];
         total = 0;
-        ShareHandler shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
-        shareHandler.prepareProfiles();
-        ShareHandlingEvent event = shareHandler.createEvent();
+        ShareHandlingEvent event = new WorldChangeShareHandler(inventories, player, "world", "world2").createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
             ShareHandlingUpdater.updateProfile(inventories, player, event.getWriteProfiles().get(0));
@@ -207,9 +202,7 @@ public class TestPerformance {
 
         timeTaken = new double[numTests];
         total = 0;
-        shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
-        shareHandler.prepareProfiles();
-        event = shareHandler.createEvent();
+        event = new WorldChangeShareHandler(inventories, player, "world", "world2").createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
             ShareHandlingUpdater.updatePlayer(inventories, player, event.getReadProfiles().get(0));
