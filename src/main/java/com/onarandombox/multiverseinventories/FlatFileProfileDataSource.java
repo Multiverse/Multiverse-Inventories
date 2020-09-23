@@ -15,10 +15,12 @@ import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.ProfileType;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +40,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
-    private final JSONParser JSON_PARSER = new JSONParser();
+    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.MODE_JSON_SIMPLE);
 
     private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 
@@ -111,16 +113,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     private File getFolder(ContainerType type, String folderName) {
         File folder;
-        switch (type) {
-            case GROUP:
-                folder = new File(this.groupFolder, folderName);
-                break;
-            case WORLD:
-                folder = new File(this.worldFolder, folderName);
-                break;
-            default:
-                folder = new File(this.worldFolder, folderName);
-                break;
+        if (type == ContainerType.GROUP) {
+            folder = new File(this.groupFolder, folderName);
+        } else {
+            folder = new File(this.worldFolder, folderName);
         }
 
         if (!folder.exists()) {
@@ -135,19 +131,26 @@ class FlatFileProfileDataSource implements ProfileDataSource {
      *
      * @param type       Indicates whether data is for group or world.
      * @param dataName   The name of the group or world.
-     * @param playerName The name of the player.
+     * @param player     The OfflinePlayer.
      * @return The data file for a player.
      * @throws IOException if there was a problem creating the file.
      */
-    File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
-        File jsonPlayerFile = new File(this.getFolder(type, dataName), playerName + JSON);
+    File getPlayerFile(ContainerType type, String dataName, OfflinePlayer player) throws IOException {
+        File jsonPlayerFile = new File(this.getFolder(type, dataName), player.getUniqueId().toString() + JSON);
         if (!jsonPlayerFile.exists()) {
+            // TODO: maybe one day we can remove this conversion
+            File oldFile = new File(this.getFolder(type, dataName), player.getName() + JSON);
+            if (oldFile.exists()) {
+                oldFile.renameTo(jsonPlayerFile);
+                if (jsonPlayerFile.exists()) return jsonPlayerFile;
+            }
+
             try {
                 jsonPlayerFile.createNewFile();
             } catch (IOException e) {
                 throw new IOException("Could not create necessary player data file: " + jsonPlayerFile.getPath()
-                        + ". Data for " + playerName + " in " + type.name().toLowerCase() + " " + dataName
-                        + " may not be saved.", e);
+                        + ". Data for Player: " + ((player.getName() != null) ? player.getName() : player.getUniqueId().toString())
+                        + " in " + type.name().toLowerCase() + " " + dataName + " may not be saved.", e);
             }
         }
         return jsonPlayerFile;
@@ -195,7 +198,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     private void processProfileWrite(PlayerProfile playerProfile) {
         try {
             File playerFile = this.getPlayerFile(playerProfile.getContainerType(),
-                    playerProfile.getContainerName(), playerProfile.getPlayer().getName());
+                    playerProfile.getContainerName(), playerProfile.getPlayer());
             FileConfiguration playerData = getConfigHandleNow(playerFile);
             playerData.createSection(playerProfile.getProfileType().getName(), serializePlayerProfile(playerProfile));
             try {
@@ -249,7 +252,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         }
         File playerFile = null;
         try {
-            playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
+            playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), Bukkit.getOfflinePlayer(key.getPlayerUUID()));
         } catch (IOException e) {
             e.printStackTrace();
             // Return an empty profile
@@ -276,8 +279,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        return getPlayerData(ProfileKey.createProfileKey(containerType, dataName, profileType, playerUUID));
+    public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, OfflinePlayer player) {
+        return getPlayerData(ProfileKey.createProfileKey(containerType, dataName, profileType, player.getUniqueId()));
     }
 
     private PlayerProfile deserializePlayerProfile(ProfileKey pKey, Map playerData) {
@@ -336,10 +339,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (stats.isEmpty()) {
             return;
         }
-        org.json.simple.JSONObject jsonStats = null;
+        JSONObject jsonStats = null;
         try {
-            jsonStats = (org.json.simple.JSONObject) JSON_PARSER.parse(stats);
-        } catch (org.json.simple.parser.ParseException e) {
+            jsonStats = (JSONObject) JSON_PARSER.parse(stats);
+        } catch (ParseException e) {
             Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
         } catch (ClassCastException e) {
@@ -372,24 +375,26 @@ class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName) {
+    public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, OfflinePlayer player) {
         if (profileType == null) {
             try {
-                File playerFile = getPlayerFile(containerType, dataName, playerName);
+                File playerFile = getPlayerFile(containerType, dataName, player);
                 return playerFile.delete();
             } catch (IOException ignore) {
-                Logging.warning("Attempted to delete file that did not exist for player " + playerName
+                Logging.warning("Attempted to delete file that did not exist for Player: "
+                        + ((player.getName() != null) ? player.getName() : player.getUniqueId().toString())
                         + " in " + containerType.name().toLowerCase() + " " + dataName);
                 return false;
             }
         } else {
             File playerFile;
             try {
-                playerFile = getPlayerFile(containerType, dataName, playerName);
+                playerFile = getPlayerFile(containerType, dataName, player);
             } catch (IOException e) {
-                Logging.warning("Attempted to delete " + playerName + "'s data for "
-                        + profileType.getName().toLowerCase() + " mode in "  + containerType.name().toLowerCase()
-                        + " " + dataName + " but the file did not exist.");
+                Logging.warning("Attempted to delete Player: "
+                        + ((player.getName() != null) ? player.getName() : player.getUniqueId().toString())
+                        + "'s data for " + profileType.getName().toLowerCase() + " mode in "
+                        + containerType.name().toLowerCase() + " " + dataName + " but the file did not exist.");
                 return false;
             }
             FileConfiguration playerData = this.waitForConfigHandle(playerFile);
@@ -397,7 +402,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             try {
                 playerData.save(playerFile);
             } catch (IOException e) {
-                Logging.severe("Could not delete data for player: " + playerName
+                Logging.severe("Could not delete data for Player: "
+                        + ((player.getName() != null) ? player.getName() : player.getUniqueId().toString())
                         + " for " + containerType.toString() + ": " + dataName);
                 Logging.severe(e.getMessage());
                 return false;
@@ -484,8 +490,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                 globalProfile.setLastWorld(playerData.get(key).toString());
             } else if (key.equalsIgnoreCase(DataStrings.PLAYER_SHOULD_LOAD)) {
                 globalProfile.setLoadOnLogin(Boolean.valueOf(playerData.get(key).toString()));
-            } else if (key.equalsIgnoreCase(DataStrings.PLAYER_LAST_KNOWN_NAME)) {
-                globalProfile.setLastKnownName(playerData.get(key).toString());
             }
         }
         return globalProfile;
@@ -521,7 +525,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
         }
         result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
-        result.put(DataStrings.PLAYER_LAST_KNOWN_NAME, profile.getLastKnownName());
         return result;
     }
 
@@ -544,7 +547,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    public void migratePlayerData(String oldName, String newName, UUID uuid, boolean removeOldData) throws IOException {
+    public void migratePlayerData(OfflinePlayer oldPlayer, OfflinePlayer newPlayer, boolean removeOldData) throws IOException {
         File[] worldFolders = worldFolder.listFiles(File::isDirectory);
         if (worldFolders == null) {
             throw new IOException("Could not enumerate world folders");
@@ -556,28 +559,28 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
         for (File worldFolder : worldFolders) {
             ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, worldFolder.getName(),
-                    ProfileTypes.ADVENTURE, uuid, oldName);
+                    ProfileTypes.ADVENTURE, newPlayer.getUniqueId(), oldPlayer.getName());
             updatePlayerData(getPlayerData(key));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
         for (File groupFolder : groupFolders) {
             ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, groupFolder.getName(),
-                    ProfileTypes.ADVENTURE, uuid, oldName);
+                    ProfileTypes.ADVENTURE, newPlayer.getUniqueId(), oldPlayer.getName());
             updatePlayerData(getPlayerData(key));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
         if (removeOldData) {
             for (File worldFolder : worldFolders) {
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName);
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.CREATIVE, oldName);
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.SURVIVAL, oldName);
+                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldPlayer);
+                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.CREATIVE, oldPlayer);
+                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.SURVIVAL, oldPlayer);
             }
             for (File groupFolder : groupFolders) {
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.ADVENTURE, oldName);
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.CREATIVE, oldName);
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldName);
+                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.ADVENTURE, oldPlayer);
+                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.CREATIVE, oldPlayer);
+                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldPlayer);
             }
         }
     }

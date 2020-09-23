@@ -7,7 +7,6 @@ import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -18,8 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -34,9 +31,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -196,7 +193,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayer(UUID.randomUUID());
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
@@ -334,7 +331,7 @@ public class TestWorldChanged {
         Assert.assertNotSame(satTest, player.getSaturation());
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
-        File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
+        File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", player);
         FileConfiguration playerConfig = JsonConfiguration.loadConfiguration(playerFile);
         playerConfig.set("SURVIVAL." + DataStrings.PLAYER_INVENTORY_CONTENTS, null);
         playerConfig.set("SURVIVAL." + DataStrings.PLAYER_ARMOR_CONTENTS, null);

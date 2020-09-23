@@ -8,6 +8,7 @@ import com.onarandombox.multiverseinventories.profile.container.ProfileContainer
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -32,8 +33,8 @@ public class MigrateCommand extends InventoriesCommand {
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        String oldName = args.get(0);
-        String newName = args.get(1);
+        OfflinePlayer oldPlayer = this.plugin.getServer().getOfflinePlayer(args.get(0));
+        OfflinePlayer newPlayer = this.plugin.getServer().getOfflinePlayer(args.get(1));
         boolean deleteOld = true;
         if (args.size() > 2) {
             if (args.get(2).equalsIgnoreCase("saveold")) {
@@ -41,12 +42,12 @@ public class MigrateCommand extends InventoriesCommand {
             }
         }
         try {
-            plugin.getData().migratePlayerData(oldName, newName, Bukkit.getOfflinePlayer(newName).getUniqueId(), deleteOld);
-            messager.good(Message.MIGRATE_SUCCESSFUL, sender, oldName, newName);
+            plugin.getData().migratePlayerData(oldPlayer, newPlayer, deleteOld);
+            messager.good(Message.MIGRATE_SUCCESSFUL, sender, oldPlayer.getName(), newPlayer.getName());
         } catch (IOException e) {
-            Logging.severe("Could not migrate data from name " + oldName + " to " + newName);
+            Logging.severe("Could not migrate data from name " + oldPlayer.getName() + " to " + newPlayer.getName());
             e.printStackTrace();
-            messager.bad(Message.MIGRATE_FAILED, sender, oldName, newName);
+            messager.bad(Message.MIGRATE_FAILED, sender, oldPlayer.getName(), newPlayer.getName());
         }
     }
 }

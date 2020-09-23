@@ -35,13 +35,11 @@ public final class GlobalProfile {
     private final String name;
     private final UUID uuid;
     private String lastWorld = null;
-    private String lastKnownName;
     private boolean loadOnLogin = false;
 
     private GlobalProfile(String name, UUID uuid) {
         this.name = name;
         this.uuid = uuid;
-        this.lastKnownName = name;
     }
 
     /**
@@ -60,26 +58,6 @@ public final class GlobalProfile {
      */
     public UUID getPlayerUUID() {
         return uuid;
-    }
-
-    /**
-     * Returns the last name the player was known to have.
-     *
-     * @return the last name the player was known to have.
-     */
-    public String getLastKnownName() {
-        return lastKnownName;
-    }
-
-    /**
-     * Sets the last name that the player was seen having.
-     * <p>This should be updated when a player's name is changed through Mojang but only after their data has been
-     * migrated to the new name.</p>
-     *
-     * @param lastKnownName the last known name for the player.
-     */
-    public void setLastKnownName(String lastKnownName) {
-        this.lastKnownName = lastKnownName;
     }
 
     /**

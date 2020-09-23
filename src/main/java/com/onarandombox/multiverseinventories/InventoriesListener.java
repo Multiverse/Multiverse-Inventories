@@ -99,28 +99,6 @@ public class InventoriesListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void playerPreLogin(AsyncPlayerPreLoginEvent event) {
-        if (event.getLoginResult() != Result.ALLOWED) {
-            return;
-        }
-        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(event.getName(), event.getUniqueId());
-        if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
-            // Data must be migrated
-            try {
-                inventories.getData().migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
-                        event.getUniqueId(), true);
-            } catch (IOException e) {
-                Logging.severe("Could not migrate data from name " + globalProfile.getLastKnownName()
-                        + " to " + event.getName());
-                e.printStackTrace();
-            }
-
-            globalProfile.setLastKnownName(event.getName());
-            inventories.getData().updateGlobalProfile(globalProfile);
-        }
-    }
-
     /**
      * Called when a player joins the server.
      *
