@@ -25,11 +25,10 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.ServicesManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionEffectTypeWrapper;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
@@ -262,6 +261,17 @@ public class TestInstanceCreator {
                         }
                     });
             when(mockServer.getScheduler()).thenReturn(mockScheduler);
+
+            // add mock services manager
+            ServicesManager mockServicesManager = mock(ServicesManager.class);
+            when(mockServicesManager.getKnownServices()).
+                    thenAnswer(new Answer<Collection<Class<?>>>() {
+                        @Override
+                        public Collection<Class<?>> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                            return new ArrayList<>();
+                        }
+                    });
+            when(mockServer.getServicesManager()).thenReturn(mockServicesManager);
 
             ItemFactory itemFactory = MockItemMeta.mockItemFactory();
             when(mockServer.getItemFactory()).thenReturn(itemFactory);
