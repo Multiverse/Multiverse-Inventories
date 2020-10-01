@@ -127,11 +127,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                 if (isFromWorldNotInToWorldGroup(worldGroup)) {
                     addReadProfileForWorldGroup(worldGroup);
                 } else {
-                    if (worldGroupIsNotSharingAll(worldGroup)) {
-                        addReadProfileForWorldGroup(worldGroup);
-                    } else {
-                        sharesToRead = Sharables.allOf();
-                    }
+                    addReadProfileForWorldGroup(worldGroup, true);
                 }
             }
         }
@@ -153,10 +149,19 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private void addReadProfileForWorldGroup(WorldGroup worldGroup) {
+            addReadProfileForWorldGroup(worldGroup, false);
+        }
+
+        private void addReadProfileForWorldGroup(WorldGroup worldGroup, boolean compliment) {
             PlayerProfile playerProfile = getWorldGroupPlayerData(worldGroup);
             Shares sharesToAdd = getWorldGroupShares(worldGroup);
 
-            addReadProfile(playerProfile, sharesToAdd);
+            if (compliment) {
+                addReadProfile(playerProfile, Sharables.complimentOf(sharesToAdd));
+            } else {
+                addReadProfile(playerProfile, sharesToAdd);
+            }
+
             sharesToRead.addAll(sharesToAdd);
         }
 
