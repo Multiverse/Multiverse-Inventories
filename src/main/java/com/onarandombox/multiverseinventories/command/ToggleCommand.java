@@ -22,6 +22,7 @@ public class ToggleCommand extends InventoriesCommand {
         this.setArgRange(1, 1);
         this.addKey("mvinv toggle");
         this.addKey("mvinv t");
+        this.addKey("mvinvtoggle");
         this.setPermission(Perm.COMMAND_ADDSHARES.getPermission());
     }
 
