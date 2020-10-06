@@ -12,6 +12,7 @@ import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
+import com.onarandombox.MultiverseCore.utils.TestingMode;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -62,6 +63,7 @@ public class TestInstanceCreator {
     public static final File worldsDirectory = new File("bin/test/server");
 
     public boolean setUp() {
+        TestingMode.enable();
         try {
             FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
