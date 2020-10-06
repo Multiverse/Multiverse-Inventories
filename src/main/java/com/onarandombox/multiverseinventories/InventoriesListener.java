@@ -27,6 +27,7 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.InventoryHolder;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,10 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void versionRequest(MVVersionEvent event) {
         event.appendVersionInfo(this.inventories.getVersionInfo());
+        File configFile = new File(this.inventories.getDataFolder(), "config.yml");
+        File groupsFile = new File(this.inventories.getDataFolder(), "groups.yml");
+        event.putDetailedVersionInfo("multiverse-inventories/config.yml", configFile);
+        event.putDetailedVersionInfo("multiverse-inventories/groups.yml", groupsFile);
     }
 
     /**
