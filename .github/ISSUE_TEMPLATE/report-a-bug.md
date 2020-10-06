@@ -1,6 +1,6 @@
 ---
 name: 🐛 Report a Bug
-about: Report an Multiverse-Inventories bug. Only use this if you're 100% sure it's something wrong with Multiverse-Inventories - otherwise, try "Help!".
+about: Report a Multiverse-Inventories bug. Only use this if you're 100% sure it's something wrong with Multiverse-Inventories - otherwise, try "Help!".
 title: ''
 labels: 'type: Bug'
 assignees: ''
