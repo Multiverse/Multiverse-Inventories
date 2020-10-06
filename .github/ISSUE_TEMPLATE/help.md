@@ -1,6 +1,9 @@
 ---
-name: Help!
+name: ❓ Help!
 about: Encountered a problem with Multiverse-Inventories? Not sure how to fix it?
+title: ''
+labels: 'type: Assistance'
+assignees: ''
 
 ---
 
