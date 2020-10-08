@@ -17,21 +17,24 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A Configuration wrapper class that allows for comments to be applied to the config paths.
  */
 public final class CommentedYamlConfiguration {
 
-    private HashMap<String, String> comments;
-    private File file;
+    private final File file;
     private FileConfiguration config = null;
-    private boolean doComments;
+    private final boolean doComments;
+    private final HashMap<String, String> comments;
+    private final Pattern newlinePattern = Pattern.compile("\r?\n");
 
     public CommentedYamlConfiguration(File file, boolean doComments) {
-        comments = new HashMap<String, String>();
         this.file = file;
         this.doComments = doComments;
+        comments = new HashMap<String, String>();
     }
 
     /**
@@ -75,17 +78,20 @@ public final class CommentedYamlConfiguration {
             // convert config file to String
             String stringConfig = this.convertFileToString(file);
 
-            // detect which kind of line endings it uses
-            String lineEnding;
-            if (stringConfig.contains("\r\n")) lineEnding = "\r\n";
-            else lineEnding = "\n";
+            // figure out where the header ends
+            int indexAfterHeader = 0;
+            Matcher newline = newlinePattern.matcher(stringConfig);
+
+            while (newline.find() && stringConfig.charAt(newline.end()) == '#') {
+                indexAfterHeader = newline.end();
+            }
 
             // convert stringConfig to array, ignoring the header
-            String[] arrayConfig = stringConfig.substring(stringConfig.indexOf(lineEnding) + lineEnding.length()).split(lineEnding);
+            String[] arrayConfig = stringConfig.substring(indexAfterHeader).split(newline.group());
 
             // begin building the new config, starting with the header
             StringBuilder newContents = new StringBuilder();
-            newContents.append("# ").append(config.options().header()).append(lineEnding);
+            newContents.append(stringConfig, 0, indexAfterHeader);
 
             // This holds the current path the lines are at in the config
             StringBuilder currentPath = new StringBuilder();
@@ -168,13 +174,13 @@ public final class CommentedYamlConfiguration {
                     String comment = comments.get(currentPath.toString());
                     if (comment != null && !comment.isEmpty()) {
                         // Add the comment to the beginning of the current line
-                        newLine.insert(0, System.getProperty("line.separator")).insert(0, comment);
+                        newLine.insert(0, "\n").insert(0, comment);
                         if (newLine.charAt(newLine.length() - 1) != ':' && !line.equals(arrayConfig[arrayConfig.length - 1]))
-                            newLine.append(System.getProperty("line.separator"));
+                            newLine.append("\n");
                     }
                 }
 
-                newLine.append(System.getProperty("line.separator"));
+                newLine.append("\n");
                 // Add the (modified) line to the total config String
                 newContents.append(newLine.toString());
             }
@@ -209,7 +215,7 @@ public final class CommentedYamlConfiguration {
                 line = leadingSpaces.toString() + line;
             }
             if (commentString.length() > 0) {
-                commentString.append(System.getProperty("line.separator"));
+                commentString.append("\n");
             }
             commentString.append(line);
         }
