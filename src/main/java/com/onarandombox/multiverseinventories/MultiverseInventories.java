@@ -304,17 +304,17 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * @return The version info.
      */
     public String getVersionInfo() {
-        StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + this.getDescription().getVersion() + System.lineSeparator()
-                + "[Multiverse-Inventories] === Settings ===" + System.lineSeparator()
-                + "[Multiverse-Inventories] First Run: " + this.getMVIConfig().isFirstRun() + System.lineSeparator()
-                + "[Multiverse-Inventories] Using Bypass: " + this.getMVIConfig().isUsingBypass() + System.lineSeparator()
-                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds() + System.lineSeparator()
-                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad() + System.lineSeparator()
-                + "[Multiverse-Inventories] Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles() + System.lineSeparator()
-                + "[Multiverse-Inventories] === Shares ===" + System.lineSeparator()
-                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped() + System.lineSeparator()
-                + "[Multiverse-Inventories] Enabled Optionals: " + this.getMVIConfig().getOptionalShares() + System.lineSeparator()
-                + "[Multiverse-Inventories] === Groups ===" + System.lineSeparator());
+        StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + this.getDescription().getVersion() + '\n'
+                + "[Multiverse-Inventories] === Settings ===" + '\n'
+                + "[Multiverse-Inventories] First Run: " + this.getMVIConfig().isFirstRun() + '\n'
+                + "[Multiverse-Inventories] Using Bypass: " + this.getMVIConfig().isUsingBypass() + '\n'
+                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds() + '\n'
+                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad() + '\n'
+                + "[Multiverse-Inventories] Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles() + '\n'
+                + "[Multiverse-Inventories] === Shares ===" + '\n'
+                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped() + '\n'
+                + "[Multiverse-Inventories] Enabled Optionals: " + this.getMVIConfig().getOptionalShares() + '\n'
+                + "[Multiverse-Inventories] === Groups ===" + '\n');
 
         for (WorldGroup group : this.getGroupManager().getGroups()) {
             versionInfo.append(group.toString());
@@ -325,7 +325,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private String logAndAddToPasteBinBuffer(String string) {
         Logging.info(string);
-        return Logging.getPrefixedMessage(string + System.lineSeparator(), false);
+        return Logging.getPrefixedMessage(string + '\n', false);
     }
 
     /**
