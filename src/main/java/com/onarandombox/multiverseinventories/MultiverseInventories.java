@@ -317,7 +317,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 + "[Multiverse-Inventories] === Groups ===" + '\n');
 
         for (WorldGroup group : this.getGroupManager().getGroups()) {
-            versionInfo.append(group.toString());
+            versionInfo.append("[Multiverse-Inventories] ").append(group.toString()).append('\n');
         }
 
         return versionInfo.toString();
