@@ -15,6 +15,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -97,7 +98,7 @@ public final class CommentedYamlConfiguration {
             StringBuilder currentPath = new StringBuilder();
 
             // This flags if the line is a node or unknown text.
-            boolean node = false;
+            boolean node;
             // The depth of the path. (number of words separated by periods - 1)
             int depth = 0;
 
@@ -109,7 +110,7 @@ public final class CommentedYamlConfiguration {
                     node = true;
 
                     // Grab the index of the end of the node name
-                    int index = 0;
+                    int index;
                     index = line.indexOf(": ");
                     if (index < 0) {
                         index = line.length() - 1;
@@ -130,7 +131,7 @@ public final class CommentedYamlConfiguration {
                         // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
                         if (whiteSpace / 2 > depth) {
                             // Path is deeper. Add a dot and the node name
-                            currentPath.append(".").append(line.substring(whiteSpace, index));
+                            currentPath.append(".").append(line, whiteSpace, index);
                             depth++;
                         } else if (whiteSpace / 2 < depth) {
                             // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
@@ -148,7 +149,7 @@ public final class CommentedYamlConfiguration {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
                             // Add the new node name to the path
-                            currentPath.append(line.substring(whiteSpace, index));
+                            currentPath.append(line, whiteSpace, index);
                             // Reset the depth
                             depth = newDepth;
                         } else {
@@ -161,14 +162,16 @@ public final class CommentedYamlConfiguration {
                                 // If there is a final period, replace everything after it with nothing
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                             }
-                            //currentPath = currentPath.replace(currentPath.substring(currentPath.lastIndexOf(".")), "");
-                            currentPath.append(line.substring(whiteSpace, index));
+
+                            currentPath.append(line, whiteSpace, index);
                         }
                     }
                 } else {
                     node = false;
                 }
+
                 StringBuilder newLine = new StringBuilder(line);
+
                 if (node) {
                     // get the comment for the current node
                     String comment = comments.get(currentPath.toString());
@@ -185,13 +188,9 @@ public final class CommentedYamlConfiguration {
                 newContents.append(newLine.toString());
             }
 
-            try {
-                // Write the string to the config file
-                this.stringToFile(newContents.toString(), file);
-            } catch (IOException e) {
-                saved = false;
-            }
+            saved = this.stringToFile(newContents.toString(), file);
         }
+
         return saved;
     }
 
@@ -236,7 +235,7 @@ public final class CommentedYamlConfiguration {
 
             try (InputStream is = new FileInputStream(file)) {
                 int n;
-                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                Reader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
                 while ((n = reader.read(buffer)) != -1) {
                     writer.write(buffer, 0, n);
                 }
@@ -255,12 +254,11 @@ public final class CommentedYamlConfiguration {
      * @param source String to write.
      * @param file   File to write to.
      * @return True on success.
-     * @throws java.io.IOException
      */
-    private boolean stringToFile(String source, File file) throws IOException {
+    private boolean stringToFile(String source, File file) {
         OutputStreamWriter out = null;
         try {
-            out = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+            out = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             out.write(source);
             out.close();
             return true;
