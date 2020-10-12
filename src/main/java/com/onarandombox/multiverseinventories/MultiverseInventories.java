@@ -106,7 +106,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             final String world = player.getWorld().getName();
             //getData().updateLastWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
-                ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
+                ShareHandlingUpdater.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
                         getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
                 getData().setLoadOnLogin(player.getName(), true);
             }

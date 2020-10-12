@@ -143,7 +143,7 @@ public class InventoriesListener implements Listener {
         final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId());
         final String world = globalProfile.getLastWorld();
         if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
-            ShareHandler.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+            ShareHandlingUpdater.updatePlayer(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
         }
         inventories.getData().setLoadOnLogin(player.getName(), false);
@@ -161,7 +161,7 @@ public class InventoriesListener implements Listener {
         final String world = event.getPlayer().getWorld().getName();
         inventories.getData().updateLastWorld(player.getName(), world);
         if (inventories.getMVIConfig().usingLoggingSaveLoad()) {
-            ShareHandler.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
+            ShareHandlingUpdater.updateProfile(inventories, player, new DefaultPersistingProfile(Sharables.allOf(),
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
             inventories.getData().setLoadOnLogin(player.getName(), true);
         }
@@ -233,15 +233,20 @@ public class InventoriesListener implements Listener {
                 || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
             return;
         }
+
         Player player = event.getPlayer();
+
         String fromWorldName = event.getFrom().getWorld().getName();
         String toWorldName = event.getTo().getWorld().getName();
+
         ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(fromWorldName);
         PlayerProfile playerProfile = fromWorldProfileContainer.getPlayerData(player);
         playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
+
         List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
         for (WorldGroup fromGroup : fromGroups) {
             playerProfile = fromGroup.getGroupProfileContainer().getPlayerData(event.getPlayer());
+
             if (fromGroup.containsWorld(toWorldName)) {
                 if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
                     playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
