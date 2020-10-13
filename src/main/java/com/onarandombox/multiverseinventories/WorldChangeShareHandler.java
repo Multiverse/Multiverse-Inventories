@@ -103,10 +103,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         private void addReadProfiles() {
             sharesToRead = Sharables.noneOf();
-            //Shares optionalSharesToUpdate = Sharables.noneOptional();
-
             addReadProfilesFromToWorldGroups();
-
             useToWorldForMissingShares();
         }
 
@@ -127,11 +124,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                 if (isFromWorldNotInToWorldGroup(worldGroup)) {
                     addReadProfileForWorldGroup(worldGroup);
                 } else {
-                    if (worldGroupIsNotSharingAll(worldGroup)) {
-                        addReadProfileForWorldGroup(worldGroup);
-                    } else {
-                        sharesToRead = Sharables.allOf();
-                    }
+                    sharesToRead.addAll(worldGroup.getShares());
                 }
             }
         }
@@ -172,18 +165,14 @@ final class WorldChangeShareHandler extends ShareHandler {
             return Sharables.fromShares(worldGroup.getShares());
         }
 
-        private boolean worldGroupIsNotSharingAll(WorldGroup worldGroup) {
-            return !worldGroup.getShares().isSharing(Sharables.all());
-        }
-
         private void useToWorldForMissingShares() {
             // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
-            if (hasUnhandedShares()) {
+            if (hasUnhandledShares()) {
                 addUnhandledSharesFromToWorld();
             }
         }
 
-        private boolean hasUnhandedShares() {
+        private boolean hasUnhandledShares() {
             return !sharesToRead.isSharing(Sharables.all());
         }
 
