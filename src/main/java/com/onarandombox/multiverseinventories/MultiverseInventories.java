@@ -369,6 +369,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                     if (getGroupManager().getGroups().isEmpty()) {
                         getGroupManager().createDefaultGroup();
                     }
+
+                    getMVIConfig().setFirstRun(false);
                 }
                 getGroupManager().checkForConflicts(null);
             }
