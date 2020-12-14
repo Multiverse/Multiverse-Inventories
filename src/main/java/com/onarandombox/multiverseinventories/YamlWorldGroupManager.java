@@ -43,7 +43,6 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
         }
         // Load the configuration file into memory
         groupsConfig = new CommentedYamlConfiguration(groupConfigFile, true);
-        groupsConfig.load();
 
         if (migrateGroups) {
             migrateGroups(config);

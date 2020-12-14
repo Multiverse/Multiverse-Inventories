@@ -123,7 +123,6 @@ public final class InventoriesConfig {
 
         // Load the configuration file into memory
         config = new CommentedYamlConfiguration(configFile, true);
-        config.load();
 
         // Sets defaults config values
         this.setDefaults();

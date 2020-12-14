@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.util;
 
-import com.feildmaster.lib.configuration.EnhancedConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,7 +13,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -27,7 +26,7 @@ import java.util.regex.Pattern;
 public final class CommentedYamlConfiguration {
 
     private final File file;
-    private FileConfiguration config = null;
+    private final FileConfiguration config;
     private final boolean doComments;
     private final HashMap<String, String> comments;
     private final Pattern newlinePattern = Pattern.compile("\r?\n");
@@ -35,18 +34,12 @@ public final class CommentedYamlConfiguration {
     public CommentedYamlConfiguration(File file, boolean doComments) {
         this.file = file;
         this.doComments = doComments;
-        comments = new HashMap<String, String>();
-    }
+        this.comments = new HashMap<String, String>();
+        this.config = new YamlConfiguration();
 
-    /**
-     * Loads this Configuration object into memory.
-     */
-    public void load() {
         try {
-            config = new EncodedConfiguration(file, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            config = new EnhancedConfiguration(file);
-        }
+            this.config.load(file);
+        } catch (Exception ignored) {}
     }
 
     /**
