@@ -144,7 +144,7 @@ public class TestInstanceCreator {
                 if (name == null) return null;
                 return MockPlayerFactory.getOrCreateMockPlayer(name, mockServer);
             };
-            when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
+            when(mockServer.getPlayerExact(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayers()).thenAnswer(
                     (Answer<OfflinePlayer[]>) invocation -> MockPlayerFactory.getAllPlayers().toArray(new Player[0]));
