@@ -12,6 +12,7 @@ import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
+import com.onarandombox.multiverseinventories.commands_acf.RootCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
@@ -53,6 +54,7 @@ public class CommandTools {
         this.manager.registerCommand(new ToggleCommand(this.plugin));
         this.manager.registerCommand(new CreateGroupCommand(this.plugin));
         this.manager.registerCommand(new DeleteGroupCommand(this.plugin));
+        this.manager.registerCommand(new RootCommand(this.plugin));
     }
 
     @NotNull
