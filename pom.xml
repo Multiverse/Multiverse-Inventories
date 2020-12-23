@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.onarandombox.multiverseinventories</groupId>
     <artifactId>Multiverse-Inventories</artifactId>
-    <version>4.2.2-SNAPSHOT</version>
+    <version>5.0.0-ACF-BETA</version>
     <name>Multiverse-Inventories</name>
     <description>Multiverse Multiworld Inventories Module</description>
     <properties>
@@ -209,8 +209,9 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>4.2.2</version>
-            <scope>provided</scope>
+            <version>5.0.0-ACF-BETA</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Multiverse-Core-5.0.0-ACF-BETA.jar</systemPath>
             <exclusions>
                 <exclusion>
                     <groupId>me.main__.util</groupId>
