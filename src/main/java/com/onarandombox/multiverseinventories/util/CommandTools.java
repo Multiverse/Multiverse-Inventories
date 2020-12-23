@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.MultiverseCore.commandTools.MVCommandManager;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
 
 public class CommandTools {
 
@@ -19,6 +20,6 @@ public class CommandTools {
         // Conditions
 
         //Commands
-        
+        this.manager.registerCommand(new GroupCommand(this.plugin));
     }
 }
