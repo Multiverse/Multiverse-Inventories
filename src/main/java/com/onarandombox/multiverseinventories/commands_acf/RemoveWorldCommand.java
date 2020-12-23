@@ -1,8 +1,10 @@
 package com.onarandombox.multiverseinventories.commands_acf;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.onarandombox.acf.annotation.CommandAlias;
 import com.onarandombox.acf.annotation.CommandCompletion;
 import com.onarandombox.acf.annotation.Description;
+import com.onarandombox.acf.annotation.Flags;
 import com.onarandombox.acf.annotation.Subcommand;
 import com.onarandombox.acf.annotation.Syntax;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -12,6 +14,7 @@ import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+@CommandAlias("mvinv")
 public class RemoveWorldCommand extends InventoriesCommand {
 
     public RemoveWorldCommand(MultiverseInventories plugin) {
@@ -24,7 +27,7 @@ public class RemoveWorldCommand extends InventoriesCommand {
     @CommandCompletion("@MVWorlds @worldGroups")
     @Description("Adds a World to a World Group.")
     public void onRemoveWorldCommand(@NotNull CommandSender sender,
-                                     @NotNull MultiverseWorld world,
+                                     @NotNull @Flags("other") MultiverseWorld world,
                                      @NotNull WorldGroup group) {
 
         if (!group.containsWorld(world.getName())) {
