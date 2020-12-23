@@ -9,10 +9,12 @@ import com.onarandombox.acf.ConditionFailedException;
 import com.onarandombox.acf.InvalidCommandArgument;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.commands_acf.AddSharesCommand;
 import com.onarandombox.multiverseinventories.commands_acf.AddWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
+import com.onarandombox.multiverseinventories.commands_acf.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RootCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ToggleCommand;
@@ -40,6 +42,7 @@ public class CommandTools {
         // Completions
         this.manager.getCommandCompletions().registerAsyncCompletion("sharables", this::suggestSharables);
         this.manager.getCommandCompletions().registerAsyncCompletion("optionalSharables", this::suggestOptionalSharables);
+        this.manager.getCommandCompletions().registerAsyncCompletion("shares", this::suggestShares);
         this.manager.getCommandCompletions().registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
 
         // Contexts
@@ -59,6 +62,8 @@ public class CommandTools {
         this.manager.registerCommand(new RootCommand(this.plugin));
         this.manager.registerCommand(new AddWorldCommand(this.plugin));
         this.manager.registerCommand(new RemoveWorldCommand(this.plugin));
+        this.manager.registerCommand(new AddSharesCommand(this.plugin));
+        this.manager.registerCommand(new RemoveSharesCommand(this.plugin));
     }
 
     @NotNull
@@ -79,6 +84,19 @@ public class CommandTools {
     }
 
     @NotNull
+    private Collection<String> suggestShares(@NotNull BukkitCommandCompletionContext context) {
+        return Sharables.getMapKeys();
+    }
+
+    @NotNull
+    private Collection<String> suggestWorldGroups(@NotNull BukkitCommandCompletionContext context) {
+        return this.plugin.getGroupManager().getGroups().stream()
+                .unordered()
+                .map(WorldGroup::getName)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
     private Sharable<?> deriveSharable(@NotNull BukkitCommandExecutionContext context) {
         String shareName = context.popFirstArg();
         Sharable<?> targetSharable = Sharables.all().stream()
@@ -93,14 +111,6 @@ public class CommandTools {
         }
 
         return targetSharable;
-    }
-
-    @NotNull
-    private Collection<String> suggestWorldGroups(@NotNull BukkitCommandCompletionContext context) {
-        return this.plugin.getGroupManager().getGroups().stream()
-                .unordered()
-                .map(WorldGroup::getName)
-                .collect(Collectors.toList());
     }
 
     @NotNull
