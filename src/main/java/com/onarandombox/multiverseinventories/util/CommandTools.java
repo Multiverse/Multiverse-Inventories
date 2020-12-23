@@ -8,6 +8,9 @@ import com.onarandombox.acf.ConditionContext;
 import com.onarandombox.acf.ConditionFailedException;
 import com.onarandombox.acf.InvalidCommandArgument;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
+import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -34,17 +37,22 @@ public class CommandTools {
         // Completions
         this.manager.getCommandCompletions().registerAsyncCompletion("sharables", this::suggestSharables);
         this.manager.getCommandCompletions().registerAsyncCompletion("optionalSharables", this::suggestOptionalSharables);
+        this.manager.getCommandCompletions().registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
 
         // Contexts
         this.manager.getCommandContexts().registerContext(Sharable.class, this::deriveSharable);
         this.manager.getCommandContexts().registerContext(Shares.class, this::deriveShares);
+        this.manager.getCommandContexts().registerContext(WorldGroup.class, this::deriveWorldGroup);
 
         // Conditions
         this.manager.getCommandConditions().addCondition(Sharable.class, "optional", this::checkIsSharableOptional);
+        this.manager.getCommandConditions().addCondition(String.class, "creatableGroupName", this::checkCreatableGroupName);
 
         //Commands
         this.manager.registerCommand(new GroupCommand(this.plugin));
         this.manager.registerCommand(new ToggleCommand(this.plugin));
+        this.manager.registerCommand(new CreateGroupCommand(this.plugin));
+        this.manager.registerCommand(new DeleteGroupCommand(this.plugin));
     }
 
     @NotNull
@@ -65,7 +73,7 @@ public class CommandTools {
     }
 
     @NotNull
-    private Sharable<?> deriveSharable(BukkitCommandExecutionContext context) {
+    private Sharable<?> deriveSharable(@NotNull BukkitCommandExecutionContext context) {
         String shareName = context.popFirstArg();
         Sharable<?> targetSharable = Sharables.all().stream()
                 .unordered()
@@ -82,6 +90,14 @@ public class CommandTools {
     }
 
     @NotNull
+    private Collection<String> suggestWorldGroups(@NotNull BukkitCommandCompletionContext context) {
+        return this.plugin.getGroupManager().getGroups().stream()
+                .unordered()
+                .map(WorldGroup::getName)
+                .collect(Collectors.toList());
+    }
+
+    @NotNull
     private Shares deriveShares(BukkitCommandExecutionContext context) {
         Shares shares = Sharables.lookup(context.popFirstArg());
         if (shares == null) {
@@ -91,12 +107,33 @@ public class CommandTools {
         return shares;
     }
 
+    @NotNull
+    private WorldGroup deriveWorldGroup(@NotNull BukkitCommandExecutionContext context) {
+        String groupName = context.popFirstArg();
+        WorldGroup group = this.plugin.getGroupManager().getGroup(groupName);
+        if (group == null) {
+            this.messager.normal(Message.ERROR_NO_GROUP, context.getSender(), groupName);
+            throw new InvalidCommandArgument();
+        }
+        return group;
+    }
+
     private void checkIsSharableOptional(@NotNull ConditionContext<BukkitCommandIssuer> context,
                                          @NotNull BukkitCommandExecutionContext executionContext,
                                          @NotNull Sharable<?> sharable) {
 
         if (!sharable.isOptional()) {
             this.messager.normal(Message.NO_OPTIONAL_SHARES, executionContext.getSender(), sharable);
+            throw new ConditionFailedException();
+        }
+    }
+
+    private void checkCreatableGroupName(@NotNull ConditionContext<BukkitCommandIssuer> context,
+                                         @NotNull BukkitCommandExecutionContext executionContext,
+                                         @NotNull String groupName) {
+
+        if (this.plugin.getGroupManager().getGroup(groupName) != null) {
+            this.messager.normal(Message.GROUP_EXISTS, executionContext.getSender(), groupName);
             throw new ConditionFailedException();
         }
     }
