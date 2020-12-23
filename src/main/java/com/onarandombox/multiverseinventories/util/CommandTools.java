@@ -9,9 +9,11 @@ import com.onarandombox.acf.ConditionFailedException;
 import com.onarandombox.acf.InvalidCommandArgument;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.commands_acf.AddWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
+import com.onarandombox.multiverseinventories.commands_acf.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RootCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -55,6 +57,8 @@ public class CommandTools {
         this.manager.registerCommand(new CreateGroupCommand(this.plugin));
         this.manager.registerCommand(new DeleteGroupCommand(this.plugin));
         this.manager.registerCommand(new RootCommand(this.plugin));
+        this.manager.registerCommand(new AddWorldCommand(this.plugin));
+        this.manager.registerCommand(new RemoveWorldCommand(this.plugin));
     }
 
     @NotNull
