@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.commands_acf;
 
 import com.onarandombox.acf.annotation.CommandAlias;
 import com.onarandombox.acf.annotation.CommandCompletion;
+import com.onarandombox.acf.annotation.Description;
 import com.onarandombox.acf.annotation.Subcommand;
 import com.onarandombox.acf.annotation.Syntax;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -25,7 +26,13 @@ public class AddSharesCommand extends InventoriesCommand {
     @Syntax("<share[,extra]> <group>")
     @CommandCompletion("@shares @worldGroups")
     public void onAddSharesCommand(@NotNull CommandSender sender,
+
+                                   @Syntax("<share[,extra]>")
+                                   @Description("One or more sharables to add.")
                                    @NotNull String sharesString,
+
+                                   @Syntax("<group>")
+                                   @Description("Group you want to add the shares to.")
                                    @NotNull WorldGroup group) {
 
         //TODO: Clean this up.

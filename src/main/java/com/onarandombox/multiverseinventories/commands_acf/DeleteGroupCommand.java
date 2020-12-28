@@ -26,6 +26,9 @@ public class DeleteGroupCommand extends InventoriesCommand {
     @CommandCompletion("@worldGroups")
     @Description("Deletes a World Group.")
     public void onDeleteGroupCommand(@NotNull CommandSender sender,
+
+                                     @Syntax("<group>")
+                                     @Description("Inventories group to delete.")
                                      @NotNull WorldGroup group) {
 
         this.plugin.getCore().getMVCommandManager().getQueueManager().addToQueue(

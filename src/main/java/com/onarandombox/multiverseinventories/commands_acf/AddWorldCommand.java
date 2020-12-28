@@ -27,7 +27,13 @@ public class AddWorldCommand extends InventoriesCommand {
     @CommandCompletion("@MVWorlds @worldGroups")
     @Description("Adds a World to a World Group.")
     public void onAddWorldCommand(@NotNull CommandSender sender,
+
+                                  @Syntax("<world>")
+                                  @Description("World name to add.")
                                   @NotNull @Flags("other") MultiverseWorld world,
+
+                                  @Syntax("<group>")
+                                  @Description("Group you want to add the world to.")
                                   @NotNull WorldGroup group) {
 
         if (group.containsWorld(world.getName())) {

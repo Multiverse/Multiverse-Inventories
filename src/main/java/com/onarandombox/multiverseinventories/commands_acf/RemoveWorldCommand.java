@@ -27,7 +27,13 @@ public class RemoveWorldCommand extends InventoriesCommand {
     @CommandCompletion("@MVWorlds @worldGroups")
     @Description("Adds a World to a World Group.")
     public void onRemoveWorldCommand(@NotNull CommandSender sender,
+
+                                     @Syntax("<world>")
+                                     @Description("World name to remove.")
                                      @NotNull @Flags("other") MultiverseWorld world,
+
+                                     @Syntax("<group>")
+                                     @Description("Group you want to remove the world from.")
                                      @NotNull WorldGroup group) {
 
         if (!group.containsWorld(world.getName())) {

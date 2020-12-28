@@ -25,6 +25,9 @@ public class CreateGroupCommand extends InventoriesCommand {
     @Syntax("<name>")
     @Description("Creates a new empty World Group with no worlds and no shares.")
     public void onCreateGroupCommand(@NotNull CommandSender sender,
+
+                                     @Syntax("<name>")
+                                     @Description("New group name to create.")
                                      @NotNull @Single @Conditions("creatableGroupName") String groupName) {
 
         WorldGroup worldGroup = this.plugin.getGroupManager().newEmptyGroup(groupName);

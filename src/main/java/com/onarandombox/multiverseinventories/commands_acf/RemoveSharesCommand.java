@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories.commands_acf;
 
 import com.onarandombox.acf.annotation.CommandAlias;
 import com.onarandombox.acf.annotation.CommandCompletion;
+import com.onarandombox.acf.annotation.Description;
 import com.onarandombox.acf.annotation.Subcommand;
 import com.onarandombox.acf.annotation.Syntax;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -25,8 +26,14 @@ public class RemoveSharesCommand extends InventoriesCommand {
     @Subcommand("removeshares")
     @Syntax("<share[,extra]> <group>")
     @CommandCompletion("@shares @worldGroups")
-    public void onRemoveSharesCommand(@NotNull CommandSender sender, 
-                                      @NotNull String sharesString, 
+    public void onRemoveSharesCommand(@NotNull CommandSender sender,
+
+                                      @Syntax("<share[,extra]>")
+                                      @Description("One or more sharables to remove.")
+                                      @NotNull String sharesString,
+
+                                      @Syntax("<group>")
+                                      @Description("Group you want to remove the shares from.")
                                       @NotNull WorldGroup group) {
 
         //TODO: Clean this up.

@@ -26,6 +26,9 @@ public class ToggleCommand extends InventoriesCommand {
     @CommandCompletion("@optionalSharables")
     @Description("Toggles the usage of optional sharable.")
     public void onToggleCommand(@NotNull CommandSender sender,
+
+                                @Syntax("<share>")
+                                @Description("Optional sharable name.")
                                 @NotNull @Conditions("optional") Sharable<?> targetSharable) {
 
         //TODO: on|off toggle instead?
