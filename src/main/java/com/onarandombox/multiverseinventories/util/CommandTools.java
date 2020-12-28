@@ -55,11 +55,11 @@ public class CommandTools {
         this.manager.getCommandConditions().addCondition(String.class, "creatableGroupName", this::checkCreatableGroupName);
 
         //Commands
+        this.manager.registerSubModule("mvinv", new RootCommand(this.plugin));
         this.manager.registerCommand(new GroupCommand(this.plugin));
         this.manager.registerCommand(new ToggleCommand(this.plugin));
         this.manager.registerCommand(new CreateGroupCommand(this.plugin));
         this.manager.registerCommand(new DeleteGroupCommand(this.plugin));
-        this.manager.registerCommand(new RootCommand(this.plugin));
         this.manager.registerCommand(new AddWorldCommand(this.plugin));
         this.manager.registerCommand(new RemoveWorldCommand(this.plugin));
         this.manager.registerCommand(new AddSharesCommand(this.plugin));
