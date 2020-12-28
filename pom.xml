@@ -282,6 +282,12 @@ and adjust the build number accordingly -->
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Start of Test Dependencies -->
         <dependency>
