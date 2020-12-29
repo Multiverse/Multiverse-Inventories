@@ -183,7 +183,7 @@ public class TestWSharableAPI {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
         //changeWorld(player, "world", "world2");
         //changeWorld(player, "world2", "world");
 

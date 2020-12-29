@@ -69,7 +69,7 @@ public class TestWorldChanged {
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
 
-        Player p = mockServer.getPlayer("dumptruckman");
+        Player p = mockServer.getPlayerExact("dumptruckman");
 
         // Set Player's initial location
         p.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
@@ -146,7 +146,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
@@ -211,7 +211,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
@@ -313,7 +313,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
@@ -418,7 +418,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         // Move player within group and to a different location than spawn
         changeWorld(player, "world", "world_nether");
@@ -495,7 +495,7 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         // get inventories as strings
         String emptyInventory = player.getInventory().toString();

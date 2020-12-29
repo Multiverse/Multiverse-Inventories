@@ -89,7 +89,7 @@ public class TestPerformance {
     }
 
     private Player getPreparedPlayer() {
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         for (int i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
