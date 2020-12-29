@@ -14,17 +14,20 @@ import com.onarandombox.multiverseinventories.commands_acf.AddWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
+import com.onarandombox.multiverseinventories.commands_acf.ImportCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RootCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ToggleCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
+import com.onarandombox.multiverseinventories.migration.DataImporter;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -44,11 +47,13 @@ public class CommandTools {
         this.manager.getCommandCompletions().registerAsyncCompletion("optionalSharables", this::suggestOptionalSharables);
         this.manager.getCommandCompletions().registerAsyncCompletion("shares", this::suggestShares);
         this.manager.getCommandCompletions().registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
+        this.manager.getCommandCompletions().registerStaticCompletion("invPluginImports", this::suggestInvPluginImports);
 
         // Contexts
         this.manager.getCommandContexts().registerContext(Sharable.class, this::deriveSharable);
         this.manager.getCommandContexts().registerContext(Shares.class, this::deriveShares);
         this.manager.getCommandContexts().registerContext(WorldGroup.class, this::deriveWorldGroup);
+        this.manager.getCommandContexts().registerContext(DataImporter.class, this::deriveDataImporter);
 
         // Conditions
         this.manager.getCommandConditions().addCondition(Sharable.class, "optional", this::checkIsSharableOptional);
@@ -64,6 +69,7 @@ public class CommandTools {
         this.manager.registerCommand(new RemoveWorldCommand(this.plugin));
         this.manager.registerCommand(new AddSharesCommand(this.plugin));
         this.manager.registerCommand(new RemoveSharesCommand(this.plugin));
+        this.manager.registerCommand(new ImportCommand(this.plugin));
     }
 
     @NotNull
@@ -94,6 +100,11 @@ public class CommandTools {
                 .unordered()
                 .map(WorldGroup::getName)
                 .collect(Collectors.toList());
+    }
+
+    @NotNull
+    private Collection<String> suggestInvPluginImports() {
+        return Arrays.asList("MultiInv", "WorldInventories");
     }
 
     @NotNull
@@ -132,6 +143,29 @@ public class CommandTools {
             throw new InvalidCommandArgument();
         }
         return group;
+    }
+
+    @NotNull
+    private DataImporter deriveDataImporter(@NotNull BukkitCommandExecutionContext context) {
+        String pluginName = context.popFirstArg();
+        DataImporter importer;
+        if (pluginName.equalsIgnoreCase("MultiInv")) {
+            importer = this.plugin.getImportManager().getMultiInvImporter();
+        }
+        else if (pluginName.equalsIgnoreCase("WorldInventories")) {
+            importer = this.plugin.getImportManager().getWorldInventoriesImporter();
+        }
+        else {
+            this.messager.bad(Message.ERROR_UNSUPPORTED_IMPORT, context.getSender(), pluginName);
+            throw new InvalidCommandArgument();
+        }
+
+        if (importer == null) {
+            this.messager.bad(Message.ERROR_PLUGIN_NOT_ENABLED, context.getSender(), pluginName);
+            throw new InvalidCommandArgument(false);
+        }
+
+        return importer;
     }
 
     private void checkIsSharableOptional(@NotNull ConditionContext<BukkitCommandIssuer> context,

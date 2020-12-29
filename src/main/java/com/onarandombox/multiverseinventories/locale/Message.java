@@ -90,7 +90,10 @@ public enum Message {
     NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!"),
     // Migrate Command
     MIGRATE_FAILED("Failed to migrate data from %1 to %2! Check logs for error details."),
-    MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!");
+    MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!"),
+    // Import Command
+    IMPORT_FAILED("Failed to import data from %1! Check logs for error details."),
+    IMPORT_SUCCESSFUL("Imported data from %1! You can now remove it and use Multiverse-Inventories.");
 
     // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
 
