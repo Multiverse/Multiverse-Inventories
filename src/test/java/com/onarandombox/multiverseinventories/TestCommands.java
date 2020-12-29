@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
 @PowerMockIgnore("javax.script.*")
-@Ignore
 public class TestCommands {
     TestInstanceCreator creator;
     Server mockServer;
@@ -71,25 +70,16 @@ public class TestCommands {
         File serverDirectory = new File(creator.getPlugin().getServerFolder(), "world");
         serverDirectory.mkdirs();
 
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        Command mockCoreCommand = mock(Command.class);
-        when(mockCoreCommand.getName()).thenReturn("mv");
-
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] debugArgs = new String[]{"debug", "3"};
-        plugin.onCommand(mockCommandSender, mockCoreCommand, "", debugArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] reloadArgs = new String[] { "reload" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", reloadArgs);
+        inventories.reloadConfig();
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
     }
@@ -105,14 +95,8 @@ public class TestCommands {
 
         // Make sure Core is enabled
         assertTrue(plugin.isEnabled());
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
         // Send the debug command.
-        String[] debugArgs = new String[]{ "info", "default"};
-        plugin.onCommand(mockCommandSender, mockCommand, "", debugArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
     }
 
     @Test
@@ -127,20 +111,13 @@ public class TestCommands {
         // Make sure Core is enabled
         assertTrue(plugin.isEnabled());
 
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
         Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
-        // Send the debug command.
-        String[] cmdArgs = new String[]{ "toggle", "economy" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Test economy optional share
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv toggle economy"));
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
-        cmdArgs = new String[]{ "reload" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
-        cmdArgs = new String[]{ "toggle", "economy" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv toggle economy"));
         Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
     }
 
@@ -156,21 +133,13 @@ public class TestCommands {
         // Make sure Core is enabled
         assertTrue(plugin.isEnabled());
 
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
 
-        String[] cmdArgs = new String[]{ "rmworld", "world", "default" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        cmdArgs = new String[]{ "rmworld", "world_nether", "default" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        cmdArgs = new String[]{ "rmworld", "world_the_end", "default" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world default"));
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world_nether default"));
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world_the_end default"));
 
-        cmdArgs = new String[]{ "reload" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
 
-        cmdArgs = new String[]{ "info", "default" };
-        plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
     }
 }

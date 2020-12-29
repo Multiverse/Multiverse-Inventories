@@ -8,6 +8,7 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
@@ -20,7 +21,9 @@ import junit.framework.Assert;
 import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
+import org.bukkit.help.HelpMap;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
@@ -54,6 +57,7 @@ public class TestInstanceCreator {
     private MultiverseCore core;
     private Server mockServer;
     private CommandSender commandSender;
+    private SimpleCommandMap simpleCommandMap;
 
     public static final File invDirectory = new File("bin/test/server/plugins/inventories-test");
     public static final File coreDirectory = new File("bin/test/server/plugins/core-test");
@@ -72,13 +76,18 @@ public class TestInstanceCreator {
             MockGateway.MOCK_STANDARD_METHODS = false;
 
             // Initialize the Mock server.
-            mockServer = mock(Server.class);
+            mockServer = PowerMockito.mock(DummyCraftServer.class);
             JavaPluginLoader mockPluginLoader = PowerMock.createMock(JavaPluginLoader.class);
             Whitebox.setInternalState(mockPluginLoader, "server", mockServer);
             when(mockServer.getName()).thenReturn("TestBukkit");
+            when(mockServer.getVersion()).thenReturn("TestBukkit V1");
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
+
+            // Add an internal command map (needed for ACF)
+            this.simpleCommandMap = new SimpleCommandMap(mockServer);
+            PowerMockito.when(mockServer, "getCommandMap").thenReturn(this.simpleCommandMap);
 
             // Return a fake PDF file.
             PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
@@ -131,8 +140,9 @@ public class TestInstanceCreator {
             MockWorldFactory.makeNewMockWorld("world2", Environment.NORMAL, WorldType.NORMAL);
 
             // Initialize the Mock server.
-            mockServer = mock(Server.class);
+            mockServer = mock(DummyCraftServer.class);
             when(mockServer.getName()).thenReturn("TestBukkit");
+            when(mockServer.getVersion()).thenReturn("TestBukkit V1");
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
@@ -157,6 +167,10 @@ public class TestInstanceCreator {
             };
             doAnswer(uuidPlayerAnswer).when(mockServer).getPlayer(any(UUID.class));
             doAnswer(uuidPlayerAnswer).when(mockServer).getOfflinePlayer(any(UUID.class));
+
+            // Add an internal command map (needed for ACF)
+            this.simpleCommandMap = new SimpleCommandMap(mockServer);
+            PowerMockito.when(mockServer, "getCommandMap").thenReturn(this.simpleCommandMap);
 
             try {
                 PotionEffectType.registerPotionEffectType(mockPotionEffectType(1, "SPEED"));
@@ -262,6 +276,10 @@ public class TestInstanceCreator {
                         }
                     });
             when(mockServer.getScheduler()).thenReturn(mockScheduler);
+
+            // add dummy help map
+            HelpMap helpMap = mock(HelpMap.class);
+            when(mockServer.getHelpMap()).thenReturn(helpMap);
 
             ItemFactory itemFactory = MockItemMeta.mockItemFactory();
             when(mockServer.getItemFactory()).thenReturn(itemFactory);
@@ -399,6 +417,10 @@ public class TestInstanceCreator {
 
     public CommandSender getCommandSender() {
         return commandSender;
+    }
+
+    public boolean dispatch(CommandSender sender, String commandLine) {
+        return this.simpleCommandMap.dispatch(sender, commandLine);
     }
 
     private PotionEffectType mockPotionEffectType(int id, String name) throws Exception {

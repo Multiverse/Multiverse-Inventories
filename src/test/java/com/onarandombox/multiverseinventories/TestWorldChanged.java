@@ -23,7 +23,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -44,7 +43,6 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
 @PowerMockIgnore("javax.script.*")
-@Ignore
 public class TestWorldChanged {
     TestInstanceCreator creator;
     Server mockServer;
@@ -120,29 +118,18 @@ public class TestWorldChanged {
 
     @Test
     public void testBasicWorldChange() throws IOException {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        Command mockCoreCommand = mock(Command.class);
-        when(mockCoreCommand.getName()).thenReturn("mv");
-
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
@@ -160,8 +147,8 @@ public class TestWorldChanged {
 
         Assert.assertNotSame(originalInventory, newInventory);
 
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         changeWorld(player, "world2", "world");
 
@@ -183,31 +170,26 @@ public class TestWorldChanged {
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         // add inventory shares (inv and armor) to default group
-        cmdArgs = new String[]{"addshares", "-saturation", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv addshares -saturation default"));
 
         Shares shares = Sharables.allOf();
         shares.remove(Sharables.SATURATION);
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
+        assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
 
         // Reload to ensure things are saving to config.yml
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
 
-        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
+        assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(shares));
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
@@ -236,8 +218,8 @@ public class TestWorldChanged {
         Assert.assertNotSame(satTest, player.getSaturation());
         Assert.assertNotSame(hpTest, player.getHealth());
 
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         changeWorld(player, "world2", "world");
         newInventory = player.getInventory().toString();
@@ -255,8 +237,8 @@ public class TestWorldChanged {
         Assert.assertNotSame(satTest, player.getSaturation());
         Assert.assertNotSame(hpTest, player.getHealth());
 
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         changeWorld(player, "world2", "world");
 
@@ -266,31 +248,19 @@ public class TestWorldChanged {
 
     @Test
     public void testGroupedSharesWorldChange() throws Exception {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        Command mockCoreCommand = mock(Command.class);
-        when(mockCoreCommand.getName()).thenReturn("mv");
-
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         // remove all shares from default group
-        cmdArgs = new String[]{"rmshares", "all", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeshares all default"));
         // add inventory shares (inv and armor) to default group
-        cmdArgs = new String[]{"addshares", "inventory,saturation", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv addshares inventory,saturation default"));
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
@@ -298,8 +268,7 @@ public class TestWorldChanged {
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.SATURATION));
 
         // Reload to ensure things are saving to config.yml
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.INVENTORY));
@@ -308,8 +277,7 @@ public class TestWorldChanged {
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
@@ -333,8 +301,8 @@ public class TestWorldChanged {
         Assert.assertNotSame(originalInventory, newInventory);
         Assert.assertNotSame(satTest, player.getSaturation());
 
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         changeWorld(player, "world2", "world");
 
@@ -359,8 +327,8 @@ public class TestWorldChanged {
             e.printStackTrace();
         }
 
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         changeWorld(player, "world2", "world");
 
@@ -370,42 +338,28 @@ public class TestWorldChanged {
 
     @Test
     public void testLastLocation() throws Exception {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        Command mockCoreCommand = mock(Command.class);
-        when(mockCoreCommand.getName()).thenReturn("mv");
-
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         // remove all shares from default group
-        cmdArgs = new String[]{"rmshares", "all", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeshares all default"));
         // enable last_location share
-        cmdArgs = new String[]{"toggle", "last_location"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv toggle last_location"));
         // add last_location share to default group
-        cmdArgs = new String[]{"addshares", "last_location", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv addshares last_location default"));
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
 
         // Reload to ensure things are saving to config.yml
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
@@ -413,8 +367,7 @@ public class TestWorldChanged {
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
@@ -436,14 +389,6 @@ public class TestWorldChanged {
 
     @Test
     public void testOptionalsForUngroupedWorlds() throws Exception {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
-        Command mockCoreCommand = mock(Command.class);
-        when(mockCoreCommand.getName()).thenReturn("mv");
-
         // Assert debug mode is off
         Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
@@ -455,33 +400,26 @@ public class TestWorldChanged {
         Assert.assertFalse(inventories.getMVIConfig().usingOptionalsForUngrouped());
 
         // Send the debug command.
-        String[] cmdArgs = new String[]{"debug", "3"};
-        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mv debug 3"));
 
         // remove world2 from default group
-        cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         // remove all shares from default group
-        cmdArgs = new String[]{"rmshares", "all", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeshares all default"));
         // enable last_location share
-        cmdArgs = new String[]{"toggle", "last_location"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv toggle last_location"));
         // add last_location share to default group
-        cmdArgs = new String[]{"addshares", "last_location", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        // add inventory share to default group
-        cmdArgs = new String[]{"addshares", "inventory", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv addshares last_location default"));
+        // add inventory share to default group;
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv addshares inventory default"));
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
         Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
 
         // Reload to ensure things are saving to config.yml
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        inventories.reloadConfig();
 
         Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
         Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
@@ -490,8 +428,7 @@ public class TestWorldChanged {
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
-        cmdArgs = new String[]{"info", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv info default"));
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
@@ -534,14 +471,8 @@ public class TestWorldChanged {
 
     @Test
     public void testGroupingConflictChecker() {
-
-        // Initialize a fake command
-        Command mockCommand = mock(Command.class);
-        when(mockCommand.getName()).thenReturn("mvinv");
-
         // remove world2 from default group
-        String[] cmdArgs = new String[]{"rmworld", "world2", "default"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world2 default"));
 
         WorldGroup group = inventories.getGroupManager().newEmptyGroup("test");
         group.addWorld("world");
@@ -550,14 +481,16 @@ public class TestWorldChanged {
         group.addWorld("world2");
         group.getShares().setSharing(Sharables.allOf(), true);
         inventories.getGroupManager().updateGroup(group);
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
+
         Assert.assertTrue(inventories.getGroupManager().checkGroups().isEmpty());
 
-        cmdArgs = new String[]{"rmworld", "world_the_end", "test"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        cmdArgs = new String[]{"reload"};
-        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        assertTrue(creator.dispatch(mockCommandSender, "mvinv removeworld world_the_end test"));
+
+        // Reload to ensure things are saving to config.yml
+        inventories.reloadConfig();
 
         Assert.assertFalse(inventories.getGroupManager().checkGroups().isEmpty());
 
