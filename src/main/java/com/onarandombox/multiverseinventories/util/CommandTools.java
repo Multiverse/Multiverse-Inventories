@@ -15,6 +15,7 @@ import com.onarandombox.multiverseinventories.commands_acf.CreateGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.GroupCommand;
 import com.onarandombox.multiverseinventories.commands_acf.ImportCommand;
+import com.onarandombox.multiverseinventories.commands_acf.MigrateCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.commands_acf.RootCommand;
@@ -70,6 +71,7 @@ public class CommandTools {
         this.manager.registerCommand(new AddSharesCommand(this.plugin));
         this.manager.registerCommand(new RemoveSharesCommand(this.plugin));
         this.manager.registerCommand(new ImportCommand(this.plugin));
+        this.manager.registerCommand(new MigrateCommand(this.plugin));
     }
 
     @NotNull
