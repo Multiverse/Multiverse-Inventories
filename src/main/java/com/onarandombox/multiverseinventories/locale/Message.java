@@ -25,6 +25,7 @@ public enum Message {
     GENERIC_THE_CONSOLE("the console"),
     GENERIC_NOT_LOGGED_IN("%1 is not logged on right now!"),
     GENERIC_OFF("OFF"),
+    GENERIC_EMPTY(" "),
 
     // Errors
     ERROR_CONFIG_LOAD("Encountered an error while loading the configuration file.  Disabling..."),
