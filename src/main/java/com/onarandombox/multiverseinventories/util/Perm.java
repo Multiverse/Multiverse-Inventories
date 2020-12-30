@@ -16,6 +16,10 @@ public enum Perm {
     /**
      * Permission for /mvinv info.
      */
+    COMMAND_HELP(new Permission("multiverse.inventories.help", "Displays Multiverse-Inventories command usage.", PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv info.
+     */
     COMMAND_INFO(new Permission("multiverse.inventories.info", "Displays information about a world or group.", PermissionDefault.OP)),
     /**
      * Permission for /mvinv list.

@@ -23,6 +23,7 @@ import com.onarandombox.multiverseinventories.commands.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.commands.RootCommand;
 import com.onarandombox.multiverseinventories.commands.SpawnCommand;
 import com.onarandombox.multiverseinventories.commands.ToggleCommand;
+import com.onarandombox.multiverseinventories.commands.UsageCommand;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.migration.DataImporter;
@@ -78,6 +79,7 @@ public class CommandTools {
         this.manager.registerCommand(new SpawnCommand(this.plugin));
         this.manager.registerCommand(new InfoCommand(this.plugin));
         this.manager.registerCommand(new ListCommand(this.plugin));
+        this.manager.registerCommand(new UsageCommand(this.plugin));
     }
 
     @NotNull
