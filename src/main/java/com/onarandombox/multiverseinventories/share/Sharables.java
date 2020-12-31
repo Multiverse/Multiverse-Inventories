@@ -8,19 +8,23 @@ import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -583,6 +587,65 @@ public final class Sharables implements Shares {
             .altName("potion").altName("potions").build();
 
     /**
+     * Sharing Advancements.
+     */
+    public static final Sharable<List> ADVANCEMENTS = new Sharable.Builder<List>("advancements", List.class,
+            new SharableHandler<List>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Set<String> completedAdvancements = new HashSet<>();
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+                        Collection<String> awardedCriteria = player.getAdvancementProgress(advancement).getAwardedCriteria();
+                        completedAdvancements.addAll(awardedCriteria);
+                    }
+
+                    profile.set(ADVANCEMENTS, new ArrayList<>(completedAdvancements));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    List<String> advancements = profile.get(ADVANCEMENTS);
+                    Set<String> processedAdvancements = new HashSet<>();
+                    Set<String> completedAdvancements = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+
+                    boolean announceAdvancements = player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
+                    if (announceAdvancements) player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+                        // the set of Advancements to revoke
+                        Set<String> revoke = new HashSet<>(advancement.getCriteria());
+                        // the set of Advancements to grant
+                        Set<String> intersection = new HashSet<>(advancement.getCriteria());
+
+                        revoke.removeAll(processedAdvancements);
+                        revoke.removeAll(completedAdvancements);
+                        intersection.removeAll(processedAdvancements);
+                        intersection.retainAll(completedAdvancements);
+
+                        for (String criteria: revoke) {
+                            processedAdvancements.add(criteria);
+                            completedAdvancements.remove(criteria);
+                            player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                        }
+                        for (String criteria: intersection) {
+                            processedAdvancements.add(criteria);
+                            completedAdvancements.remove(criteria);
+                            player.getAdvancementProgress(advancement).awardCriteria(criteria);
+                        }
+
+                        // here's the idea: revoke all (criteria \ completedAdvancements), grant (criteria intersect completedAdvancements)
+                        // also, we don't need to grant/revoke anything in processedAdvancements since they've already been granted/revoked!
+                    }
+                    if (announceAdvancements) player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+                    return advancements != null;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").build();
+
+    /**
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
@@ -625,7 +688,8 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND,
+            ADVANCEMENTS),
             "*", "everything");
 
 
