@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.commands;
 
-import com.onarandombox.MultiverseCore.commandTools.ColourAlternator;
+import com.onarandombox.MultiverseCore.commandTools.display.ColorAlternator;
 import com.onarandombox.acf.annotation.CommandAlias;
 import com.onarandombox.acf.annotation.Description;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -20,7 +20,7 @@ public class RootCommand extends InventoriesCommand {
         this.plugin.getCore().getMVCommandManager().showPluginInfo(
                 sender,
                 this.plugin.getDescription(),
-                new ColourAlternator(ChatColor.DARK_AQUA, ChatColor.AQUA),
+                new ColorAlternator(ChatColor.DARK_AQUA, ChatColor.AQUA),
                 "mvinv"
         );
     }
