@@ -45,8 +45,9 @@ INFO_GROUP_INFO:
 - '&bNegative Shares:&f %3'
 
 # List Command
-LIST_GROUPS:
+LIST_GROUPS_HEADER:
 - '&b===[ Group List ]==='
+LIST_GROUPS_PREFIX:
 - '&6Groups:&f %1'
 
 # Reload Command

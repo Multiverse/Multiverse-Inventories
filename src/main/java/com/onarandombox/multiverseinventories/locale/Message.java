@@ -67,7 +67,8 @@ public enum Message {
     GROUP_CREATION_COMPLETE("&2You created a new group!"),
     GROUP_UPDATED("&2Group has been updated!"),
     // List Command
-    LIST_GROUPS("&b===[ Group List ]===", "&6Groups:&f %1"),
+    LIST_GROUPS_HEADER("&b===[ Group List ]==="),
+    LIST_GROUPS_PREFIX("&6Groups:&f %1"),
     // Reload Command
     RELOAD_COMPLETE("&b===[ Reload Complete! ]==="),
     // AddWorld Command
