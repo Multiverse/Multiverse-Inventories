@@ -31,6 +31,7 @@ import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -144,11 +145,14 @@ public class CommandTools {
         return shares;
     }
 
-    @NotNull
+    @Nullable
     private WorldGroup deriveWorldGroup(@NotNull BukkitCommandExecutionContext context) {
         String groupName = context.popFirstArg();
         WorldGroup group = this.plugin.getGroupManager().getGroup(groupName);
         if (group == null) {
+            if (context.isOptional()) {
+                return null;
+            }
             this.messager.normal(Message.ERROR_NO_GROUP, context.getSender(), groupName);
             throw new InvalidCommandArgument();
         }
