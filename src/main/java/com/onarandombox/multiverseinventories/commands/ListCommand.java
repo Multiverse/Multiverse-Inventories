@@ -6,6 +6,7 @@ import com.onarandombox.MultiverseCore.commandTools.display.inline.ListDisplay;
 import com.onarandombox.acf.annotation.CommandAlias;
 import com.onarandombox.acf.annotation.Description;
 import com.onarandombox.acf.annotation.Subcommand;
+import com.onarandombox.acf.annotation.Syntax;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -26,7 +27,8 @@ public class ListCommand extends InventoriesCommand {
         this.addPermission(Perm.COMMAND_LIST);
     }
 
-    @Subcommand("list [filter]")
+    @Subcommand("list")
+    @Syntax("[filter]")
     @Description("World and Group Information.")
     public void onListCommand(@NotNull CommandSender sender,
                               @NotNull ContentFilter filter) {
