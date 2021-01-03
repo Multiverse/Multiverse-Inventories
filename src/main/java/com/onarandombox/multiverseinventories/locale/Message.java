@@ -47,11 +47,13 @@ public enum Message {
     NON_CONVERSABLE("You are not allowed to access conversations (remote console?)"),
     INVALID_PROMPT_OPTION("&cThat is not a valid option! Type &f##&c to stop working on groups."),
     // Info Command
-    INFO_ZERO_ARG("You may only use the no argument version of this command in game!"),
-    INFO_WORLD("&b===[ Info for world: &6%1&b ]==="),
-    INFO_WORLD_INFO("&6Groups:&f %1"),
-    INFO_GROUP("&b===[ Info for group: &6%1&b ]==="),
+    INFO_ZERO_ARG("You need to specify a World or Inv-Group from console."),
+    INFO_WORLD_HEADER("&b===[ Info for world: &6%1&b ]==="),
+    INFO_WORLD_GROUPS("&6Groups:&f %1"),
+    INFO_GROUP_HEADER("&b===[ Info for group: &6%1&b ]==="),
     INFO_GROUPS_INFO("&6Worlds:&f %1", "&bShares:&f %2"),
+    INFO_GROUP_WORLDS("&6Worlds:&f %1"),
+    INFO_GROUP_SHARES("&bShares:&f %1"),
     // Group Command
     GROUP_COMMAND_PROMPT("&6What would you like to do? &fCreate&6, &fEdit &6or &fDelete&6. Enter &f##&6 at any time to cancel."),
     GROUP_CREATE_PROMPT("&6Please name your new group: "),

@@ -33,16 +33,19 @@ CONFLICT_NOT_FOUND: 'No group conflicts found!'
 
 ## Commands
 # Info Command
-INFO_WORLD: 
+INFO_WORLD_HEADER:
 - '&b===[ Info for world: &6%1&b ]==='
-INFO_WORLD_INFO:
+INFO_WORLD_GROUPS:
 - '&6Groups:&f %1'
-INFO_GROUP: 
+INFO_GROUP_HEADER:
 - '&b===[ Info for group: &6%1&b ]==='
 INFO_GROUP_INFO:
 - '&6Worlds:&f %1'
 - '&bShares:&f %2'
-- '&bNegative Shares:&f %3'
+INFO_GROUP_WORLDS:
+- '&6Worlds:&f %1'
+INFO_GROUP_SHARES:
+- '&bShares:&f %1'
 
 # List Command
 LIST_GROUPS_HEADER:
