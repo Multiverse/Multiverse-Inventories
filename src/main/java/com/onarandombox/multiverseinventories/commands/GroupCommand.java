@@ -1,35 +1,29 @@
-package com.onarandombox.multiverseinventories.command;
+package com.onarandombox.multiverseinventories.commands;
 
+import com.onarandombox.acf.annotation.CommandAlias;
+import com.onarandombox.acf.annotation.Description;
+import com.onarandombox.acf.annotation.Subcommand;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.command.prompts.GroupControlPrompt;
+import com.onarandombox.multiverseinventories.commands.prompts.GroupControlPrompt;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationFactory;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
-/**
- * The /mvi info Command.
- */
+@CommandAlias("mvinv")
 public class GroupCommand extends InventoriesCommand {
 
     public GroupCommand(MultiverseInventories plugin) {
         super(plugin);
-        this.setName("Creates a world group.");
-        this.setCommandUsage("/mvinv group");
-        this.setArgRange(0, 0);
-        this.addKey("mvinv group");
-        this.addKey("mvinv g");
-        this.addKey("mvinvgroup");
-        this.addKey("mvinvg");
-        this.setPermission(Perm.COMMAND_GROUP.getPermission());
+        this.addPermission(Perm.COMMAND_GROUP);
     }
 
-    @Override
-    public void runCommand(CommandSender sender, List<String> args) {
+    @Subcommand("group")
+    @Description("Create, edit, or delete a world group.")
+    public void onGroupCommand(@NotNull CommandSender sender) {
         if (!(sender instanceof Conversable)) {
             this.messager.normal(Message.NON_CONVERSABLE, sender);
             return;
@@ -43,4 +37,3 @@ public class GroupCommand extends InventoriesCommand {
         conversation.begin();
     }
 }
-

@@ -16,6 +16,10 @@ public enum Perm {
     /**
      * Permission for /mvinv info.
      */
+    COMMAND_HELP(new Permission("multiverse.inventories.help", "Displays Multiverse-Inventories command usage.", PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv info.
+     */
     COMMAND_INFO(new Permission("multiverse.inventories.info", "Displays information about a world or group.", PermissionDefault.OP)),
     /**
      * Permission for /mvinv list.
@@ -29,6 +33,10 @@ public enum Perm {
      * Permission for /mvinv import.
      */
     COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv migrate.
+     */
+    COMMAND_MIGRATE(new Permission("multiverse.inventories.migrate", "Migrate player data from one name to another.", PermissionDefault.OP)),
     /**
      * Permission for /mvinv group.
      */

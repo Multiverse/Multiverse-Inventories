@@ -7,17 +7,12 @@ import com.onarandombox.multiverseinventories.DataStrings;
 import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.jetbrains.annotations.NotNull;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * The Sharables class is where all the default Sharable instances are located as constants as well as a factory class
@@ -671,6 +665,15 @@ public final class Sharables implements Shares {
      */
     public static Shares lookup(String name) {
         return LOOKUP_MAP.get(name.toLowerCase());
+    }
+
+    /**
+     * Get the keys of the lookup map.
+     *
+     * @return Collection of shares groups available.
+     */
+    public static Set<String> getMapKeys() {
+        return LOOKUP_MAP.keySet();
     }
 
     /**
