@@ -612,39 +612,35 @@ public final class Sharables implements Shares {
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     List<String> advancements = profile.get(ADVANCEMENTS);
-                    Set<String> processedAdvancements = new HashSet<>();
-                    Set<String> completedAdvancements = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
-                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+                    Set<String> processedCriteria = new HashSet<>();
+                    Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
 
                     boolean announceAdvancements = player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
-                    if (announceAdvancements) player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                    }
+
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
                     while (advancementIterator.hasNext()) {
                         Advancement advancement = advancementIterator.next();
-                        // the set of Advancements to revoke
-                        Set<String> revoke = new HashSet<>(advancement.getCriteria());
-                        // the set of Advancements to grant
-                        Set<String> intersection = new HashSet<>(advancement.getCriteria());
 
-                        revoke.removeAll(processedAdvancements);
-                        revoke.removeAll(completedAdvancements);
-                        intersection.removeAll(processedAdvancements);
-                        intersection.retainAll(completedAdvancements);
+                        for (String criteria : advancement.getCriteria()) {
+                            if (processedCriteria.contains(criteria)) {
+                                continue;
+                            } else if (completedCriteria.contains(criteria)) {
+                                player.getAdvancementProgress(advancement).awardCriteria(criteria);
+                            } else {
+                                player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                            }
 
-                        for (String criteria: revoke) {
-                            processedAdvancements.add(criteria);
-                            completedAdvancements.remove(criteria);
-                            player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                            processedCriteria.add(criteria);
                         }
-                        for (String criteria: intersection) {
-                            processedAdvancements.add(criteria);
-                            completedAdvancements.remove(criteria);
-                            player.getAdvancementProgress(advancement).awardCriteria(criteria);
-                        }
-
-                        // here's the idea: revoke all (criteria \ completedAdvancements), grant (criteria intersect completedAdvancements)
-                        // also, we don't need to grant/revoke anything in processedAdvancements since they've already been granted/revoked!
                     }
-                    if (announceAdvancements) player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+                    }
+
                     return advancements != null;
                 }
             }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").build();
@@ -661,9 +657,12 @@ public final class Sharables implements Shares {
                         if (stat.getType() == Statistic.Type.UNTYPED) {
                             int val = player.getStatistic(stat);
                             // no need to save values of 0, that's the default!
-                            if (val != 0) playerStats.put(stat.name(), val);
+                            if (val != 0) {
+                                playerStats.put(stat.name(), val);
+                            }
                         }
                     }
+
                     profile.set(GAME_STATISTICS, playerStats);
                 }
 
@@ -671,15 +670,22 @@ public final class Sharables implements Shares {
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Map<String, Integer> playerStats = profile.get(GAME_STATISTICS);
                     for (Statistic stat : Statistic.values()) {
-                        if (stat.getType() == Statistic.Type.UNTYPED) player.setStatistic(stat, 0);
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            player.setStatistic(stat, 0);
+                        }
                     }
+
                     if (playerStats == null) {
                         return false;
                     }
-                    for (String stringStat : playerStats.keySet()) {
-                        Statistic stat = Statistic.valueOf(stringStat);
-                        if (stat.getType() == Statistic.Type.UNTYPED) player.setStatistic(stat, playerStats.get(stat.name()));
+
+                    for (Map.Entry<String, Integer> statInfo : playerStats.entrySet()) {
+                        Statistic stat = Statistic.valueOf(statInfo.getKey());
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            player.setStatistic(stat, statInfo.getValue());
+                        }
                     }
+
                     return true;
                 }
             }).defaultSerializer(new ProfileEntry(false, "game_statistics")).altName("game_stats").build();
@@ -692,40 +698,43 @@ public final class Sharables implements Shares {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
                     Set<NamespacedKey> recipes = new HashSet<>();
+                    Map<String, List<String>> recipesMap = new HashMap<>();
                     Iterator<Recipe> recipeIterator = inventories.getServer().recipeIterator();
 
                     while (recipeIterator.hasNext()) {
                         Recipe recipe = recipeIterator.next();
                         if (recipe instanceof Keyed) {
                             NamespacedKey key = ((Keyed) recipe).getKey();
-                            if (player.undiscoverRecipe(key)) recipes.add(key);
+                            if (player.undiscoverRecipe(key)) {
+                                recipes.add(key);
+                                recipesMap.putIfAbsent(key.getNamespace(), new ArrayList<>());
+                                recipesMap.get(key.getNamespace()).add(key.getKey());
+                            }
                         }
                     }
 
                     player.discoverRecipes(recipes);
-
-                    Map<String, List<String>> recipesMap = new HashMap<>();
-                    for (NamespacedKey recipe: recipes) {
-                        recipesMap.putIfAbsent(recipe.getNamespace(), new ArrayList<>());
-                        recipesMap.get(recipe.getNamespace()).add(recipe.getKey());
-                    }
-
                     profile.set(RECIPES, recipesMap);
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Map<String, List<String>> recipes = profile.get(RECIPES);
-                    if (recipes == null) recipes = new HashMap<>();
-                    Iterator<Recipe> recipeIterator = inventories.getServer().recipeIterator();
+                    if (recipes == null) {
+                        recipes = new HashMap<>();
+                    }
 
+                    Iterator<Recipe> recipeIterator = inventories.getServer().recipeIterator();
                     while (recipeIterator.hasNext()) {
                         Recipe recipe = recipeIterator.next();
                         if (recipe instanceof Keyed) {
                             NamespacedKey key = ((Keyed) recipe).getKey();
-                            if (recipes.containsKey(key.getNamespace()) && recipes.get(key.getNamespace()).contains(key.getKey())) {
+                            List<String> namespace = recipes.get(key.getNamespace());
+                            if (namespace != null && namespace.contains(key.getKey())) {
                                 player.discoverRecipe(key);
-                            } else player.undiscoverRecipe(key);
+                            } else {
+                                player.undiscoverRecipe(key);
+                            }
                         }
                     }
 
