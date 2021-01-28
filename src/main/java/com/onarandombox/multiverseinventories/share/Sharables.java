@@ -615,7 +615,10 @@ public final class Sharables implements Shares {
                     Set<String> processedCriteria = new HashSet<>();
                     Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
 
+                    int totalExperience = player.getTotalExperience();
+                    int level = player.getLevel();
                     float exp = player.getExp();
+
                     boolean announceAdvancements = player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
                     if (announceAdvancements) {
                         player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
@@ -639,6 +642,9 @@ public final class Sharables implements Shares {
                     }
 
                     player.setExp(exp);
+                    player.setLevel(level);
+                    player.setTotalExperience(totalExperience);
+
                     if (announceAdvancements) {
                         player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
                     }
