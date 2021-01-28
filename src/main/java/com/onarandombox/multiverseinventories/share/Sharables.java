@@ -8,19 +8,27 @@ import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Statistic;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -583,6 +591,166 @@ public final class Sharables implements Shares {
             .altName("potion").altName("potions").build();
 
     /**
+     * Sharing Advancements.
+     */
+    public static final Sharable<List> ADVANCEMENTS = new Sharable.Builder<List>("advancements", List.class,
+            new SharableHandler<List>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Set<String> completedAdvancements = new HashSet<>();
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+                        Collection<String> awardedCriteria = player.getAdvancementProgress(advancement).getAwardedCriteria();
+                        completedAdvancements.addAll(awardedCriteria);
+                    }
+
+                    profile.set(ADVANCEMENTS, new ArrayList<>(completedAdvancements));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    List<String> advancements = profile.get(ADVANCEMENTS);
+                    Set<String> processedCriteria = new HashSet<>();
+                    Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
+
+                    int totalExperience = player.getTotalExperience();
+                    int level = player.getLevel();
+                    float exp = player.getExp();
+
+                    boolean announceAdvancements = player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS);
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                    }
+
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+
+                        for (String criteria : advancement.getCriteria()) {
+                            if (processedCriteria.contains(criteria)) {
+                                continue;
+                            } else if (completedCriteria.contains(criteria)) {
+                                player.getAdvancementProgress(advancement).awardCriteria(criteria);
+                            } else {
+                                player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                            }
+
+                            processedCriteria.add(criteria);
+                        }
+                    }
+
+                    player.setExp(exp);
+                    player.setLevel(level);
+                    player.setTotalExperience(totalExperience);
+
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+                    }
+
+                    return advancements != null;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").build();
+
+    /**
+     * Sharing Statistics.
+     */
+    public static final Sharable<Map> GAME_STATISTICS = new Sharable.Builder<Map>("game_statistics", Map.class,
+            new SharableHandler<Map>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Map<String, Integer> playerStats = new HashMap<>();
+                    for (Statistic stat: Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            int val = player.getStatistic(stat);
+                            // no need to save values of 0, that's the default!
+                            if (val != 0) {
+                                playerStats.put(stat.name(), val);
+                            }
+                        }
+                    }
+
+                    profile.set(GAME_STATISTICS, playerStats);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Map<String, Integer> playerStats = profile.get(GAME_STATISTICS);
+                    for (Statistic stat : Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            player.setStatistic(stat, 0);
+                        }
+                    }
+
+                    if (playerStats == null) {
+                        return false;
+                    }
+
+                    for (Map.Entry<String, Integer> statInfo : playerStats.entrySet()) {
+                        Statistic stat = Statistic.valueOf(statInfo.getKey());
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            player.setStatistic(stat, statInfo.getValue());
+                        }
+                    }
+
+                    return true;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "game_statistics")).altName("game_stats").build();
+
+    /**
+     * Sharing Recipes.
+     */
+    public static final Sharable<Map> RECIPES = new Sharable.Builder<Map>("recipes", Map.class,
+            new SharableHandler<Map>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    Set<NamespacedKey> recipes = new HashSet<>();
+                    Map<String, List<String>> recipesMap = new HashMap<>();
+                    Iterator<Recipe> recipeIterator = inventories.getServer().recipeIterator();
+
+                    while (recipeIterator.hasNext()) {
+                        Recipe recipe = recipeIterator.next();
+                        if (recipe instanceof Keyed) {
+                            NamespacedKey key = ((Keyed) recipe).getKey();
+                            if (player.undiscoverRecipe(key)) {
+                                recipes.add(key);
+                                recipesMap.putIfAbsent(key.getNamespace(), new ArrayList<>());
+                                recipesMap.get(key.getNamespace()).add(key.getKey());
+                            }
+                        }
+                    }
+
+                    player.discoverRecipes(recipes);
+                    profile.set(RECIPES, recipesMap);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Map<String, List<String>> recipes = profile.get(RECIPES);
+                    if (recipes == null) {
+                        recipes = new HashMap<>();
+                    }
+
+                    Iterator<Recipe> recipeIterator = inventories.getServer().recipeIterator();
+                    while (recipeIterator.hasNext()) {
+                        Recipe recipe = recipeIterator.next();
+                        if (recipe instanceof Keyed) {
+                            NamespacedKey key = ((Keyed) recipe).getKey();
+                            List<String> namespace = recipes.get(key.getNamespace());
+                            if (namespace != null && namespace.contains(key.getKey())) {
+                                player.discoverRecipe(key);
+                            } else {
+                                player.undiscoverRecipe(key);
+                            }
+                        }
+                    }
+
+                    return !recipes.isEmpty();
+                }
+            }).defaultSerializer(new ProfileEntry(false, "recipes")).build();
+
+    /**
      * Grouping for inventory sharables.
      */
     public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
@@ -617,7 +785,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
-                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS));
+                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, GAME_STATISTICS));
 
     /**
      * Grouping for ALL default sharables.
@@ -625,7 +793,8 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
             FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND,
+            ADVANCEMENTS, GAME_STATISTICS, RECIPES),
             "*", "everything");
 
 
