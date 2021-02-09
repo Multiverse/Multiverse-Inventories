@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -177,7 +178,7 @@ public final class Sharables implements Shares {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(PlayerStats.HEALTH);
+                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                         return false;
                     }
                     return true;
