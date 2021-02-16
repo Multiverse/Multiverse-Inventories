@@ -11,7 +11,6 @@ import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
 import org.bukkit.ChatColor;
@@ -121,16 +120,17 @@ public class PlayerDataImporter {
                                 // TODO
                                 break;
                             case "Lore":
+                                // TODO: take care of "extra" lore like clickEvent and hoverEvent
                                 ArrayList<String> lore = new ArrayList<>();
                                 for (Tag loreTag: (Tag[]) displayTag.getValue()) {
-                                    JSONArray json = (JSONArray) JSONValue.parse((String) loreTag.getValue());
-                                    lore.add(parseLabel((JSONObject) json.get(0), true));
+                                    JSONObject json = (JSONObject) JSONValue.parse((String) loreTag.getValue());
+                                    lore.add(parseLabel(json, true));
                                 }
                                 itemMeta.setLore(lore);
                                 break;
                             case "Name":
-                                JSONArray json = (JSONArray) JSONValue.parse((String) displayTag.getValue());
-                                itemMeta.setDisplayName(parseLabel((JSONObject) json.get(0), false));
+                                JSONObject json = (JSONObject) JSONValue.parse((String) displayTag.getValue());
+                                itemMeta.setDisplayName(parseLabel(json, false));
                                 break;
                         }
                     }
