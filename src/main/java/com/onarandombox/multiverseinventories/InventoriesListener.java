@@ -207,10 +207,11 @@ public class InventoriesListener implements Listener {
         World toWorld = player.getWorld();
 
         // A precaution..  Will this ever be true?
-        if (fromWorld.equals(toWorld)) {
+        if (fromWorld.getName().equals(toWorld.getName())) {
             Logging.fine("PlayerChangedWorldEvent fired when player travelling in same world.");
             return;
         }
+
         // Warn if not managed by Multiverse-Core
         if (this.inventories.getCore().getMVWorldManager().getMVWorld(toWorld) == null
                 || this.inventories.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
@@ -228,16 +229,32 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerTeleport(PlayerTeleportEvent event) {
-        if (event.isCancelled()
-                || event.getFrom().getWorld().equals(event.getTo().getWorld())
-                || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+        if (event.isCancelled() || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+            return;
+        }
+
+        if (event.getTo() == null) {
+            Logging.fine("No target location to teleport %s.", event.getPlayer().getName());
+            return;
+        }
+
+        World fromWorld = event.getFrom().getWorld();
+        World toWorld = event.getTo().getWorld();
+
+        if (fromWorld == null || toWorld == null) {
+            Logging.fine("Null teleport worlds.");
+            return;
+        }
+
+        String fromWorldName = fromWorld.getName();
+        String toWorldName = toWorld.getName();
+
+        if (fromWorldName.equals(toWorldName)) {
+            Logging.fine("Teleporting within the same world '%s'.", fromWorldName);
             return;
         }
 
         Player player = event.getPlayer();
-
-        String fromWorldName = event.getFrom().getWorld().getName();
-        String toWorldName = event.getTo().getWorld().getName();
 
         ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(fromWorldName);
         PlayerProfile playerProfile = fromWorldProfileContainer.getPlayerData(player);
