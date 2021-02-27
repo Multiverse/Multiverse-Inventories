@@ -74,6 +74,10 @@ public class DataStrings {
      */
     public static final String PLAYER_PROFILE_TYPE = "profileType";
     /**
+     * Player max health identifier.
+     */
+    public static final String PLAYER_MAX_HEALTH = "mhp";
+    /**
      * Player health identifier.
      */
     public static final String PLAYER_HEALTH = "hp";

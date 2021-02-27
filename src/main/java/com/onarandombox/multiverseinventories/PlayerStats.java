@@ -22,6 +22,10 @@ public class PlayerStats {
      */
     public static final int HEALTH = 20;
     /**
+     * Default max health value.
+     */
+    public static final int MAX_HEALTH = 20;
+    /**
      * Default experience value.
      */
     public static final float EXPERIENCE = 0F;

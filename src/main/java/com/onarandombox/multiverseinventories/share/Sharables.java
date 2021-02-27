@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -169,22 +170,70 @@ public final class Sharables implements Shares {
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Double value = profile.get(HEALTH);
-                    if (value == null) {
-                        player.setHealth(PlayerStats.HEALTH);
+                    AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    if (maxHealthAttr == null) {
+                        Logging.warning("Unable to get max health attribute for %s.", player.getName());
                         return false;
                     }
+
+                    Double value = profile.get(HEALTH);
+                    if (value == null) {
+                        player.setHealth(maxHealthAttr.getValue());
+                        return false;
+                    }
+
+                    // This share may handled before MAX_HEALTH.
+                    // Thus this is needed to ensure there is no loss in health stored.
+                    if (value > maxHealthAttr.getValue()) {
+                        maxHealthAttr.setBaseValue(value);
+                    }
+
                     try {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                        player.setHealth(maxHealthAttr.getValue());
                         return false;
                     }
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
             .altName("health").altName("hp").altName("hitpoints").build();
+
+    /**
+     * Sharing Max Health.
+     */
+    public static final Sharable<Double> MAX_HEALTH = new Sharable.Builder<Double>("max_hit_points", Double.class,
+            new SharableHandler<Double>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    if (maxHealthAttr == null) {
+                        Logging.warning("Unable to get max health attribute for %s.", player.getName());
+                        return;
+                    }
+                    profile.set(MAX_HEALTH, maxHealthAttr.getValue());
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    AttributeInstance maxHealthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    if (maxHealthAttr == null) {
+                        Logging.warning("Unable to get max health attribute for %s.", player.getName());
+                        return false;
+                    }
+
+                    Double value = profile.get(MAX_HEALTH);
+                    if (value == null) {
+                        maxHealthAttr.setBaseValue(PlayerStats.MAX_HEALTH);
+                        return false;
+                    }
+
+                    maxHealthAttr.setBaseValue(value);
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_HEALTH))
+            .altName("maxhealth").altName("maxhp").altName("maxhitpoints").build();
 
     /**
      * Sharing Remaining Air.
