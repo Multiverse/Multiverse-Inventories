@@ -2,6 +2,7 @@ package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
+import com.onarandombox.multiverseinventories.profile.ProfileKey;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
@@ -109,5 +110,14 @@ final class WeakProfileContainer implements ProfileContainer {
     public ContainerType getContainerType() {
         return type;
     }
-}
 
+    @Override
+    public void clearContainer() {
+        for (Map<ProfileType, PlayerProfile> profiles : playerData.values()) {
+            for (PlayerProfile profile : profiles.values()) {
+                this.getDataSource().clearProfileCache(ProfileKey.createProfileKey(profile));
+            }
+        }
+        this.playerData.clear();
+    }
+}
