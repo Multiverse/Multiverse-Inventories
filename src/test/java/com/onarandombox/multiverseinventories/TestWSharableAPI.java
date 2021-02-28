@@ -1,10 +1,13 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
+import com.onarandombox.multiverseinventories.listeners.AdventureListener;
+import com.onarandombox.multiverseinventories.listeners.InventoriesListener;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
-import com.onarandombox.multiverseinventories.share.SharableHandler;
+import com.onarandombox.multiverseinventories.share.handlers.SharableHandler;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;

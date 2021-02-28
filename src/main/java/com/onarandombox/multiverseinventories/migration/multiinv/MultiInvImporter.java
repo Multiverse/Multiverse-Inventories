@@ -2,8 +2,8 @@ package com.onarandombox.multiverseinventories.migration.multiinv;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.WorldGroup;
-import com.onarandombox.multiverseinventories.profile.ProfileTypes;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
+import com.onarandombox.multiverseinventories.profile.utils.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Sharables;

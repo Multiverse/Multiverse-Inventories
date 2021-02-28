@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.event;
 
-import com.onarandombox.multiverseinventories.ShareHandler;
+import com.onarandombox.multiverseinventories.share.handlers.AbstractShareHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -20,7 +20,7 @@ public class WorldChangeShareHandlingEvent extends ShareHandlingEvent implements
     private final String fromWorld;
     private final String toWorld;
 
-    public WorldChangeShareHandlingEvent(Player player, ShareHandler.AffectedProfiles affectedProfiles,
+    public WorldChangeShareHandlingEvent(Player player, AbstractShareHandler.AffectedProfiles affectedProfiles,
                                          String fromWorld, String toWorld) {
         super(player, affectedProfiles);
         this.fromWorld = fromWorld;

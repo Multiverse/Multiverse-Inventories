@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
+import com.onarandombox.multiverseinventories.profile.data.FlatFileProfileDataSource;
+import com.onarandombox.multiverseinventories.profile.data.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
 import java.io.File;

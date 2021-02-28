@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command;
 
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
 import com.onarandombox.multiverseinventories.util.Perm;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;

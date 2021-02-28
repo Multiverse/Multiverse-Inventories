@@ -1,6 +1,10 @@
 package com.onarandombox.multiverseinventories.share;
 
 import com.onarandombox.multiverseinventories.InventoriesConfig;
+import com.onarandombox.multiverseinventories.share.handlers.SharableHandler;
+import com.onarandombox.multiverseinventories.share.serializers.DefaultSerializer;
+import com.onarandombox.multiverseinventories.share.serializers.DefaultStringSerializer;
+import com.onarandombox.multiverseinventories.share.serializers.SharableSerializer;
 
 import java.util.ArrayList;
 import java.util.List;

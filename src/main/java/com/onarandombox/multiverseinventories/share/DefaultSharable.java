@@ -1,5 +1,8 @@
 package com.onarandombox.multiverseinventories.share;
 
+import com.onarandombox.multiverseinventories.share.handlers.SharableHandler;
+import com.onarandombox.multiverseinventories.share.serializers.SharableSerializer;
+
 /**
  * A class used to define a value that can be shared between worlds and world groups in Multiverse-Inventories.
  *

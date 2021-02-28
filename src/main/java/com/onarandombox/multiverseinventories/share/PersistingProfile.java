@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.share;
 
+import com.onarandombox.multiverseinventories.share.handlers.AbstractShareHandler;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 
 /**
@@ -11,7 +12,7 @@ public interface PersistingProfile {
     /**
      * @return The shares that will be saved/loaded for.  This set are all the sharable things
      *         that will be acted upon when passed through
-     *         {@link com.onarandombox.multiverseinventories.ShareHandler}
+     *         {@link AbstractShareHandler}
      */
     Shares getShares();
 

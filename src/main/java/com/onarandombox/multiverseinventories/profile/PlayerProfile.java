@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
+import com.onarandombox.multiverseinventories.profile.utils.ProfileType;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SharableEntry;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;

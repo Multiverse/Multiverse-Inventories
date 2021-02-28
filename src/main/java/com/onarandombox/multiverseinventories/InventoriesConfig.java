@@ -216,7 +216,7 @@ public final class InventoriesConfig {
      *
      * @param firstRun What to set the flag to in the config.
      */
-    void setFirstRun(boolean firstRun) {
+    public void setFirstRun(boolean firstRun) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
     }
 

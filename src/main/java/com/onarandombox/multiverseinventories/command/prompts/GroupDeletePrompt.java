@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.command.prompts;
 
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

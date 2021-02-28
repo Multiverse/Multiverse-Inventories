@@ -2,9 +2,14 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
+import com.onarandombox.multiverseinventories.listeners.InventoriesListener;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
+import com.onarandombox.multiverseinventories.share.handlers.ShareHandlingUpdater;
+import com.onarandombox.multiverseinventories.share.handlers.WorldChangeShareHandler;
+import com.onarandombox.multiverseinventories.util.PlayerStats;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Location;

@@ -7,7 +7,6 @@
 
 package com.onarandombox.multiverseinventories.util;
 
-import com.onarandombox.multiverseinventories.PlayerStats;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.event;
 
-import com.onarandombox.multiverseinventories.ShareHandler;
+import com.onarandombox.multiverseinventories.share.handlers.AbstractShareHandler;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -21,7 +21,7 @@ public class GameModeChangeShareHandlingEvent extends ShareHandlingEvent impleme
     private final GameMode fromGameMode;
     private final GameMode toGameMode;
 
-    public GameModeChangeShareHandlingEvent(Player player, ShareHandler.AffectedProfiles affectedProfiles,
+    public GameModeChangeShareHandlingEvent(Player player, AbstractShareHandler.AffectedProfiles affectedProfiles,
                                             GameMode fromGameMode, GameMode toGameMode) {
         super(player, affectedProfiles);
         this.fromGameMode = fromGameMode;

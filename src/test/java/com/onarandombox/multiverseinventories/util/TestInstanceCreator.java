@@ -14,7 +14,7 @@ import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
 import com.onarandombox.MultiverseCore.utils.TestingMode;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
-import com.onarandombox.multiverseinventories.InventoriesListener;
+import com.onarandombox.multiverseinventories.listeners.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import junit.framework.Assert;
 import org.bukkit.*;

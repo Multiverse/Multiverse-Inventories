@@ -1,6 +1,6 @@
 package com.onarandombox.multiverseinventories.profile;
 
-import com.onarandombox.multiverseinventories.WorldGroup;
+import com.onarandombox.multiverseinventories.groups.WorldGroup;
 import com.onarandombox.multiverseinventories.share.Shares;
 
 import java.util.ArrayList;

@@ -2,6 +2,8 @@ package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseAdventure.event.MVAResetFinishedEvent;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.multiverseinventories.listeners.AdventureListener;
+import com.onarandombox.multiverseinventories.listeners.InventoriesListener;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
 import org.bukkit.Color;

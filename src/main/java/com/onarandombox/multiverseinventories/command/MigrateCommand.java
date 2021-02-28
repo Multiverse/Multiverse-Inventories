@@ -2,18 +2,14 @@ package com.onarandombox.multiverseinventories.command;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import com.onarandombox.multiverseinventories.WorldGroup;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The /mvi info Command.
