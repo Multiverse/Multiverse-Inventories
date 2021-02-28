@@ -7,6 +7,7 @@ import com.onarandombox.multiverseinventories.profile.container.ProfileContainer
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +67,28 @@ public final class WorldGroup {
     }
 
     /**
+     * Convenience method to add multiple worlds to this World Group and updates it in the Config.
+     *
+     * @param worlds A collections of worlds to add.
+     */
+    public void addWorlds(Collection<String> worlds) {
+        this.addWorlds(worlds, true);
+    }
+
+    /**
+     * Convenience method to add multiple worlds to this World Group.
+     *
+     * @param worlds A collections of worlds to add.
+     * @param updateConfig True to update this group in the config.
+     */
+    public void addWorlds(Collection<String> worlds, boolean updateConfig) {
+        worlds.forEach(worldName -> this.addWorld(worldName, false));
+        if (updateConfig) {
+            this.plugin.getGroupManager().updateGroup(this);
+        }
+    }
+
+    /**
      * Removes a world from this world group and updates the group in the Config.
      *
      * @param worldName The name of the world to remove.
@@ -94,6 +117,25 @@ public final class WorldGroup {
      */
     public void removeWorld(World world) {
         this.removeWorld(world.getName());
+    }
+
+    /**
+     * Remove all the worlds in this World Group.
+     */
+    public void removeAllWorlds() {
+        this.removeAllWorlds(true);
+    }
+
+    /**
+     * Remove all the worlds in this World Group.
+     *
+     * @param updateConfig  True to update this group in the config.
+     */
+    public void removeAllWorlds(boolean updateConfig) {
+        this.worlds.clear();
+        if (updateConfig) {
+            this.plugin.getGroupManager().updateGroup(this);
+        }
     }
 
     /**
