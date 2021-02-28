@@ -82,7 +82,10 @@ public final class WorldGroup {
      * @param updateConfig True to update this group in the config.
      */
     public void addWorlds(Collection<String> worlds, boolean updateConfig) {
-        worlds.forEach(worldName -> this.addWorld(worldName, updateConfig));
+        worlds.forEach(worldName -> this.addWorld(worldName, false));
+        if (updateConfig) {
+            this.plugin.getGroupManager().updateGroup(this);
+        }
     }
 
     /**
@@ -131,7 +134,7 @@ public final class WorldGroup {
     public void removeAllWorlds(boolean updateConfig) {
         this.worlds.clear();
         if (updateConfig) {
-            plugin.getGroupManager().updateGroup(this);
+            this.plugin.getGroupManager().updateGroup(this);
         }
     }
 
