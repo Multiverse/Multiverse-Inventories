@@ -190,7 +190,21 @@ public class InventoriesListener implements Listener {
         if (event.isCancelled() || !inventories.getMVIConfig().isUsingGameModeProfiles()) {
             return;
         }
+
         Player player = event.getPlayer();
+
+        if (this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+            this.inventories.getWorldProfileContainerStore()
+                    .getContainer(player.getWorld().getName())
+                    .getPlayerData(player)
+                    .set(Sharables.LAST_LOCATION, player.getLocation());
+            this.inventories.getGroupManager()
+                    .getGroupsForWorld(player.getWorld().getName())
+                    .forEach(worldGroup -> worldGroup.getGroupProfileContainer()
+                            .getPlayerData(player)
+                            .set(Sharables.LAST_LOCATION, player.getLocation()));
+        }
+
         new GameModeShareHandler(this.inventories, player,
                 player.getGameMode(), event.getNewGameMode()).handleSharing();
     }
