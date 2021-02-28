@@ -51,8 +51,8 @@ class GroupWorldsPrompt extends InventoriesPrompt {
                 messager.normal(Message.GROUP_WORLDS_EMPTY, sender);
                 return this;
             }
-            group.getWorlds().clear();
-            group.getWorlds().addAll(worlds);
+            group.removeAllWorlds(false);
+            group.addWorlds(worlds, false);
             if (!isCreating) {
                 plugin.getGroupManager().updateGroup(group);
                 messager.normal(Message.GROUP_UPDATED, sender);
