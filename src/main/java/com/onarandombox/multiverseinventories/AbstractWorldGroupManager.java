@@ -54,7 +54,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         worldName = worldName.toLowerCase();
         List<WorldGroup> worldGroups = new ArrayList<>();
         for (WorldGroup worldGroup : getGroupNames().values()) {
-            if (worldGroup.containsWorld(worldName)) {
+            if (worldGroup.getWorlds().contains(worldName)) {
                 worldGroups.add(worldGroup);
             }
         }
@@ -139,22 +139,24 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
+
         WorldGroup worldGroup = new WorldGroup(plugin, DEFAULT_GROUP_NAME);
-        worldGroup.getShares().mergeShares(Sharables.allOf());
-        worldGroup.addWorld(defaultWorld);
-        StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
-        if (defaultNether != null) {
-            worldGroup.addWorld(defaultNether);
-            worlds.append(", ").append(defaultNether.getName());
-        }
-        if (defaultEnd != null) {
-            worldGroup.addWorld(defaultEnd);
-            worlds.append(", ").append(defaultEnd.getName());
-        }
-        updateGroup(worldGroup);
+
+        worldGroup.modify(group -> {
+            group.getShares().mergeShares(Sharables.allOf());
+            group.getWorlds().add(defaultWorld);
+            if (defaultNether != null) {
+                group.getWorlds().add(defaultNether);
+            }
+            if (defaultEnd != null) {
+                group.getWorlds().add(defaultEnd);
+            }
+        });
+
         plugin.getMVIConfig().setFirstRun(false);
         plugin.getMVIConfig().save();
-        Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
+        Logging.info("Created a default group for you containing all of your default worlds: %s",
+                worldGroup.getWorlds().toString());
     }
 
     /**
@@ -163,11 +165,11 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
     @Override
     public WorldGroup getDefaultGroup() {
         WorldGroup group = getGroupNames().get(DEFAULT_GROUP_NAME);
-        if (group == null) {
-            group = newEmptyGroup(DEFAULT_GROUP_NAME);
-            group.getShares().setSharing(Sharables.allOf(), true);
-            updateGroup(group);
+        if (group != null) {
+            return group;
         }
+        group = newEmptyGroup(DEFAULT_GROUP_NAME);
+        group.modify(worldGroup -> worldGroup.getShares().setSharing(Sharables.allOf(), true));
         return group;
     }
 

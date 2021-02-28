@@ -120,7 +120,7 @@ public class WorldInventoriesImporter implements DataImporter {
             }
             WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
-                newGroup.addWorld(worldName);
+                newGroup.getWorlds().add(worldName);
             }
 
             try {
@@ -136,7 +136,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
             }
-            this.inventories.getGroupManager().updateGroup(newGroup);
+            newGroup.save();
             Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());
         }
     }

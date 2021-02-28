@@ -42,13 +42,14 @@ public class AddWorldCommand extends InventoriesCommand {
             this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
-        if (worldGroup.containsWorld(world.getName())) {
+        if (worldGroup.getWorlds().contains(world.getName())) {
             this.messager.normal(Message.WORLD_ALREADY_EXISTS, sender, world.getName(),
                     worldGroup.getName());
             return;
         }
-        worldGroup.addWorld(world);
-        this.plugin.getGroupManager().updateGroup(worldGroup);
+
+        worldGroup.modify(group -> group.getWorlds().add(world));
+
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.WORLD_ADDED, sender, world.getName(),
                 worldGroup.getName());

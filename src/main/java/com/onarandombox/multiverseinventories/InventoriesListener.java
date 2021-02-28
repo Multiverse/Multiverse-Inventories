@@ -247,8 +247,8 @@ public class InventoriesListener implements Listener {
         for (WorldGroup fromGroup : fromGroups) {
             playerProfile = fromGroup.getGroupProfileContainer().getPlayerData(event.getPlayer());
 
-            if (fromGroup.containsWorld(toWorldName)) {
-                if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
+            if (fromGroup.getWorlds().contains(toWorldName)) {
+                if (!fromGroup.getShares().isSharing(Sharables.LAST_LOCATION)) {
                     playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
                 }
             } else {
@@ -428,8 +428,8 @@ public class InventoriesListener implements Listener {
         List<WorldGroup> fromGroups = inventories.getGroupManager().getGroupsForWorld(fromWorld.getName());
         List<WorldGroup> toGroups = inventories.getGroupManager().getGroupsForWorld(toWorld.getName());
         // We only care about the groups that have the inventory sharable
-        fromGroups = fromGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
-        toGroups = toGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
+        fromGroups = fromGroups.stream().filter(it -> it.getShares().isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
+        toGroups = toGroups.stream().filter(it -> it.getShares().isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
         for (WorldGroup fromGroup : fromGroups) {
             if (toGroups.contains(fromGroup)) {
                 Logging.finest("Allowing item or inventory holding %s to go from world %s to world %s", entity,

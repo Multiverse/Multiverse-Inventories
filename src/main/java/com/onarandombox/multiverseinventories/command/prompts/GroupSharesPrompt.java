@@ -45,9 +45,10 @@ class GroupSharesPrompt extends InventoriesPrompt {
     @Override
     public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
         if (s.equals("@")) {
-            group.getShares().clear();
-            group.getShares().addAll(this.shares);
-            plugin.getGroupManager().updateGroup(group);
+            group.modify(worldGroup -> {
+                group.getShares().clear();
+                group.getShares().addAll(this.shares);
+            });
             if (isCreating) {
                 messager.normal(Message.GROUP_CREATION_COMPLETE, sender);
             } else {

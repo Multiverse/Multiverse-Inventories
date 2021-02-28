@@ -142,7 +142,7 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private boolean isFromWorldNotInToWorldGroup(WorldGroup worldGroup) {
-            return !worldGroup.containsWorld(fromWorld);
+            return !worldGroup.getWorlds().contains(fromWorld);
         }
 
         private void addReadProfileForWorldGroup(WorldGroup worldGroup) {
@@ -211,7 +211,7 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private boolean groupDoesNotContainWorld(String world) {
-            return !worldGroup.containsWorld(world);
+            return !worldGroup.getWorlds().contains(world);
         }
 
         private boolean isNotSharingAll() {
