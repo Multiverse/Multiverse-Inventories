@@ -61,28 +61,27 @@ class GroupWorldsPrompt extends InventoriesPrompt {
             }
             return nextPrompt;
         }
-        final boolean negative;
-        final World world;
-        if (s.startsWith("-") && s.length() > 1) {
+
+        boolean negative = false;
+        World world = Bukkit.getWorld(s);
+        if (world == null && s.startsWith("-") && s.length() > 1) {
             negative = true;
             world = Bukkit.getWorld(s.substring(1));
-        } else {
-            negative = false;
-            world = Bukkit.getWorld(s);
         }
+
         if (world == null) {
             messager.normal(Message.ERROR_NO_WORLD, sender, s);
-        } else {
-            if (negative) {
-                if (!worlds.contains(world.getName())) {
-                    messager.normal(Message.WORLD_NOT_IN_GROUP, sender, world.getName(), group.getName());
-                    return this;
-                }
-                worlds.remove(world.getName());
-            } else {
-                worlds.add(world.getName());
-            }
+            return this;
         }
+        if (negative) {
+            if (!worlds.contains(world.getName())) {
+                messager.normal(Message.WORLD_NOT_IN_GROUP, sender, world.getName(), group.getName());
+                return this;
+            }
+            worlds.remove(world.getName());
+            return this;
+        }
+        worlds.add(world.getName());
         return this;
     }
 }
