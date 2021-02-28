@@ -71,9 +71,12 @@ public class AddSharesCommand extends InventoriesCommand {
             this.messager.normal(Message.ERROR_NO_GROUP, sender, args.get(1));
             return;
         }
-        worldGroup.getShares().mergeShares(newShares);
-        worldGroup.getShares().removeAll(negativeShares);
-        this.plugin.getGroupManager().updateGroup(worldGroup);
+
+        worldGroup.modify(group -> {
+            group.getShares().mergeShares(newShares);
+            group.getShares().removeAll(negativeShares);
+        });
+
         this.plugin.getMVIConfig().save();
         this.messager.normal(Message.NOW_SHARING, sender, worldGroup.getName(),
                 worldGroup.getShares().toString());

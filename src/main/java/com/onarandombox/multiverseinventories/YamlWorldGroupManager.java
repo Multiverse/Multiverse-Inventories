@@ -136,7 +136,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                             Logging.fine("Error with a world listed in group: " + name);
                             continue;
                         }
-                        profile.addWorld(worldNameObj.toString(), false);
+                        profile.getWorlds().add(worldNameObj.toString());
                         World world = Bukkit.getWorld(worldNameObj.toString());
                         if (world == null) {
                             if (builder.length() != 0) {
@@ -220,6 +220,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
         super.updateGroup(worldGroup);
         updateWorldGroup(worldGroup);
         save();
+        Logging.finest("Updated World Group '%s'.", worldGroup.getName());
     }
 
     @Override

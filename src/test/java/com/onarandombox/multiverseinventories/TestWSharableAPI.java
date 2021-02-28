@@ -171,10 +171,11 @@ public class TestWSharableAPI {
         inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
 
         WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup("test");
-        newGroup.getShares().mergeShares(Sharables.allOf());
-        newGroup.addWorld("world2");
-        newGroup.getShares().remove(OPTIONAL);
-        inventories.getGroupManager().updateGroup(newGroup);
+        newGroup.modify(worldGroup -> {
+            worldGroup.getShares().mergeShares(Sharables.allOf());
+            worldGroup.getWorlds().add("world2");
+            worldGroup.getShares().remove(OPTIONAL);
+        });
 
         // Verify removal
         Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));

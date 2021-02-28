@@ -70,12 +70,12 @@ public class MultiInvImporter implements DataImporter {
         for (Map.Entry<String, String> groupEntry : miGroupMap.entrySet()) {
             WorldGroup worldGroup = this.inventories.getGroupManager().getGroup(groupEntry.getValue());
             if (worldGroup == null) {
+                Logging.info("Importing group: " + groupEntry.getValue());
                 worldGroup = this.inventories.getGroupManager().newEmptyGroup(groupEntry.getValue());
                 worldGroup.getShares().mergeShares(Sharables.allOf());
-                Logging.info("Importing group: " + groupEntry.getValue());
-                this.inventories.getGroupManager().updateGroup(worldGroup);
             }
-            worldGroup.addWorld(groupEntry.getValue());
+            worldGroup.getWorlds().add(groupEntry.getValue());
+            worldGroup.save();
         }
         this.inventories.getMVIConfig().save();
 

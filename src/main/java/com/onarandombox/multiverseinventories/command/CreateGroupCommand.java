@@ -36,7 +36,8 @@ public class CreateGroupCommand extends InventoriesCommand {
         }
 
         worldGroup = this.plugin.getGroupManager().newEmptyGroup(args.get(0));
-        this.plugin.getGroupManager().updateGroup(worldGroup);
+        worldGroup.save();
+
         this.messager.normal(Message.GROUP_CREATION_COMPLETE, sender);
     }
 }

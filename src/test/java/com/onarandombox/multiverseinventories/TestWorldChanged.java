@@ -542,12 +542,14 @@ public class TestWorldChanged {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         WorldGroup group = inventories.getGroupManager().newEmptyGroup("test");
-        group.addWorld("world");
-        group.addWorld("world_nether");
-        group.addWorld("world_the_end");
-        group.addWorld("world2");
-        group.getShares().setSharing(Sharables.allOf(), true);
-        inventories.getGroupManager().updateGroup(group);
+        group.modify(worldGroup -> {
+            worldGroup.getWorlds().add("world");
+            worldGroup.getWorlds().add("world_nether");
+            worldGroup.getWorlds().add("world_the_end");
+            worldGroup.getWorlds().add("world2");
+            worldGroup.getShares().setSharing(Sharables.allOf(), true);
+        });
+
         cmdArgs = new String[]{"reload"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
         Assert.assertTrue(inventories.getGroupManager().checkGroups().isEmpty());
