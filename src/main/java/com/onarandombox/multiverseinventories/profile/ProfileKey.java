@@ -34,6 +34,11 @@ public final class ProfileKey {
                 copyKey.getPlayerName());
     }
 
+    public static ProfileKey createProfileKey(PlayerProfile profile) {
+        return new ProfileKey(profile.getContainerType(), profile.getContainerName(), profile.getProfileType(),
+                profile.getPlayer().getUniqueId(), profile.getPlayer().getName());
+    }
+
     private final ContainerType containerType;
     private final String dataName;
     private final ProfileType profileType;

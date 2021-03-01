@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
@@ -442,6 +443,21 @@ public class InventoriesListener implements Listener {
         Logging.finest("Disallowing item or inventory holding %s to go from world %s to world %s since these" +
                         "worlds do not share inventories", entity, fromWorld.getName(), toWorld.getName());
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void worldUnload(WorldUnloadEvent event) {
+        String unloadWorldName = event.getWorld().getName();
+
+        Logging.finer("Clearing data for world/groups container with '%s' world.", unloadWorldName);
+
+        ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(unloadWorldName);
+        fromWorldProfileContainer.clearContainer();
+
+        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(unloadWorldName);
+        for (WorldGroup fromGroup : fromGroups) {
+            fromGroup.getGroupProfileContainer().clearContainer();
+        }
     }
 }
 

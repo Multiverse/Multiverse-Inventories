@@ -95,5 +95,10 @@ public interface ProfileDataSource {
      * @throws IOException Thrown if something goes wrong while migrating the files.
      */
     void migratePlayerData(String oldName, String newName, UUID playerUUID, boolean removeOldData) throws IOException;
+
+    /**
+     * Clears a single profile in cache.
+     */
+    void clearProfileCache(ProfileKey key);
 }
 

@@ -67,5 +67,10 @@ public interface ProfileContainer {
      * @param player Player to remove data for.
      */
     void removePlayerData(ProfileType profileType, OfflinePlayer player);
+
+    /**
+     * Clears all cached data in the container.
+     */
+    void clearContainer();
 }
 
