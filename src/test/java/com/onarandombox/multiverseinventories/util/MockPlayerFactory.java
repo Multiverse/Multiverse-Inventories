@@ -76,6 +76,14 @@ public class MockPlayerFactory {
         return createdPlayers.values();
     }
 
+    public static Player changeName(Player player, String newName) {
+        createdPlayers.remove(player.getName());
+        when(player.getName()).thenReturn(newName);
+
+        registerPlayer(player);
+        return player;
+    }
+
     private static void registerPlayer(Player player) {
         createdPlayers.put(player.getName(), player);
         playerUIDs.put(player.getUniqueId(), player);
