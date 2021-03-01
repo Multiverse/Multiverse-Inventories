@@ -215,8 +215,14 @@ public class TestPlayerNameChange {
         Assert.assertNotSame(player.getInventory().toString(), worldInvData);
         Assert.assertEquals(player.getInventory().toString(), world2InvData);
 
-        // Go back to world2
+        // Go back to world_nether which is in group default
+        // i.e. Should be the same inv as world.
         changeWorld(player, "world2", "world_nether");
+        Assert.assertNotSame(player.getInventory().toString(), world2InvData);
+        Assert.assertEquals(player.getInventory().toString(), worldInvData);
+
+        // Go back to world
+        changeWorld(player, "world_nether", "world");
         Assert.assertNotSame(player.getInventory().toString(), world2InvData);
         Assert.assertEquals(player.getInventory().toString(), worldInvData);
     }
