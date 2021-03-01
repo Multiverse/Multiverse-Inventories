@@ -561,13 +561,15 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
+
         for (File groupFolder : groupFolders) {
-            ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, groupFolder.getName(),
+            ProfileKey key = ProfileKey.createProfileKey(ContainerType.GROUP, groupFolder.getName(),
                     ProfileTypes.ADVENTURE, uuid, oldName);
             updatePlayerData(getPlayerData(key));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
+
         if (removeOldData) {
             for (File worldFolder : worldFolders) {
                 removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName);
