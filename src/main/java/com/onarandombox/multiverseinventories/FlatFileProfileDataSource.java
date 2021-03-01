@@ -126,7 +126,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        Logging.finer("got data folder: " + folder.getPath() + " from type: " + type);
         return folder;
     }
 
@@ -150,6 +149,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                         + " may not be saved.", e);
             }
         }
+        Logging.finer("got data file: %s. Type: %s, DataName: %s, PlayerName: %s",
+                jsonPlayerFile.getPath(), type, dataName, playerName);
         return jsonPlayerFile;
     }
 
@@ -508,7 +509,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
-            Logging.severe("Could not save global data for player: " + globalProfile.getPlayerName());
+            Logging.severe("Could not save global data for player: " + globalProfile);
             Logging.severe(e.getMessage());
             return false;
         }

@@ -115,20 +115,26 @@ public class InventoriesListener implements Listener {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;
         }
+
+        Logging.finer("Loading global profile for Player{name:'%s', uuid:'%s'}.",
+                event.getName(), event.getUniqueId());
+
         GlobalProfile globalProfile = inventories.getData().getGlobalProfile(event.getName(), event.getUniqueId());
         if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
             // Data must be migrated
+            Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
+                    event.getUniqueId(), globalProfile.getLastKnownName(), event.getName());
             try {
                 inventories.getData().migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
                         event.getUniqueId(), true);
             } catch (IOException e) {
-                Logging.severe("Could not migrate data from name " + globalProfile.getLastKnownName()
-                        + " to " + event.getName());
+                Logging.severe("An error occurred while trying to migrate playerdata.");
                 e.printStackTrace();
             }
 
             globalProfile.setLastKnownName(event.getName());
             inventories.getData().updateGlobalProfile(globalProfile);
+            Logging.info("Migration complete!");
         }
     }
 
