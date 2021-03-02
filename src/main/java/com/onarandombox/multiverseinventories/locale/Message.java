@@ -32,8 +32,8 @@ public enum Message {
     ERROR_NO_GROUP("&6There is no group with the name: &f%1"),
     ERROR_NO_WORLD("&6There is no world with the name: &f%1"),
     ERROR_NO_WORLD_PROFILE("&6There is no profile container for the world: &f%1"),
-    ERROR_PLUGIN_NOT_ENABLED("&f%1 &6is not enabled so you may not import data from it!"),
-    ERROR_UNSUPPORTED_IMPORT("&6Sorry, ''&f%1&6'' is not supported for importing."),
+    ERROR_PLUGIN_NOT_ENABLED("&f%1 &6is not enabled on your server, so you may not import data from it!"),
+    ERROR_UNSUPPORTED_IMPORT("&6Sorry, '&f%1&6' is not supported for importing."),
     ERROR_NO_SHARES_SPECIFIED("&cYou did not specify any valid shares!"),
 
     // Group Conflicts
@@ -90,9 +90,12 @@ public enum Message {
     NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!"),
     // Migrate Command
     MIGRATE_FAILED("Failed to migrate data from %1 to %2! Check logs for error details."),
-    MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!");
-
-    // BEGIN CHECKSTYLE-SUPPRESSION: Javadoc
+    MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!"),
+    // Import Command
+    IMPORT_ATTEMPT("&6Attempting to import data from %1..."),
+    IMPORT_FAILED("&cAn errored occurred while attempting to import from %1."),
+    IMPORT_SUCCESSFUL("&aImported data from %1! You can now remove &6%1 &aand restart your server. Enjoy!");
+    // END CHECKSTYLE-SUPPRESSION: Javadoc
 
     private final List<String> def;
 

@@ -1,13 +1,13 @@
-package com.onarandombox.multiverseinventories.migration;
+package com.onarandombox.multiverseinventories.dataimport;
 
 /**
  * Exception thrown when migration doesn't go well.
  */
-public class MigrationException extends Exception {
+public class DataImportException extends Exception {
 
     private Exception causeException = null;
 
-    public MigrationException(String message) {
+    public DataImportException(String message) {
         super(message);
     }
 
@@ -17,7 +17,7 @@ public class MigrationException extends Exception {
      * @param exception The cause exception.
      * @return This exception for easy chainability.
      */
-    public MigrationException setCauseException(Exception exception) {
+    public DataImportException setCauseException(Exception exception) {
         this.causeException = exception;
         return this;
     }

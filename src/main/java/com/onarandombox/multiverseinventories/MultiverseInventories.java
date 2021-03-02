@@ -5,11 +5,6 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.commandhandler.CommandHandler;
-import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
-import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
-import com.onarandombox.multiverseinventories.profile.container.ContainerType;
-import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
-import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
 import com.onarandombox.multiverseinventories.command.CreateGroupCommand;
@@ -24,22 +19,25 @@ import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
 import com.onarandombox.multiverseinventories.command.SpawnCommand;
 import com.onarandombox.multiverseinventories.command.ToggleCommand;
+import com.onarandombox.multiverseinventories.dataimport.DataImportManager;
+import com.onarandombox.multiverseinventories.dataimport.multiinv.MultiInvImporter;
+import com.onarandombox.multiverseinventories.dataimport.worldinventories.WorldInventoriesImporter;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
-import com.onarandombox.multiverseinventories.migration.ImportManager;
+import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
+import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
+import com.onarandombox.multiverseinventories.profile.container.ContainerType;
+import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
+import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.Perm;
-import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private WorldGroupManager worldGroupManager = null;
     private ProfileContainerStore worldProfileContainerStore = null;
     private ProfileContainerStore groupProfileContainerStore = null;
-    private ImportManager importManager = new ImportManager(this);
+    private DataImportManager importManager = new DataImportManager();
 
     private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
@@ -174,8 +172,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Register Commands
         this.registerCommands();
 
-        // Hook plugins that can be imported from
-        this.hookImportables();
+        // Register and hook plugins that can be imported from
+        this.importManager.register(new WorldInventoriesImporter(this));
+        this.importManager.register(new MultiInvImporter(this));
 
         Sharables.init(this);
 
@@ -208,22 +207,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         }
     }
 
-    private void hookImportables() {
-        final PluginManager pm = Bukkit.getPluginManager();
-        Plugin plugin = pm.getPlugin("MultiInv");
-        if (plugin != null) {
-            this.getImportManager().hookMultiInv((MultiInv) plugin);
-        }
-        plugin = pm.getPlugin("WorldInventories");
-        if (plugin != null) {
-            this.getImportManager().hookWorldInventories((WorldInventories) plugin);
-        }
-    }
-
     /**
      * @return A class used for managing importing data from other similar plugins.
      */
-    public ImportManager getImportManager() {
+    public DataImportManager getImportManager() {
         return this.importManager;
     }
 
@@ -311,6 +298,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                 + "[Multiverse-Inventories] Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds() + '\n'
                 + "[Multiverse-Inventories] Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad() + '\n'
                 + "[Multiverse-Inventories] Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles() + '\n'
+                + "[Multiverse-Inventories] Enabled importers: " + this.getImportManager().getEnabledImporterNames() + '\n'
                 + "[Multiverse-Inventories] === Shares ===" + '\n'
                 + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped() + '\n'
                 + "[Multiverse-Inventories] Enabled Optionals: " + this.getMVIConfig().getOptionalShares() + '\n'
