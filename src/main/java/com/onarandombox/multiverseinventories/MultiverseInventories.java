@@ -21,6 +21,7 @@ import com.onarandombox.multiverseinventories.command.SpawnCommand;
 import com.onarandombox.multiverseinventories.command.ToggleCommand;
 import com.onarandombox.multiverseinventories.dataimport.DataImportManager;
 import com.onarandombox.multiverseinventories.dataimport.multiinv.MultiInvImporter;
+import com.onarandombox.multiverseinventories.dataimport.perworldinventory.PerWorldInventoryImporter;
 import com.onarandombox.multiverseinventories.dataimport.worldinventories.WorldInventoriesImporter;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
@@ -175,6 +176,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Register and hook plugins that can be imported from
         this.importManager.register(new WorldInventoriesImporter(this));
         this.importManager.register(new MultiInvImporter(this));
+        this.importManager.register(new PerWorldInventoryImporter(this));
 
         Sharables.init(this);
 

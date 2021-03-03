@@ -4,7 +4,7 @@ version: maven-version-number
 api-version: 1.13
 author: dumptruckman
 depend: ['Multiverse-Core']
-softdepend: [MultiInv, WorldInventories, Multiverse-Adventure]
+softdepend: ['MultiInv', 'WorldInventories', 'PerWorldInventory', 'Multiverse-Adventure']
 
 commands:
   mvinv:
