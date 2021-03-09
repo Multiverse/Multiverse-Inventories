@@ -5,6 +5,7 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.commandhandler.CommandHandler;
+import com.onarandombox.multiverseinventories.dependencies.WorldGroupContextCalculator;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
@@ -30,6 +31,8 @@ import com.onarandombox.multiverseinventories.locale.Messaging;
 import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.util.Perm;
 import me.drayshak.WorldInventories.WorldInventories;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -174,8 +177,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Register Commands
         this.registerCommands();
 
-        // Hook plugins that can be imported from
+        // Hook plugins dependencies
         this.hookImportables();
+        this.hookLuckPerms();
 
         Sharables.init(this);
 
@@ -218,6 +222,22 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         if (plugin != null) {
             this.getImportManager().hookWorldInventories((WorldInventories) plugin);
         }
+    }
+
+    private void hookLuckPerms() {
+        if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null) {
+            Logging.finer("LuckPerms is not installed on your server.");
+            return;
+        }
+        LuckPerms luckPerms;
+        try {
+            luckPerms = LuckPermsProvider.get();
+        } catch (IllegalArgumentException e) {
+            Logging.warning("Unable to hook into LuckPerms. API not enabled!");
+            Logging.warning(e.getMessage());
+            return;
+        }
+        luckPerms.getContextManager().registerCalculator(new WorldGroupContextCalculator(this));
     }
 
     /**
