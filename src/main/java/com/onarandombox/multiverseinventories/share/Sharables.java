@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
+import sun.rmi.runtime.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -537,13 +538,29 @@ public final class Sharables implements Shares {
      */
     public static final Sharable<Double> ECONOMY = new Sharable.Builder<Double>("economy", Double.class,
             new SharableHandler<Double>() {
+                private boolean hasValidEconomyHandler() {
+                    if (!inventories.getCore().getEconomist().isUsingEconomyPlugin()) {
+                        return true;
+                    }
+                    Logging.warning("You do not have an an economy plugin with Vault. Economy sharable will not work!");
+                    Logging.warning("Check that your economy and vault plugin are both working correctly.");
+                    Logging.warning("If you enabled the sharable by mistake, run '/mvinv toggle economy' to resolve this.");
+                    return false;
+                }
+
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
+                    if (!hasValidEconomyHandler()) {
+                        return;
+                    }
                     profile.set(ECONOMY, inventories.getCore().getEconomist().getBalance(player));
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    if (!hasValidEconomyHandler()) {
+                        return false;
+                    }
                     Double money = profile.get(ECONOMY);
                     if (money == null) {
                         inventories.getCore().getEconomist().setBalance(player, 0);
