@@ -30,7 +30,7 @@ CONFLICT_CHECKING: 'Überprüfe die Konfigurationen für die Gruppen...'
 CONFLICT_FOUND: 'Konflikt gefunden... Wenn er nicht gelöst wird, werden die Daten eventuell korrupt.'
 CONFLICT_NOT_FOUND: 'Keine Konflikte bei den Gruppen gefunden!'
 
-NON_CONVERSABLE: 'Du bist nicht berechtigt auf Konversationen zu zugreifen (remote Konsole?)'"),'
+NON_CONVERSABLE: 'Du bist nicht berechtigt auf Konversationen zu zugreifen (remote Konsole?),'
 INVALID_PROMPT_OPTION: '&cDas ist keine gültige Option! Schreibe &f##&c um das Arbeiten an Gruppen abzubrechen.'
 
 ## Commands
