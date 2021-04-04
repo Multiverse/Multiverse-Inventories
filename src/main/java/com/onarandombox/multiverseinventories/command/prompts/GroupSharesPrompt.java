@@ -71,10 +71,10 @@ class GroupSharesPrompt extends InventoriesPrompt {
             return this;
         }
         if (negative) {
-            this.shares.addAll(shares);
+            this.shares.removeAll(shares);
             return this;
         }
-        this.shares.removeAll(shares);
+        this.shares.addAll(shares);
         return this;
     }
 }
