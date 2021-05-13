@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
-import sun.rmi.runtime.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
