@@ -13,7 +13,6 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -77,6 +76,14 @@ public class MockPlayerFactory {
         return createdPlayers.values();
     }
 
+    public static Player changeName(Player player, String newName) {
+        createdPlayers.remove(player.getName());
+        when(player.getName()).thenReturn(newName);
+
+        registerPlayer(player);
+        return player;
+    }
+
     private static void registerPlayer(Player player) {
         createdPlayers.put(player.getName(), player);
         playerUIDs.put(player.getUniqueId(), player);
@@ -129,7 +136,6 @@ public class MockPlayerFactory {
         mockPotionEffects();
         mockLocation();
         mockTeleport();
-        mockPersistentDataContainer();
     }
 
     private void mockCompassTarget() {
@@ -279,10 +285,6 @@ public class MockPlayerFactory {
         }).when(player).teleport(any(Location.class), any(PlayerTeleportEvent.TeleportCause.class));
     }
 
-    private void mockPersistentDataContainer() {
-        when(player.getPersistentDataContainer()).thenReturn(data.persistentDataContainer);
-    }
-
     private static class PlayerData {
         Location compassTarget = null;
 
@@ -307,7 +309,5 @@ public class MockPlayerFactory {
         Map<Integer, PotionEffect> potionEffects = new HashMap<>();
 
         Location location = null;
-
-        PersistentDataContainer persistentDataContainer = new PersistentDataContainerImpl();
     }
 }

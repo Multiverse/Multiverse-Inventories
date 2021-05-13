@@ -12,6 +12,7 @@ import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
+import com.onarandombox.MultiverseCore.utils.TestingMode;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
@@ -27,9 +28,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionEffectTypeWrapper;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
@@ -62,6 +61,7 @@ public class TestInstanceCreator {
     public static final File worldsDirectory = new File("bin/test/server");
 
     public boolean setUp() {
+        TestingMode.enable();
         try {
             FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
@@ -144,7 +144,7 @@ public class TestInstanceCreator {
                 if (name == null) return null;
                 return MockPlayerFactory.getOrCreateMockPlayer(name, mockServer);
             };
-            when(mockServer.getPlayer(anyString())).thenAnswer(playerAnswer);
+            when(mockServer.getPlayerExact(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayer(anyString())).thenAnswer(playerAnswer);
             when(mockServer.getOfflinePlayers()).thenAnswer(
                     (Answer<OfflinePlayer[]>) invocation -> MockPlayerFactory.getAllPlayers().toArray(new Player[0]));
@@ -384,7 +384,8 @@ public class TestInstanceCreator {
             return false;
         }
 
-        FileUtils.deleteFolder(serverDirectory);
+        // Dont remove so that we can see the data result after the test.
+        // FileUtils.deleteFolder(serverDirectory);
 
         return true;
     }

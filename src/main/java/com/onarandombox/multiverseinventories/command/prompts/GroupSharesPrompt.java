@@ -58,24 +58,23 @@ class GroupSharesPrompt extends InventoriesPrompt {
             plugin.getGroupManager().checkForConflicts(sender);
             return nextPrompt;
         }
+
         boolean negative = false;
-        final Shares shares;
-        if (s.startsWith("-") && s.length() > 1) {
+        Shares shares = Sharables.lookup(s.toLowerCase());
+        if (shares == null && s.startsWith("-") && s.length() > 1) {
             negative = true;
             shares = Sharables.lookup(s.toLowerCase().substring(1));
-        } else {
-            shares = Sharables.lookup(s.toLowerCase());
         }
 
         if (shares == null) {
             messager.normal(Message.ERROR_NO_SHARES_SPECIFIED, sender);
-        } else {
-            if (!negative) {
-                this.shares.addAll(shares);
-            } else {
-                this.shares.removeAll(shares);
-            }
+            return this;
         }
+        if (negative) {
+            this.shares.removeAll(shares);
+            return this;
+        }
+        this.shares.addAll(shares);
         return this;
     }
 }

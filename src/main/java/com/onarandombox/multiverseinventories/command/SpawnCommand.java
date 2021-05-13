@@ -48,7 +48,7 @@ public class SpawnCommand extends InventoriesCommand {
                         perm.getPermission().getDescription(), perm.getPermission().getName());
                 return;
             }
-            Player target = Bukkit.getPlayer(args.get(0));
+            Player target = Bukkit.getPlayerExact(args.get(0));
             if (target != null) {
                 this.messager.normal(Message.TELEPORTING, target);
                 spawnAccurately(target);

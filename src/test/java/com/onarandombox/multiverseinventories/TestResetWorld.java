@@ -113,7 +113,7 @@ public class TestResetWorld {
         cmdArgs = new String[]{"rmworld", "world2", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         changeWorld(player, "world", "world2");
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();

@@ -32,14 +32,12 @@ public final class GlobalProfile {
         return new GlobalProfile(playerName, playerUUID);
     }
 
-    private final String name;
     private final UUID uuid;
     private String lastWorld = null;
     private String lastKnownName;
     private boolean loadOnLogin = false;
 
     private GlobalProfile(String name, UUID uuid) {
-        this.name = name;
         this.uuid = uuid;
         this.lastKnownName = name;
     }
@@ -48,9 +46,12 @@ public final class GlobalProfile {
      * Returns the name of the player.
      *
      * @return The name of the player.
+     * @deprecated Use {@link #getPlayerUUID()} to uniquely identify a player.
+     *             If you need player name, use {@link #getLastKnownName()}.
      */
+    @Deprecated
     public String getPlayerName() {
-        return this.name;
+        return this.lastKnownName;
     }
 
     /**
@@ -117,5 +118,15 @@ public final class GlobalProfile {
      */
     public void setLastWorld(String world) {
         this.lastWorld = world;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalProfile{" +
+                "uuid=" + uuid +
+                ", lastWorld='" + lastWorld + '\'' +
+                ", lastKnownName='" + lastKnownName + '\'' +
+                ", loadOnLogin=" + loadOnLogin +
+                '}';
     }
 }

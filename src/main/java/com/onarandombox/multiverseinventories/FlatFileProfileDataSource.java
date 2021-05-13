@@ -126,7 +126,6 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        Logging.finer("got data folder: " + folder.getPath() + " from type: " + type);
         return folder;
     }
 
@@ -150,6 +149,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                         + " may not be saved.", e);
             }
         }
+        Logging.finer("got data file: %s. Type: %s, DataName: %s, PlayerName: %s",
+                jsonPlayerFile.getPath(), type, dataName, playerName);
         return jsonPlayerFile;
     }
 
@@ -508,7 +509,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         try {
             playerData.save(playerFile);
         } catch (IOException e) {
-            Logging.severe("Could not save global data for player: " + globalProfile.getPlayerName());
+            Logging.severe("Could not save global data for player: " + globalProfile);
             Logging.severe(e.getMessage());
             return false;
         }
@@ -561,13 +562,15 @@ class FlatFileProfileDataSource implements ProfileDataSource {
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
+
         for (File groupFolder : groupFolders) {
-            ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, groupFolder.getName(),
+            ProfileKey key = ProfileKey.createProfileKey(ContainerType.GROUP, groupFolder.getName(),
                     ProfileTypes.ADVENTURE, uuid, oldName);
             updatePlayerData(getPlayerData(key));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
             updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
         }
+
         if (removeOldData) {
             for (File worldFolder : worldFolders) {
                 removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName);
@@ -580,6 +583,16 @@ class FlatFileProfileDataSource implements ProfileDataSource {
                 removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldName);
             }
         }
+    }
+
+    @Override
+    public void clearProfileCache(ProfileKey key) {
+        profileCache.invalidate(key);
+    }
+
+    void clearCache() {
+        globalProfileCache.invalidateAll();
+        profileCache.invalidateAll();
     }
 }
 

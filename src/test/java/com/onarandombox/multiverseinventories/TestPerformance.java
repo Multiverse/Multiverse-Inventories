@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
@@ -67,8 +68,6 @@ public class TestPerformance {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
-
     }
 
     @After
@@ -90,7 +89,7 @@ public class TestPerformance {
     }
 
     private Player getPreparedPlayer() {
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         for (int i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
@@ -181,9 +180,8 @@ public class TestPerformance {
         timeTaken = new double[numTests];
         total = 0;
         for (int i = 0; i < numTests; i++) {
-            ShareHandler shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
             startTime = System.nanoTime();
-            shareHandler.handle();
+            new WorldChangeShareHandler(inventories, player, "world", "world2");
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -192,11 +190,10 @@ public class TestPerformance {
 
         timeTaken = new double[numTests];
         total = 0;
-        ShareHandler shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
-        shareHandler.handle();
+        ShareHandlingEvent event = new WorldChangeShareHandler(inventories, player, "world", "world2").createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            shareHandler.updateProfile(inventories, player, shareHandler.event.getFromProfiles().get(0));
+            ShareHandlingUpdater.updateProfile(inventories, player, event.getWriteProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
@@ -205,11 +202,10 @@ public class TestPerformance {
 
         timeTaken = new double[numTests];
         total = 0;
-        shareHandler = new WorldChangeShareHandler(inventories, player, "world", "world2");
-        shareHandler.handle();
+        event = new WorldChangeShareHandler(inventories, player, "world", "world2").createEvent();
         for (int i = 0; i < numTests; i++) {
             startTime = System.nanoTime();
-            shareHandler.updatePlayer(inventories, player, shareHandler.event.getToProfiles().get(0));
+            ShareHandlingUpdater.updatePlayer(inventories, player, event.getReadProfiles().get(0));
             endTime = System.nanoTime();
             timeTaken[i] = (endTime - startTime) / 1000000D;
             total += timeTaken[i];
