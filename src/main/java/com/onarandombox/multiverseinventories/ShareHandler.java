@@ -54,6 +54,9 @@ public abstract class ShareHandler {
     }
 
     /**
+     * Finalizes the transfer from one world to another. This handles the switching
+     * inventories/stats for a player and persisting the changes.
+     *
      * @param profile   The player profile that will need data loaded from.
      * @param shares    What from this group needs to be loaded.
      */

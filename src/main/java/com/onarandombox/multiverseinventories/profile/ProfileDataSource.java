@@ -25,7 +25,7 @@ public interface ProfileDataSource {
      * @param dataName   World/Group to retrieve from.
      * @param profileType The type of profile to load data for, typically based on game mode.
      * @param playerUUID UUID of the player to retrieve for.
-     * @return The player as returned from data.  If no data was found, a new PlayerProfile will be
+     * @return The player as returned from data. If no data was found, a new PlayerProfile will be
      *         created.
      */
     PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID);
@@ -35,7 +35,7 @@ public interface ProfileDataSource {
      *
      * @param containerType The type of container this profile is part of, world or group.
      * @param dataName   The name of the world/group the player's data is associated with.
-     * @param profileType The type of profile we're removing, as per {@link ProfileType}.  If null, this will remove
+     * @param profileType The type of profile we're removing, as per {@link ProfileType}. If null, this will remove
      *                    remove all profile types.
      * @param playerName The name of the player whose data is being removed.
      * @return True if successfully removed.

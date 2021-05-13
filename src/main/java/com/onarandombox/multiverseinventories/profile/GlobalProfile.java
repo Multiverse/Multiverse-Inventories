@@ -112,7 +112,7 @@ public final class GlobalProfile {
     }
 
     /**
-     * Sets the last world the player was known to be in.  This is done automatically on world change.
+     * Sets the last world the player was known to be in. This is done automatically on world change.
      *
      * @param world The world the player is in.
      */
