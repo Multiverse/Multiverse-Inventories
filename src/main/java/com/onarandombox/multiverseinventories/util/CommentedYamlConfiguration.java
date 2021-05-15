@@ -171,14 +171,16 @@ public final class CommentedYamlConfiguration {
                     if (comment != null && !comment.isEmpty()) {
                         // Add the comment to the beginning of the current line
                         newLine.insert(0, "\n").insert(0, comment);
-                        if (newLine.charAt(newLine.length() - 1) != ':' && !line.equals(arrayConfig[arrayConfig.length - 1]))
-                            newLine.append("\n");
+                        char previousChar = newContents.charAt(newContents.length() - 2);
+                        if (previousChar != ':' && previousChar != '\n') {
+                            newLine.insert(0, "\n");
+                        }
                     }
                 }
 
                 newLine.append("\n");
                 // Add the (modified) line to the total config String
-                newContents.append(newLine.toString());
+                newContents.append(newLine);
             }
 
             saved = this.stringToFile(newContents.toString(), file);
