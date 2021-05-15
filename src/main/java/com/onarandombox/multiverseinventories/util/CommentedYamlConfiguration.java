@@ -122,15 +122,16 @@ public final class CommentedYamlConfiguration {
                                 break;
                             }
                         }
+
+                        int whiteSpaceDividedByTwo = whiteSpace / 2;
                         // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
-                        if (whiteSpace / 2 > depth) {
+                        if (whiteSpaceDividedByTwo > depth) {
                             // Path is deeper. Add a dot and the node name
                             currentPath.append(".").append(line, whiteSpace, index);
                             depth++;
-                        } else if (whiteSpace / 2 < depth) {
+                        } else if (whiteSpaceDividedByTwo < depth) {
                             // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
-                            int newDepth = whiteSpace / 2;
-                            for (int i = 0; i < depth - newDepth; i++) {
+                            for (int i = 0; i < depth - whiteSpaceDividedByTwo; i++) {
                                 currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
                             }
                             // Grab the index of the final period
@@ -145,7 +146,7 @@ public final class CommentedYamlConfiguration {
                             // Add the new node name to the path
                             currentPath.append(line, whiteSpace, index);
                             // Reset the depth
-                            depth = newDepth;
+                            depth = whiteSpaceDividedByTwo;
                         } else {
                             // Path is same depth, replace the last path node name to the current node name
                             int lastIndex = currentPath.lastIndexOf(".");
