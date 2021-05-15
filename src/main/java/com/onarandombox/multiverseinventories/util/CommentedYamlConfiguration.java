@@ -29,7 +29,8 @@ public final class CommentedYamlConfiguration {
     private final FileConfiguration config;
     private final boolean doComments;
     private final HashMap<String, String> comments;
-    private final Pattern newlinePattern = Pattern.compile("\r?\n");
+
+    private static final Pattern NEW_LINE_PATTERN = Pattern.compile("\r?\n");
 
     public CommentedYamlConfiguration(File file, boolean doComments) {
         this.file = file;
@@ -74,7 +75,7 @@ public final class CommentedYamlConfiguration {
 
             // figure out where the header ends
             int indexAfterHeader = 0;
-            Matcher newline = newlinePattern.matcher(stringConfig);
+            Matcher newline = NEW_LINE_PATTERN.matcher(stringConfig);
 
             while (newline.find() && stringConfig.charAt(newline.end()) == '#') {
                 indexAfterHeader = newline.end();
