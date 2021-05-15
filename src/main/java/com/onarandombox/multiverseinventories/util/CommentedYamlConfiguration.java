@@ -165,22 +165,28 @@ public final class CommentedYamlConfiguration {
                     node = false;
                 }
 
-                StringBuilder newLine = new StringBuilder(line);
+                StringBuilder newLine = new StringBuilder();
 
                 if (node) {
                     // get the comment for the current node
                     String comment = comments.get(currentPath.toString());
                     if (comment != null && !comment.isEmpty()) {
-                        // Add the comment to the beginning of the current line
-                        newLine.insert(0, "\n").insert(0, comment);
+                        // if the previous line doesn't end in a colon
+                        // and there's not already a newline character,
+                        // add a newline before we add the comment
                         char previousChar = newContents.charAt(newContents.length() - 2);
                         if (previousChar != ':' && previousChar != '\n') {
-                            newLine.insert(0, "\n");
+                            newLine.append("\n");
                         }
+
+                        // add the comment
+                        newLine.append(comment).append("\n");
                     }
                 }
 
-                newLine.append("\n");
+                // add the config line
+                newLine.append(line).append("\n");
+
                 // Add the (modified) line to the total config String
                 newContents.append(newLine);
             }
