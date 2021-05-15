@@ -384,7 +384,8 @@ public class TestInstanceCreator {
             return false;
         }
 
-        FileUtils.deleteFolder(serverDirectory);
+        // Dont remove so that we can see the data result after the test.
+        // FileUtils.deleteFolder(serverDirectory);
 
         return true;
     }

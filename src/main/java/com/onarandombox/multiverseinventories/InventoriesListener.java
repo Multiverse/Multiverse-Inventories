@@ -30,6 +30,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
@@ -115,20 +116,26 @@ public class InventoriesListener implements Listener {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;
         }
+
+        Logging.finer("Loading global profile for Player{name:'%s', uuid:'%s'}.",
+                event.getName(), event.getUniqueId());
+
         GlobalProfile globalProfile = inventories.getData().getGlobalProfile(event.getName(), event.getUniqueId());
         if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
             // Data must be migrated
+            Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
+                    event.getUniqueId(), globalProfile.getLastKnownName(), event.getName());
             try {
                 inventories.getData().migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
                         event.getUniqueId(), true);
             } catch (IOException e) {
-                Logging.severe("Could not migrate data from name " + globalProfile.getLastKnownName()
-                        + " to " + event.getName());
+                Logging.severe("An error occurred while trying to migrate playerdata.");
                 e.printStackTrace();
             }
 
             globalProfile.setLastKnownName(event.getName());
             inventories.getData().updateGlobalProfile(globalProfile);
+            Logging.info("Migration complete!");
         }
     }
 
@@ -442,6 +449,21 @@ public class InventoriesListener implements Listener {
         Logging.finest("Disallowing item or inventory holding %s to go from world %s to world %s since these" +
                         "worlds do not share inventories", entity, fromWorld.getName(), toWorld.getName());
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void worldUnload(WorldUnloadEvent event) {
+        String unloadWorldName = event.getWorld().getName();
+
+        Logging.finer("Clearing data for world/groups container with '%s' world.", unloadWorldName);
+
+        ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(unloadWorldName);
+        fromWorldProfileContainer.clearContainer();
+
+        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(unloadWorldName);
+        for (WorldGroup fromGroup : fromGroups) {
+            fromGroup.getGroupProfileContainer().clearContainer();
+        }
     }
 }
 

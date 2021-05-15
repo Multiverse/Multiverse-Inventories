@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories.share;
 
 /**
- * The default Sharable serializer.  It performs no special tasks on the objects being sent to persistence, they are
+ * The default Sharable serializer. It performs no special tasks on the objects being sent to persistence, they are
  * sent as is.
  *
  * @param <T> The type of data this serializer serializes.

@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -177,7 +178,7 @@ public final class Sharables implements Shares {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(PlayerStats.HEALTH);
+                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                         return false;
                     }
                     return true;
@@ -186,7 +187,7 @@ public final class Sharables implements Shares {
             .altName("health").altName("hp").altName("hitpoints").build();
 
     /**
-     * Sharing Health.
+     * Sharing Remaining Air.
      */
     public static final Sharable<Integer> REMAINING_AIR = new Sharable.Builder<Integer>("remaining_air", Integer.class,
             new SharableHandler<Integer>() {
@@ -214,7 +215,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
 
     /**
-     * Sharing Health.
+     * Sharing Maximum Air.
      */
     public static final Sharable<Integer> MAXIMUM_AIR = new Sharable.Builder<Integer>("maximum_air", Integer.class,
             new SharableHandler<Integer>() {
@@ -242,7 +243,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_AIR)).build();
 
     /**
-     * Sharing Health.
+     * Sharing Fall Distance.
      */
     public static final Sharable<Float> FALL_DISTANCE = new Sharable.Builder<Float>("fall_distance", Float.class,
             new SharableHandler<Float>() {
@@ -271,7 +272,7 @@ public final class Sharables implements Shares {
             .altName("falling").build();
 
     /**
-     * Sharing Health.
+     * Sharing Fire Ticks.
      */
     public static final Sharable<Integer> FIRE_TICKS = new Sharable.Builder<Integer>("fire_ticks", Integer.class,
             new SharableHandler<Integer>() {
@@ -329,7 +330,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
 
     /**
-     * Sharing Experience.
+     * Sharing Level.
      */
     public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("lvl", Integer.class,
             new SharableHandler<Integer>() {
@@ -357,7 +358,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
 
     /**
-     * Sharing Experience.
+     * Sharing Total Experience.
      */
     public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_xp", Integer.class,
             new SharableHandler<Integer>() {
@@ -414,7 +415,7 @@ public final class Sharables implements Shares {
             .altName("food").build();
 
     /**
-     * Sharing Hunger.
+     * Sharing Exhaustion.
      */
     public static final Sharable<Float> EXHAUSTION = new Sharable.Builder<Float>("exhaustion", Float.class,
             new SharableHandler<Float>() {
@@ -443,7 +444,7 @@ public final class Sharables implements Shares {
             .altName("exhaust").altName("exh").build();
 
     /**
-     * Sharing Hunger.
+     * Sharing Saturation.
      */
     public static final Sharable<Float> SATURATION = new Sharable.Builder<Float>("saturation", Float.class,
             new SharableHandler<Float>() {
@@ -509,7 +510,7 @@ public final class Sharables implements Shares {
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     /**
-     * Sharing Bed Spawn.
+     * Sharing Last Location.
      */
     public static final Sharable<Location> LAST_LOCATION = new Sharable.Builder<Location>("last_location", Location.class,
             new SharableHandler<Location>() {
@@ -630,7 +631,7 @@ public final class Sharables implements Shares {
 
 
     /**
-     * Registers a Sharable, which is required for it to function properly.  This method is called automatically when
+     * Registers a Sharable, which is required for it to function properly. This method is called automatically when
      * using the {@link Sharable.Builder} class and should not be called manually.
      *
      * @param sharable The sharable to register.
@@ -674,8 +675,8 @@ public final class Sharables implements Shares {
     }
 
     /**
-     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s.  This is NOT to be modified and
-     * serves only as a reference.  For a version you can do what you want with, see {@link #allOf()}.
+     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
      */
     public static Shares all() {
         return ALL_SHARABLES;

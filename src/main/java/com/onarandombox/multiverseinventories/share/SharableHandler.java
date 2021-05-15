@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public interface SharableHandler<T> {
 
     /**
-     * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
+     * This method is called during share handling (aka PlayerChangeWorldEvent). It will perform updates to
      * the {@link PlayerProfile} based on the data contained in the {@link org.bukkit.entity.Player}
      *
      * @param profile Updates the data of this profile according to the Sharable
@@ -22,13 +22,13 @@ public interface SharableHandler<T> {
     void updateProfile(PlayerProfile profile, Player player);
 
     /**
-     * This method is called during share handling (aka PlayerChangeWorldEvent).  It will perform updates to
+     * This method is called during share handling (aka PlayerChangeWorldEvent). It will perform updates to
      * the {@link Player} based on the data contained in the {@link PlayerProfile}
      *
      * @param player  Updates the data of this player according to the Sharable
      *                with the values of the given profile.
      * @param profile The profile whose values will be used to update the give player.
-     * @return True if player was updated from existing profile.  False if default was used (new profile).
+     * @return True if player was updated from existing profile. False if default was used (new profile).
      */
     boolean updatePlayer(Player player, PlayerProfile profile);
 }

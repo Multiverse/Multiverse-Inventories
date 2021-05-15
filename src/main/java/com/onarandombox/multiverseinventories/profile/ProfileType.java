@@ -16,7 +16,7 @@ public final class ProfileType {
     }
 
     /**
-     * @return The name of the profile.  The default profile type will return a blank string.
+     * @return The name of the profile. The default profile type will return a blank string.
      */
     public String getName() {
         return name;

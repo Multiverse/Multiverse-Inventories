@@ -4,15 +4,15 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * Multiverse 2 LazyMessageProvider
- * <p/>
+ * <p>Multiverse 2 LazyMessageProvider</p>
+ *
  * This interface describes a Multiverse-MessageProvider that only loads locales when they're needed.
  */
 public interface LazyLocaleMessageProvider extends MessageProvider {
 
     /**
-     * Loads a localization for a specified {@link Locale}.
-     * <p/>
+     * <p>Loads a localization for a specified {@link Locale}.</p>
+     *
      * If that localization is already loaded, this method will reload it.
      *
      * @param locale The desired {@link Locale}.
