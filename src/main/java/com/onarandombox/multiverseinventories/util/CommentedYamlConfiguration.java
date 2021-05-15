@@ -213,13 +213,12 @@ public final class CommentedYamlConfiguration {
             }
         }
         for (String line : commentLines) {
-            if (!line.isEmpty()) {
-                line = leadingSpaces.toString() + line;
-            }
             if (commentString.length() > 0) {
                 commentString.append("\n");
             }
-            commentString.append(line);
+            if (!line.isEmpty()) {
+                commentString.append(leadingSpaces).append(line);
+            }
         }
         comments.put(path, commentString.toString());
     }
