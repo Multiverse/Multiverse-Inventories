@@ -1,5 +1,6 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.locale.LazyLocaleMessageProvider;
 import com.onarandombox.multiverseinventories.locale.LocalizationLoadingException;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -112,13 +113,16 @@ class DefaultMessageProvider implements LazyLocaleMessageProvider {
         InputStream filestream = null;
 
         try {
-            filestream = new FileInputStream(new File(plugin.getDataFolder(), l.getLanguage() + ".yml"));
+            File localeFile = new File(plugin.getDataFolder(), l.getLanguage() + ".yml");
+            filestream = new FileInputStream(localeFile);
+            Logging.fine("Loaded locale %s from %s.", l.getDisplayName(), localeFile.getAbsolutePath());
         } catch (FileNotFoundException e) {
         }
 
         try {
             resstream = plugin.getResource(new StringBuilder(LOCALIZATION_FOLDER_NAME).append("/")
                     .append(l.getLanguage()).append(".yml").toString());
+            Logging.fine("Loaded locale %s from resource.", l.getDisplayName());
         } catch (Exception e) {
         }
 
@@ -136,14 +140,14 @@ class DefaultMessageProvider implements LazyLocaleMessageProvider {
                 if (resconfig.isList(m.toString())) {
                     values = resconfig.getStringList(m.toString());
                 } else {
-                    values.add(resconfig.getString(m.toString(), values.get(0)));
+                    values.set(0, resconfig.getString(m.toString(), values.get(0)));
                 }
             }
             if (fileconfig != null) {
                 if (fileconfig.isList(m.toString())) {
                     values = fileconfig.getStringList(m.toString());
                 } else {
-                    values.add(fileconfig.getString(m.toString(), values.get(0)));
+                    values.set(0, fileconfig.getString(m.toString(), values.get(0)));
                 }
             }
 

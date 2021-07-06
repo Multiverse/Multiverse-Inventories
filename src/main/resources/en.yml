@@ -30,6 +30,8 @@ CONFLICT_CHECKING: 'Checking for conflicts in groups...'
 CONFLICT_FOUND: 'Conflicts have been found... If these are not resolved, you may experience problems with your data.'
 CONFLICT_NOT_FOUND: 'No group conflicts found!'
 
+NON_CONVERSABLE: 'You are not allowed to access conversations (remote console?)'
+INVALID_PROMPT_OPTION: '&cThat is not a valid option! Type &f##&c to stop working on groups.'
 
 ## Commands
 # Info Command
@@ -39,10 +41,25 @@ INFO_WORLD_INFO:
 - '&6Groups:&f %1'
 INFO_GROUP: 
 - '&b===[ Info for group: &6%1&b ]==='
-INFO_GROUP_INFO:
+INFO_GROUPS_INFO:
 - '&6Worlds:&f %1'
 - '&bShares:&f %2'
 - '&bNegative Shares:&f %3'
+
+# Group Command
+GROUP_COMMAND_PROMPT: '&6What would you like to do? &fCreate&6, &fEdit &6or &fDelete&6. Enter &f##&6 at any time to cancel.'
+GROUP_CREATE_PROMPT: '&6Please name your new group: '
+GROUP_EDIT_PROMPT: '&6Edit which group? %1'
+GROUP_DELETE_PROMPT: '&6Delete which group? %1'
+GROUP_MODIFY_PROMPT: '&6Which would you like to change for &e%1&6? &fWorlds &6or &fShares&6. Enter &f##&6 to finish.'
+GROUP_WORLDS_PROMPT: '6Enter the name of a world to add to group &f%1&6 or enter &f@&6 to continue. To remove a world, precede the name with the minus symbol. (ex: &f-worldname&6). Current worlds: %2'
+GROUP_SHARES_PROMPT: '&6Enter &fall&6 or a specific share to add to group &f%1&6 or enter &f@&6 to continue. To remove shares, precede the name with the minus symbol (ex: &f-inventory&6). Current shares: %2'
+GROUP_INVALID_NAME: '&cThat name is not valid!  May only contain letters, numbers, and underscores.'
+GROUP_EXISTS: '&cThat group already exists! (&f%1&c)'
+GROUP_REMOVED: '&2Removed group: &f%1'
+GROUP_WORLDS_EMPTY: '&cYou may not have a group with no worlds, please add worlds or type &f##&c to cancel.'
+GROUP_CREATION_COMPLETE: '&2You created a new group!'
+GROUP_UPDATED: '&2Group has been updated!'
 
 # List Command
 LIST_GROUPS:
@@ -87,3 +104,7 @@ DEBUG_SET:
 NOW_USING_OPTIONAL: '&f%1 &6will now be considered when player''s change world.'
 NOW_NOT_USING_OPTIONAL: '&f%1 &6will no longer be considered when player''s change world.'
 NO_OPTIONAL_SHARES: '&f%1 &6is not an optional share!'
+
+# Migrate Command
+MIGRATE_FAILED: 'Failed to migrate data from %1 to %2! Check logs for error details.'
+MIGRATE_SUCCESSFUL: 'Migrated data from %1 to %2!'
