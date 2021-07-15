@@ -164,7 +164,12 @@ public final class Sharables implements Shares {
             new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(HEALTH, (double) player.getHealth());
+                    double health = player.getHealth();
+                    // Player is dead, so health should be regained to full.
+                    if (health <= 0) {
+                        health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                    }
+                    profile.set(HEALTH, health);
                 }
 
                 @Override
