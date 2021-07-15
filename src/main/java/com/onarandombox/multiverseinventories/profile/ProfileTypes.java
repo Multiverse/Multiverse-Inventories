@@ -23,6 +23,11 @@ public final class ProfileTypes {
     public static final ProfileType ADVENTURE = ProfileType.createProfileType("ADVENTURE");
 
     /**
+     * The profile type for the any other Game Modes, i.e. spectator.
+     */
+    public static final ProfileType NONE = ProfileType.createProfileType("NONE");
+
+    /**
      * Returns the appropriate ProfileType for the given game mode.
      *
      * @param mode The game mode to get the profile type for.
@@ -37,7 +42,7 @@ public final class ProfileTypes {
             case ADVENTURE:
                 return ADVENTURE;
             default:
-                return SURVIVAL;
+                return NONE;
         }
     }
 
