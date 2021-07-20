@@ -27,10 +27,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -41,9 +37,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
-@PowerMockIgnore("javax.script.*")
 @Ignore
 public class TestPerformance {
     TestInstanceCreator creator;
@@ -94,13 +87,13 @@ public class TestPerformance {
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         for (int i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
             ItemStack item = new ItemStack(Material.STONE_BRICKS, 64);
-            Enchantment mockEnchantment = PowerMockito.mock(Enchantment.class);
+            Enchantment mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Protection");
             item.addUnsafeEnchantment(mockEnchantment, 3);
-            mockEnchantment = PowerMockito.mock(Enchantment.class);
+            mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Respiration");
             item.addUnsafeEnchantment(mockEnchantment, 3);
-            mockEnchantment = PowerMockito.mock(Enchantment.class);
+            mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Smite");
             item.addUnsafeEnchantment(mockEnchantment, 3);
             fillerItems.put(i, item);

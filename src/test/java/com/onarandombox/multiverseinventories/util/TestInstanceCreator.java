@@ -31,13 +31,9 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Matchers;
+import org.mockito.internal.util.reflection.ReflectionMemberAccessor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.MockGateway;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -48,7 +44,6 @@ import java.util.logging.Logger;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
-@PrepareForTest({InventoriesListener.class})
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
     private MultiverseCore core;
@@ -69,28 +64,26 @@ public class TestInstanceCreator {
             invDirectory.mkdirs();
             Assert.assertTrue(invDirectory.exists());
 
-            MockGateway.MOCK_STANDARD_METHODS = false;
-
             // Initialize the Mock server.
             mockServer = mock(Server.class);
-            JavaPluginLoader mockPluginLoader = PowerMock.createMock(JavaPluginLoader.class);
-            Whitebox.setInternalState(mockPluginLoader, "server", mockServer);
+            JavaPluginLoader mockPluginLoader = mock(JavaPluginLoader.class);
+            new ReflectionMemberAccessor().set(JavaPluginLoader.class.getDeclaredField("server"), mockPluginLoader, mockServer);
             when(mockServer.getName()).thenReturn("TestBukkit");
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
 
             // Return a fake PDF file.
-            PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
+            PluginDescriptionFile pdf = spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
                     "com.onarandombox.multiverseinventories.MultiverseInventories"));
             when(pdf.getAuthors()).thenReturn(new ArrayList<String>());
-            plugin = PowerMockito.spy(new MultiverseInventories(mockPluginLoader, pdf, invDirectory, new File(invDirectory, "testPluginFile")));
+            plugin = spy(new MultiverseInventories(mockPluginLoader, pdf, invDirectory, new File(invDirectory, "testPluginFile")));
             doReturn(pdf).when(plugin).getDescription();
             doReturn(true).when(plugin).isEnabled();
-            PluginDescriptionFile pdfCore = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
+            PluginDescriptionFile pdfCore = spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
                     "com.onarandombox.MultiverseCore.MultiverseCore"));
             when(pdfCore.getAuthors()).thenReturn(new ArrayList<String>());
-            core = PowerMockito.spy(new MultiverseCore(mockPluginLoader, pdf, coreDirectory, new File(coreDirectory, "testPluginFile")));
+            core = spy(new MultiverseCore(mockPluginLoader, pdf, coreDirectory, new File(coreDirectory, "testPluginFile")));
             doReturn(pdfCore).when(core).getDescription();
             doReturn(true).when(core).isEnabled();
             doReturn(Util.logger).when(core).getLogger();
@@ -106,7 +99,7 @@ public class TestInstanceCreator {
             JavaPlugin[] plugins = new JavaPlugin[]{plugin, core};
 
             // Mock the Plugin Manager
-            PluginManager mockPluginManager = PowerMockito.mock(PluginManager.class);
+            PluginManager mockPluginManager = mock(PluginManager.class);
             when(mockPluginManager.getPlugins()).thenReturn(plugins);
             when(mockPluginManager.getPlugin("Multiverse-Inventories")).thenReturn(plugin);
             when(mockPluginManager.getPlugin("Multiverse-Core")).thenReturn(core);
@@ -272,7 +265,7 @@ public class TestInstanceCreator {
             when(mockServer.getUnsafe()).thenReturn(unsafeValues);
 
             // Set InventoriesListener
-            InventoriesListener il = PowerMockito.spy(new InventoriesListener(plugin));
+            InventoriesListener il = spy(new InventoriesListener(plugin));
             Field inventoriesListenerField = MultiverseInventories.class.getDeclaredField("inventoriesListener");
             inventoriesListenerField.setAccessible(true);
             inventoriesListenerField.set(plugin, il);
@@ -288,25 +281,25 @@ public class TestInstanceCreator {
             serverfield.set(plugin, mockServer);
 
             // Set worldManager
-            WorldManager wm = PowerMockito.spy(new WorldManager(core));
+            WorldManager wm = spy(new WorldManager(core));
             Field worldmanagerfield = MultiverseCore.class.getDeclaredField("worldManager");
             worldmanagerfield.setAccessible(true);
             worldmanagerfield.set(core, wm);
 
             // Set playerListener
-            MVPlayerListener pl = PowerMockito.spy(new MVPlayerListener(core));
+            MVPlayerListener pl = spy(new MVPlayerListener(core));
             Field playerlistenerfield = MultiverseCore.class.getDeclaredField("playerListener");
             playerlistenerfield.setAccessible(true);
             playerlistenerfield.set(core, pl);
 
             // Set entityListener
-            MVEntityListener el = PowerMockito.spy(new MVEntityListener(core));
+            MVEntityListener el = spy(new MVEntityListener(core));
             Field entitylistenerfield = MultiverseCore.class.getDeclaredField("entityListener");
             entitylistenerfield.setAccessible(true);
             entitylistenerfield.set(core, el);
 
             // Set weatherListener
-            MVWeatherListener wl = PowerMockito.spy(new MVWeatherListener(core));
+            MVWeatherListener wl = spy(new MVWeatherListener(core));
             Field weatherlistenerfield = MultiverseCore.class.getDeclaredField("weatherListener");
             weatherlistenerfield.setAccessible(true);
             weatherlistenerfield.set(core, wl);
