@@ -7,34 +7,25 @@
 
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
-import junit.framework.Assert;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
-@PowerMockIgnore("javax.script.*")
 public class TestCommands {
     TestInstanceCreator creator;
     Server mockServer;
@@ -77,19 +68,19 @@ public class TestCommands {
         when(mockCoreCommand.getName()).thenReturn("mv");
 
         // Assert debug mode is off
-        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] debugArgs = new String[]{"debug", "3"};
         plugin.onCommand(mockCommandSender, mockCoreCommand, "", debugArgs);
 
-        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] reloadArgs = new String[] { "reload" };
         plugin.onCommand(mockCommandSender, mockCommand, "", reloadArgs);
 
-        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
     }
 
     @Test
@@ -129,17 +120,17 @@ public class TestCommands {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
-        Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
         // Send the debug command.
         String[] cmdArgs = new String[]{ "toggle", "economy" };
         plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
         cmdArgs = new String[]{ "reload" };
         plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        assertTrue(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
         cmdArgs = new String[]{ "toggle", "economy" };
         plugin.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
-        Assert.assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
+        assertFalse(inventories.getMVIConfig().getOptionalShares().contains(Sharables.ECONOMY));
     }
 
     @Test

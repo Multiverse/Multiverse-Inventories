@@ -24,7 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MockWorldFactory {
 
@@ -153,15 +155,6 @@ public class MockWorldFactory {
 
     public static List<World> getWorlds() {
         return new ArrayList<World>(createdWorlds.values());
-        // we have to invert the order!
-        /*
-        ArrayList<World> myList = new ArrayList<World>(createdWorlds.values());
-        List<World> retList = new ArrayList<World>();
-        for (int i = (myList.size() - 1); i >= 0; i--) {
-            retList.add(myList.get(i));
-        }
-        return retList;
-        */
     }
 
     public static void clearWorlds() {

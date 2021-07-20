@@ -1,12 +1,10 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
-import junit.framework.Assert;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -18,33 +16,23 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
-@PowerMockIgnore("javax.script.*")
-@Ignore
 public class TestPerformance {
     TestInstanceCreator creator;
     Server mockServer;
@@ -78,7 +66,7 @@ public class TestPerformance {
     public void changeWorld(Player player, String fromWorld, String toWorld) {
         Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
         player.teleport(location);
-        Assert.assertEquals(location, player.getLocation());
+        assertEquals(location, player.getLocation());
         listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
     }
 
@@ -94,13 +82,13 @@ public class TestPerformance {
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         for (int i = 0; i < PlayerStats.INVENTORY_SIZE; i++) {
             ItemStack item = new ItemStack(Material.STONE_BRICKS, 64);
-            Enchantment mockEnchantment = PowerMockito.mock(Enchantment.class);
+            Enchantment mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Protection");
             item.addUnsafeEnchantment(mockEnchantment, 3);
-            mockEnchantment = PowerMockito.mock(Enchantment.class);
+            mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Respiration");
             item.addUnsafeEnchantment(mockEnchantment, 3);
-            mockEnchantment = PowerMockito.mock(Enchantment.class);
+            mockEnchantment = mock(Enchantment.class);
             when(mockEnchantment.getName()).thenReturn("Smite");
             item.addUnsafeEnchantment(mockEnchantment, 3);
             fillerItems.put(i, item);
@@ -143,7 +131,7 @@ public class TestPerformance {
         inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
-        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        assertFalse(inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
         String[] cmdArgs = new String[]{"info", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
@@ -233,7 +221,7 @@ public class TestPerformance {
         inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
-        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        assertFalse(inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
         String[] cmdArgs = new String[]{"info", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
@@ -277,7 +265,7 @@ public class TestPerformance {
             System.out.println("Average Time for " + share.getNames()[0] + ".updateProfile(): " + averageUpdateProfile.get(share));
         }
     }
-    /*
+
     @Test
     public void testLargeGroupCollectionPerformance() {
         int numTests = 100;
@@ -286,13 +274,13 @@ public class TestPerformance {
         Command mockCommand = mock(Command.class);
         when(mockCommand.getName()).thenReturn("mvinv");
 
-        WorldGroupProfile newGroup = inventories.getGroupManager().newEmptyGroup("test");
+        WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup("test");
         newGroup.getShares().mergeShares(Sharables.allOf());
         newGroup.addWorld("world2");
         inventories.getGroupManager().addGroup(newGroup, true);
 
         // Verify removal
-        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        assertFalse(inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
         String[] cmdArgs = new String[]{"info", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
@@ -328,5 +316,4 @@ public class TestPerformance {
         System.out.println("Average Time for cached world change: " + average + "ms");
         System.out.println("Average Time for uncached world change: " + (total / numTests) + "ms");
     }
-    */
 }

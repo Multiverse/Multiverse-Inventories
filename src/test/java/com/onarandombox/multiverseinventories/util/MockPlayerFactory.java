@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyDouble;
+import static org.mockito.Mockito.anyFloat;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,6 +70,11 @@ public class MockPlayerFactory {
             player = makeMockPlayer(uuid, server);
         }
         return player;
+    }
+
+    public static void clearAllPlayers() {
+        createdPlayers.clear();
+        playerUIDs.clear();
     }
 
     public static Collection<Player> getAllPlayers() {
@@ -264,13 +269,7 @@ public class MockPlayerFactory {
 
     private void mockLocation() {
         when(player.getLocation()).thenAnswer(i -> data.location);
-        when(player.getWorld()).thenAnswer(i -> {
-            if (data.location == null) {
-                return null;
-            } else {
-                return data.location.getWorld();
-            }
-        });
+        when(player.getWorld()).thenAnswer(i -> data.location.getWorld());
     }
 
     private void mockTeleport() {
@@ -308,6 +307,6 @@ public class MockPlayerFactory {
 
         Map<Integer, PotionEffect> potionEffects = new HashMap<>();
 
-        Location location = null;
+        Location location = new Location(MockWorldFactory.getWorld("world"), 0, 70, 0);
     }
 }
