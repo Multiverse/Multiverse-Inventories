@@ -4,11 +4,11 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
+import com.onarandombox.multiverseinventories.dataimport.DataImporter;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
 import com.onarandombox.multiverseinventories.share.Sharables;
-import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,7 +32,7 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -84,14 +84,11 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler
     public void pluginEnable(PluginEnableEvent event) {
-        try {
-            if (event.getPlugin() instanceof MultiInv) {
-                this.inventories.getImportManager().hookMultiInv((MultiInv) event.getPlugin());
-            } else if (event.getPlugin() instanceof WorldInventories) {
-                this.inventories.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
-            }
-        } catch (NoClassDefFoundError ignore) {
+        DataImporter<? extends Plugin> dataImporter = this.inventories.getImportManager().getImporter(event.getPlugin());
+        if (dataImporter == null) {
+            return;
         }
+        dataImporter.enable(event.getPlugin());
     }
 
     /**
@@ -101,14 +98,11 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler
     public void pluginDisable(PluginDisableEvent event) {
-        try {
-            if (event.getPlugin() instanceof MultiInv) {
-                this.inventories.getImportManager().unHookMultiInv();
-            } else if (event.getPlugin() instanceof WorldInventories) {
-                this.inventories.getImportManager().unHookWorldInventories();
-            }
-        } catch (NoClassDefFoundError ignore) {
+        DataImporter<? extends Plugin> dataImporter = this.inventories.getImportManager().getImporter(event.getPlugin());
+        if (dataImporter == null) {
+            return;
         }
+        dataImporter.disable();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
