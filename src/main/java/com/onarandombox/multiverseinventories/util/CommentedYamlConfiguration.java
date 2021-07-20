@@ -213,10 +213,10 @@ public final class CommentedYamlConfiguration {
     }
 
     /**
-     * Adds a comment just before the specified path.  The comment can be multiple lines.  An empty string will indicate a blank line.
+     * Adds a comment just before the specified path. The comment can be multiple lines.  An empty string will indicate a blank line.
      *
      * @param path         Configuration path to add comment.
-     * @param commentLines Comments to add.  One String per line.
+     * @param commentLines Comments to add. One String per line.
      */
     public void addComment(String path, List<String> commentLines) {
         StringBuilder commentstring = new StringBuilder();
@@ -244,7 +244,7 @@ public final class CommentedYamlConfiguration {
      * Pass a file and it will return it's contents as a string.
      *
      * @param file File to read.
-     * @return Contents of file.  String will be empty in case of any errors.
+     * @return Contents of file. String will be empty in case of any errors.
      */
     private String convertFileToString(File file) {
         final int bufferSize = 1024;

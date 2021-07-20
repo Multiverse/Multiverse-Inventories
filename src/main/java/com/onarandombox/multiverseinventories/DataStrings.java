@@ -1,21 +1,16 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +37,7 @@ public class DataStrings {
      */
     public static final String PLAYER_ARMOR_CONTENTS = "armorContents";
     /**
-     * Player armor contents identifier.
+     * Player off hand item identifier.
      */
     public static final String PLAYER_OFF_HAND_ITEM = "offHandItem";
     /**
@@ -54,7 +49,7 @@ public class DataStrings {
      */
     public static final String PLAYER_BED_SPAWN_LOCATION = "bedSpawnLocation";
     /**
-     * Player bed spawn location identifier.
+     * Player last location identifier.
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
@@ -70,7 +65,7 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_KNOWN_NAME = "lastKnownName";
     /**
-     * Player bed spawn location identifier.
+     * Player profile type identifier.
      */
     public static final String PLAYER_PROFILE_TYPE = "profileType";
     /**
@@ -78,15 +73,15 @@ public class DataStrings {
      */
     public static final String PLAYER_HEALTH = "hp";
     /**
-     * Player exp identifier.
+     * Player experience identifier.
      */
     public static final String PLAYER_EXPERIENCE = "xp";
     /**
-     * Player total exp identifier.
+     * Player total experience identifier.
      */
     public static final String PLAYER_TOTAL_EXPERIENCE = "txp";
     /**
-     * Player exp level identifier.
+     * Player experience level identifier.
      */
     public static final String PLAYER_LEVEL = "el";
     /**
@@ -114,7 +109,7 @@ public class DataStrings {
      */
     public static final String PLAYER_REMAINING_AIR = "ra";
     /**
-     * Player saturation identifier.
+     * Player max air identifier.
      */
     public static final String PLAYER_MAX_AIR = "ma";
     /**
@@ -161,7 +156,8 @@ public class DataStrings {
     /**
      * @param locString Parses this string and creates Location.
      * @return New location object or null if no location could be created.
-     * @deprecated Locations do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
+     * @deprecated Locations do not use special handling because they are
+     *             {@link org.bukkit.configuration.serialization.ConfigurationSerializable}.
      */
     @Deprecated
     public static Location parseLocation(String locString) {
@@ -182,7 +178,8 @@ public class DataStrings {
     }
 
     /**
-     * @deprecated Locations do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
+     * @deprecated Locations do not use special handling because they are
+     *             {@link org.bukkit.configuration.serialization.ConfigurationSerializable}.
      */
     @Deprecated
     public static Location parseLocation(Map locMap) {
@@ -237,9 +234,11 @@ public class DataStrings {
     }
 
     /**
-     * @param potionsString A player's potion effects in string form to be parsed into Collection<PotionEffect>.
+     * @param potionsString A player's potion effects in string form to be parsed into
+     *                      {@link java.util.Collection}&lt;{@link org.bukkit.potion.PotionEffect}&gt;.
      * @return a collection of potion effects parsed from potionsString.
-     * @deprecated PotionEffect do not use special handling because they are {@link org.bukkit.configuration.serialization.ConfigurationSerializable}
+     * @deprecated PotionEffect do not use special handling because they are
+     *             {@link org.bukkit.configuration.serialization.ConfigurationSerializable}.
      */
     @Deprecated
     public static PotionEffect[] parsePotionEffects(String potionsString) {

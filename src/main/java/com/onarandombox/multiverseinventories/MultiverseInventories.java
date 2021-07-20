@@ -5,7 +5,6 @@ import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.MultiverseCore.commands.HelpCommand;
 import com.onarandombox.commandhandler.CommandHandler;
-import com.onarandombox.multiverseinventories.command.MigrateCommand;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
@@ -13,10 +12,13 @@ import com.onarandombox.multiverseinventories.profile.container.ProfileContainer
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.command.AddSharesCommand;
 import com.onarandombox.multiverseinventories.command.AddWorldCommand;
+import com.onarandombox.multiverseinventories.command.CreateGroupCommand;
+import com.onarandombox.multiverseinventories.command.DeleteGroupCommand;
 import com.onarandombox.multiverseinventories.command.GroupCommand;
 import com.onarandombox.multiverseinventories.command.ImportCommand;
 import com.onarandombox.multiverseinventories.command.InfoCommand;
 import com.onarandombox.multiverseinventories.command.ListCommand;
+import com.onarandombox.multiverseinventories.command.MigrateCommand;
 import com.onarandombox.multiverseinventories.command.ReloadCommand;
 import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
 import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
@@ -51,6 +53,12 @@ import java.util.logging.Level;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
+    private static MultiverseInventories inventoriesPlugin;
+
+    public static MultiverseInventories getPlugin() {
+        return inventoriesPlugin;
+    }
+
     private final int requiresProtocol = 22;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
     private final AdventureListener adventureListener = new AdventureListener(this);
@@ -64,11 +72,15 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
     private InventoriesConfig config = null;
-    private ProfileDataSource data = null;
+    private FlatFileProfileDataSource data = null;
 
     private InventoriesDupingPatch dupingPatch;
 
     private File serverFolder = new File(System.getProperty("user.dir"));
+
+    {
+        inventoriesPlugin = this;
+    }
 
     public MultiverseInventories() {
         super();
@@ -94,7 +106,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             final String world = player.getWorld().getName();
             //getData().updateLastWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
-                ShareHandler.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
+                ShareHandlingUpdater.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
                         getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
                 getData().setLoadOnLogin(player.getName(), true);
             }
@@ -183,6 +195,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
         this.getCommandHandler().registerCommand(new AddSharesCommand(this));
         this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
+        this.getCommandHandler().registerCommand(new CreateGroupCommand(this));
+        this.getCommandHandler().registerCommand(new DeleteGroupCommand(this));
         this.getCommandHandler().registerCommand(new SpawnCommand(this));
         this.getCommandHandler().registerCommand(new GroupCommand(this));
         this.getCommandHandler().registerCommand(new ToggleCommand(this));
@@ -268,41 +282,50 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public String dumpVersionInfo(String buffer) {
-        buffer += this.getVersionInfo();
+        buffer += logAndAddToPasteBinBuffer("=== Settings ===");
+        buffer += logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun());
+        buffer += logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass());
+        buffer += logAndAddToPasteBinBuffer("Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds());
+        buffer += logAndAddToPasteBinBuffer("Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad());
+        buffer += logAndAddToPasteBinBuffer("Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles());
+        buffer += logAndAddToPasteBinBuffer("=== Shares ===");
+        buffer += logAndAddToPasteBinBuffer("Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped());
+        buffer += logAndAddToPasteBinBuffer("Enabled Optionals: " + this.getMVIConfig().getOptionalShares());
+        buffer += logAndAddToPasteBinBuffer("=== Groups ===");
+        for (WorldGroup group : this.getGroupManager().getGroups()) {
+            buffer += logAndAddToPasteBinBuffer(group.toString());
+        }
         return buffer;
     }
 
     /**
-     * @return The pastebin version string.
+     * Builds a String containing Multiverse-Inventories' version info.
+     *
+     * @return The version info.
      */
     public String getVersionInfo() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.logAndAddToPasteBinBuffer("Multiverse-Inventories Version: "
-                + this.getDescription().getVersion()));
-        builder.append(this.logAndAddToPasteBinBuffer("=== Settings ==="));
-        builder.append(this.logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun()));
-        builder.append(this.logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass()));
-        builder.append(this.logAndAddToPasteBinBuffer("Default Ungrouped Worlds: "
-                + this.getMVIConfig().isDefaultingUngroupedWorlds()));
-        builder.append(this.logAndAddToPasteBinBuffer("Save and Load on Log In and Out: "
-                + this.getMVIConfig().usingLoggingSaveLoad()));
-        builder.append(this.logAndAddToPasteBinBuffer("Using GameMode Profiles: "
-                + this.getMVIConfig().isUsingGameModeProfiles()));
-        builder.append(this.logAndAddToPasteBinBuffer("=== Shares ==="));
-        builder.append(this.logAndAddToPasteBinBuffer("Optionals for Ungrouped Worlds: "
-                + this.getMVIConfig().usingOptionalsForUngrouped()));
-        builder.append(this.logAndAddToPasteBinBuffer("Enabled Optionals: "
-                + this.getMVIConfig().getOptionalShares()));
-        builder.append(this.logAndAddToPasteBinBuffer("=== Groups ==="));
+        StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + this.getDescription().getVersion() + '\n'
+                + "[Multiverse-Inventories] === Settings ===" + '\n'
+                + "[Multiverse-Inventories] First Run: " + this.getMVIConfig().isFirstRun() + '\n'
+                + "[Multiverse-Inventories] Using Bypass: " + this.getMVIConfig().isUsingBypass() + '\n'
+                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds() + '\n'
+                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad() + '\n'
+                + "[Multiverse-Inventories] Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles() + '\n'
+                + "[Multiverse-Inventories] === Shares ===" + '\n'
+                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped() + '\n'
+                + "[Multiverse-Inventories] Enabled Optionals: " + this.getMVIConfig().getOptionalShares() + '\n'
+                + "[Multiverse-Inventories] === Groups ===" + '\n');
+
         for (WorldGroup group : this.getGroupManager().getGroups()) {
-            builder.append(this.logAndAddToPasteBinBuffer(group.toString()));
+            versionInfo.append("[Multiverse-Inventories] ").append(group.toString()).append('\n');
         }
-        return builder.toString();
+
+        return versionInfo.toString();
     }
 
     private String logAndAddToPasteBinBuffer(String string) {
         Logging.info(string);
-        return Logging.getPrefixedMessage(string + "\n", false);
+        return Logging.getPrefixedMessage(string + '\n', false);
     }
 
     /**
@@ -323,6 +346,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
                     ((InventoriesConfig) config).getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
+
+            if (data != null) {
+                this.data.clearCache();
+            }
+
             //this.data = null;
             Logging.fine("Loaded config file!");
         } catch (IOException e) {  // Catch errors loading the config file and exit out if found.

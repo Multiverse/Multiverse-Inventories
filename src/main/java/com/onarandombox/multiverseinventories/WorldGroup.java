@@ -7,6 +7,7 @@ import com.onarandombox.multiverseinventories.profile.container.ProfileContainer
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -66,6 +67,28 @@ public final class WorldGroup {
     }
 
     /**
+     * Convenience method to add multiple worlds to this World Group and updates it in the Config.
+     *
+     * @param worlds A collections of worlds to add.
+     */
+    public void addWorlds(Collection<String> worlds) {
+        this.addWorlds(worlds, true);
+    }
+
+    /**
+     * Convenience method to add multiple worlds to this World Group.
+     *
+     * @param worlds A collections of worlds to add.
+     * @param updateConfig True to update this group in the config.
+     */
+    public void addWorlds(Collection<String> worlds, boolean updateConfig) {
+        worlds.forEach(worldName -> this.addWorld(worldName, false));
+        if (updateConfig) {
+            this.plugin.getGroupManager().updateGroup(this);
+        }
+    }
+
+    /**
      * Removes a world from this world group and updates the group in the Config.
      *
      * @param worldName The name of the world to remove.
@@ -97,6 +120,25 @@ public final class WorldGroup {
     }
 
     /**
+     * Remove all the worlds in this World Group.
+     */
+    public void removeAllWorlds() {
+        this.removeAllWorlds(true);
+    }
+
+    /**
+     * Remove all the worlds in this World Group.
+     *
+     * @param updateConfig  True to update this group in the config.
+     */
+    public void removeAllWorlds(boolean updateConfig) {
+        this.worlds.clear();
+        if (updateConfig) {
+            this.plugin.getGroupManager().updateGroup(this);
+        }
+    }
+
+    /**
      * Retrieves all of the worlds in this World Group.
      *
      * @return The worlds of this World Group.
@@ -106,7 +148,7 @@ public final class WorldGroup {
     }
 
     /**
-     * Checks if this group is sharing sharable.  This will check both shares and negative shares of the group.
+     * Checks if this group is sharing sharable. This will check both shares and negative shares of the group.
      * This is the preferred method for checking if a group shares something as shares may contain ALL shares while
      * ones indicated in negative shares means those aren't actually shared.
      *
@@ -118,7 +160,7 @@ public final class WorldGroup {
     }
 
     /**
-     * Retrieves the shares for this World Group.  Any changes to this group must be subsequently saved to the data
+     * Retrieves the shares for this World Group. Any changes to this group must be subsequently saved to the data
      * source for the changes to be permanent.
      *
      * @return The shares for this World Group.

@@ -10,7 +10,7 @@ import java.util.Set;
 public interface Shares extends Cloneable, Iterable<Sharable>, Collection<Sharable>, Set<Sharable> {
 
     /**
-     * Merges what is shared with another share.  Only the false items should be merged.
+     * Merges what is shared with another share. Only the false items should be merged.
      *
      * @param newShares The set of shares to merge into this set of shares.
      */

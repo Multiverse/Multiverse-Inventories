@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Multiverse 2 MessageProvider.
- * <p/>
+ * <p>Multiverse 2 MessageProvider.</p>
+ *
  * This interface describes a Multiverse-MessageProvider.
  */
 public interface MessageProvider {

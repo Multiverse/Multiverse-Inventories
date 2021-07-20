@@ -12,11 +12,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataAdapterContext;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
@@ -166,7 +164,12 @@ public final class Sharables implements Shares {
             new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(HEALTH, (double) player.getHealth());
+                    double health = player.getHealth();
+                    // Player is dead, so health should be regained to full.
+                    if (health <= 0) {
+                        health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                    }
+                    profile.set(HEALTH, health);
                 }
 
                 @Override
@@ -180,7 +183,7 @@ public final class Sharables implements Shares {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(PlayerStats.HEALTH);
+                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                         return false;
                     }
                     return true;
@@ -189,7 +192,7 @@ public final class Sharables implements Shares {
             .altName("health").altName("hp").altName("hitpoints").build();
 
     /**
-     * Sharing Health.
+     * Sharing Remaining Air.
      */
     public static final Sharable<Integer> REMAINING_AIR = new Sharable.Builder<Integer>("remaining_air", Integer.class,
             new SharableHandler<Integer>() {
@@ -217,7 +220,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_REMAINING_AIR)).build();
 
     /**
-     * Sharing Health.
+     * Sharing Maximum Air.
      */
     public static final Sharable<Integer> MAXIMUM_AIR = new Sharable.Builder<Integer>("maximum_air", Integer.class,
             new SharableHandler<Integer>() {
@@ -245,7 +248,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_AIR)).build();
 
     /**
-     * Sharing Health.
+     * Sharing Fall Distance.
      */
     public static final Sharable<Float> FALL_DISTANCE = new Sharable.Builder<Float>("fall_distance", Float.class,
             new SharableHandler<Float>() {
@@ -274,7 +277,7 @@ public final class Sharables implements Shares {
             .altName("falling").build();
 
     /**
-     * Sharing Health.
+     * Sharing Fire Ticks.
      */
     public static final Sharable<Integer> FIRE_TICKS = new Sharable.Builder<Integer>("fire_ticks", Integer.class,
             new SharableHandler<Integer>() {
@@ -332,7 +335,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_EXPERIENCE)).build();
 
     /**
-     * Sharing Experience.
+     * Sharing Level.
      */
     public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("lvl", Integer.class,
             new SharableHandler<Integer>() {
@@ -360,7 +363,7 @@ public final class Sharables implements Shares {
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_LEVEL)).build();
 
     /**
-     * Sharing Experience.
+     * Sharing Total Experience.
      */
     public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_xp", Integer.class,
             new SharableHandler<Integer>() {
@@ -417,7 +420,7 @@ public final class Sharables implements Shares {
             .altName("food").build();
 
     /**
-     * Sharing Hunger.
+     * Sharing Exhaustion.
      */
     public static final Sharable<Float> EXHAUSTION = new Sharable.Builder<Float>("exhaustion", Float.class,
             new SharableHandler<Float>() {
@@ -446,7 +449,7 @@ public final class Sharables implements Shares {
             .altName("exhaust").altName("exh").build();
 
     /**
-     * Sharing Hunger.
+     * Sharing Saturation.
      */
     public static final Sharable<Float> SATURATION = new Sharable.Builder<Float>("saturation", Float.class,
             new SharableHandler<Float>() {
@@ -481,7 +484,21 @@ public final class Sharables implements Shares {
             new SharableHandler<Location>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(BED_SPAWN, player.getBedSpawnLocation());
+                    Location bedSpawnLocation = null;
+                    try {
+                        bedSpawnLocation = player.getBedSpawnLocation();
+                    } catch (NullPointerException e) {
+                        // TODO this is a temporary fix for the bug occurring in 1.16.X CB/Spigot/Paper
+                        StackTraceElement[] stackTrace = e.getStackTrace();
+                        String error;
+                        if (stackTrace.length > 1) {
+                            error = stackTrace[0].toString() + stackTrace[1];
+                        } else {
+                            error = "NullPointerException thrown by Player#getBedSpawnLocation";
+                        }
+                        Logging.warning(error + " - See https://github.com/Multiverse/Multiverse-Inventories/issues/374 for more details.");
+                    }
+                    profile.set(BED_SPAWN, bedSpawnLocation);
                 }
 
                 @Override
@@ -498,13 +515,14 @@ public final class Sharables implements Shares {
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     /**
-     * Sharing Bed Spawn.
+     * Sharing Last Location.
      */
     public static final Sharable<Location> LAST_LOCATION = new Sharable.Builder<Location>("last_location", Location.class,
             new SharableHandler<Location>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
-                    //profile.set(LAST_LOCATION, player.getLocation());
+                    /* It's too late to update the profile for last location here because the world change has already
+                       happened. The update occurs in the PlayerTeleportEvent handler in InventoriesListener. */
                 }
 
                 @Override
@@ -570,124 +588,6 @@ public final class Sharables implements Shares {
             }).serializer(new ProfileEntry(false, "potions"), new PotionEffectSerializer())
             .altName("potion").altName("potions").build();
 
-    public static final Sharable<Location> SPAWN_LOCATION = new Sharable.Builder<Location>("spawn_location", Location.class,
-            new SharableHandler<Location>() {
-                @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
-                    profile.set(SPAWN_LOCATION, getPlayerSpawnLocation(player));
-                }
-
-                @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
-                    Location loc = profile.get(SPAWN_LOCATION);
-
-                    if (loc == null) {
-                        return false;
-                    }
-
-                    setPlayerSpawnLocation(player, loc);
-
-                    return true;
-                }
-            }
-    ).defaultSerializer(new ProfileEntry(false, "spawnLocation")).altName("spawn").build();
-
-    private static final NamespacedKey SPAWN_LOCATION_KEY = new NamespacedKey(MultiverseInventories.getPlugin(MultiverseInventories.class), "spawn_location");
-
-    private static final LocationTagType LOCATION_TAG_TYPE = new LocationTagType();
-
-    private static class LocationTagType implements PersistentDataType<PersistentDataContainer, Location> {
-
-        private static NamespacedKey WORLD_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "world_uuid");
-        private static NamespacedKey X_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "x");
-        private static NamespacedKey Y_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "y");
-        private static NamespacedKey Z_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "z");
-        private static NamespacedKey PITCH_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "pitch");
-        private static NamespacedKey YAW_KEY = new NamespacedKey(SPAWN_LOCATION_KEY.getKey(), "yaw");
-
-        @Override
-        public @NotNull Class<PersistentDataContainer> getPrimitiveType() {
-            return PersistentDataContainer.class;
-        }
-
-        @Override
-        public @NotNull Class<Location> getComplexType() {
-            return Location.class;
-        }
-
-        @NotNull
-        @Override
-        public PersistentDataContainer toPrimitive(@NotNull Location complex, @NotNull PersistentDataAdapterContext context) {
-            PersistentDataContainer primitive = context.newPersistentDataContainer();
-
-            World world = complex.getWorld();
-            if (world != null) {
-                primitive.set(WORLD_KEY, UUID_TAG_TYPE, world.getUID());
-            }
-            primitive.set(X_KEY, PersistentDataType.DOUBLE, complex.getX());
-            primitive.set(Y_KEY, PersistentDataType.DOUBLE, complex.getY());
-            primitive.set(Z_KEY, PersistentDataType.DOUBLE, complex.getZ());
-            primitive.set(PITCH_KEY, PersistentDataType.FLOAT, complex.getPitch());
-            primitive.set(YAW_KEY, PersistentDataType.FLOAT, complex.getYaw());
-
-            return primitive;
-        }
-
-        @NotNull
-        @Override
-        public Location fromPrimitive(@NotNull PersistentDataContainer primitive, @NotNull PersistentDataAdapterContext context) {
-            UUID worldUid = primitive.get(WORLD_KEY, UUID_TAG_TYPE);
-            Double x = primitive.get(X_KEY, PersistentDataType.DOUBLE);
-            Double y = primitive.get(Y_KEY, PersistentDataType.DOUBLE);
-            Double z = primitive.get(Z_KEY, PersistentDataType.DOUBLE);
-            Float pitch = primitive.get(PITCH_KEY, PersistentDataType.FLOAT);
-            Float yaw = primitive.get(YAW_KEY, PersistentDataType.FLOAT);
-
-            return new Location(worldUid != null ? Bukkit.getWorld(worldUid) : null,
-                    x != null ? x : 0D, y != null ? y : 0D, z != null ? z : 0D,
-                    pitch != null ? pitch : 0F, yaw != null ? yaw : 0F);
-        }
-    }
-
-    private static UUIDTagType UUID_TAG_TYPE = new UUIDTagType();
-
-    private static class UUIDTagType implements PersistentDataType<byte[], UUID> {
-
-        @Override
-        public @NotNull Class<byte[]> getPrimitiveType() {
-            return byte[].class;
-        }
-
-        @Override
-        public @NotNull Class<UUID> getComplexType() {
-            return UUID.class;
-        }
-
-        @Override
-        public @NotNull byte[] toPrimitive(@NotNull UUID complex, @NotNull PersistentDataAdapterContext context) {
-            ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-            bb.putLong(complex.getMostSignificantBits());
-            bb.putLong(complex.getLeastSignificantBits());
-            return bb.array();
-        }
-
-        @Override
-        public @NotNull UUID fromPrimitive(@NotNull byte[] primitive, @NotNull PersistentDataAdapterContext context) {
-            ByteBuffer bb = ByteBuffer.wrap(primitive);
-            long firstLong = bb.getLong();
-            long secondLong = bb.getLong();
-            return new UUID(firstLong, secondLong);
-        }
-    }
-
-    public static Location getPlayerSpawnLocation(Player player) {
-        return player.getPersistentDataContainer().get(SPAWN_LOCATION_KEY, LOCATION_TAG_TYPE);
-    }
-
-    public static void setPlayerSpawnLocation(Player player, Location spawnLocation) {
-        player.getPersistentDataContainer().set(SPAWN_LOCATION_KEY, LOCATION_TAG_TYPE, spawnLocation);
-    }
-
     /**
      * Grouping for inventory sharables.
      */
@@ -736,7 +636,7 @@ public final class Sharables implements Shares {
 
 
     /**
-     * Registers a Sharable, which is required for it to function properly.  This method is called automatically when
+     * Registers a Sharable, which is required for it to function properly. This method is called automatically when
      * using the {@link Sharable.Builder} class and should not be called manually.
      *
      * @param sharable The sharable to register.
@@ -780,8 +680,8 @@ public final class Sharables implements Shares {
     }
 
     /**
-     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s.  This is NOT to be modified and
-     * serves only as a reference.  For a version you can do what you want with, see {@link #allOf()}.
+     * @return A {@link Shares} collection containing ALL registered {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
      */
     public static Shares all() {
         return ALL_SHARABLES;

@@ -1,25 +1,23 @@
 package com.onarandombox.multiverseinventories;
 
+import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
 import junit.framework.Assert;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPluginLoader;
@@ -34,7 +32,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +67,14 @@ public class TestWorldChanged {
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
 
+        Player p = mockServer.getPlayerExact("dumptruckman");
+
+        // Set Player's initial location
+        p.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
+
+        // Clear Player's inventory
+        // note: using clear() is not effective!
+        clearInventory(p.getInventory());
 
     }
 
@@ -79,9 +84,11 @@ public class TestWorldChanged {
     }
 
     public void changeWorld(Player player, String fromWorld, String toWorld) {
+        Location oldLocation = player.getLocation();
         Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
         player.teleport(location);
         Assert.assertEquals(location, player.getLocation());
+        listener.playerTeleport(new PlayerTeleportEvent(player, oldLocation, location));
         listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
     }
 
@@ -91,23 +98,20 @@ public class TestWorldChanged {
         }
     }
 
+    public void clearInventory(PlayerInventory inventory) {
+        for (int i = 0; i < inventory.getSize(); i++) {
+            inventory.setItem(i, null);
+        }
+    }
+
     public static Map<Integer, ItemStack> getFillerInv() {
         Map<Integer, ItemStack> fillerItems = new HashMap<Integer, ItemStack>();
         fillerItems.put(3, new ItemStack(Material.BOW, 1));
         fillerItems.put(13, new ItemStack(Material.DIRT, 64));
         fillerItems.put(36, new ItemStack(Material.IRON_HELMET, 1));
         ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        BookMeta bookMeta = (BookMeta) book.getItemMeta();
-        bookMeta.setAuthor("dumptruckman");
-        bookMeta.setPages("This is my freaking", "book", "man");
-        bookMeta.setDisplayName("Super Book");
-        book.setItemMeta(bookMeta);
         fillerItems.put(1, book);
         ItemStack leather = new ItemStack(Material.LEATHER_BOOTS, 1);
-        LeatherArmorMeta leatherMeta = (LeatherArmorMeta) leather.getItemMeta();
-        leatherMeta.setColor(Color.PURPLE);
-        leatherMeta.setLore(Arrays.asList("Aww fuck yeah", "Lore"));
-        leather.setItemMeta(leatherMeta);
         fillerItems.put(2, leather);
         return fillerItems;
     }
@@ -140,9 +144,9 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -205,13 +209,13 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
-        int hpTest = 13;
+        double hpTest = 13D;
         player.setHealth(hpTest);
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
@@ -307,11 +311,11 @@ public class TestWorldChanged {
 
         Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
-        Player player = inventories.getServer().getPlayer("dumptruckman");
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
 
         float satTest = 0.349F;
         player.setSaturation(satTest);
-        addToInventory(player.getInventory(), TestWorldChanged.getFillerInv());
+        addToInventory(player.getInventory(), getFillerInv());
         String originalInventory = player.getInventory().toString();
 
         // Changing to world within same group, nothing should change.
@@ -336,7 +340,7 @@ public class TestWorldChanged {
         Assert.assertEquals(originalInventory, newInventory);
         Assert.assertEquals(satTest, player.getSaturation());
 
-        changeWorld(player, "world_nether", "world2");
+        changeWorld(player, "world", "world2");
         originalInventory = player.getInventory().toString();
 
         Assert.assertNotSame(originalInventory, newInventory);
@@ -344,9 +348,9 @@ public class TestWorldChanged {
 
         FlatFileDataHelper dataHelper = new FlatFileDataHelper(inventories.getData());
         File playerFile = dataHelper.getPlayerFile(ContainerType.GROUP, "default", "dumptruckman");
-        FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_INVENTORY_CONTENTS, "");
-        playerConfig.set("playerData.default_profile." + DataStrings.PLAYER_ARMOR_CONTENTS, "");
+        FileConfiguration playerConfig = JsonConfiguration.loadConfiguration(playerFile);
+        playerConfig.set("SURVIVAL." + DataStrings.PLAYER_INVENTORY_CONTENTS, null);
+        playerConfig.set("SURVIVAL." + DataStrings.PLAYER_ARMOR_CONTENTS, null);
         try {
             playerConfig.save(playerFile);
         } catch (IOException e) {
@@ -360,6 +364,170 @@ public class TestWorldChanged {
 
         newInventory = player.getInventory().toString();
         Assert.assertEquals(originalInventory, newInventory);
+    }
+
+    @Test
+    public void testLastLocation() throws Exception {
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
+        // Assert debug mode is off
+        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+
+        // Send the debug command.
+        String[] cmdArgs = new String[]{"debug", "3"};
+        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+
+        // remove world2 from default group
+        cmdArgs = new String[]{"rmworld", "world2", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // remove all shares from default group
+        cmdArgs = new String[]{"rmshares", "all", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // enable last_location share
+        cmdArgs = new String[]{"toggle", "last_location"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // add last_location share to default group
+        cmdArgs = new String[]{"addshares", "last_location", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
+
+        // Reload to ensure things are saving to config.yml
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
+
+        // Verify removal
+        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        cmdArgs = new String[]{"info", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
+
+        // Move player within group and to a different location than spawn
+        changeWorld(player, "world", "world_nether");
+        Location lastLocation = new Location(mockServer.getWorld("world_nether"), 10, 10, 10);
+        player.teleport(lastLocation);
+
+        // Move player out of group
+        changeWorld(player, "world_nether", "world2");
+        Assert.assertNotSame(lastLocation, player.getLocation());
+
+        // Move player back to group
+        changeWorld(player, "world2", "world_nether");
+        Assert.assertEquals(lastLocation, player.getLocation());
+    }
+
+    @Test
+    public void testOptionalsForUngroupedWorlds() throws Exception {
+
+        // Initialize a fake command
+        Command mockCommand = mock(Command.class);
+        when(mockCommand.getName()).thenReturn("mvinv");
+
+        Command mockCoreCommand = mock(Command.class);
+        when(mockCoreCommand.getName()).thenReturn("mv");
+
+        // Assert debug mode is off
+        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+
+        // Assert UseOptionalsForUngroupedWorlds is set to true
+        Assert.assertTrue(inventories.getMVIConfig().usingOptionalsForUngrouped());
+
+        // Change UseOptionalsForUngroupedWorlds to false, then assert that it is false
+        inventories.getMVIConfig().setUsingOptionalsForUngrouped(false);
+        Assert.assertFalse(inventories.getMVIConfig().usingOptionalsForUngrouped());
+
+        // Send the debug command.
+        String[] cmdArgs = new String[]{"debug", "3"};
+        inventories.onCommand(mockCommandSender, mockCoreCommand, "", cmdArgs);
+
+        // remove world2 from default group
+        cmdArgs = new String[]{"rmworld", "world2", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        // remove all shares from default group
+        cmdArgs = new String[]{"rmshares", "all", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // enable last_location share
+        cmdArgs = new String[]{"toggle", "last_location"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // add last_location share to default group
+        cmdArgs = new String[]{"addshares", "last_location", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+        // add inventory share to default group
+        cmdArgs = new String[]{"addshares", "inventory", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
+
+        // Reload to ensure things are saving to config.yml
+        cmdArgs = new String[]{"reload"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertFalse(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.all()));
+        Assert.assertTrue(inventories.getMVIConfig().getOptionalShares().isSharing(Sharables.LAST_LOCATION));
+        Assert.assertTrue(inventories.getGroupManager().getDefaultGroup().getShares().isSharing(Sharables.LAST_LOCATION));
+        Assert.assertFalse(inventories.getMVIConfig().usingOptionalsForUngrouped());
+
+        // Verify removal
+        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        cmdArgs = new String[]{"info", "default"};
+        inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
+
+        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+
+        Player player = inventories.getServer().getPlayerExact("dumptruckman");
+
+        // get inventories as strings
+        String emptyInventory = player.getInventory().toString();
+        addToInventory(player.getInventory(), getFillerInv());
+        String originalInventory = player.getInventory().toString();
+
+        // Move player within group and to a different location than spawn
+        changeWorld(player, "world", "world_nether");
+        Location lastLocation = new Location(mockServer.getWorld("world_nether"), 10, 10, 10);
+        player.teleport(lastLocation);
+
+        // make sure inventory is the same
+        Assert.assertEquals(originalInventory, player.getInventory().toString());
+
+        // Move player out of group
+        changeWorld(player, "world_nether", "world2");
+        Assert.assertNotSame(lastLocation, player.getLocation());
+        Assert.assertEquals(emptyInventory, player.getInventory().toString());
+
+        // Move player back to group
+        changeWorld(player, "world2", "world_nether");
+        Assert.assertEquals(lastLocation, player.getLocation());
+        Assert.assertEquals(originalInventory, player.getInventory().toString());
+
+        // Move player within group again
+        // Note: newLocation must match the location given made in changeWorld()
+        Location newLocation = new Location(mockServer.getWorld("world"), 0, 70, 0);
+        changeWorld(player, "world_nether", "world");
+        Assert.assertEquals(originalInventory, player.getInventory().toString());
+        // The following two assertions mean the same thing (they're redundant)
+        // but they help in understanding what is being tested.
+        Assert.assertNotSame(lastLocation, player.getLocation());
+        Assert.assertEquals(newLocation, player.getLocation());
+
     }
 
     @Test
