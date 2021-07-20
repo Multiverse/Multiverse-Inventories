@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
+import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.share.PersistingProfile;
 import com.onarandombox.multiverseinventories.share.Shares;
 import org.bukkit.Bukkit;
@@ -42,7 +43,9 @@ public abstract class ShareHandler {
     }
 
     protected final void setAlwaysWriteProfile(PlayerProfile profile) {
-        affectedProfiles.setAlwaysWriteProfile(profile);
+        if (!profile.getProfileType().equals(ProfileTypes.NONE)) {
+            affectedProfiles.setAlwaysWriteProfile(profile);
+        }
     }
 
     /**
@@ -50,7 +53,9 @@ public abstract class ShareHandler {
      * @param shares    What from this group needs to be saved.
      */
     protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addWriteProfile(profile, shares);
+        if (!profile.getProfileType().equals(ProfileTypes.NONE)) {
+            affectedProfiles.addWriteProfile(profile, shares);
+        }
     }
 
     /**
@@ -61,7 +66,9 @@ public abstract class ShareHandler {
      * @param shares    What from this group needs to be loaded.
      */
     protected final void addReadProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addReadProfile(profile, shares);
+        if (!profile.getProfileType().equals(ProfileTypes.NONE)) {
+            affectedProfiles.addReadProfile(profile, shares);
+        }
     }
 
     protected abstract ShareHandlingEvent createEvent();
