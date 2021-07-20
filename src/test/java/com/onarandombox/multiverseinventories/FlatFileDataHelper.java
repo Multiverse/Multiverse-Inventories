@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class FlatFileDataHelper {
 
-    private FlatFileProfileDataSource data;
+    private final FlatFileProfileDataSource data;
 
     public FlatFileDataHelper(ProfileDataSource data) {
         if (!(data instanceof FlatFileProfileDataSource)) {

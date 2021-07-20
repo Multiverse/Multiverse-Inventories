@@ -301,12 +301,6 @@ and adjust the build number accordingly -->
             <version>3.11.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>4.0.2</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <distributionManagement>

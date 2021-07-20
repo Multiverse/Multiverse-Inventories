@@ -1,40 +1,37 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.share.ProfileEntry;
 import com.onarandombox.multiverseinventories.share.Sharable;
 import com.onarandombox.multiverseinventories.share.SharableHandler;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
-import junit.framework.Assert;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Ignore
 public class TestWSharableAPI {
     TestInstanceCreator creator;
     Server mockServer;
@@ -58,8 +55,6 @@ public class TestWSharableAPI {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
-
     }
 
     @After
@@ -68,9 +63,11 @@ public class TestWSharableAPI {
     }
 
     public void changeWorld(Player player, String fromWorld, String toWorld) {
+        Location oldLocation = player.getLocation();
         Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
         player.teleport(location);
-        Assert.assertEquals(location, player.getLocation());
+        assertEquals(location, player.getLocation());
+        listener.playerTeleport(new PlayerTeleportEvent(player, oldLocation, location));
         listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
     }
 
@@ -147,8 +144,8 @@ public class TestWSharableAPI {
     @Test
     public void testSharableAPI() {
 
-        Assert.assertTrue(Sharables.all().contains(CUSTOM));
-        Assert.assertTrue(Sharables.all().contains(OPTIONAL));
+        assertTrue(Sharables.all().contains(CUSTOM));
+        assertTrue(Sharables.all().contains(OPTIONAL));
 
         // Initialize a fake command
         Command mockCommand = mock(Command.class);
@@ -158,7 +155,7 @@ public class TestWSharableAPI {
         when(mockCoreCommand.getName()).thenReturn("mv");
 
         // Assert debug mode is off
-        Assert.assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(0, inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] cmdArgs = new String[]{"debug", "3"};
@@ -171,11 +168,11 @@ public class TestWSharableAPI {
         inventories.getGroupManager().updateGroup(newGroup);
 
         // Verify removal
-        Assert.assertTrue(!inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
+        assertFalse(inventories.getGroupManager().getDefaultGroup().getWorlds().contains("world2"));
         cmdArgs = new String[]{"info", "default"};
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
-        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         Player player = inventories.getServer().getPlayerExact("dumptruckman");
         //changeWorld(player, "world", "world2");
@@ -188,23 +185,23 @@ public class TestWSharableAPI {
         player.setMaximumNoDamageTicks(10);
         int lastDamage = 10;
         player.setLastDamage(lastDamage);
-        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
+        assertEquals(10, player.getMaximumNoDamageTicks());
         String originalInventory = player.getInventory().toString();
 
         changeWorld(player, "world", "world_nether");
         String newInventory = player.getInventory().toString();
-        Assert.assertEquals(originalInventory, newInventory);
-        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
-        Assert.assertEquals(lastDamage, player.getLastDamage());
+        assertEquals(originalInventory, newInventory);
+        assertEquals(10, player.getMaximumNoDamageTicks());
+        assertEquals(lastDamage, player.getLastDamage(), 0);
 
         changeWorld(player, "world_nether", "world2");
-        Assert.assertEquals(0, player.getMaximumNoDamageTicks());
-        Assert.assertNotSame(originalInventory, newInventory);
-        Assert.assertEquals(lastDamage, player.getLastDamage());
+        assertEquals(0, player.getMaximumNoDamageTicks());
+        assertNotSame(originalInventory, newInventory);
+        assertEquals(lastDamage, player.getLastDamage(), 0);
         changeWorld(player, "world2", "world");
-        Assert.assertEquals(10, player.getMaximumNoDamageTicks());
-        Assert.assertEquals(originalInventory, newInventory);
-        Assert.assertEquals(lastDamage, player.getLastDamage());
+        assertEquals(10, player.getMaximumNoDamageTicks());
+        assertEquals(originalInventory, newInventory);
+        assertEquals(lastDamage, player.getLastDamage(), 0);
     }
 
 }
