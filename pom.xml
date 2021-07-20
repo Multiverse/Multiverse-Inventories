@@ -137,11 +137,11 @@ and adjust the build number accordingly -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
-<!--                <configuration>-->
-<!--                    <excludes>-->
-<!--                        <exclude>**/Test**.java</exclude>-->
-<!--                    </excludes>-->
-<!--                </configuration>-->
+                <configuration>
+                    <excludes>
+                        <exclude>**/TestInstanceCreator.java</exclude>
+                    </excludes>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
