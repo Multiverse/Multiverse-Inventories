@@ -72,6 +72,11 @@ public class MockPlayerFactory {
         return player;
     }
 
+    public static void clearAllPlayers() {
+        createdPlayers.clear();
+        playerUIDs.clear();
+    }
+
     public static Collection<Player> getAllPlayers() {
         return createdPlayers.values();
     }
@@ -264,13 +269,7 @@ public class MockPlayerFactory {
 
     private void mockLocation() {
         when(player.getLocation()).thenAnswer(i -> data.location);
-        when(player.getWorld()).thenAnswer(i -> {
-            if (data.location == null) {
-                return null;
-            } else {
-                return data.location.getWorld();
-            }
-        });
+        when(player.getWorld()).thenAnswer(i -> data.location.getWorld());
     }
 
     private void mockTeleport() {
@@ -308,6 +307,6 @@ public class MockPlayerFactory {
 
         Map<Integer, PotionEffect> potionEffects = new HashMap<>();
 
-        Location location = null;
+        Location location = new Location(MockWorldFactory.getWorld("world"), 0, 70, 0);
     }
 }

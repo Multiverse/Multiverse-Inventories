@@ -359,6 +359,7 @@ public class TestInstanceCreator {
         MultiverseInventories inventories = (MultiverseInventories) plugin;
         inventories.onDisable();
 
+        MockPlayerFactory.clearAllPlayers();
         MockWorldFactory.clearWorlds();
 
         plugin = getServer().getPluginManager().getPlugin("Multiverse-Core");

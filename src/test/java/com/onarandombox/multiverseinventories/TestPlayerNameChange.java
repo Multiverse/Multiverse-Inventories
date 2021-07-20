@@ -61,16 +61,6 @@ public class TestPlayerNameChange {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
-        Player p = mockServer.getPlayerExact("dumptruckman");
-
-        // Set Player's initial location
-        p.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
-
-        // Clear Player's inventory
-        // note: using clear() is not effective!
-        clearInventory(p.getInventory());
-
     }
 
     @After
@@ -90,12 +80,6 @@ public class TestPlayerNameChange {
     public void addToInventory(PlayerInventory inventory, Map<Integer, ItemStack> items) {
         for (Map.Entry<Integer, ItemStack> invEntry : items.entrySet()) {
             inventory.setItem(invEntry.getKey(), invEntry.getValue());
-        }
-    }
-
-    public void clearInventory(PlayerInventory inventory) {
-        for (int i = 0; i < inventory.getSize(); i++) {
-            inventory.setItem(i, null);
         }
     }
 
