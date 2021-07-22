@@ -33,6 +33,7 @@ public abstract class ShareHandler {
      * inventories/stats for a player and persisting the changes.
      */
     final void handleSharing() {
+        TeleportDetails.removeTeleportDestination(this.player);
         ShareHandlingEvent event = this.createEvent();
 
         Bukkit.getPluginManager().callEvent(event);
