@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
+import com.onarandombox.MultiverseCore.event.MVTeleportEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
@@ -229,6 +230,22 @@ public class InventoriesListener implements Listener {
     }
 
     /**
+     * Called when a player teleports using Multiverse.
+     *
+     * @param event The Multiverse teleport event.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerMVTeleport(MVTeleportEvent event) {
+        if (event.isCancelled()
+                || event.getFrom().getWorld().equals(event.getDestination().getLocation(event.getTeleportee()).getWorld())
+                || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+            return;
+        }
+
+        TeleportDetails.addTeleportDestination(event.getTeleportee(), event.getDestination());
+    }
+
+    /**
      * Called when a player teleports.
      *
      * @param event The player teleport event.
@@ -249,6 +266,10 @@ public class InventoriesListener implements Listener {
         ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(fromWorldName);
         PlayerProfile playerProfile = fromWorldProfileContainer.getPlayerData(player);
         playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
+
+        if (TeleportDetails.getTeleportDestination(player) == null) {
+            TeleportDetails.addTeleportDestination(player, event.getTo());
+        }
 
         List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
         for (WorldGroup fromGroup : fromGroups) {
