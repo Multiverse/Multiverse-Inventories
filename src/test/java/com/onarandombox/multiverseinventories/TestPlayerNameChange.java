@@ -1,10 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.util.MockPlayerFactory;
 import com.onarandombox.multiverseinventories.util.TestInstanceCreator;
-import junit.framework.Assert;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Server;
@@ -19,15 +17,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -36,14 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({MultiverseInventories.class, PluginDescriptionFile.class, JavaPluginLoader.class, MultiverseCore.class})
-@PowerMockIgnore("javax.script.*")
 public class TestPlayerNameChange {
     TestInstanceCreator creator;
     Server mockServer;
@@ -67,16 +58,6 @@ public class TestPlayerNameChange {
         listener = (InventoriesListener) field.get(inventories);
         // Make sure Core is enabled
         assertTrue(inventories.isEnabled());
-
-        Player p = mockServer.getPlayerExact("dumptruckman");
-
-        // Set Player's initial location
-        p.teleport(new Location(mockServer.getWorld("world"), 0, 70, 0));
-
-        // Clear Player's inventory
-        // note: using clear() is not effective!
-        clearInventory(p.getInventory());
-
     }
 
     @After
@@ -88,7 +69,7 @@ public class TestPlayerNameChange {
         Location oldLocation = player.getLocation();
         Location location = new Location(mockServer.getWorld(toWorld), 0.0, 70.0, 0.0);
         player.teleport(location);
-        Assert.assertEquals(location, player.getLocation());
+        assertEquals(location, player.getLocation());
         listener.playerTeleport(new PlayerTeleportEvent(player, oldLocation, location));
         listener.playerChangedWorld(new PlayerChangedWorldEvent(player, mockServer.getWorld(fromWorld)));
     }
@@ -96,12 +77,6 @@ public class TestPlayerNameChange {
     public void addToInventory(PlayerInventory inventory, Map<Integer, ItemStack> items) {
         for (Map.Entry<Integer, ItemStack> invEntry : items.entrySet()) {
             inventory.setItem(invEntry.getKey(), invEntry.getValue());
-        }
-    }
-
-    public void clearInventory(PlayerInventory inventory) {
-        for (int i = 0; i < inventory.getSize(); i++) {
-            inventory.setItem(i, null);
         }
     }
 
@@ -140,7 +115,7 @@ public class TestPlayerNameChange {
     }
 
     public void changePlayerName(Player player, String targetName) {
-        Assert.assertNotNull(player);
+        assertNotNull(player);
 
         String oldName = player.getName();
         UUID oldUUID = player.getUniqueId();
@@ -150,16 +125,16 @@ public class TestPlayerNameChange {
         String newName = player.getName();
         UUID newUUID = player.getUniqueId();
 
-        Assert.assertEquals(oldName, "dumptruckman");
-        Assert.assertEquals(newName, "benwoo1110");
-        Assert.assertEquals(oldUUID, newUUID);
+        assertEquals(oldName, "dumptruckman");
+        assertEquals(newName, "benwoo1110");
+        assertEquals(oldUUID, newUUID);
     }
 
     public GlobalProfile getAndCheckGlobalProfile(Player player) {
         GlobalProfile globalProfile = this.inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId());
-        Assert.assertEquals(globalProfile.getLastKnownName(), player.getName());
-        Assert.assertEquals(globalProfile.getPlayerName(), player.getName());
-        Assert.assertEquals(globalProfile.getPlayerUUID(), player.getUniqueId());
+        assertEquals(globalProfile.getLastKnownName(), player.getName());
+        assertEquals(globalProfile.getPlayerName(), player.getName());
+        assertEquals(globalProfile.getPlayerUUID(), player.getUniqueId());
 
         return globalProfile;
     }
@@ -177,7 +152,7 @@ public class TestPlayerNameChange {
         when(mockCoreCommand.getName()).thenReturn("mv");
 
         // Assert debug mode is off
-        Assert.assertEquals(0, this.inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(0, this.inventories.getMVIConfig().getGlobalDebug());
 
         // Send the debug command.
         String[] cmdArgs = new String[]{"debug", "3"};
@@ -187,11 +162,11 @@ public class TestPlayerNameChange {
         inventories.onCommand(mockCommandSender, mockCommand, "", cmdArgs);
 
         // Assert debug mode is on
-        Assert.assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
+        assertEquals(3, inventories.getMVIConfig().getGlobalDebug());
 
         // Getting player
         Player player = this.mockServer.getPlayerExact("dumptruckman");
-        Assert.assertNotNull(player);
+        assertNotNull(player);
 
         doPlayerJoin(player);
         GlobalProfile globalProfile = getAndCheckGlobalProfile(player);
@@ -201,7 +176,7 @@ public class TestPlayerNameChange {
         String worldInvData = player.getInventory().toString();
 
         changeWorld(player, "world", "world2");
-        Assert.assertNotSame(player.getInventory().toString(), worldInvData);
+        assertNotSame(player.getInventory().toString(), worldInvData);
 
         // Set inv for world2
         addToInventory(player.getInventory(), getFillerInv2());
@@ -212,18 +187,18 @@ public class TestPlayerNameChange {
         doPlayerJoin(player);
 
         globalProfile = getAndCheckGlobalProfile(player);
-        Assert.assertNotSame(player.getInventory().toString(), worldInvData);
-        Assert.assertEquals(player.getInventory().toString(), world2InvData);
+        assertNotSame(player.getInventory().toString(), worldInvData);
+        assertEquals(player.getInventory().toString(), world2InvData);
 
         // Go back to world_nether which is in group default
         // i.e. Should be the same inv as world.
         changeWorld(player, "world2", "world_nether");
-        Assert.assertNotSame(player.getInventory().toString(), world2InvData);
-        Assert.assertEquals(player.getInventory().toString(), worldInvData);
+        assertNotSame(player.getInventory().toString(), world2InvData);
+        assertEquals(player.getInventory().toString(), worldInvData);
 
         // Go back to world
         changeWorld(player, "world_nether", "world");
-        Assert.assertNotSame(player.getInventory().toString(), world2InvData);
-        Assert.assertEquals(player.getInventory().toString(), worldInvData);
+        assertNotSame(player.getInventory().toString(), world2InvData);
+        assertEquals(player.getInventory().toString(), worldInvData);
     }
 }

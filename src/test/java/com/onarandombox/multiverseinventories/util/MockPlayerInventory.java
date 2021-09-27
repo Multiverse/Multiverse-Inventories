@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -209,7 +210,8 @@ public class MockPlayerInventory implements PlayerInventory {
 
     @Override
     public void clear() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Arrays.fill(armorContents, null);
+        Arrays.fill(inventoryContents, null);
     }
 
     @Override

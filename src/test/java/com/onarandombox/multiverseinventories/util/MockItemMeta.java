@@ -9,13 +9,15 @@ package com.onarandombox.multiverseinventories.util;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFactory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -23,25 +25,23 @@ import static org.mockito.Mockito.when;
 
 public class MockItemMeta {
 
-    private static Map<ItemMeta, MockItemMeta> itemMetaData = new HashMap<>();
+    private static final Map<ItemMeta, MockItemMeta> itemMetaData = new HashMap<>();
 
     public static ItemFactory mockItemFactory() {
         ItemFactory itemFactory = mock(ItemFactory.class);
 
         when(itemFactory.equals(any(), any())).thenReturn(true);
-        //doAnswer(i -> true).when(itemFactory).equals(any(ItemMeta.class), any(ItemMeta.class));
 
         doAnswer(invocation -> {
-            return null;
-//            Material material = invocation.getArgument(0);
-//            switch (material) {
-//                case WRITTEN_BOOK:
-//                    return mockItemMeta(material, BookMeta.class);
-//                case LEATHER_BOOTS:
-//                    return mockItemMeta(material, LeatherArmorMeta.class);
-//                default:
-//                    return mockItemMeta(material, ItemMeta.class);
-//            }
+            Material material = invocation.getArgument(0);
+            switch (material) {
+                case WRITTEN_BOOK:
+                    return mockItemMeta(material, BookMeta.class);
+                case LEATHER_BOOTS:
+                    return mockItemMeta(material, LeatherArmorMeta.class);
+                default:
+                    return mockItemMeta(material, ItemMeta.class);
+            }
 
         }).when(itemFactory).getItemMeta(any(Material.class));
 

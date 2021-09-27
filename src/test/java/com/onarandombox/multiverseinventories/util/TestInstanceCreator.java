@@ -16,8 +16,15 @@ import com.onarandombox.MultiverseCore.utils.TestingMode;
 import com.onarandombox.MultiverseCore.utils.WorldManager;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
-import junit.framework.Assert;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.UnsafeValues;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,14 +37,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.mockito.Matchers;
+import org.mockito.internal.util.reflection.ReflectionMemberAccessor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.MockGateway;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -45,10 +47,21 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
-@PrepareForTest({InventoriesListener.class})
 public class TestInstanceCreator {
     private MultiverseInventories plugin;
     private MultiverseCore core;
@@ -65,32 +78,30 @@ public class TestInstanceCreator {
         try {
             FileUtils.deleteFolder(invDirectory);
             FileUtils.deleteFolder(serverDirectory);
-            Assert.assertFalse(invDirectory.exists());
+            assertFalse(invDirectory.exists());
             invDirectory.mkdirs();
-            Assert.assertTrue(invDirectory.exists());
-
-            MockGateway.MOCK_STANDARD_METHODS = false;
+            assertTrue(invDirectory.exists());
 
             // Initialize the Mock server.
             mockServer = mock(Server.class);
-            JavaPluginLoader mockPluginLoader = PowerMock.createMock(JavaPluginLoader.class);
-            Whitebox.setInternalState(mockPluginLoader, "server", mockServer);
+            JavaPluginLoader mockPluginLoader = mock(JavaPluginLoader.class);
+            new ReflectionMemberAccessor().set(JavaPluginLoader.class.getDeclaredField("server"), mockPluginLoader, mockServer);
             when(mockServer.getName()).thenReturn("TestBukkit");
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
 
             // Return a fake PDF file.
-            PluginDescriptionFile pdf = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
+            PluginDescriptionFile pdf = spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
                     "com.onarandombox.multiverseinventories.MultiverseInventories"));
             when(pdf.getAuthors()).thenReturn(new ArrayList<String>());
-            plugin = PowerMockito.spy(new MultiverseInventories(mockPluginLoader, pdf, invDirectory, new File(invDirectory, "testPluginFile")));
+            plugin = spy(new MultiverseInventories(mockPluginLoader, pdf, invDirectory, new File(invDirectory, "testPluginFile")));
             doReturn(pdf).when(plugin).getDescription();
             doReturn(true).when(plugin).isEnabled();
-            PluginDescriptionFile pdfCore = PowerMockito.spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
+            PluginDescriptionFile pdfCore = spy(new PluginDescriptionFile("Multiverse-Core", "2.2-Test",
                     "com.onarandombox.MultiverseCore.MultiverseCore"));
             when(pdfCore.getAuthors()).thenReturn(new ArrayList<String>());
-            core = PowerMockito.spy(new MultiverseCore(mockPluginLoader, pdf, coreDirectory, new File(coreDirectory, "testPluginFile")));
+            core = spy(new MultiverseCore(mockPluginLoader, pdf, coreDirectory, new File(coreDirectory, "testPluginFile")));
             doReturn(pdfCore).when(core).getDescription();
             doReturn(true).when(core).isEnabled();
             doReturn(Util.logger).when(core).getLogger();
@@ -106,7 +117,7 @@ public class TestInstanceCreator {
             JavaPlugin[] plugins = new JavaPlugin[]{plugin, core};
 
             // Mock the Plugin Manager
-            PluginManager mockPluginManager = PowerMockito.mock(PluginManager.class);
+            PluginManager mockPluginManager = mock(PluginManager.class);
             when(mockPluginManager.getPlugins()).thenReturn(plugins);
             when(mockPluginManager.getPlugin("Multiverse-Inventories")).thenReturn(plugin);
             when(mockPluginManager.getPlugin("Multiverse-Core")).thenReturn(core);
@@ -213,7 +224,7 @@ public class TestInstanceCreator {
 
 
 
-            when(mockServer.createWorld(Matchers.isA(WorldCreator.class))).thenAnswer(
+            when(mockServer.createWorld(isA(WorldCreator.class))).thenAnswer(
                     new Answer<World>() {
                         public World answer(InvocationOnMock invocation) throws Throwable {
                             WorldCreator arg;
@@ -272,7 +283,7 @@ public class TestInstanceCreator {
             when(mockServer.getUnsafe()).thenReturn(unsafeValues);
 
             // Set InventoriesListener
-            InventoriesListener il = PowerMockito.spy(new InventoriesListener(plugin));
+            InventoriesListener il = spy(new InventoriesListener(plugin));
             Field inventoriesListenerField = MultiverseInventories.class.getDeclaredField("inventoriesListener");
             inventoriesListenerField.setAccessible(true);
             inventoriesListenerField.set(plugin, il);
@@ -288,25 +299,25 @@ public class TestInstanceCreator {
             serverfield.set(plugin, mockServer);
 
             // Set worldManager
-            WorldManager wm = PowerMockito.spy(new WorldManager(core));
+            WorldManager wm = spy(new WorldManager(core));
             Field worldmanagerfield = MultiverseCore.class.getDeclaredField("worldManager");
             worldmanagerfield.setAccessible(true);
             worldmanagerfield.set(core, wm);
 
             // Set playerListener
-            MVPlayerListener pl = PowerMockito.spy(new MVPlayerListener(core));
+            MVPlayerListener pl = spy(new MVPlayerListener(core));
             Field playerlistenerfield = MultiverseCore.class.getDeclaredField("playerListener");
             playerlistenerfield.setAccessible(true);
             playerlistenerfield.set(core, pl);
 
             // Set entityListener
-            MVEntityListener el = PowerMockito.spy(new MVEntityListener(core));
+            MVEntityListener el = spy(new MVEntityListener(core));
             Field entitylistenerfield = MultiverseCore.class.getDeclaredField("entityListener");
             entitylistenerfield.setAccessible(true);
             entitylistenerfield.set(core, el);
 
             // Set weatherListener
-            MVWeatherListener wl = PowerMockito.spy(new MVWeatherListener(core));
+            MVWeatherListener wl = spy(new MVWeatherListener(core));
             Field weatherlistenerfield = MultiverseCore.class.getDeclaredField("weatherListener");
             weatherlistenerfield.setAccessible(true);
             weatherlistenerfield.set(core, wl);
@@ -324,15 +335,13 @@ public class TestInstanceCreator {
             when(commandSender.getServer()).thenReturn(mockServer);
             when(commandSender.getName()).thenReturn("MockCommandSender");
             when(commandSender.isPermissionSet(anyString())).thenReturn(true);
-            when(commandSender.isPermissionSet(Matchers.isA(Permission.class))).thenReturn(true);
+            when(commandSender.isPermissionSet(isA(Permission.class))).thenReturn(true);
             when(commandSender.hasPermission(anyString())).thenReturn(true);
-            when(commandSender.hasPermission(Matchers.isA(Permission.class))).thenReturn(true);
+            when(commandSender.hasPermission(isA(Permission.class))).thenReturn(true);
             when(commandSender.addAttachment(plugin)).thenReturn(null);
             when(commandSender.isOp()).thenReturn(true);
 
-            Field singletonServerField = Bukkit.class.getDeclaredField("server");
-            singletonServerField.setAccessible(true);
-            singletonServerField.set(null, mockServer);
+            Bukkit.setServer(mockServer);
 
             // Load Multiverse Core
             core.onLoad();
@@ -351,21 +360,12 @@ public class TestInstanceCreator {
     }
 
     public boolean tearDown() {
-        /*
-        List<MultiverseWorld> worlds = new ArrayList<MultiverseWorld>(core.getMVWorldManager()
-                .getMVWorlds());
-        for (MultiverseWorld world : worlds) {
-            core.getMVWorldManager().deleteWorld(world.getName());
-        }
-        */
-
-        Server maybeNullServer = getServer();
-        PluginManager maybeNullPluginManager = maybeNullServer.getPluginManager();
-        Plugin plugin = maybeNullPluginManager.getPlugin("Multiverse-Inventories");
-        //Plugin plugin = getServer().getPluginManager().getPlugin("Multiverse-Inventories");
+        PluginManager pluginManager = getServer().getPluginManager();
+        Plugin plugin = pluginManager.getPlugin("Multiverse-Inventories");
         MultiverseInventories inventories = (MultiverseInventories) plugin;
         inventories.onDisable();
 
+        MockPlayerFactory.clearAllPlayers();
         MockWorldFactory.clearWorlds();
 
         plugin = getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -380,7 +380,7 @@ public class TestInstanceCreator {
             Util.log(Level.SEVERE,
                     "Error while trying to unregister the server from Bukkit. Has Bukkit changed?");
             e.printStackTrace();
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
             return false;
         }
 
