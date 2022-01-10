@@ -152,7 +152,6 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
             worlds.append(", ").append(defaultEnd.getName());
         }
         updateGroup(worldGroup);
-        plugin.getMVIConfig().setFirstRun(false);
         plugin.getMVIConfig().save();
         Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
     }
