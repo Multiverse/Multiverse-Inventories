@@ -57,144 +57,141 @@ public final class CommentedYamlConfiguration {
      * @return True if successful.
      */
     public boolean save() {
-        boolean saved = true;
-        // Save the config just like normal
+        // try to save the config file, return false on failure
         try {
             config.save(file);
         } catch (Exception e) {
-            saved = false;
-        }
-        if (!doComments) {
-            return saved;
+            return false;
         }
 
-        // if there's comments to add and it saved fine, we need to add comments
-        if (!comments.isEmpty() && saved) {
-            // convert config file to String
-            String stringConfig = this.convertFileToString(file);
+        // if we're not supposed to add comments, or there aren't any to add, we're done
+        if (!doComments || comments.isEmpty()) {
+            return true;
+        }
 
-            // figure out where the header ends
-            int indexAfterHeader = 0;
-            Matcher newline = NEW_LINE_PATTERN.matcher(stringConfig);
+        // convert config file to String
+        String stringConfig = this.convertFileToString(file);
 
-            while (newline.find() && stringConfig.charAt(newline.end()) == '#') {
-                indexAfterHeader = newline.end();
-            }
+        // figure out where the header ends
+        int indexAfterHeader = 0;
+        Matcher newline = NEW_LINE_PATTERN.matcher(stringConfig);
 
-            // convert stringConfig to array, ignoring the header
-            String[] arrayConfig = stringConfig.substring(indexAfterHeader).split(newline.group());
+        while (newline.find() && stringConfig.charAt(newline.end()) == '#') {
+            indexAfterHeader = newline.end();
+        }
 
-            // begin building the new config, starting with the header
-            StringBuilder newContents = new StringBuilder();
-            newContents.append(stringConfig, 0, indexAfterHeader);
+        // convert stringConfig to array, ignoring the header
+        String[] arrayConfig = stringConfig.substring(indexAfterHeader).split(newline.group());
 
-            // This holds the current path the lines are at in the config
-            StringBuilder currentPath = new StringBuilder();
+        // begin building the new config, starting with the header
+        StringBuilder newContents = new StringBuilder();
+        newContents.append(stringConfig, 0, indexAfterHeader);
 
-            // This flags if the line is a node or unknown text.
-            boolean node;
-            // The depth of the path. (number of words separated by periods - 1)
-            int depth = 0;
+        // This holds the current path the lines are at in the config
+        StringBuilder currentPath = new StringBuilder();
 
-            // Loop through the config lines
-            for (final String line : arrayConfig) {
-                // If the line is a node (and not something like a list value)
-                if (line.contains(": ") || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
-                    // This is a node so flag it as one
-                    node = true;
+        // This flags if the line is a node or unknown text.
+        boolean node;
+        // The depth of the path. (number of words separated by periods - 1)
+        int depth = 0;
 
-                    // Grab the index of the end of the node name
-                    int index;
-                    index = line.indexOf(": ");
-                    if (index < 0) {
-                        index = line.length() - 1;
-                    }
-                    // If currentPath is empty, store the node name as the currentPath. (this is only on the first iteration, i think)
-                    if (currentPath.toString().isEmpty()) {
-                        currentPath = new StringBuilder(line.substring(0, index));
-                    } else {
-                        // Calculate the whitespace preceding the node name
-                        int whiteSpace = 0;
-                        for (int n = 0; n < line.length(); n++) {
-                            if (line.charAt(n) == ' ') {
-                                whiteSpace++;
-                            } else {
-                                break;
-                            }
-                        }
+        // Loop through the config lines
+        for (final String line : arrayConfig) {
+            // If the line is a node (and not something like a list value)
+            if (line.contains(": ") || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
+                // This is a node so flag it as one
+                node = true;
 
-                        int whiteSpaceDividedByTwo = whiteSpace / 2;
-                        // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
-                        if (whiteSpaceDividedByTwo > depth) {
-                            // Path is deeper. Add a dot and the node name
-                            currentPath.append(".").append(line, whiteSpace, index);
-                            depth++;
-                        } else if (whiteSpaceDividedByTwo < depth) {
-                            // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
-                            for (int i = 0; i < depth - whiteSpaceDividedByTwo; i++) {
-                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
-                            }
-                            // Grab the index of the final period
-                            int lastIndex = currentPath.lastIndexOf(".");
-                            if (lastIndex < 0) {
-                                // if there isn't a final period, set the current path to nothing because we're at root
-                                currentPath = new StringBuilder();
-                            } else {
-                                // If there is a final period, replace everything after it with nothing
-                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
-                            }
-                            // Add the new node name to the path
-                            currentPath.append(line, whiteSpace, index);
-                            // Reset the depth
-                            depth = whiteSpaceDividedByTwo;
-                        } else {
-                            // Path is same depth, replace the last path node name to the current node name
-                            int lastIndex = currentPath.lastIndexOf(".");
-                            if (lastIndex < 0) {
-                                // if there isn't a final period, set the current path to nothing because we're at root
-                                currentPath = new StringBuilder();
-                            } else {
-                                // If there is a final period, replace everything after it with nothing
-                                currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
-                            }
-
-                            currentPath.append(line, whiteSpace, index);
-                        }
-                    }
+                // Grab the index of the end of the node name
+                int index;
+                index = line.indexOf(": ");
+                if (index < 0) {
+                    index = line.length() - 1;
+                }
+                // If currentPath is empty, store the node name as the currentPath. (this is only on the first iteration, i think)
+                if (currentPath.toString().isEmpty()) {
+                    currentPath = new StringBuilder(line.substring(0, index));
                 } else {
-                    node = false;
-                }
+                    // Calculate the whitespace preceding the node name
+                    int whiteSpace = 0;
+                    for (int n = 0; n < line.length(); n++) {
+                        if (line.charAt(n) == ' ') {
+                            whiteSpace++;
+                        } else {
+                            break;
+                        }
+                    }
 
-                StringBuilder newLine = new StringBuilder();
-
-                if (node) {
-                    // get the comment for the current node
-                    String comment = comments.get(currentPath.toString());
-                    if (comment != null && !comment.isEmpty()) {
-                        // if the previous line doesn't end in a colon
-                        // and there's not already a newline character,
-                        // add a newline before we add the comment
-                        char previousChar = newContents.charAt(newContents.length() - 2);
-                        if (previousChar != ':' && previousChar != '\n') {
-                            newLine.append("\n");
+                    int whiteSpaceDividedByTwo = whiteSpace / 2;
+                    // Find out if the current depth (whitespace * 2) is greater/lesser/equal to the previous depth
+                    if (whiteSpaceDividedByTwo > depth) {
+                        // Path is deeper. Add a dot and the node name
+                        currentPath.append(".").append(line, whiteSpace, index);
+                        depth++;
+                    } else if (whiteSpaceDividedByTwo < depth) {
+                        // Path is shallower, calculate current depth from whitespace (whitespace / 2) and subtract that many levels from the currentPath
+                        for (int i = 0; i < depth - whiteSpaceDividedByTwo; i++) {
+                            currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
+                        }
+                        // Grab the index of the final period
+                        int lastIndex = currentPath.lastIndexOf(".");
+                        if (lastIndex < 0) {
+                            // if there isn't a final period, set the current path to nothing because we're at root
+                            currentPath = new StringBuilder();
+                        } else {
+                            // If there is a final period, replace everything after it with nothing
+                            currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
+                        }
+                        // Add the new node name to the path
+                        currentPath.append(line, whiteSpace, index);
+                        // Reset the depth
+                        depth = whiteSpaceDividedByTwo;
+                    } else {
+                        // Path is same depth, replace the last path node name to the current node name
+                        int lastIndex = currentPath.lastIndexOf(".");
+                        if (lastIndex < 0) {
+                            // if there isn't a final period, set the current path to nothing because we're at root
+                            currentPath = new StringBuilder();
+                        } else {
+                            // If there is a final period, replace everything after it with nothing
+                            currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
                         }
 
-                        // add the comment
-                        newLine.append(comment).append("\n");
+                        currentPath.append(line, whiteSpace, index);
                     }
                 }
-
-                // add the config line
-                newLine.append(line).append("\n");
-
-                // Add the (modified) line to the total config String
-                newContents.append(newLine);
+            } else {
+                node = false;
             }
 
-            saved = this.stringToFile(newContents.toString(), file);
+            StringBuilder newLine = new StringBuilder();
+
+            if (node) {
+                // get the comment for the current node
+                String comment = comments.get(currentPath.toString());
+                if (comment != null && !comment.isEmpty()) {
+                    // if the previous line doesn't end in a colon
+                    // and there's not already a newline character,
+                    // add a newline before we add the comment
+                    char previousChar = newContents.charAt(newContents.length() - 2);
+                    if (previousChar != ':' && previousChar != '\n') {
+                        newLine.append("\n");
+                    }
+
+                    // add the comment
+                    newLine.append(comment).append("\n");
+                }
+            }
+
+            // add the config line
+            newLine.append(line).append("\n");
+
+            // Add the (modified) line to the total config String
+            newContents.append(newLine);
         }
 
-        return saved;
+        // try to save the config file, returning whether it saved successfully
+        return this.stringToFile(newContents.toString(), file);
     }
 
     /**
