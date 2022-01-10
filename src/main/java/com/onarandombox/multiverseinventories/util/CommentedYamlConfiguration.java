@@ -32,7 +32,7 @@ public final class CommentedYamlConfiguration {
         super();
         comments = new HashMap<String, String>();
         this.file = file;
-        this.doComments = doComments;
+        this.doComments = false;
     }
 
     /**
