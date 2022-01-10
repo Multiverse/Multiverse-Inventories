@@ -6,17 +6,15 @@ import org.junit.Test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestCommentedYamlConfiguration {
     private static final char LINE_SEPARATOR = '\n';
-    private static final String TEST_CONFIG_NAME = "testconfig.yml";
+    private static final File TEST_CONFIG = new File("bin/test/testconfig.yml");
 
     private static final String TEST_CONTENTS_1 = "# A Test Yaml File" + LINE_SEPARATOR + LINE_SEPARATOR +
             "test: 123" + LINE_SEPARATOR +
@@ -64,13 +62,14 @@ public class TestCommentedYamlConfiguration {
             "back_to_root: true" + LINE_SEPARATOR;
 
     private CommentedYamlConfiguration createConfig(boolean doComments) {
-        try (PrintWriter out = new PrintWriter(TEST_CONFIG_NAME)) {
+        TEST_CONFIG.getParentFile().mkdirs();
+        try (PrintWriter out = new PrintWriter(TEST_CONFIG)) {
             out.println(TEST_CONTENTS_1);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        CommentedYamlConfiguration testConfig = new CommentedYamlConfiguration(new File(TEST_CONFIG_NAME), doComments);
+        CommentedYamlConfiguration testConfig = new CommentedYamlConfiguration(TEST_CONFIG, doComments);
 
         testConfig.getConfig().options().header("A Test Yaml File\n");
 
@@ -90,7 +89,7 @@ public class TestCommentedYamlConfiguration {
         CommentedYamlConfiguration testConfig = createConfig(false);
         testConfig.save();
 
-        String uncommentedConfigFile = new String(Files.readAllBytes(Paths.get(TEST_CONFIG_NAME)), StandardCharsets.UTF_8);
+        String uncommentedConfigFile = new String(Files.readAllBytes(TEST_CONFIG.getCanonicalFile().toPath()), StandardCharsets.UTF_8);
         assertEquals(TEST_CONTENTS_1, uncommentedConfigFile);
     }
 
@@ -99,7 +98,7 @@ public class TestCommentedYamlConfiguration {
         CommentedYamlConfiguration testConfig = createConfig(true);
         testConfig.save();
 
-        String commentedConfigFile = new String(Files.readAllBytes(Paths.get(TEST_CONFIG_NAME)), StandardCharsets.UTF_8);
+        String commentedConfigFile = new String(Files.readAllBytes(TEST_CONFIG.getCanonicalFile().toPath()), StandardCharsets.UTF_8);
         assertEquals(COMMENTED_TEST_CONTENTS_1, commentedConfigFile);
     }
 }
