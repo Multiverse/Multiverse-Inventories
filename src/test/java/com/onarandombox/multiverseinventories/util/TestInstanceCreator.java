@@ -84,12 +84,14 @@ public class TestInstanceCreator {
 
             // Initialize the Mock server.
             mockServer = mock(Server.class);
-            JavaPluginLoader mockPluginLoader = mock(JavaPluginLoader.class);
-            new ReflectionMemberAccessor().set(JavaPluginLoader.class.getDeclaredField("server"), mockPluginLoader, mockServer);
             when(mockServer.getName()).thenReturn("TestBukkit");
             Logger.getLogger("Minecraft").setParent(Util.logger);
             when(mockServer.getLogger()).thenReturn(Util.logger);
             when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
+
+            // Initialize the Mock Plugin Loader.
+            JavaPluginLoader mockPluginLoader = mock(JavaPluginLoader.class);
+            new ReflectionMemberAccessor().set(JavaPluginLoader.class.getDeclaredField("server"), mockPluginLoader, mockServer);
 
             // Return a fake PDF file.
             PluginDescriptionFile pdf = spy(new PluginDescriptionFile("Multiverse-Inventories", "2.4-test",
@@ -141,12 +143,7 @@ public class TestInstanceCreator {
             world2File.mkdirs();
             MockWorldFactory.makeNewMockWorld("world2", Environment.NORMAL, WorldType.NORMAL);
 
-            // Initialize the Mock server.
-            mockServer = mock(Server.class);
-            when(mockServer.getName()).thenReturn("TestBukkit");
-            Logger.getLogger("Minecraft").setParent(Util.logger);
-            when(mockServer.getLogger()).thenReturn(Util.logger);
-            when(mockServer.getWorldContainer()).thenReturn(worldsDirectory);
+            // Finish initializing.
             when(plugin.getServer()).thenReturn(mockServer);
             when(core.getServer()).thenReturn(mockServer);
             when(mockServer.getPluginManager()).thenReturn(mockPluginManager);
