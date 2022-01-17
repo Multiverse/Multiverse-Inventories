@@ -7,18 +7,12 @@ import com.onarandombox.multiverseinventories.DataStrings;
 import com.onarandombox.multiverseinventories.PlayerStats;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.jetbrains.annotations.NotNull;
-
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * The Sharables class is where all the default Sharable instances are located as constants as well as a factory class
@@ -543,7 +536,7 @@ public final class Sharables implements Shares {
     public static final Sharable<Double> ECONOMY = new Sharable.Builder<Double>("economy", Double.class,
             new SharableHandler<Double>() {
                 private boolean hasValidEconomyHandler() {
-                    if (!inventories.getCore().getEconomist().isUsingEconomyPlugin()) {
+                    if (inventories.getCore().getEconomist().isUsingEconomyPlugin()) {
                         return true;
                     }
                     Logging.warning("You do not have an an economy plugin with Vault. Economy sharable will not work!");
