@@ -17,8 +17,8 @@
             <url>https://repo.onarandombox.com/content/groups/public</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -173,8 +173,7 @@ and adjust the build number accordingly -->
                             <relocations>
                                 <relocation>
                                     <pattern>com.dumptruckman.minecraft.util.Logging</pattern>
-                                    <shadedPattern>com.onarandombox.multiverseinventories.utils.InvLogging
-                                    </shadedPattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.utils.InvLogging</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.dumptruckman.minecraft.util.DebugLog</pattern>
@@ -186,7 +185,11 @@ and adjust the build number accordingly -->
                                 </relocation>
                                 <relocation>
                                     <pattern>net.minidev.json</pattern>
-                                    <shadedPattern>com.onarandombox.multiverseinventories.util.json</shadedPattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.utils.json</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.papermc.lib</pattern>
+                                    <shadedPattern>com.onarandombox.multiverseinventories.utils.paperlib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -224,6 +227,12 @@ and adjust the build number accordingly -->
                     <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.7</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.onarandombox.multiverseadventure</groupId>
