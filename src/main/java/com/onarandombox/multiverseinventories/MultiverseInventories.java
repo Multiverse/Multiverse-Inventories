@@ -342,8 +342,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     public void reloadConfig() {
         try {
             this.config = new InventoriesConfig(this);
-            this.worldGroupManager = new YamlWorldGroupManager(this, new File(getDataFolder(), "groups.yml"),
-                    ((InventoriesConfig) config).getConfig());
+            this.worldGroupManager = new YamlWorldGroupManager(this, this.config.getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
 

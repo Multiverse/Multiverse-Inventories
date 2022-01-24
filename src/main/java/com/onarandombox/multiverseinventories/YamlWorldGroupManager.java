@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.onarandombox.multiverseinventories.share.Sharables;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import com.onarandombox.multiverseinventories.util.DeserializationException;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
@@ -30,19 +31,21 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private final CommentedYamlConfiguration groupsConfig;
 
-    YamlWorldGroupManager(final MultiverseInventories inventories, final File groupConfigFile, final Configuration config)
-            throws IOException {
+    YamlWorldGroupManager(final MultiverseInventories inventories, final Configuration config) throws IOException {
         super(inventories);
 
-        // Check if the group config file exists.  If not, create it and migrate group data.
+        // Check if the group config file exists. If not, create it and migrate group data.
+        File groupsConfigFile = new File(plugin.getDataFolder(), "groups.yml");
+        boolean groupsConfigFileExists = groupsConfigFile.exists();
         boolean migrateGroups = false;
-        if (!groupConfigFile.exists()) {
+        if (!groupsConfigFile.exists()) {
             Logging.fine("Created groups file.");
-            groupConfigFile.createNewFile();
+            groupsConfigFile.createNewFile();
             migrateGroups = true;
         }
         // Load the configuration file into memory
-        groupsConfig = new CommentedYamlConfiguration(groupConfigFile, true);
+        boolean supportsCommentsNatively = PaperLib.getMinecraftVersion() > 17;
+        groupsConfig = new CommentedYamlConfiguration(groupsConfigFile, !groupsConfigFileExists || !supportsCommentsNatively);
 
         if (migrateGroups) {
             migrateGroups(config);
