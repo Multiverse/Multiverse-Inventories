@@ -1,4 +1,4 @@
-package com.onarandombox.multiverseinventories.migration.multiinv;
+package com.onarandombox.multiverseinventories.dataimport.multiinv;
 
 import com.onarandombox.multiverseinventories.util.MinecraftTools;
 import org.bukkit.inventory.ItemStack;

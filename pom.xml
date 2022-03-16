@@ -24,6 +24,10 @@
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.org/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -245,6 +249,12 @@ and adjust the build number accordingly -->
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>me.ebonjaeger</groupId>
+            <artifactId>perworldinventory-kt</artifactId>
+            <version>2.3.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>uk.co</groupId>
