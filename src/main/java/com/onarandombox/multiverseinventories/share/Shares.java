@@ -49,6 +49,11 @@ public interface Shares extends Cloneable, Iterable<Sharable>, Collection<Sharab
     void setSharing(Shares sharables, boolean sharing);
 
     /**
+     * @return Gets the names that represent this share.
+     */
+    String[] getNames();
+
+    /**
      * @return These shares as a string list.
      */
     List<String> toStringList();

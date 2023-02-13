@@ -28,7 +28,11 @@ public enum Perm {
     /**
      * Permission for /mvinv import.
      */
-    COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories", PermissionDefault.OP)),
+    COMMAND_IMPORT(new Permission("multiverse.inventories.import", "Imports data from MultiInv/WorldInventories.", PermissionDefault.OP)),
+    /**
+     * Permission for /mvinv migrate.
+     */
+    COMMAND_MIGRATE(new Permission("multiverse.inventories.migrate", "Migrates data from one player to another.", PermissionDefault.OP)),
     /**
      * Permission for /mvinv group.
      */

@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -689,6 +690,13 @@ public final class Sharables implements Shares {
     }
 
     /**
+     * @return A collection of all registered {@link Shares}. This is NOT to be modified and serves only as a reference.
+     */
+    public static Collection<Shares> allShares() {
+        return LOOKUP_MAP.values();
+    }
+
+    /**
      * @return A {@link Shares} collection containing ALL registered {@link Sharable}s. This is NOT to be modified and
      * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
      */
@@ -893,6 +901,11 @@ public final class Sharables implements Shares {
     @Override
     public int hashCode() {
         return this.sharables.hashCode();
+    }
+
+    @Override
+    public String[] getNames() {
+        return new String[0];
     }
 
     /**

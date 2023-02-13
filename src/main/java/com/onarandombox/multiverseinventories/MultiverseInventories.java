@@ -10,6 +10,24 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
+import com.onarandombox.MultiverseCore.commandtools.MVCommandManager;
+import com.onarandombox.multiverseinventories.command.AddSharesCommand;
+import com.onarandombox.multiverseinventories.command.AddWorldCommand;
+import com.onarandombox.multiverseinventories.command.CreateGroupCommand;
+import com.onarandombox.multiverseinventories.command.DeleteGroupCommand;
+import com.onarandombox.multiverseinventories.command.GroupCommand;
+import com.onarandombox.multiverseinventories.command.ImportCommand;
+import com.onarandombox.multiverseinventories.command.InfoCommand;
+import com.onarandombox.multiverseinventories.command.ListCommand;
+import com.onarandombox.multiverseinventories.command.MigrateCommand;
+import com.onarandombox.multiverseinventories.command.ReloadCommand;
+import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
+import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
+import com.onarandombox.multiverseinventories.command.SpawnCommand;
+import com.onarandombox.multiverseinventories.command.ToggleCommand;
+import com.onarandombox.multiverseinventories.command.tools.MVInvCommandCompletions;
+import com.onarandombox.multiverseinventories.command.tools.MVInvCommandConditions;
+import com.onarandombox.multiverseinventories.command.tools.MVInvCommandContexts;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
@@ -178,7 +196,25 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private void registerCommands() {
+        MVInvCommandCompletions.init(this);
+        MVInvCommandConditions.init(this);
+        MVInvCommandContexts.init(this);
 
+        MVCommandManager commandManager = this.getCore().getMVCommandManager();
+        commandManager.registerCommand(new AddSharesCommand(this));
+        commandManager.registerCommand(new AddWorldCommand(this));
+        commandManager.registerCommand(new CreateGroupCommand(this));
+        commandManager.registerCommand(new DeleteGroupCommand(this));
+        commandManager.registerCommand(new GroupCommand(this));
+        commandManager.registerCommand(new ImportCommand(this));
+        commandManager.registerCommand(new InfoCommand(this));
+        commandManager.registerCommand(new ListCommand(this));
+        commandManager.registerCommand(new MigrateCommand(this));
+        commandManager.registerCommand(new ReloadCommand(this));
+        commandManager.registerCommand(new RemoveSharesCommand(this));
+        commandManager.registerCommand(new RemoveWorldCommand(this));
+        commandManager.registerCommand(new SpawnCommand(this));
+        commandManager.registerCommand(new ToggleCommand(this));
     }
 
     private void hookImportables() {
