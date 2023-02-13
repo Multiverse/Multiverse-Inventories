@@ -22,7 +22,7 @@ public class AddSharesCommand extends InventoriesCommand {
     }
 
     @Subcommand("addshares")
-    @CommandCompletion("@shares @worldGroups")
+    @CommandCompletion("@shares|@sharables @worldGroups")
     @Syntax("<share[,extra]> <group>")
     @Description("Add one or more shares to a group.")
     public void onAddSharesCommand(BukkitCommandIssuer issuer,

@@ -23,7 +23,7 @@ public class RemoveSharesCommand extends InventoriesCommand {
     }
 
     @Subcommand("removeshares")
-    @CommandCompletion("@shares @worldGroups")
+    @CommandCompletion("@shares|@sharables @worldGroups")
     @Syntax("<share[,extra]> <group>")
     public void onRemoveSharesCommand(BukkitCommandIssuer issuer,
 
