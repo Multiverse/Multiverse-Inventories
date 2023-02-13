@@ -1,38 +1,25 @@
 package com.onarandombox.multiverseinventories;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+import java.util.logging.Level;
+
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
-import com.onarandombox.MultiverseCore.commands.HelpCommand;
-import com.onarandombox.commandhandler.CommandHandler;
+import com.onarandombox.multiverseinventories.locale.Message;
+import com.onarandombox.multiverseinventories.locale.Messager;
+import com.onarandombox.multiverseinventories.locale.Messaging;
+import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.profile.ProfileDataSource;
 import com.onarandombox.multiverseinventories.profile.WorldGroupManager;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainerStore;
 import com.onarandombox.multiverseinventories.share.Sharables;
-import com.onarandombox.multiverseinventories.command.AddSharesCommand;
-import com.onarandombox.multiverseinventories.command.AddWorldCommand;
-import com.onarandombox.multiverseinventories.command.CreateGroupCommand;
-import com.onarandombox.multiverseinventories.command.DeleteGroupCommand;
-import com.onarandombox.multiverseinventories.command.GroupCommand;
-import com.onarandombox.multiverseinventories.command.ImportCommand;
-import com.onarandombox.multiverseinventories.command.InfoCommand;
-import com.onarandombox.multiverseinventories.command.ListCommand;
-import com.onarandombox.multiverseinventories.command.MigrateCommand;
-import com.onarandombox.multiverseinventories.command.ReloadCommand;
-import com.onarandombox.multiverseinventories.command.RemoveSharesCommand;
-import com.onarandombox.multiverseinventories.command.RemoveWorldCommand;
-import com.onarandombox.multiverseinventories.command.SpawnCommand;
-import com.onarandombox.multiverseinventories.command.ToggleCommand;
-import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.locale.Messager;
-import com.onarandombox.multiverseinventories.locale.Messaging;
-import com.onarandombox.multiverseinventories.migration.ImportManager;
 import com.onarandombox.multiverseinventories.util.Perm;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -40,13 +27,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.logging.Level;
 
 /**
  * Multiverse-Inventories plugin main class.
@@ -69,7 +49,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private ProfileContainerStore groupProfileContainerStore = null;
     private ImportManager importManager = new ImportManager(this);
 
-    private CommandHandler commandHandler = null;
     private MultiverseCore core = null;
     private InventoriesConfig config = null;
     private FlatFileProfileDataSource data = null;
@@ -186,26 +165,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private void registerCommands() {
-        this.commandHandler = this.getCore().getCommandHandler();
-        this.getCommandHandler().registerCommand(new InfoCommand(this));
-        this.getCommandHandler().registerCommand(new ImportCommand(this));
-        this.getCommandHandler().registerCommand(new ListCommand(this));
-        this.getCommandHandler().registerCommand(new ReloadCommand(this));
-        this.getCommandHandler().registerCommand(new AddWorldCommand(this));
-        this.getCommandHandler().registerCommand(new RemoveWorldCommand(this));
-        this.getCommandHandler().registerCommand(new AddSharesCommand(this));
-        this.getCommandHandler().registerCommand(new RemoveSharesCommand(this));
-        this.getCommandHandler().registerCommand(new CreateGroupCommand(this));
-        this.getCommandHandler().registerCommand(new DeleteGroupCommand(this));
-        this.getCommandHandler().registerCommand(new SpawnCommand(this));
-        this.getCommandHandler().registerCommand(new GroupCommand(this));
-        this.getCommandHandler().registerCommand(new ToggleCommand(this));
-        this.getCommandHandler().registerCommand(new MigrateCommand(this));
-        for (com.onarandombox.commandhandler.Command c : this.commandHandler.getAllCommands()) {
-            if (c instanceof HelpCommand) {
-                c.addKey("mvinv");
-            }
-        }
+
     }
 
     private void hookImportables() {
@@ -231,32 +191,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * {@inheritDoc}
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-        if (!this.isEnabled()) {
-            sender.sendMessage("This plugin is Disabled!");
-            return true;
-        }
-        ArrayList<String> allArgs = new ArrayList<String>(Arrays.asList(args));
-        allArgs.add(0, command.getName());
-        return this.getCommandHandler().locateAndRunCommand(sender, allArgs);
-    }
-
-    private CommandHandler getCommandHandler() {
-        return this.commandHandler;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void log(Level level, String msg) {
-        Logging.log(level, msg);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public MultiverseCore getCore() {
         return this.core;
     }
@@ -275,27 +209,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     @Override
     public int getProtocolVersion() {
         return 1;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String dumpVersionInfo(String buffer) {
-        buffer += logAndAddToPasteBinBuffer("=== Settings ===");
-        buffer += logAndAddToPasteBinBuffer("First Run: " + this.getMVIConfig().isFirstRun());
-        buffer += logAndAddToPasteBinBuffer("Using Bypass: " + this.getMVIConfig().isUsingBypass());
-        buffer += logAndAddToPasteBinBuffer("Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds());
-        buffer += logAndAddToPasteBinBuffer("Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad());
-        buffer += logAndAddToPasteBinBuffer("Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles());
-        buffer += logAndAddToPasteBinBuffer("=== Shares ===");
-        buffer += logAndAddToPasteBinBuffer("Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped());
-        buffer += logAndAddToPasteBinBuffer("Enabled Optionals: " + this.getMVIConfig().getOptionalShares());
-        buffer += logAndAddToPasteBinBuffer("=== Groups ===");
-        for (WorldGroup group : this.getGroupManager().getGroups()) {
-            buffer += logAndAddToPasteBinBuffer(group.toString());
-        }
-        return buffer;
     }
 
     /**

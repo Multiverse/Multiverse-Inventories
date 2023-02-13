@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.onarandombox.MultiverseCore.api.MVWorld;
 import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
 import com.onarandombox.MultiverseCore.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
@@ -389,7 +389,7 @@ public class InventoriesListener implements Listener {
             if (group.getSpawnPriority().equals(priority)) {
                 String spawnWorldName = group.getSpawnWorld();
                 if (spawnWorldName != null) {
-                    MultiverseWorld mvWorld = this.inventories.getCore()
+                    MVWorld mvWorld = this.inventories.getCore()
                             .getMVWorldManager().getMVWorld(spawnWorldName);
                     if (mvWorld != null) {
                         this.spawnLoc = mvWorld.getSpawnLocation();

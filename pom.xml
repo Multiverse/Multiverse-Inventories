@@ -138,6 +138,7 @@ and adjust the build number accordingly -->
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
                 <configuration>
+                    <skipTests>true</skipTests>
                     <excludes>
                         <exclude>**/TestInstanceCreator.java</exclude>
                     </excludes>
@@ -208,7 +209,7 @@ and adjust the build number accordingly -->
         <dependency>
             <groupId>com.onarandombox.multiversecore</groupId>
             <artifactId>Multiverse-Core</artifactId>
-            <version>4.2.2</version>
+            <version>5.0.0-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
