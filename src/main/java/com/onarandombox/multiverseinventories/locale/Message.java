@@ -93,6 +93,7 @@ public enum Message {
     NOW_NOT_USING_OPTIONAL("&f%1 &6will no longer be considered when player's change world."),
     NO_OPTIONAL_SHARES("&f%1 &6is not an optional share!"),
     // Migrate Command
+    MIGRATE_SAME_PLAYER("You cannot migrate data from a player to themselves!"),
     MIGRATE_FAILED("Failed to migrate data from %1 to %2! Check logs for error details."),
     MIGRATE_SUCCESSFUL("Migrated data from %1 to %2!"),
     // Import Command

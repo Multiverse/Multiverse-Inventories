@@ -32,8 +32,8 @@ public class AddWorldCommand extends InventoriesCommand {
 
                                   @Syntax("<group>")
                                   @Description("Group you want to add the world to.")
-                                  WorldGroup group) {
-
+                                  WorldGroup group
+    ) {
         if (group.containsWorld(world.getName())) {
             this.messager.normal(Message.WORLD_ALREADY_EXISTS, issuer.getIssuer(), world.getName(), group.getName());
             return;

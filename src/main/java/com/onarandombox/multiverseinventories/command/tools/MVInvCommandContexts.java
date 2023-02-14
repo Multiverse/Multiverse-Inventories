@@ -1,7 +1,8 @@
 package com.onarandombox.multiverseinventories.command.tools;
 
-import java.util.Arrays;
+import java.util.Optional;
 
+import com.google.common.base.Strings;
 import com.onarandombox.acf.BukkitCommandExecutionContext;
 import com.onarandombox.acf.CommandContexts;
 import com.onarandombox.acf.InvalidCommandArgument;
@@ -69,14 +70,31 @@ public class MVInvCommandContexts {
     }
 
     private Shares parseShares(BukkitCommandExecutionContext context) {
-        Shares shares = Sharables.lookup(context.popFirstArg());
-        if (shares != null) {
-            return shares;
+        String shareStrings = context.popFirstArg();
+        if (Strings.isNullOrEmpty(shareStrings)) {
+            throw new InvalidCommandArgument(messager.getMessage(Message.ERROR_NO_SHARES_SPECIFIED, shareStrings));
         }
-        if (context.isOptional()) {
-            return null;
+
+        String[] shareNames = shareStrings.split(",");
+        Shares newShares = Sharables.noneOf();
+        Shares negativeShares = Sharables.noneOf();
+        for (String shareName : shareNames) {
+            if (shareName.startsWith("-")) {
+                shareName = shareName.substring(1);
+                Optional.ofNullable(Sharables.lookup(shareName))
+                        .ifPresent(shares -> negativeShares.setSharing(shares, true));
+                continue;
+            }
+            Optional.ofNullable(Sharables.lookup(shareName))
+                    .ifPresent(shares -> newShares.setSharing(shares, true));
         }
-        throw new InvalidCommandArgument(messager.getMessage(Message.ERROR_NO_SHARES_SPECIFIED));
+
+        newShares.setSharing(negativeShares, false);
+        if (newShares.isEmpty()) {
+            throw new InvalidCommandArgument(messager.getMessage(Message.ERROR_NO_SHARES_SPECIFIED, shareStrings));
+        }
+
+        return newShares;
     }
 
     private WorldGroup parseWorldGroup(BukkitCommandExecutionContext context) {

@@ -15,7 +15,7 @@ import com.onarandombox.acf.annotation.Values;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.util.Perm;
-import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("mvinv")
@@ -31,33 +31,35 @@ public class MigrateCommand extends InventoriesCommand {
     @Description("Migrate player data from one name to another.")
     public void onMigrateCommand(BukkitCommandIssuer issuer,
 
-                                 @Flags("type= old name")
                                  @Syntax("<oldname>")
                                  @Description("The old name of the player to migrate data from.")
-                                 String oldName,
+                                 OfflinePlayer oldPlayer,
 
-                                 @NotNull
-                                 @Flags("type= new name")
                                  @Syntax("<newname>")
                                  @Description("The new name of the player to migrate data to.")
-                                 String newName,
+                                 OfflinePlayer newPlayer,
 
                                  @Optional
                                  @Values("--save-old")
                                  String saveOld
     ) {
+        if (oldPlayer.equals(newPlayer)) {
+            messager.bad(Message.MIGRATE_SAME_PLAYER, issuer.getIssuer());
+            return;
+        }
+
         boolean deleteOld = saveOld == null || saveOld.equalsIgnoreCase("--save-old");
 
         try {
-            this.plugin.getData().migratePlayerData(oldName, newName, Bukkit.getOfflinePlayer(newName).getUniqueId(), deleteOld);
+            this.plugin.getData().migratePlayerData(oldPlayer.getName(), newPlayer.getName(), newPlayer.getUniqueId(), deleteOld);
         }
         catch (IOException e) {
-            messager.bad(Message.MIGRATE_FAILED, issuer.getIssuer(), oldName, newName);
-            Logging.severe("Could not migrate data from name " + oldName + " to " + newName);
+            messager.bad(Message.MIGRATE_FAILED, issuer.getIssuer(), oldPlayer.getName(), newPlayer.getName());
+            Logging.severe("Could not migrate data from name " + oldPlayer.getName() + " to " + newPlayer.getName());
             e.printStackTrace();
             return;
         }
 
-        messager.good(Message.MIGRATE_SUCCESSFUL, issuer.getIssuer(), oldName, newName);
+        messager.good(Message.MIGRATE_SUCCESSFUL, issuer.getIssuer(), oldPlayer.getName(), newPlayer.getName());
     }
 }
