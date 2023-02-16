@@ -6,8 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

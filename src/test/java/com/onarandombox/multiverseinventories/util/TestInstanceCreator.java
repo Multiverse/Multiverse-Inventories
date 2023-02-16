@@ -8,12 +8,13 @@
 package com.onarandombox.multiverseinventories.util;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import com.onarandombox.MultiverseCore.listeners.MVEntityListener;
 import com.onarandombox.MultiverseCore.listeners.MVPlayerListener;
 import com.onarandombox.MultiverseCore.listeners.MVWeatherListener;
 import com.onarandombox.MultiverseCore.utils.FileUtils;
 import com.onarandombox.MultiverseCore.utils.TestingMode;
-import com.onarandombox.MultiverseCore.utils.WorldManager;
+import com.onarandombox.MultiverseCore.world.SimpleMVWorldManager;
 import com.onarandombox.multiverseinventories.InventoriesListener;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
 import org.bukkit.Bukkit;
@@ -297,7 +298,7 @@ public class TestInstanceCreator {
             serverfield.set(plugin, mockServer);
 
             // Set worldManager
-            WorldManager wm = spy(new WorldManager(core));
+            MVWorldManager wm = spy(new SimpleMVWorldManager(core));
             Field worldmanagerfield = MultiverseCore.class.getDeclaredField("worldManager");
             worldmanagerfield.setAccessible(true);
             worldmanagerfield.set(core, wm);
