@@ -35,6 +35,9 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
      */
     @Override
     public WorldGroup getGroup(String groupName) {
+        if (groupName == null) {
+            return null;
+        }
         return groupNamesMap.get(groupName.toLowerCase());
     }
 

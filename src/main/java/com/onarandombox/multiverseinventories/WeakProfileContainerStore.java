@@ -30,6 +30,9 @@ final class WeakProfileContainerStore implements ProfileContainerStore {
 
     @Override
     public ProfileContainer getContainer(String containerName) {
+        if (containerName == null) {
+            return null;
+        }
         ProfileContainer container = this.containers.get(containerName.toLowerCase());
         if (container == null) {
             container = new WeakProfileContainer(this.getInventories(), containerName, containerType);

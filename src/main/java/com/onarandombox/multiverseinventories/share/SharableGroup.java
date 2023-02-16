@@ -28,6 +28,7 @@ public final class SharableGroup implements Shares {
      * @return The names of this SharableGroup for setting as shared in the config.
      * All names in this array may be used to set a group as sharing this SharableGroup.
      */
+    @Override
     public String[] getNames() {
         return this.names;
     }

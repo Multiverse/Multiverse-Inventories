@@ -53,7 +53,7 @@ class GroupSharesPrompt extends InventoriesPrompt {
             } else {
                 messager.normal(Message.GROUP_UPDATED, sender);
             }
-            messager.normal(Message.INFO_GROUP, sender, group.getName());
+            messager.normal(Message.INFO_GROUP_HEADER, sender, group.getName());
             messager.normal(Message.INFO_GROUPS_INFO, sender, group.getWorlds(), group.getShares());
             plugin.getGroupManager().checkForConflicts(sender);
             return nextPrompt;
