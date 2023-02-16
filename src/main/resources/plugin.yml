@@ -2,7 +2,7 @@ name: Multiverse-Inventories
 main: com.onarandombox.multiverseinventories.MultiverseInventories
 version: maven-version-number
 api-version: 1.13
-author: dumptruckman
+authors: ['dumptruckman']
 depend: ['Multiverse-Core']
 softdepend: [MultiInv, WorldInventories, Multiverse-Adventure]
 

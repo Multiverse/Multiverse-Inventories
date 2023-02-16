@@ -2,11 +2,13 @@ package com.onarandombox.multiverseinventories;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVCore;
 import com.onarandombox.MultiverseCore.api.MVPlugin;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
@@ -33,6 +35,8 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
  */
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
+    private static final int PROTOCOL = 50;
+
     private static MultiverseInventories inventoriesPlugin;
 
     public static MultiverseInventories getPlugin() {
@@ -49,7 +53,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private ProfileContainerStore groupProfileContainerStore = null;
     private ImportManager importManager = new ImportManager(this);
 
-    private MultiverseCore core = null;
+    private MVCore core = null;
     private InventoriesConfig config = null;
     private FlatFileProfileDataSource data = null;
 
@@ -80,49 +84,43 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * {@inheritDoc}
      */
     @Override
-    public void onDisable() {
-        for (final Player player : getServer().getOnlinePlayers()) {
-            final String world = player.getWorld().getName();
-            //getData().updateLastWorld(player.getName(), world);
-            if (getMVIConfig().usingLoggingSaveLoad()) {
-                ShareHandlingUpdater.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
-                        getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
-                getData().setLoadOnLogin(player.getName(), true);
-            }
-        }
-
-        this.dupingPatch.disable();
-
-        Logging.shutdown();
+    public void onLoad() {
+        Logging.init(this);
+        this.getDataFolder().mkdirs();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onEnable() {
-        Logging.init(this);
-        Perm.register(this);
-
-        MultiverseCore mvCore;
-        mvCore = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        // Test if the Core was found, if not we'll disable this plugin.
-        if (mvCore == null) {
-            Logging.severe("Multiverse-Core not found, disabling...");
+    public final void onEnable() {
+        this.core = (MVCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
+        if (this.core == null) {
+            Logging.severe("Core not found! You must have Multiverse-Core installed to use this plugin!");
+            Logging.severe("Grab a copy at: ");
+            Logging.severe("https://dev.bukkit.org/projects/multiverse-core");
+            Logging.severe("Disabling!");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        this.setCore(mvCore);
-
-        if (this.getCore().getProtocolVersion() < this.getRequiredProtocol()) {
+        if (this.core.getProtocolVersion() < this.getProtocolVersion()) {
             Logging.severe("Your Multiverse-Core is OUT OF DATE");
-            Logging.severe("This version of Multiverse-Inventories requires Protocol Level: " + this.getRequiredProtocol());
-            Logging.severe("Your of Core Protocol Level is: " + this.getCore().getProtocolVersion());
+            Logging.severe("This version of " + this.getDescription().getName() + " requires Protocol Level: " + this.getProtocolVersion());
+            Logging.severe("Your of Core Protocol Level is: " + this.core.getProtocolVersion());
             Logging.severe("Grab an updated copy at: ");
-            Logging.severe("http://bukkit.onarandombox.com/?dir=multiverse-core");
+            Logging.severe("https://dev.bukkit.org/projects/multiverse-core");
+            Logging.severe("Disabling!");
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        Logging.setDebugLevel(core.getMVConfig().getGlobalDebug());
+        this.core.incrementPluginCount();
+        this.onMVPluginEnable();
+        Logging.config("Version %s (API v%s) Enabled - By %s", this.getDescription().getVersion(), getProtocolVersion(), getAuthors());
+    }
+
+    private void onMVPluginEnable() {
+        Perm.register(this);
 
         this.reloadConfig();
 
@@ -137,15 +135,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         // Initialize data class
         //this.getWorldProfileContainerStore().setWorldProfiles(this.getData().getWorldProfiles());
 
-        Logging.setDebugLevel(getCore().getMVConfig().getGlobalDebug());
-
-        this.getCore().incrementPluginCount();
-
         // Register Events
         Bukkit.getPluginManager().registerEvents(inventoriesListener, this);
         if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
             Bukkit.getPluginManager().registerEvents(adventureListener, this);
         }
+
         if (getCore().getProtocolVersion() >= 24) {
             new CoreDebugListener(this);
         }
@@ -159,9 +154,27 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         Sharables.init(this);
 
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
+    }
 
-        // Display enable message/version info
-        Logging.log(true, Level.INFO, "enabled.");
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisable() {
+        for (final Player player : getServer().getOnlinePlayers()) {
+            final String world = player.getWorld().getName();
+            //getData().updateLastWorld(player.getName(), world);
+            if (getMVIConfig().usingLoggingSaveLoad()) {
+                ShareHandlingUpdater.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
+                        getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
+                getData().setLoadOnLogin(player.getName(), true);
+            }
+        }
+
+        this.dupingPatch.disable();
+
+        this.core.decrementPluginCount();
+        Logging.shutdown();
     }
 
     private void registerCommands() {
@@ -191,7 +204,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * {@inheritDoc}
      */
     @Override
-    public MultiverseCore getCore() {
+    public MVCore getCore() {
         return this.core;
     }
 
@@ -199,16 +212,32 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * {@inheritDoc}
      */
     @Override
-    public void setCore(MultiverseCore core) {
-        this.core = core;
+    public int getProtocolVersion() {
+        return PROTOCOL;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getProtocolVersion() {
-        return 1;
+    public String getAuthors() {
+        List<String> authorsList = this.getDescription().getAuthors();
+        if (authorsList.size() == 0) {
+            return "";
+        }
+
+        StringBuilder authors = new StringBuilder();
+        authors.append(authorsList.get(0));
+
+        for (int i = 1; i < authorsList.size(); i++) {
+            if (i == authorsList.size() - 1) {
+                authors.append(" and ").append(authorsList.get(i));
+            } else {
+                authors.append(", ").append(authorsList.get(i));
+            }
+        }
+
+        return authors.toString();
     }
 
     /**
