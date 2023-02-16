@@ -41,7 +41,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return inventoriesPlugin;
     }
 
-    private final int requiresProtocol = 22;
     private final InventoriesListener inventoriesListener = new InventoriesListener(this);
     private final AdventureListener adventureListener = new AdventureListener(this);
 
@@ -351,13 +350,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             throw new IllegalArgumentException("The new messager can't be null!");
         }
         this.messager = messager;
-    }
-
-    /**
-     * @return The required protocol version of core.
-     */
-    public int getRequiredProtocol() {
-        return this.requiresProtocol;
     }
 
     /**
