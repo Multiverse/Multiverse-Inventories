@@ -43,3 +43,7 @@ debug.log
 # Doxygen
 /docs/html
 debug.txt
+
+# Gradle
+.gradle
+

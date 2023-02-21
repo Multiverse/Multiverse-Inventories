@@ -1,6 +1,6 @@
 name: Multiverse-Inventories
 main: com.onarandombox.multiverseinventories.MultiverseInventories
-version: maven-version-number
+version: ${version}
 api-version: 1.13
 author: dumptruckman
 depend: ['Multiverse-Core']

@@ -13,9 +13,7 @@
     <module name="JavadocPackage">
         <property name="allowLegacy" value="true"/>
     </module>
-    <module name="NewlineAtEndOfFile">
-        <property name="severity" value="info"/>
-    </module>
+    <module name="NewlineAtEndOfFile" />
     <module name="Translation"/>
     <module name="FileLength"/>
     <module name="FileTabCharacter">
@@ -78,7 +76,10 @@
         <module name="UnusedImports">
             <property name="processJavadoc" value="true"/>
         </module>
-        <module name="MethodLength"/>
+        <module name="MethodLength">
+            <property name="severity" value="warning"/>
+            <property name="countEmpty" value="false"/>
+        </module>
         <module name="ParameterNumber"/>
         <module name="EmptyForIteratorPad"/>
         <module name="MethodParamPad"/>
@@ -103,7 +104,6 @@
         </module>
         <module name="LeftCurly"/>
         <module name="RightCurly"/>
-        <module name="DoubleCheckedLocking"/>
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="HiddenField">
@@ -115,7 +115,6 @@
             <property name="ignoreNumbers" value="-1, 0, 0.5, 1, 2, 3"/>
         </module>
         <module name="MissingSwitchDefault"/>
-        <module name="RedundantThrows"/>
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
         <!-- Don't like errors for `final` missing
@@ -140,4 +139,3 @@
         <module name="MissingOverride"/>
     </module>
 </module>
-
