@@ -7,7 +7,7 @@ plugins {
 
 version = System.getenv('GITHUB_VERSION') ?: 'local'
 group = 'com.onarandombox.multiverseinventories'
-description = 'multiverse-inventories'
+description = 'Multiverse-Inventories'
 
 java.sourceCompatibility = JavaVersion.VERSION_11
 
