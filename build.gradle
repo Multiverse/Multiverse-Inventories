@@ -13,6 +13,7 @@ java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenLocal()
+    mavenCentral()
 
     maven {
         name = 'onarandombox'
