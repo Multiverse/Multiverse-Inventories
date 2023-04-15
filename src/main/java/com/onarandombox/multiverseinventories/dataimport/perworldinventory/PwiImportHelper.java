@@ -1,5 +1,17 @@
 package com.onarandombox.multiverseinventories.dataimport.perworldinventory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.potion.PotionEffect;
+
 import com.dumptruckman.bukkit.configuration.util.SerializationHelper;
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
@@ -9,6 +21,7 @@ import com.onarandombox.multiverseinventories.dataimport.DataImportException;
 import com.onarandombox.multiverseinventories.profile.ProfileTypes;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 import com.onarandombox.multiverseinventories.share.Sharables;
+
 import me.ebonjaeger.perworldinventory.Group;
 import me.ebonjaeger.perworldinventory.GroupManager;
 import me.ebonjaeger.perworldinventory.api.PerWorldInventoryAPI;
@@ -21,18 +34,6 @@ import me.ebonjaeger.perworldinventory.data.ProfileKey;
 import me.ebonjaeger.perworldinventory.data.ProfileManager;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffect;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 class PwiImportHelper {
 
@@ -67,7 +68,7 @@ class PwiImportHelper {
         }
     }
 
-    /**
+	/**
      * Do the necessary reflection to get access to the classes needed for data import.
      */
     private void pwiSetUp() throws DataImportException {
@@ -169,14 +170,24 @@ class PwiImportHelper {
             Logging.finer("No data for %s.",  pwiKey.toString());
             return null;
         }
-
-        PlayerProfile pwiPlayerProfile;
+        PlayerProfile pwiPlayerProfile = null;
         try {
-            JSONObject jsonObject = (JSONObject) PARSER.parse(new FileInputStream(pwiPlayerDataFile));
-            pwiPlayerProfile = (PlayerProfile) SerializationHelper.deserialize(jsonObject);
+        	JSONObject jsonObject = (JSONObject) PARSER.parse(new FileInputStream(pwiPlayerDataFile));
+        	
+        	if((!jsonObject.containsKey("data-format") || ((int)jsonObject.get("data-format")) < 2)) {
+        		Logging.finer("Inventory format too old to import. %s.",   pwiPlayerDataFile.getAbsolutePath());
+        		return null;
+        	}
+        	
+           pwiPlayerProfile = (PlayerProfile) SerializationHelper.deserialize(jsonObject);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new DataImportException("Unable to parse file into profile: " + pwiPlayerDataFile.getAbsolutePath());
+        	if(Bukkit.getOfflinePlayer(pwiKey.getUuid()).hasPlayedBefore()){
+        		  e.printStackTrace();
+                  throw new DataImportException("Unable to parse file into profile: " + pwiPlayerDataFile.getAbsolutePath());
+        	}else {
+        		//Migration command for PWI does not take into account players that aren't present in the offline player directory. 
+        		Logging.finer("We have a profile that failed to decode, because they haven't played on the server before. %s.",   pwiPlayerDataFile.getAbsolutePath());
+        	}
         }
 
         if (pwiPlayerProfile == null) {

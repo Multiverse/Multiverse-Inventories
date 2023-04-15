@@ -38,7 +38,9 @@ public abstract class AbstractDataImporter<T extends Plugin> implements DataImpo
             doDataImport();
         } catch (DataImportException e) {
             Logging.severe(e.getMessage());
-            Logging.severe("Cause: %s", e.getCauseException().getMessage());
+            if(e.getCauseException() != null) {
+               Logging.severe("Cause: %s", e.getCauseException().getMessage());
+            }
             e.printStackTrace();
             return false;
         }
