@@ -19,8 +19,8 @@ public class ImportCommand extends InventoriesCommand {
 
     public ImportCommand(MultiverseInventories plugin) {
         super(plugin);
-        this.setName("Import from MultiInv/WorldInventories");
-        this.setCommandUsage("/mvinv import " + ChatColor.GREEN + "{MultiInv|WorldInventories}");
+        this.setName("Import from MultiInv/WorldInventories/PerWorldInventory");
+        this.setCommandUsage("/mvinv import " + ChatColor.GREEN + "{MultiInv|WorldInventories|PerWorldInventory}");
         this.setArgRange(1, 1);
         this.addKey("mvinv import");
         this.addKey("mvinvim");
