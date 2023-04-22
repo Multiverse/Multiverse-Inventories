@@ -54,7 +54,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         worldName = worldName.toLowerCase();
         List<WorldGroup> worldGroups = new ArrayList<>();
         for (WorldGroup worldGroup : getGroupNames().values()) {
-            if (worldGroup.containsWorld(worldName)) {
+            if (worldGroup.containsWorld(worldName, false)) {
                 worldGroups.add(worldGroup);
             }
         }
