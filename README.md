@@ -42,3 +42,7 @@ Simply build the source with Gradle:
 * If you'd like to make a financial contribution to the project, do consider joining our [Patreon](https://www.patreon.com/dumptruckman) or make a one-time donation [here](https://paypal.me/dumptruckman)!
 
 Additionally, we would like to give a big thanks to everyone that has supported Multiverse over the years, as well as those in the years to come. Thank you!
+
+## License
+
+Multiverse-Core is licensed under BSD-3-Clause License. Please see [LICENSE.md](LICENSE.md) for more info.
