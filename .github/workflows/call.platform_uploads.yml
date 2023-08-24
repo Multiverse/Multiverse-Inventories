@@ -33,12 +33,31 @@ jobs:
     secrets: inherit
     with:
       plugin_name: multiverse-inventories
+
       modrinth_project_id: qvdtDX3s
-      modrinth_dependencies: '[]'
+      modrinth_dependencies: >
+        [
+          {"project_id": "3wmN97b8", "dependency_type": "required"}
+        ]
+
       dbo_project_id: 35839
-      dbo_project_relations: '[]'
+      dbo_project_relations: >
+        [
+          {"slug": "multiverse-core", "type": "requiredDependency"},
+        ]
+
       hangar_slug: Multiverse-Inventories
-      hangar_plugin_dependencies: '{}'
+      hangar_plugin_dependencies: >
+        { "PAPER": [
+          {
+            "name": "Multiverse-Core",
+            "required": true,
+            "namespace": {
+              "owner": "Multiverse",
+              "slug": "Multiverse-Core"
+            }
+          }
+        ]}
 
       target_tag: ${{ inputs.target_tag }}
       upload_modrinth: ${{ inputs.upload_modrinth }}
