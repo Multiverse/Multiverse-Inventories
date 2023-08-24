@@ -1,0 +1,46 @@
+name: 'Call: Platform Uploads'
+
+on:
+  workflow_call:
+    inputs:
+      target_tag:
+        description: 'Version to upload'
+        required: true
+        type: string
+      upload_modrinth:
+        description: 'Upload to modrinth.com'
+        required: true
+        type: string
+      upload_dbo:
+        description: 'Upload to dev.bukkit.org'
+        required: true
+        type: string
+      upload_hangar:
+        description: 'Upload to hangar.papermc.io'
+        required: true
+        type: string
+    secrets:
+      MODRINTH_TOKEN:
+        required: true
+      DBO_UPLOAD_API_TOKEN:
+        required: true
+      HANGAR_UPLOAD_TOKEN:
+        required: true
+
+jobs:
+  platform_uploads:
+    uses: benwoo1110/Multiverse-Core/.github/workflows/generic.platform_uploads.yml@main
+    secrets: inherit
+    with:
+      plugin_name: multiverse-inventories
+      modrinth_project_id: qvdtDX3s
+      modrinth_dependencies: '[]'
+      dbo_project_id: 35839
+      dbo_project_relations: '[]'
+      hangar_slug: Multiverse-Inventories
+      hangar_plugin_dependencies: '{}'
+
+      target_tag: ${{ inputs.target_tag }}
+      upload_modrinth: ${{ inputs.upload_modrinth }}
+      upload_dbo: ${{ inputs.upload_dbo }}
+      upload_hangar: ${{ inputs.upload_hangar }}
