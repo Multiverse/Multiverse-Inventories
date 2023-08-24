@@ -29,7 +29,7 @@ on:
 
 jobs:
   platform_uploads:
-    uses: benwoo1110/Multiverse-Core/.github/workflows/generic.platform_uploads.yml@main
+    uses: Multiverse/Multiverse-Core/.github/workflows/generic.platform_uploads.yml@main
     secrets: inherit
     with:
       plugin_name: multiverse-inventories
