@@ -58,7 +58,6 @@ jobs:
               "slug": "Multiverse-Core"
             }
           }
-          }
         ]}
 
       target_tag: ${{ inputs.target_tag }}
