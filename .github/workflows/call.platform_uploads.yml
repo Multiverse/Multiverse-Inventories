@@ -37,13 +37,19 @@ jobs:
       modrinth_project_id: qvdtDX3s
       modrinth_dependencies: >
         [
-          {"project_id": "3wmN97b8", "dependency_type": "required"}
+          {"project_id": "3wmN97b8", "dependency_type": "required"},
+          {"project_id": "8VMk6P0I", "dependency_type": "optional"},
+          {"project_id": "vtawPsTo", "dependency_type": "optional"},
+          {"project_id": "WuErDeI1", "dependency_type": "optional"}
         ]
 
       dbo_project_id: 35839
       dbo_project_relations: >
         [
           {"slug": "multiverse-core", "type": "requiredDependency"},
+          {"slug": "multiverse-portals", "type": "optionalDependency"},
+          {"slug": "multiverse-netherportals", "type": "optionalDependency"},
+          {"slug": "multiverse-signportals", "type": "optionalDependency"}
         ]
 
       hangar_slug: Multiverse-Inventories
@@ -55,6 +61,30 @@ jobs:
             "namespace": {
               "owner": "Multiverse",
               "slug": "Multiverse-Core"
+            }
+          },
+          {
+            "name": "Multiverse-Portals",
+            "required": false,
+            "namespace": {
+              "owner": "Multiverse",
+              "slug": "Multiverse-Portals"
+            }
+          },
+          {
+            "name": "Multiverse-NetherPortals",
+            "required": false,
+            "namespace": {
+              "owner": "Multiverse",
+              "slug": "Multiverse-NetherPortals"
+            }
+          },
+          {
+            "name": "Multiverse-SignPortals",
+            "required": false,
+            "namespace": {
+              "owner": "Multiverse",
+              "slug": "Multiverse-SignPortals"
             }
           }
         ]}
