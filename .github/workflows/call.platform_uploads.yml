@@ -49,7 +49,8 @@ jobs:
           {"slug": "multiverse-core", "type": "requiredDependency"},
           {"slug": "multiverse-portals", "type": "optionalDependency"},
           {"slug": "multiverse-netherportals", "type": "optionalDependency"},
-          {"slug": "multiverse-signportals", "type": "optionalDependency"}
+          {"slug": "multiverse-signportals", "type": "optionalDependency"},
+          {"slug": "vault", "type": "optionalDependency"}
         ]
 
       hangar_slug: Multiverse-Inventories
