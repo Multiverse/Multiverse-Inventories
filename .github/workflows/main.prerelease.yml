@@ -2,7 +2,7 @@ name: 'Main: Prerelease'
 
 on:
   push:
-    branches: [revamp-actions]
+    branches: [main]
 
 jobs:
   github_release_on_push:
@@ -10,7 +10,7 @@ jobs:
     secrets: inherit
     with:
       release_mode: prerelease
-      version_bump: patch
+      version_bump: prlabel
 
   platform_uploads_on_push:
     needs: github_release_on_push
