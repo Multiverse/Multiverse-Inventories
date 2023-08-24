@@ -57,30 +57,7 @@ jobs:
               "owner": "Multiverse",
               "slug": "Multiverse-Core"
             }
-          },
-          {
-            "name": "Multiverse-Portals",
-            "required": false,
-            "namespace": {
-              "owner": "Multiverse",
-              "slug": "Multiverse-Portals"
-            }
-          },
-          {
-            "name": "Multiverse-NetherPortals",
-            "required": false,
-            "namespace": {
-              "owner": "Multiverse",
-              "slug": "Multiverse-NetherPortals"
-            }
-          },
-          {
-            "name": "Multiverse-SignPortals",
-            "required": false,
-            "namespace": {
-              "owner": "Multiverse",
-              "slug": "Multiverse-SignPortals"
-            }
+          }
           }
         ]}
 
