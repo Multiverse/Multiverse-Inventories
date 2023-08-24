@@ -10,7 +10,7 @@ jobs:
     secrets: inherit
     with:
       release_mode: prerelease
-      version_bump: prlabel
+      version_bump: patch
 
   platform_uploads_on_push:
     needs: github_release_on_push
