@@ -43,7 +43,7 @@ commands:
   mvinvraddshare:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
-  mvinvaddword:
+  mvinvaddworld:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
   mvinvaddw:
