@@ -1,6 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.onarandombox.MultiverseCore.api.MVDestination;
 import com.onarandombox.multiverseinventories.event.ShareHandlingEvent;
 import com.onarandombox.multiverseinventories.event.WorldChangeShareHandlingEvent;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
@@ -21,6 +22,7 @@ final class WorldChangeShareHandler extends ShareHandler {
     private final String toWorld;
     private final List<WorldGroup> fromWorldGroups;
     private final List<WorldGroup> toWorldGroups;
+    private final boolean readLastLocation;
 
     WorldChangeShareHandler(MultiverseInventories inventories, Player player, String fromWorld, String toWorld) {
         super(inventories, player);
@@ -31,6 +33,18 @@ final class WorldChangeShareHandler extends ShareHandler {
         this.fromWorldGroups = getAffectedWorldGroups(fromWorld);
         // Get any groups we may need to load stuff from.
         this.toWorldGroups = getAffectedWorldGroups(toWorld);
+
+        // don't read last_location if there is an exact teleportation happening
+        boolean readLastLocation = true;
+        TeleportDetails.TeleportDestination<?> teleportDestination = TeleportDetails.getTeleportDestination(player);
+        if (teleportDestination != null && teleportDestination.getType() == TeleportDetails.TeleportType.MVTP) {
+            MVDestination mvDestination = (MVDestination) teleportDestination.getDestination();
+            if (mvDestination.getIdentifier().equals("e")) {
+                readLastLocation = false;
+            }
+        }
+
+        this.readLastLocation = readLastLocation;
 
         prepareProfiles();
     }
@@ -82,7 +96,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
     private void addProfiles() {
         addWriteProfiles();
-        new ReadProfilesAggregator().addReadProfiles();
+        new ReadProfilesAggregator(this.readLastLocation).addReadProfiles();
     }
 
     private void addWriteProfiles() {
@@ -100,6 +114,11 @@ final class WorldChangeShareHandler extends ShareHandler {
     private class ReadProfilesAggregator {
 
         private Shares sharesToRead;
+        private final boolean readLastLocation;
+
+        ReadProfilesAggregator(boolean readLastLocation) {
+            this.readLastLocation = readLastLocation;
+        }
 
         private void addReadProfiles() {
             sharesToRead = Sharables.noneOf();
@@ -149,6 +168,10 @@ final class WorldChangeShareHandler extends ShareHandler {
             PlayerProfile playerProfile = getWorldGroupPlayerData(worldGroup);
             Shares sharesToAdd = getWorldGroupShares(worldGroup);
 
+            if (!this.readLastLocation) {
+                sharesToAdd.remove(Sharables.LAST_LOCATION);
+            }
+
             addReadProfile(playerProfile, sharesToAdd);
             sharesToRead.addAll(sharesToAdd);
         }
@@ -178,6 +201,10 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         private void addUnhandledSharesFromToWorld() {
             Shares unhandledShares = Sharables.complimentOf(sharesToRead);
+
+            if (!this.readLastLocation) {
+                unhandledShares.remove(Sharables.LAST_LOCATION);
+            }
 
             Logging.finer("%s are left unhandled, defaulting to toWorld", unhandledShares);
 
