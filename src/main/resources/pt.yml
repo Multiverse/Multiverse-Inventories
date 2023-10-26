@@ -1,0 +1,89 @@
+TEST_STRING: 'uma string de teste do recurso'
+
+# Generic Strings
+GENERIC_SORRY: 'Desculpa...'
+GENERIC_PAGE: 'pagina'
+GENERIC_OF: 'de'
+GENERIC_UNLOADED: 'DESCARREGADO'
+GENERIC_PLUGIN_DISABLED: 'Este plugin está desabilitado!'
+GENERIC_ERROR: '[ERRO]'
+GENERIC_SUCCESS: '[Sucesso]'
+GENERIC_INFO: '[INFORMAÇÃO]'
+GENERIC_HELP: '[AJUDA]'
+GENERIC_COMMAND_NO_PERMISSION: 'Sem permissão para %1. (%2)'
+GENERIC_THE_CONSOLE: 'a consola'
+GENERIC_NOT_LOGGED_IN: '%1 não está logado agora!'
+GENERIC_OFF: 'DESLIGADO'
+
+# Errors
+ERROR_CONFIG_LOAD: 'Encontrou um erro ao carregar o arquivo de configuração. Desativando...'
+ERROR_DATA_LOAD: 'Encontrou um erro ao carregar o arquivo de dados. Desativando...'
+ERROR_NO_GROUP: '&6Não existe nenhum grupo com o nome: &f%1'
+ERROR_NO_WORLD: '&6Não existe mundo com esse nome: &f%1'
+ERROR_NO_WORLD_PROFILE: '&6Não existe um perfil de mundo para o mundo: &f%1'
+ERROR_PLUGIN_NOT_ENABLED: '&f%1 &6não está ativado, então não pode importar dados dele!'
+ERROR_UNSUPPORTED_IMPORT: '&6Desculpe, ''&f%1&6'' não é compatível com importação.'
+ERROR_NO_SHARES_SPECIFIED: '&cNão especificou nenhum compartilhamento válido!'
+
+CONFLICT_RESULTS: 'Conflito encontrado para grupos: ''%1'' and ''%2'' porque ambos compartilham: ''%3'' for the world(s): ''%4'''
+CONFLICT_CHECKING: 'Verificando conflitos em grupos...'
+CONFLICT_FOUND: 'Conflitos foram encontrados... Se isso não for resolvido, poderá ter problemas com seus dados.'
+CONFLICT_NOT_FOUND: 'No group conflicts found!'
+
+
+## Commands
+# Info Command
+INFO_WORLD: 
+- '&b===[ Informações para o mundo: &6%1&b ]==='
+INFO_WORLD_INFO:
+- '&6Grupos:&f %1'
+INFO_GROUP: 
+- '&b===[ Informações para grupo: &6%1&b ]==='
+INFO_GROUP_INFO:
+- '&6os mundos:&f %1'
+- '&Partilhas:&f %2'
+- '&bPartilhas Negadas:&f %3'
+
+# List Command
+LIST_GROUPS:
+- '&b===[ Lista de grupos ]==='
+- '&6Grupos:&f %1'
+
+# Reload Command
+RELOAD_COMPLETE:
+- '&b===[ Recarga concluída! ]==='
+
+# Addworld Command
+WORLD_ADDED:
+- '&6Mundo:&f %1 &6adicionado ao grupo: &f%2'
+WORLD_ALREADY_EXISTS:
+- '&6Mundo:&f %1 &6já faz parte do grupo: &f%2'
+
+# Removeworld Command
+WORLD_REMOVED:
+- '&6Mundo:&f %1 &6removido do grupo: &f%2'
+WORLD_NOT_IN_GROUP:
+- '&6Mundo:&f %1 &6não faz parte do grupo: &f%2'
+
+# Add/remove shares command
+NOW_SHARING:
+- '&6Grupo: &f%1 &6agora está compartilhando: &f%2 &6e NÃO compartilhando: &f%3'
+
+# Spawn command
+TELEPORTING:
+- 'Teleporte para este o spawn grupo mundial''s ...'
+TELEPORTED_BY:
+- 'Você foi teletransportado por: %1'
+TELEPORT_CONSOLE_ERROR:
+- 'Da console, deve fornecer um jogador'
+
+# Debug command
+INVALID_DEBUG:
+- '&fNível de depuração inválido.  Por favor use o número 0-3.  &b(3 sendo muitas muitas mensagens!)'
+DEBUG_SET:
+- 'Modo de depuração é %1'
+
+# Toggle command
+NOW_USING_OPTIONAL: '&f%1 &6agora será considerado quando o jogador'' mudar de mundo.'
+NOW_NOT_USING_OPTIONAL: '&f%1 &6não será mais considerado quando o jogador'' mudar de mundo.'
+NO_OPTIONAL_SHARES: '&f%1 &6não é um compartilhamento opcional!'
