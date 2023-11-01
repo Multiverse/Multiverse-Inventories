@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 public final class WorldGroup {
 
@@ -174,6 +175,29 @@ public final class WorldGroup {
      * @return True if specified world is part of this group.
      */
     public boolean containsWorld(String worldName) {
+        return this.containsWorld(worldName, true);
+    }
+
+
+    /**
+     * @param worldName Name of world to check for.
+     * @param checkDefaults Check if the world would be part of this group from the default ungrouped world config option.  Needed to avoid a recursion when checking if the world is in any other group
+     * @return True if specified world is part of this group.
+     */
+    public boolean containsWorld(String worldName, boolean checkDefaults) {
+        boolean direct = this.getWorlds().contains(worldName.toLowerCase());
+
+        boolean byDefault = false;
+
+        if (checkDefaults && this.isDefault() && plugin.getMVIConfig().isDefaultingUngroupedWorlds()) {
+            List<WorldGroup> groups = plugin.getGroupManager().getGroupsForWorld(worldName);
+
+            byDefault = !groups.isEmpty();
+        }
+
+        return direct || byDefault;
+
+
         return this.getWorlds().contains(worldName.toLowerCase());
     }
 
