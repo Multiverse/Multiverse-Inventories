@@ -3,6 +3,7 @@ package com.onarandombox.multiverseinventories.profile;
 import com.onarandombox.multiverseinventories.profile.container.ContainerType;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -60,6 +61,16 @@ public interface ProfileDataSource {
      * @return the global profile for the player with the given UUID.
      */
     GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
+
+    /**
+     * Retrieves the global profile for a player which contains meta-data for the player.
+     * Does not create profile for new players.
+     *
+     * @param playerName The name of the player to retrieve for. This is required for updating name last known as.
+     * @param playerUUID The UUID of the player.
+     * @return the global profile for the player with the given UUID, if exists.
+     */
+    Optional<GlobalProfile> getExistingGlobalProfile(String playerName, UUID playerUUID);
 
     /**
      * Update the file for a player's global profile.

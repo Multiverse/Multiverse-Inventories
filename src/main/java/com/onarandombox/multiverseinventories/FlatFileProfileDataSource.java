@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -461,6 +462,48 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
         globalProfileCache.put(playerUUID, profile);
         return profile;
+    }
+
+    @Override
+    public Optional<GlobalProfile> getExistingGlobalProfile(String playerName, UUID playerUUID) {
+        GlobalProfile cached = globalProfileCache.getIfPresent(playerUUID);
+        if (cached != null) {
+            return Optional.of(cached);
+        }
+
+        File playerFile;
+
+        // Migrate old data if necessary
+        try {
+            playerFile = getGlobalFile(playerName, false);
+        } catch (IOException e) {
+            // This won't ever happen
+            e.printStackTrace();
+            return Optional.empty();
+        }
+        if (playerFile.exists()) {
+            GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
+            if (!migrateGlobalProfileToUUID(profile, playerFile)) {
+                Logging.warning("Could not properly migrate player global data file for " + playerName);
+            }
+            globalProfileCache.put(playerUUID, profile);
+            return Optional.of(profile);
+        }
+
+        // Load current format
+        try {
+            playerFile = getGlobalFile(playerUUID.toString(), false);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+        if (playerFile.exists()) {
+            GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
+            globalProfileCache.put(playerUUID, profile);
+            return Optional.of(profile);
+        } else {
+            return Optional.empty();
+        }
     }
 
     private boolean migrateGlobalProfileToUUID(GlobalProfile profile, File playerFile) {
