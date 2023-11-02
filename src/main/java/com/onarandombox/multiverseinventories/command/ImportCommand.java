@@ -2,12 +2,13 @@ package com.onarandombox.multiverseinventories.command;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.onarandombox.multiverseinventories.MultiverseInventories;
+import com.onarandombox.multiverseinventories.dataimport.DataImporter;
 import com.onarandombox.multiverseinventories.locale.Message;
-import com.onarandombox.multiverseinventories.migration.DataImporter;
-import com.onarandombox.multiverseinventories.migration.MigrationException;
+import com.onarandombox.multiverseinventories.dataimport.DataImportException;
 import com.onarandombox.multiverseinventories.util.Perm;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
@@ -29,27 +30,23 @@ public class ImportCommand extends InventoriesCommand {
 
     @Override
     public void runCommand(CommandSender sender, List<String> args) {
-        DataImporter importer = null;
-        if (args.get(0).equalsIgnoreCase("MultiInv")) {
-            importer = this.plugin.getImportManager().getMultiInvImporter();
-        } else if (args.get(0).equalsIgnoreCase("WorldInventories")) {
-            importer = this.plugin.getImportManager().getWorldInventoriesImporter();
-        } else {
-            this.messager.bad(Message.ERROR_PLUGIN_NOT_ENABLED,
-                    sender, args.get(0));
+        DataImporter<? extends Plugin> dataImporter = this.plugin.getImportManager().getImporter(args.get(0));
+        if (dataImporter == null) {
+            this.messager.bad(Message.ERROR_UNSUPPORTED_IMPORT, sender, args.get(0));
             return;
         }
-        if (importer == null) {
-            this.messager.bad(Message.ERROR_PLUGIN_NOT_ENABLED,
-                    sender, args.get(0));
-        } else {
-            try {
-                importer.importData();
-            } catch (MigrationException e) {
-                Logging.severe(e.getMessage());
-                Logging.severe("Cause: " + e.getCauseException().getMessage());
-            }
+        if (!dataImporter.isEnabled()) {
+            this.messager.bad(Message.ERROR_PLUGIN_NOT_ENABLED, sender, dataImporter.getPluginName());
+            return;
         }
+
+        this.messager.normal(Message.IMPORT_ATTEMPT, sender, dataImporter.getPluginName());
+        if (!dataImporter.importData()) {
+            this.messager.bad(Message.IMPORT_FAILED, sender, dataImporter.getPluginName());
+            return;
+        }
+
+        this.messager.normal(Message.IMPORT_SUCCESSFUL, sender, dataImporter.getPluginName());
     }
 }
 
