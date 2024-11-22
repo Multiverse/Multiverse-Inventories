@@ -167,7 +167,7 @@ tasks.register('runHabitatGenerator', JavaExec) {
 
     args = [
             '--file', "build/libs/multiverse-inventories-$version" + ".jar",
-            '--locator', 'Multiverse-Portals',
+            '--locator', 'Multiverse-Inventories',
     ]
 }
 tasks.named("build") { finalizedBy("runHabitatGenerator") }
