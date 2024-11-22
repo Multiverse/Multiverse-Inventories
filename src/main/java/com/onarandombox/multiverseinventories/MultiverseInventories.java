@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.MultiverseCore.api.MVCore;
-import com.onarandombox.MultiverseCore.api.MVPlugin;
+import org.mvplugins.multiverse.core.api.MVCore;
+import org.mvplugins.multiverse.core.api.MVPlugin;
 import com.onarandombox.multiverseinventories.locale.Message;
 import com.onarandombox.multiverseinventories.locale.Messager;
 import com.onarandombox.multiverseinventories.locale.Messaging;
@@ -26,11 +26,17 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.mvplugins.multiverse.core.config.MVCoreConfig;
+import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jakarta.inject.Provider;
+import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 /**
  * Multiverse-Inventories plugin main class.
  */
+@Service
 public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
 
     private static final int PROTOCOL = 50;
@@ -41,8 +47,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return inventoriesPlugin;
     }
 
-    private final InventoriesListener inventoriesListener = new InventoriesListener(this);
-    private final AdventureListener adventureListener = new AdventureListener(this);
+    private PluginServiceLocator serviceLocator;
+    @Inject
+    private Provider<MVCoreConfig> mvCoreConfig;
+    @Inject
+    private Provider<InventoriesListener> inventoriesListener;
 
     private Messager messager = new DefaultMessager(this);
     private WorldGroupManager worldGroupManager = null;
@@ -110,10 +119,24 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        Logging.setDebugLevel(core.getMVConfig().getGlobalDebug());
+
+        initializeDependencyInjection();
+
+        Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
         this.core.incrementPluginCount();
         this.onMVPluginEnable();
         Logging.config("Version %s (API v%s) Enabled - By %s", this.getDescription().getVersion(), getProtocolVersion(), getAuthors());
+    }
+
+    private void initializeDependencyInjection() {
+        serviceLocator = core.getServiceLocatorFactory()
+                .registerPlugin(new MultiverseInventoriesPluginBinder(this), core.getServiceLocator())
+                .flatMap(PluginServiceLocator::enable)
+                .getOrElseThrow(exception -> {
+                    Logging.severe("Failed to initialize dependency injection!");
+                    getServer().getPluginManager().disablePlugin(this);
+                    return new RuntimeException(exception);
+                });
     }
 
     private void onMVPluginEnable() {
@@ -133,10 +156,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         //this.getWorldProfileContainerStore().setWorldProfiles(this.getData().getWorldProfiles());
 
         // Register Events
-        Bukkit.getPluginManager().registerEvents(inventoriesListener, this);
-        if (Bukkit.getPluginManager().getPlugin("Multiverse-Adventure") != null) {
-            Bukkit.getPluginManager().registerEvents(adventureListener, this);
-        }
+        Bukkit.getPluginManager().registerEvents(inventoriesListener.get(), this);
 
         if (getCore().getProtocolVersion() >= 24) {
             new CoreDebugListener(this);
@@ -237,6 +257,11 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return authors.toString();
     }
 
+    @Override
+    public PluginServiceLocator getServiceLocator() {
+        return serviceLocator;
+    }
+
     /**
      * Builds a String containing Multiverse-Inventories' version info.
      *
@@ -280,7 +305,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     @Override
     public void reloadConfig() {
         try {
-            this.config = new InventoriesConfig(this);
+            this.config = new InventoriesConfig(this, mvCoreConfig.get());
             this.worldGroupManager = new YamlWorldGroupManager(this, this.config.getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);

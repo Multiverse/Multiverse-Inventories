@@ -1,7 +1,7 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.MultiverseCore.event.MVDebugModeEvent;
+import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

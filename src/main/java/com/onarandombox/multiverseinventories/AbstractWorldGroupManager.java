@@ -9,6 +9,7 @@ import com.onarandombox.multiverseinventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.mvplugins.multiverse.core.world.WorldManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,9 +26,11 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
     static final String DEFAULT_GROUP_NAME = "default";
     protected final Map<String, WorldGroup> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
+    protected final WorldManager worldManager;
 
     public AbstractWorldGroupManager(final MultiverseInventories plugin) {
         this.plugin = plugin;
+        this.worldManager = plugin.getServiceLocator().getService(WorldManager.class);
     }
 
     /**
@@ -60,7 +63,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         }
         // Only use the default group for worlds managed by MV-Core
         if (worldGroups.isEmpty() && plugin.getMVIConfig().isDefaultingUngroupedWorlds() &&
-                plugin.getCore().getMVWorldManager().isMVWorld(worldName)) {
+                this.worldManager.isWorld(worldName)) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());
         }

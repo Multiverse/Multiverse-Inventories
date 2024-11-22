@@ -1,9 +1,8 @@
 package com.onarandombox.multiverseinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import com.onarandombox.MultiverseCore.api.MVWorld;
-import com.onarandombox.MultiverseCore.event.MVConfigReloadEvent;
-import com.onarandombox.MultiverseCore.event.MVVersionEvent;
+import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
+import org.mvplugins.multiverse.core.event.MVVersionEvent;
 import com.onarandombox.multiverseinventories.profile.GlobalProfile;
 import com.onarandombox.multiverseinventories.profile.PlayerProfile;
 import com.onarandombox.multiverseinventories.profile.container.ProfileContainer;
@@ -32,6 +31,11 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
+import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.File;
@@ -42,14 +46,19 @@ import java.util.stream.Collectors;
 /**
  * PlayerListener for MultiverseInventories.
  */
+@Service
 public class InventoriesListener implements Listener {
 
-    private MultiverseInventories inventories;
+    private final MultiverseInventories inventories;
+    private final WorldManager worldManager;
+
     private List<WorldGroup> currentGroups;
     private Location spawnLoc = null;
 
-    public InventoriesListener(MultiverseInventories inventories) {
+    @Inject
+    InventoriesListener(@NotNull MultiverseInventories inventories, @NotNull WorldManager worldManager) {
         this.inventories = inventories;
+        this.worldManager = worldManager;
     }
 
     /**
@@ -219,8 +228,7 @@ public class InventoriesListener implements Listener {
             return;
         }
         // Warn if not managed by Multiverse-Core
-        if (this.inventories.getCore().getMVWorldManager().getMVWorld(toWorld) == null
-                || this.inventories.getCore().getMVWorldManager().getMVWorld(fromWorld) == null) {
+        if (!this.worldManager.isLoadedWorld(toWorld) || !this.worldManager.isLoadedWorld(fromWorld)) {
             Logging.fine("The from or to world is not managed by Multiverse-Core!");
         }
 
@@ -389,8 +397,7 @@ public class InventoriesListener implements Listener {
             if (group.getSpawnPriority().equals(priority)) {
                 String spawnWorldName = group.getSpawnWorld();
                 if (spawnWorldName != null) {
-                    MVWorld mvWorld = this.inventories.getCore()
-                            .getMVWorldManager().getMVWorld(spawnWorldName);
+                    LoadedMultiverseWorld mvWorld = this.worldManager.getLoadedWorld(spawnWorldName).getOrNull();
                     if (mvWorld != null) {
                         this.spawnLoc = mvWorld.getSpawnLocation();
                         event.setRespawnLocation(this.spawnLoc);

@@ -2,14 +2,22 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'checkstyle'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.gradleup.shadow' version '8.3.5'
 }
 
 version = System.getenv('GITHUB_VERSION') ?: 'local'
 group = 'com.onarandombox.multiverseinventories'
 description = 'Multiverse-Inventories'
 
-java.sourceCompatibility = JavaVersion.VERSION_11
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+// todo: Enable test when convert them to use mockbukkit like mv-core
+compileTestJava {
+    enabled = false
+}
 
 repositories {
     mavenLocal()
@@ -38,9 +46,8 @@ dependencies {
     }
 
     // Core
-    implementation('com.onarandombox.multiversecore:Multiverse-Core:4.2.2') {
-        exclude group: 'me.main__.util', module: 'SerializationConfig'
-    }
+    // TODO update to correct version once we have it published
+    implementation 'org.mvplugins.multiverse.core:multiverse-core:local'
 
     // Config
     api 'com.dumptruckman.minecraft:JsonConfiguration:1.1'
@@ -59,11 +66,6 @@ dependencies {
         exclude group: '*', module: '*'
     }
     implementation('me.drayshak:WorldInventories:1.0.2') {
-        exclude group: '*', module: '*'
-    }
-
-    // Legacy Multiverse-Adventure
-    implementation('com.onarandombox.multiverseadventure:Multiverse-Adventure:2.5.0-SNAPSHOT') {
         exclude group: '*', module: '*'
     }
 
@@ -152,8 +154,20 @@ shadowJar {
 
     configurations = [project.configurations.api]
 
-    archiveFileName = "$baseName-$version.$extension"
+    archiveClassifier.set('')
 }
 
 build.dependsOn shadowJar
 jar.enabled = false
+
+
+tasks.register('runHabitatGenerator', JavaExec) {
+    classpath = configurations["compileClasspath"]
+    mainClass.set('org.mvplugins.multiverse.external.jvnet.hk2.generator.HabitatGenerator')
+
+    args = [
+            '--file', "build/libs/multiverse-inventories-$version" + ".jar",
+            '--locator', 'Multiverse-Portals',
+    ]
+}
+tasks.named("build") { finalizedBy("runHabitatGenerator") }

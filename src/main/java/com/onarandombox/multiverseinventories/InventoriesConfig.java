@@ -6,6 +6,8 @@ import com.onarandombox.multiverseinventories.share.Shares;
 import com.onarandombox.multiverseinventories.util.CommentedYamlConfiguration;
 import io.papermc.lib.PaperLib;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.mvplugins.multiverse.core.api.MVConfig;
+import org.mvplugins.multiverse.core.config.MVCoreConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,9 +109,11 @@ public final class InventoriesConfig {
 
     private final CommentedYamlConfiguration config;
     private final MultiverseInventories plugin;
+    private final MVCoreConfig mvCoreConfig;
 
-    InventoriesConfig(MultiverseInventories plugin) throws IOException {
+    InventoriesConfig(MultiverseInventories plugin, MVCoreConfig mvCoreConfig) throws IOException {
         this.plugin = plugin;
+        this.mvCoreConfig = mvCoreConfig;
         // Make the data folders
         if (plugin.getDataFolder().mkdirs()) {
             Logging.fine("Created data folder.");
@@ -179,7 +183,7 @@ public final class InventoriesConfig {
      * @param globalDebug The new value. 0 = off.
      */
     public void setGlobalDebug(int globalDebug) {
-        plugin.getCore().getMVConfig().setGlobalDebug(globalDebug);
+        mvCoreConfig.setGlobalDebug(globalDebug);
     }
 
     /**
@@ -188,7 +192,7 @@ public final class InventoriesConfig {
      * @return globalDebug.
      */
     public int getGlobalDebug() {
-        return plugin.getCore().getMVConfig().getGlobalDebug();
+        return mvCoreConfig.getGlobalDebug();
     }
 
     /**

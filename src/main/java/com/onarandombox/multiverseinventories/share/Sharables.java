@@ -13,6 +13,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.mvplugins.multiverse.core.economy.MVEconomist;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ public final class Sharables implements Shares {
     static final Map<String, Shares> LOOKUP_MAP = new HashMap<String, Shares>();
 
     private static MultiverseInventories inventories = null;
+    private static MVEconomist economist = null;
 
     /**
      * Initialize this class with the instance of Inventories.
@@ -46,6 +49,9 @@ public final class Sharables implements Shares {
     public static void init(MultiverseInventories inventories) {
         if (Sharables.inventories == null) {
             Sharables.inventories = inventories;
+        }
+        if (Sharables.economist == null) {
+            Sharables.economist = inventories.getServiceLocator().getService(MVEconomist.class);
         }
     }
 
@@ -536,7 +542,7 @@ public final class Sharables implements Shares {
     public static final Sharable<Double> ECONOMY = new Sharable.Builder<Double>("economy", Double.class,
             new SharableHandler<Double>() {
                 private boolean hasValidEconomyHandler() {
-                    if (inventories.getCore().getEconomist().isUsingEconomyPlugin()) {
+                    if (economist.isUsingEconomyPlugin()) {
                         return true;
                     }
                     Logging.warning("You do not have an an economy plugin with Vault. Economy sharable will not work!");
@@ -550,7 +556,7 @@ public final class Sharables implements Shares {
                     if (!hasValidEconomyHandler()) {
                         return;
                     }
-                    profile.set(ECONOMY, inventories.getCore().getEconomist().getBalance(player));
+                    profile.set(ECONOMY, economist.getBalance(player));
                 }
 
                 @Override
@@ -560,10 +566,10 @@ public final class Sharables implements Shares {
                     }
                     Double money = profile.get(ECONOMY);
                     if (money == null) {
-                        inventories.getCore().getEconomist().setBalance(player, 0);
+                        economist.setBalance(player, 0);
                         return false;
                     }
-                    inventories.getCore().getEconomist().setBalance(player, money);
+                    economist.setBalance(player, money);
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(false, "balance")).optional()
