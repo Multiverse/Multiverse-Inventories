@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.onarandombox.multiverseinventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.core.api.MVCore;
 import org.mvplugins.multiverse.core.api.MVPlugin;
 import com.onarandombox.multiverseinventories.locale.Message;
@@ -26,11 +27,13 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
+import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 /**
@@ -48,6 +51,9 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private PluginServiceLocator serviceLocator;
+
+    @Inject
+    private Provider<MVCommandManager> commandManager;
     @Inject
     private Provider<MVCoreConfig> mvCoreConfig;
     @Inject
@@ -195,7 +201,13 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     }
 
     private void registerCommands() {
-
+        Try.of(() -> commandManager.get())
+                .andThenTry(commandManager -> serviceLocator.getAllServices(InventoriesCommand.class)
+                        .forEach(commandManager::registerCommand))
+                .onFailure(e -> {
+                    Logging.severe("Failed to register commands");
+                    e.printStackTrace();
+                });
     }
 
     private void hookImportables() {
