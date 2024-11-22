@@ -1,0 +1,159 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'checkstyle'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+version = System.getenv('GITHUB_VERSION') ?: 'local'
+group = 'com.onarandombox.multiverseinventories'
+description = 'Multiverse-Inventories'
+
+java.sourceCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+
+    maven {
+        name = 'onarandombox'
+        url = uri('https://repo.onarandombox.com/content/groups/public')
+    }
+
+    maven {
+        name ='papermc'
+        url = uri('https://papermc.io/repo/repository/maven-public/')
+    }
+
+    maven {
+        name = 'jitpack.io'
+        url = uri('https://jitpack.io/')
+    }
+}
+
+dependencies {
+    // Spigot
+    implementation('org.bukkit:bukkit:1.14.4-R0.1-SNAPSHOT') {
+        exclude group: 'junit', module: 'junit'
+    }
+
+    // Core
+    implementation('com.onarandombox.multiversecore:Multiverse-Core:4.2.2') {
+        exclude group: 'me.main__.util', module: 'SerializationConfig'
+    }
+
+    // Config
+    api 'com.dumptruckman.minecraft:JsonConfiguration:1.1'
+    api ('com.googlecode.json-simple:json-simple:1.1.1') {
+        exclude group: 'junit', module: 'junit'
+    }
+
+    // Utils
+    api 'io.papermc:paperlib:1.0.7'
+    api('com.dumptruckman.minecraft:Logging:1.1.1') {
+        exclude group: 'junit', module: 'junit'
+    }
+
+    // Other plugins for import
+    implementation('uk.co:MultiInv:3.0.6') {
+        exclude group: '*', module: '*'
+    }
+    implementation('me.drayshak:WorldInventories:1.0.2') {
+        exclude group: '*', module: '*'
+    }
+
+    // Legacy Multiverse-Adventure
+    implementation('com.onarandombox.multiverseadventure:Multiverse-Adventure:2.5.0-SNAPSHOT') {
+        exclude group: '*', module: '*'
+    }
+
+    // Tests
+    testImplementation 'com.github.MilkBowl:VaultAPI:1.7.1'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:3.11.2'
+}
+
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
+        it.outgoing.artifact(shadowJar)
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/Multiverse/Multiverse-Inventories"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+
+processResources {
+    def props = [version: "${project.version}"]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+
+    // This task should never be skipped. The tests depend on this having been run but we want the new version number
+    // that is created after tests are run and before we run again to publish.
+    outputs.upToDateWhen { false }
+}
+
+
+checkstyle {
+    toolVersion = '6.1.1'
+    configFile file('config/mv_checks.xml')
+    ignoreFailures = true
+}
+
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+}
+
+
+project.configurations.api.canBeResolved = true
+
+shadowJar {
+    relocate 'com.dumptruckman.minecraft.util.Logging', 'com.onarandombox.multiverseinventories.utils.InvLogging'
+    relocate 'com.dumptruckman.minecraft.util.DebugLog', 'com.onarandombox.multiverseinventories.utils.DebugFileLogger'
+    relocate 'com.dumptruckman.bukkit.configuration', 'com.onarandombox.multiverseinventories.utils.configuration'
+    relocate 'io.papermc.lib', 'com.onarandombox.multiverseinventories.utils.paperlib'
+    relocate 'net.minidev.json', 'com.onarandombox.multiverseinventories.utils.json'
+
+    configurations = [project.configurations.api]
+
+    archiveFileName = "$baseName-$version.$extension"
+}
+
+build.dependsOn shadowJar
+jar.enabled = false

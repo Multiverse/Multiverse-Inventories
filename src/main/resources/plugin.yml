@@ -1,6 +1,6 @@
 name: Multiverse-Inventories
 main: com.onarandombox.multiverseinventories.MultiverseInventories
-version: maven-version-number
+version: ${version}
 api-version: 1.13
 authors: ['dumptruckman']
 depend: ['Multiverse-Core']
@@ -43,7 +43,7 @@ commands:
   mvinvraddshare:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
-  mvinvaddword:
+  mvinvaddworld:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
   mvinvaddw:
@@ -106,6 +106,3 @@ commands:
   mvinvd:
     description: Generic Multiverse-Inventories Command
     usage: /<command>
-
-awareness:
-- !@UTF8
