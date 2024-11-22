@@ -6,7 +6,7 @@ plugins {
 }
 
 version = System.getenv('GITHUB_VERSION') ?: 'local'
-group = 'com.onarandombox.multiverseinventories'
+group = 'org.mvplugins.multiverse.inventories'
 description = 'Multiverse-Inventories'
 
 compileJava {
@@ -146,11 +146,11 @@ javadoc {
 project.configurations.api.canBeResolved = true
 
 shadowJar {
-    relocate 'com.dumptruckman.minecraft.util.Logging', 'com.onarandombox.multiverseinventories.utils.InvLogging'
-    relocate 'com.dumptruckman.minecraft.util.DebugLog', 'com.onarandombox.multiverseinventories.utils.DebugFileLogger'
-    relocate 'com.dumptruckman.bukkit.configuration', 'com.onarandombox.multiverseinventories.utils.configuration'
-    relocate 'io.papermc.lib', 'com.onarandombox.multiverseinventories.utils.paperlib'
-    relocate 'net.minidev.json', 'com.onarandombox.multiverseinventories.utils.json'
+    relocate 'com.dumptruckman.minecraft.util.Logging', 'org.mvplugins.multiverse.inventories.utils.InvLogging'
+    relocate 'com.dumptruckman.minecraft.util.DebugLog', 'org.mvplugins.multiverse.inventories.utils.DebugFileLogger'
+    relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
+    relocate 'io.papermc.lib', 'org.mvplugins.multiverse.inventories.utils.paperlib'
+    relocate 'net.minidev.json', 'org.mvplugins.multiverse.inventories.utils.json'
 
     configurations = [project.configurations.api]
 
