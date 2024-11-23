@@ -37,6 +37,11 @@ repositories {
         name = 'jitpack.io'
         url = uri('https://jitpack.io/')
     }
+
+    maven {
+        name = 'benwoo1110'
+        url = uri('https://repo.c0ding.party/multiverse-beta')
+    }
 }
 
 dependencies {
@@ -47,7 +52,7 @@ dependencies {
 
     // Core
     // TODO update to correct version once we have it published
-    implementation 'org.mvplugins.multiverse.core:multiverse-core:local'
+    implementation 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
 
     // Config
     api 'com.dumptruckman.minecraft:JsonConfiguration:1.1'
