@@ -2,7 +2,7 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
-import org.mvplugins.multiverse.core.event.MVVersionEvent;
+import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
@@ -67,12 +67,12 @@ public class InventoriesListener implements Listener {
      * @param event The MVVersionEvent that this plugin will listen for.
      */
     @EventHandler
-    public void versionRequest(MVVersionEvent event) {
-        event.appendVersionInfo(this.inventories.getVersionInfo());
+    public void dumpsDebugInfoRequest(MVDumpsDebugInfoEvent event) {
+        event.appendDebugInfo(this.inventories.getVersionInfo());
         File configFile = new File(this.inventories.getDataFolder(), "config.yml");
         File groupsFile = new File(this.inventories.getDataFolder(), "groups.yml");
-        event.putDetailedVersionInfo("multiverse-inventories/config.yml", configFile);
-        event.putDetailedVersionInfo("multiverse-inventories/groups.yml", groupsFile);
+        event.putDetailedDebugInfo("multiverse-inventories/config.yml", configFile);
+        event.putDetailedDebugInfo("multiverse-inventories/groups.yml", groupsFile);
     }
 
     /**
