@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.WorldGroup;
 import org.mvplugins.multiverse.inventories.DataStrings;
@@ -40,6 +41,7 @@ public final class Sharables implements Shares {
 
     private static MultiverseInventories inventories = null;
     private static MVEconomist economist = null;
+    private static AsyncSafetyTeleporter safetyTeleporter = null;
 
     /**
      * Initialize this class with the instance of Inventories.
@@ -52,6 +54,9 @@ public final class Sharables implements Shares {
         }
         if (Sharables.economist == null) {
             Sharables.economist = inventories.getServiceLocator().getService(MVEconomist.class);
+        }
+        if (Sharables.safetyTeleporter == null) {
+            Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
         }
     }
 
@@ -530,7 +535,7 @@ public final class Sharables implements Shares {
                     if (loc == null) {
                         return false;
                     }
-                    player.teleport(loc);
+                    safetyTeleporter.teleport(player, loc);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
