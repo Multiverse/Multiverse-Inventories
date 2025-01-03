@@ -46,7 +46,7 @@ repositories {
 
 dependencies {
     // Spigot
-    implementation('org.bukkit:bukkit:1.14.4-R0.1-SNAPSHOT') {
+    implementation('org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT') {
         exclude group: 'junit', module: 'junit'
     }
 

@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.block.data.type.Bed;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.WorldGroup;
@@ -490,7 +491,20 @@ public final class Sharables implements Shares {
                 public void updateProfile(PlayerProfile profile, Player player) {
                     Location bedSpawnLocation = null;
                     try {
+                        Logging.finer("profile bed: " + player.getBedSpawnLocation());
                         bedSpawnLocation = player.getBedSpawnLocation();
+
+                        var blockBedSpawnLocation = bedSpawnLocation.getBlock().getLocation();
+                        for(int x = -1; x <= 1; x++) {
+                            for(int z = -1; z <= 1; z++) {
+                                var newBedLoc = blockBedSpawnLocation.clone().add(x, 0, z);
+                                Logging.finest("new bed: " + newBedLoc);
+                                if (newBedLoc.getBlock().getBlockData() instanceof Bed) {
+                                    bedSpawnLocation = newBedLoc;
+                                    break;
+                                }
+                            }
+                        }
                     } catch (NullPointerException e) {
                         // TODO this is a temporary fix for the bug occurring in 1.16.X CB/Spigot/Paper
                         StackTraceElement[] stackTrace = e.getStackTrace();
@@ -513,6 +527,7 @@ public final class Sharables implements Shares {
                         return false;
                     }
                     player.setBedSpawnLocation(loc, true);
+                    Logging.finer("update bed: " + player.getBedSpawnLocation());
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
