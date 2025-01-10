@@ -556,7 +556,7 @@ public final class Sharables implements Shares {
                     if (loc == null) {
                         return false;
                     }
-                    safetyTeleporter.teleport(player, loc);
+                    safetyTeleporter.to(loc).checkSafety(false).teleport(player);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
