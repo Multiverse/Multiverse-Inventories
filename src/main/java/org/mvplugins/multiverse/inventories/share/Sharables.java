@@ -1,6 +1,8 @@
 package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.block.data.type.Bed;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
@@ -44,6 +46,7 @@ public final class Sharables implements Shares {
     private static MultiverseInventories inventories = null;
     private static MVEconomist economist = null;
     private static AsyncSafetyTeleporter safetyTeleporter = null;
+    private static Attribute maxHealthAttr = null;
 
     /**
      * Initialize this class with the instance of Inventories.
@@ -60,6 +63,7 @@ public final class Sharables implements Shares {
         if (Sharables.safetyTeleporter == null) {
             Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
         }
+        Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max-health"));
     }
 
     /**
@@ -172,8 +176,8 @@ public final class Sharables implements Shares {
                 public void updateProfile(PlayerProfile profile, Player player) {
                     double health = player.getHealth();
                     // Player is dead, so health should be regained to full.
-                    if (health <= 0) {
-                        health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                    if (health <= 0 && maxHealthAttr != null) {
+                        health = player.getAttribute(maxHealthAttr).getValue();
                     }
                     profile.set(HEALTH, health);
                 }
@@ -189,7 +193,9 @@ public final class Sharables implements Shares {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                        if (maxHealthAttr != null) {
+                            player.setHealth(player.getAttribute(maxHealthAttr).getValue());
+                        }
                         return false;
                     }
                     return true;
@@ -490,6 +496,10 @@ public final class Sharables implements Shares {
             new SharableHandler<Location>() {
                 @Override
                 public void updateProfile(PlayerProfile profile, Player player) {
+                    if (inventories.isUsingSpawnChangeEvent()) {
+                        // Bed spawn location already updated during PlayerSpawnChangeEvent
+                        return;
+                    }
                     Location bedSpawnLocation = null;
                     try {
                         Logging.finer("profile bed: " + player.getBedSpawnLocation());
@@ -512,6 +522,7 @@ public final class Sharables implements Shares {
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
+                        Logging.finer("No bed location saved");
                         player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
                         return false;
                     }

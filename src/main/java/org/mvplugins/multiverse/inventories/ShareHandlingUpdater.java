@@ -5,11 +5,12 @@ import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 class ShareHandlingUpdater {
 
@@ -47,7 +48,8 @@ class ShareHandlingUpdater {
             }
         }
         if (saved.size() > 0) {
-            Logging.finer("Persisted: " + StringUtils.join(saved, ", ") + " to "
+            Logging.finer("Persisted: "
+                    + saved.stream().map(Objects::toString).collect(Collectors.joining(", ")) + " to "
                     + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
                     + " (" + profile.getProfile().getProfileType() + ")"
                     + " for player " + profile.getProfile().getPlayer().getName());

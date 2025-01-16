@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
+import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
@@ -73,6 +74,11 @@ public class InventoriesListener implements Listener {
         File groupsFile = new File(this.inventories.getDataFolder(), "groups.yml");
         event.putDetailedDebugInfo("multiverse-inventories/config.yml", configFile);
         event.putDetailedDebugInfo("multiverse-inventories/groups.yml", groupsFile);
+    }
+
+    @EventHandler
+    public void onDebugModeChange(MVDebugModeEvent event) {
+        Logging.setDebugLevel(event.getLevel());
     }
 
     /**

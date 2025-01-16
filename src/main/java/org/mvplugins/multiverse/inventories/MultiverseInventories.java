@@ -73,6 +73,8 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     private File serverFolder = new File(System.getProperty("user.dir"));
 
+    private boolean usingSpawnChangeEvent = false;
+
     {
         inventoriesPlugin = this;
     }
@@ -163,6 +165,15 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
         // Register Events
         Bukkit.getPluginManager().registerEvents(inventoriesListener.get(), this);
+        try {
+            Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
+            Bukkit.getPluginManager().registerEvents(new SpawnChangeListener(this), this);
+            usingSpawnChangeEvent = true;
+            Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
+        } catch (ClassNotFoundException e) {
+            Logging.fine("PlayerSpawnChangeEvent will not be used!");
+            usingSpawnChangeEvent = false;
+        }
 
         if (getCore().getProtocolVersion() >= 24) {
             new CoreDebugListener(this);
@@ -435,6 +446,10 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             throw new IllegalArgumentException("That's not a folder!");
         }
         this.serverFolder = newServerFolder;
+    }
+
+    public boolean isUsingSpawnChangeEvent() {
+        return usingSpawnChangeEvent;
     }
 }
 

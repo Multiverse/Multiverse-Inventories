@@ -29,6 +29,15 @@ repositories {
     }
 
     maven {
+        name = 'spigot'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+        content {
+            includeGroup 'org.bukkit'
+            includeGroup 'org.spigotmc'
+        }
+    }
+
+    maven {
         name ='papermc'
         url = uri('https://papermc.io/repo/repository/maven-public/')
     }
@@ -46,7 +55,7 @@ repositories {
 
 dependencies {
     // Spigot
-    implementation('org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT') {
+    implementation('org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT') {
         exclude group: 'junit', module: 'junit'
     }
 
@@ -164,7 +173,6 @@ shadowJar {
 
 build.dependsOn shadowJar
 jar.enabled = false
-
 
 tasks.register('runHabitatGenerator', JavaExec) {
     classpath = configurations["compileClasspath"]
