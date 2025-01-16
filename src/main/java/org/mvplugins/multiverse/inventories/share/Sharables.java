@@ -3,9 +3,9 @@ package org.mvplugins.multiverse.inventories.share;
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
-import org.bukkit.block.data.type.Bed;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.WorldGroup;
 import org.mvplugins.multiverse.inventories.DataStrings;
 import org.mvplugins.multiverse.inventories.PlayerStats;
@@ -19,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -503,7 +502,7 @@ public final class Sharables implements Shares {
                     Location bedSpawnLocation = null;
                     try {
                         Logging.finer("profile bed: " + player.getBedSpawnLocation());
-                        bedSpawnLocation = findBedFromRespawnLocation(player.getBedSpawnLocation());
+                        bedSpawnLocation = SpawnChangeListener.findBedFromRespawnLocation(player.getBedSpawnLocation());
                     } catch (NullPointerException e) {
                         // TODO this is a temporary fix for the bug occurring in 1.16.X CB/Spigot/Paper
                         StackTraceElement[] stackTrace = e.getStackTrace();
@@ -532,23 +531,6 @@ public final class Sharables implements Shares {
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
-
-    private static @Nullable Location findBedFromRespawnLocation(@Nullable Location respawnLocation) {
-        if (respawnLocation == null) {
-            return null;
-        }
-        var blockBedSpawnLocation = respawnLocation.getBlock().getLocation();
-        for(int x = -1; x <= 1; x++) {
-            for(int z = -1; z <= 1; z++) {
-                var newBedLoc = blockBedSpawnLocation.clone().add(x, 0, z);
-                Logging.finest("Finding bed at: " + newBedLoc);
-                if (newBedLoc.getBlock().getBlockData() instanceof Bed) {
-                    return newBedLoc;
-                }
-            }
-        }
-        return respawnLocation;
-    }
 
     /**
      * Sharing Last Location.

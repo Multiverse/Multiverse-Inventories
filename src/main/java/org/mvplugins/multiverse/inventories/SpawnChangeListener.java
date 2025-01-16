@@ -14,6 +14,7 @@ import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class SpawnChangeListener implements Listener {
 
@@ -26,22 +27,33 @@ public class SpawnChangeListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     void onSpawnChange(PlayerSpawnChangeEvent event) {
         Player player = event.getPlayer();
-        PlayerProfile playerData = inventories.getWorldProfileContainerStore()
-                .getContainer(player.getWorld().getName())
-                .getPlayerData(player);
 
         Logging.fine("Respawn cause: %s", event.getCause());
 
         if (event.getCause() == Cause.BED) {
-            playerData.set(Sharables.BED_SPAWN, findBedFromRespawnLocation(event.getNewSpawn()));
+            updatePlayerSpawn(player, findBedFromRespawnLocation(event.getNewSpawn()));
             return;
         }
         if (event.getCause() == Cause.RESPAWN_ANCHOR) {
-            playerData.set(Sharables.BED_SPAWN, findAnchorFromRespawnLocation(event.getNewSpawn()));
+            updatePlayerSpawn(player, findAnchorFromRespawnLocation(event.getNewSpawn()));
             return;
         }
-        playerData.set(Sharables.BED_SPAWN, event.getNewSpawn());
-        inventories.getData().updatePlayerData(playerData);
+        updatePlayerSpawn(player, event.getNewSpawn());
+    }
+
+    private void updatePlayerSpawn(Player player, Location location) {
+        PlayerProfile playerProfile = inventories.getWorldProfileContainerStore()
+                .getContainer(player.getWorld().getName())
+                .getPlayerData(player);
+        playerProfile.set(Sharables.BED_SPAWN, location);
+
+        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(player.getWorld().getName());
+        for (WorldGroup fromGroup : fromGroups) {
+            playerProfile = inventories.getGroupProfileContainerStore()
+                    .getContainer(fromGroup.getName())
+                    .getPlayerData(player);
+            playerProfile.set(Sharables.BED_SPAWN, location);
+        }
     }
 
     public static @Nullable Location findBedFromRespawnLocation(@Nullable Location respawnLocation) {
