@@ -522,7 +522,7 @@ public final class Sharables implements Shares {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
                         Logging.finer("No bed location saved");
-                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
                     player.setBedSpawnLocation(loc, true);
