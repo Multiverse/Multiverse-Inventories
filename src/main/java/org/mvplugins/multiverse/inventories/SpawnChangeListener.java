@@ -49,6 +49,9 @@ public class SpawnChangeListener implements Listener {
 
         List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(player.getWorld().getName());
         for (WorldGroup fromGroup : fromGroups) {
+            if (!fromGroup.isSharing(Sharables.BED_SPAWN)) {
+                continue;
+            }
             playerProfile = inventories.getGroupProfileContainerStore()
                     .getContainer(fromGroup.getName())
                     .getPlayerData(player);
