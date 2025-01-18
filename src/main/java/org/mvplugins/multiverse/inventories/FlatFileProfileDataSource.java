@@ -6,6 +6,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
@@ -93,8 +94,11 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         }
     }
 
-    private static FileConfiguration getConfigHandleNow(File file) {
-        return JsonConfiguration.loadConfiguration(file);
+    private static FileConfiguration getConfigHandleNow(File file) throws IOException, InvalidConfigurationException {
+        JsonConfiguration jsonConfiguration = new JsonConfiguration();
+        jsonConfiguration.options().continueOnSerializationError(true);
+        jsonConfiguration.load(file);
+        return jsonConfiguration;
     }
 
     private static class ConfigLoader implements Callable<FileConfiguration> {

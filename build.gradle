@@ -64,7 +64,7 @@ dependencies {
     implementation 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
 
     // Config
-    api 'com.dumptruckman.minecraft:JsonConfiguration:1.1'
+    api 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
     api 'net.minidev:json-smart:2.5.1'
 
     // Utils
