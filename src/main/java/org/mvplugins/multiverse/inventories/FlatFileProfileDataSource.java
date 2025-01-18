@@ -40,7 +40,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
-    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);
+    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE);
 
     private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 

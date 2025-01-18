@@ -294,6 +294,6 @@ public class DataStrings {
         return potionEffectList.toArray(new PotionEffect[potionEffectList.size()]);
     }
 
-    private static final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);
+    private static final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE);
 }
 
