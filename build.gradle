@@ -65,9 +65,7 @@ dependencies {
 
     // Config
     api 'com.dumptruckman.minecraft:JsonConfiguration:1.1'
-    api ('com.googlecode.json-simple:json-simple:1.1.1') {
-        exclude group: 'junit', module: 'junit'
-    }
+    api 'net.minidev:json-smart:2.5.1'
 
     // Utils
     api 'io.papermc:paperlib:1.0.7'

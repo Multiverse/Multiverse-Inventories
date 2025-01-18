@@ -4,6 +4,8 @@ import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
@@ -18,7 +20,6 @@ import net.minidev.json.JSONObject;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
-    private final JSONParser JSON_PARSER = new JSONParser();
+    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE);
 
     private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 
@@ -337,13 +338,10 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         if (stats.isEmpty()) {
             return;
         }
-        org.json.simple.JSONObject jsonStats = null;
+        JSONObject jsonStats = null;
         try {
-            jsonStats = (org.json.simple.JSONObject) JSON_PARSER.parse(stats);
-        } catch (org.json.simple.parser.ParseException e) {
-            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
-                    profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
-        } catch (ClassCastException e) {
+            jsonStats = (JSONObject) JSON_PARSER.parse(stats);
+        } catch (ParseException | ClassCastException e) {
             Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
         }

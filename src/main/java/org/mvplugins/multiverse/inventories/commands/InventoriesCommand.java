@@ -11,6 +11,6 @@ import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Contract;
 @Contract
 public abstract class InventoriesCommand extends MultiverseCommand {
     protected InventoriesCommand(@NotNull MVCommandManager commandManager) {
-        super(commandManager);
+        super(commandManager, "mvinv");
     }
 }

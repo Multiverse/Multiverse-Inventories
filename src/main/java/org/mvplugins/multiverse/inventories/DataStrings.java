@@ -167,10 +167,7 @@ public class DataStrings {
         JSONObject jsonLoc;
         try {
             jsonLoc = (JSONObject) JSON_PARSER.parse(locString);
-        } catch (ParseException e) {
-            Logging.warning("Could not parse location! " + e.getMessage());
-            return null;
-        } catch (ClassCastException e) {
+        } catch (ParseException | ClassCastException e) {
             Logging.warning("Could not parse location! " + e.getMessage());
             return null;
         }

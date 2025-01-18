@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.core.api.world.WorldManager;
 import org.mvplugins.multiverse.inventories.profile.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.GroupingConflict;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -9,7 +10,6 @@ import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.mvplugins.multiverse.core.world.WorldManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
