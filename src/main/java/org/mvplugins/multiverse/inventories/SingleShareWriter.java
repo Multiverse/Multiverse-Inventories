@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 
@@ -26,9 +27,10 @@ public class SingleShareWriter<T> {
 
     public void write(T value) {
         if (sharable.isOptional() && !this.inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
+            Logging.finer("Skipping write for optional share: " + sharable);
             return;
         }
-
+        Logging.finer("Writing single share: " + sharable.getNames()[0]);
         String worldName = this.player.getWorld().getName();
         this.inventories.getWorldProfileContainerStore()
                 .getContainer(worldName)
