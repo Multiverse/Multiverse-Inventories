@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.core.config.MVCoreConfig;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Messaging;
@@ -18,6 +19,7 @@ import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
+import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import me.drayshak.WorldInventories.WorldInventories;
@@ -50,6 +52,8 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     private PluginServiceLocator serviceLocator;
 
     @Inject
+    private Provider<InventoriesConfig> configProvider;
+    @Inject
     private Provider<MVCommandManager> commandManager;
     @Inject
     private Provider<MVCoreConfig> mvCoreConfig;
@@ -62,7 +66,6 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     private ProfileContainerStore groupProfileContainerStore = null;
     private final ImportManager importManager = new ImportManager(this);
 
-    private InventoriesConfig config = null;
     private FlatFileProfileDataSource data = null;
 
     private InventoriesDupingPatch dupingPatch;
@@ -251,7 +254,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
      * @return the Config object which contains settings for this plugin.
      */
     public InventoriesConfig getMVIConfig() {
-        return this.config;
+        return this.configProvider.get();
     }
 
     /**
@@ -260,8 +263,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public void reloadConfig() {
         try {
-            this.config = new InventoriesConfig(this, mvCoreConfig.get());
-            this.worldGroupManager = new YamlWorldGroupManager(this, this.config.getConfig());
+            this.worldGroupManager = new YamlWorldGroupManager(this, this.configProvider.get().getConfig());
             this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
             this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
 
@@ -363,3 +365,4 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
         return usingSpawnChangeEvent;
     }
 }
+
