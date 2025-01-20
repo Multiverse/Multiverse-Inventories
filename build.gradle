@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'checkstyle'
     id 'com.gradleup.shadow' version '8.3.5'
+    id "org.jetbrains.kotlin.jvm" version "2.0.21"
 }
 
 version = System.getenv('GITHUB_VERSION') ?: 'local'
@@ -14,9 +17,16 @@ compileJava {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-// todo: Enable test when convert them to use mockbukkit like mv-core
 compileTestJava {
-    enabled = false
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+compileTestKotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_21)
+        javaParameters.set(true)
+    }
 }
 
 repositories {
@@ -55,13 +65,18 @@ repositories {
 
 dependencies {
     // Spigot
-    implementation('org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT') {
+    compileOnly('org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT') {
         exclude group: 'junit', module: 'junit'
     }
 
     // Core
     // TODO update to correct version once we have it published
     implementation 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
+
+    // hk2 for annotation processing only
+    compileOnly('org.glassfish.hk2:hk2-api:3.0.3') {
+        exclude group: '*', module: '*'
+    }
 
     // Config
     api 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
@@ -82,9 +97,15 @@ dependencies {
     }
 
     // Tests
-    testImplementation 'com.github.MilkBowl:VaultAPI:1.7.1'
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:3.11.2'
+    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21'
+    testImplementation 'org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.24.1'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'com.natpryce:hamkrest:1.8.0.1'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
+
+    // Annotation Processors
+    annotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
+    testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
 }
 
 
@@ -95,6 +116,12 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile) {
+    configure(options) {
+        options.compilerArgs << '-Aorg.glassfish.hk2.metadata.location=META-INF/hk2-locator/Multiverse-Inventories'
+    }
 }
 
 tasks.withType(Javadoc).configureEach {
@@ -108,6 +135,7 @@ configurations {
         it.outgoing.artifact(shadowJar)
     }
 }
+
 
 publishing {
     publications {
@@ -125,6 +153,15 @@ publishing {
             }
         }
     }
+}
+
+
+compileKotlin {
+    // We're not using Kotlin in the plugin itself, just tests!
+    enabled = false
+}
+configurations.findAll { !it.name.startsWith('test') }.each {
+    it.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
 }
 
 
@@ -162,23 +199,24 @@ shadowJar {
     relocate 'com.dumptruckman.minecraft.util.DebugLog', 'org.mvplugins.multiverse.inventories.utils.DebugFileLogger'
     relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
     relocate 'io.papermc.lib', 'org.mvplugins.multiverse.inventories.utils.paperlib'
-    relocate 'net.minidev.json', 'org.mvplugins.multiverse.inventories.utils.json'
+    relocate 'net.minidev', 'org.mvplugins.multiverse.inventories.utils.minidev'
 
     configurations = [project.configurations.api]
 
     archiveClassifier.set('')
+
+    dependencies {
+        exclude(dependency {
+            it.moduleGroup == 'org.jetbrains.kotlin'
+        })
+        exclude(dependency {
+            it.moduleGroup == 'org.jetbrains'
+        })
+        exclude(dependency {
+            it.moduleGroup == 'org.ow2.asm'
+        })
+    }
 }
 
 build.dependsOn shadowJar
 jar.enabled = false
-
-tasks.register('runHabitatGenerator', JavaExec) {
-    classpath = configurations["compileClasspath"]
-    mainClass.set('org.mvplugins.multiverse.external.jvnet.hk2.generator.HabitatGenerator')
-
-    args = [
-            '--file', "build/libs/multiverse-inventories-$version" + ".jar",
-            '--locator', 'Multiverse-Inventories',
-    ]
-}
-tasks.named("build") { finalizedBy("runHabitatGenerator") }
