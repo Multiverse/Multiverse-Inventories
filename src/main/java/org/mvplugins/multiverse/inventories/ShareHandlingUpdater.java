@@ -1,7 +1,6 @@
-package org.mvplugins.multiverse.inventories.listeners;
+package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class ShareHandlingUpdater {
+public final class ShareHandlingUpdater {
 
     static void updateProfile(final MultiverseInventories inventories,
                               final Player player,

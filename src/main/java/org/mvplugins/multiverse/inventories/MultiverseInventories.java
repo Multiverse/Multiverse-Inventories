@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.MultiversePlugin;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
@@ -17,7 +18,9 @@ import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Messaging;
 import org.mvplugins.multiverse.inventories.migration.ImportManager;
+import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -115,9 +118,6 @@ public final class MultiverseInventories extends MultiversePlugin implements Mes
             return;
         }
 
-        // Initialize data class
-        //this.getWorldProfileContainerStore().setWorldProfiles(this.getData().getWorldProfiles());
-
         // Register Events
         Bukkit.getPluginManager().registerEvents(inventoriesListener.get(), this);
         try {
@@ -147,15 +147,17 @@ public final class MultiverseInventories extends MultiversePlugin implements Mes
     @Override
     public void onDisable() {
         super.onDisable();
-//        for (final Player player : getServer().getOnlinePlayers()) {
-//            final String world = player.getWorld().getName();
-//            //getData().updateLastWorld(player.getName(), world);
-//            if (getMVIConfig().usingLoggingSaveLoad()) {
-//                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(Sharables.allOf(),
-//                        getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
-//                getData().setLoadOnLogin(player.getName(), true);
-//            }
-//        }
+        for (final Player player : getServer().getOnlinePlayers()) {
+            final String world = player.getWorld().getName();
+            if (inventoriesConfig.get().usingLoggingSaveLoad()) {
+                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(
+                        Sharables.allOf(),
+                        profileContainerStoreProvider.get().getStore(ContainerType.WORLD)
+                                .getContainer(world)
+                                .getPlayerData(player)));
+                profileDataSource.get().setLoadOnLogin(player.getName(), true);
+            }
+        }
 
         this.dupingPatch.disable();
         Logging.shutdown();
