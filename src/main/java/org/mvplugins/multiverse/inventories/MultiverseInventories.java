@@ -19,7 +19,6 @@ import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
-import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import me.drayshak.WorldInventories.WorldInventories;
