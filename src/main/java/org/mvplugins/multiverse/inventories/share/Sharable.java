@@ -147,7 +147,7 @@ public interface Sharable<T> {
          * @return The new Sharable object built by this Builder.
          */
         public Sharable<T> build() {
-            Sharable<T> sharable = new DefaultSharable<T>(names.toArray(new String[names.size()]), type,
+            Sharable<T> sharable = new DefaultSharable<T>(names.toArray(new String[0]), type,
                     handler, serializer, profileEntry, optional);
             ProfileEntry.register(sharable);
             return sharable;

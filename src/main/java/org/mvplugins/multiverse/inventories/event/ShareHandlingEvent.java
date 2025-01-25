@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.event;
 
+import org.mvplugins.multiverse.inventories.PersistingProfile;
 import org.mvplugins.multiverse.inventories.ShareHandler;
-import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

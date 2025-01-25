@@ -1,8 +1,6 @@
 package org.mvplugins.multiverse.inventories;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
@@ -164,7 +162,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
             final String world = player.getWorld().getName();
             //getData().updateLastWorld(player.getName(), world);
             if (getMVIConfig().usingLoggingSaveLoad()) {
-                ShareHandlingUpdater.updateProfile(this, player, new DefaultPersistingProfile(Sharables.allOf(),
+                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(Sharables.allOf(),
                         getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
                 getData().setLoadOnLogin(player.getName(), true);
             }

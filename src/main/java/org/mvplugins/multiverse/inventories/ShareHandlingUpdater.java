@@ -2,7 +2,6 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.entity.Player;
@@ -47,7 +46,7 @@ class ShareHandlingUpdater {
                 sharable.getHandler().updateProfile(profile.getProfile(), player);
             }
         }
-        if (saved.size() > 0) {
+        if (!saved.isEmpty()) {
             Logging.finer("Persisted: "
                     + saved.stream().map(Objects::toString).collect(Collectors.joining(", ")) + " to "
                     + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()

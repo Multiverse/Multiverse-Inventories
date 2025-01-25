@@ -3,7 +3,6 @@ package org.mvplugins.multiverse.inventories;
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
-import org.mvplugins.multiverse.inventories.share.PersistingProfile;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -127,7 +126,7 @@ public abstract class ShareHandler {
         AffectedProfiles() { }
 
         protected final void setAlwaysWriteProfile(PlayerProfile profile) {
-            alwaysWriteProfile = new DefaultPersistingProfile(allOf(), profile);
+            alwaysWriteProfile = new PersistingProfile(allOf(), profile);
         }
 
         /**
@@ -135,7 +134,7 @@ public abstract class ShareHandler {
          * @param shares    What from this group needs to be saved.
          */
         protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
-            writeProfiles.add(new DefaultPersistingProfile(shares, profile));
+            writeProfiles.add(new PersistingProfile(shares, profile));
         }
 
         /**
@@ -143,7 +142,7 @@ public abstract class ShareHandler {
          * @param shares    What from this group needs to be loaded.
          */
         protected final void addReadProfile(PlayerProfile profile, Shares shares) {
-            readProfiles.add(new DefaultPersistingProfile(shares, profile));
+            readProfiles.add(new PersistingProfile(shares, profile));
         }
 
         public PersistingProfile getAlwaysWriteProfile() {
