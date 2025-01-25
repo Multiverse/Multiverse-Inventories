@@ -2,8 +2,8 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
+import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
 import org.mvplugins.multiverse.inventories.share.Sharables;
-import org.mvplugins.multiverse.inventories.util.CommentedYamlConfiguration;
 import org.mvplugins.multiverse.inventories.util.DeserializationException;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
@@ -24,12 +24,14 @@ import java.util.Set;
 
 final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
-    private final List<String> groupSectionComments = Collections.unmodifiableList(new ArrayList<String>() {{
-        add("# To ADD, DELETE, and EDIT groups use the command /mvinv group.");
-        add("# No support will be given for those who manually edit these groups.");
-    }});
+    private final String[] groupSectionComments = {
+            "# Multiverse-Inventories Groups",
+            "",
+            "# To ADD, DELETE, and EDIT groups use the command /mvinv group.",
+            "# No support will be given for those who manually edit these groups."
+    };
 
-    private final CommentedYamlConfiguration groupsConfig;
+    private final CommentedConfiguration groupsConfig;
 
     YamlWorldGroupManager(final MultiverseInventories inventories, final Configuration config) throws IOException {
         super(inventories);
@@ -44,19 +46,18 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             migrateGroups = true;
         }
         // Load the configuration file into memory
-        boolean supportsCommentsNatively = PaperLib.getMinecraftVersion() > 17;
-        groupsConfig = new CommentedYamlConfiguration(groupsConfigFile, !groupsConfigFileExists || !supportsCommentsNatively);
+        groupsConfig = new CommentedConfiguration(groupsConfigFile.toPath());
+        groupsConfig.load();
 
         if (migrateGroups) {
             migrateGroups(config);
         }
 
         groupsConfig.addComment("groups", groupSectionComments);
-        if (groupsConfig.getConfig().get("groups") == null) {
+        if (groupsConfig.get("groups") == null) {
             this.getConfig().createSection("groups");
         }
 
-        groupsConfig.getConfig().options().header("Multiverse-Inventories Groups");
         // Saves the configuration from memory to file
         groupsConfig.save();
 
@@ -86,7 +87,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
     }
 
     private FileConfiguration getConfig() {
-        return this.groupsConfig.getConfig();
+        return this.groupsConfig;
     }
 
     private List<WorldGroup> getGroupsFromConfig() {

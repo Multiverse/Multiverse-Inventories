@@ -1,11 +1,14 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.config;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
+import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import org.mvplugins.multiverse.inventories.util.CommentedYamlConfiguration;
 import io.papermc.lib.PaperLib;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -18,6 +21,7 @@ import java.util.List;
 /**
  * Provides methods for interacting with the configuration of Multiverse-Inventories.
  */
+@Service
 public final class InventoriesConfig {
 
     /**
@@ -107,10 +111,11 @@ public final class InventoriesConfig {
         }
     }
 
-    private final CommentedYamlConfiguration config;
+    private final CommentedConfiguration config;
     private final MultiverseInventories plugin;
     private final MVCoreConfig mvCoreConfig;
 
+    @Inject
     InventoriesConfig(MultiverseInventories plugin, MVCoreConfig mvCoreConfig) throws IOException {
         this.plugin = plugin;
         this.mvCoreConfig = mvCoreConfig;
@@ -128,13 +133,13 @@ public final class InventoriesConfig {
         }
 
         // Load the configuration file into memory
-        boolean supportsCommentsNatively = PaperLib.getMinecraftVersion() > 17;
-        config = new CommentedYamlConfiguration(configFile, !configFileExists || !supportsCommentsNatively);
+        config = new CommentedConfiguration(configFile.toPath());
+        config.load();
 
         // Sets defaults config values
         this.setDefaults();
 
-        config.getConfig().options().header("Multiverse-Inventories Settings");
+        config.addComment("settings", "# Multiverse-Inventories Settings", "");
 
         // Saves the configuration from memory to file
         config.save();
@@ -148,7 +153,7 @@ public final class InventoriesConfig {
      */
     private void setDefaults() {
         for (InventoriesConfig.Path path : InventoriesConfig.Path.values()) {
-            config.addComment(path.getPath(), path.getComments());
+            config.addComment(path.getPath(), path.getComments().toArray(new String[0]));
             if (this.getConfig().get(path.getPath()) == null) {
                 if (path.getDefault() != null) {
                     Logging.fine("Config: Defaulting '" + path.getPath() + "' to " + path.getDefault());
@@ -173,8 +178,8 @@ public final class InventoriesConfig {
         return this.getConfig().getString(path.getPath(), (String) path.getDefault());
     }
 
-    FileConfiguration getConfig() {
-        return this.config.getConfig();
+    public FileConfiguration getConfig() {
+        return this.config;
     }
 
     /**
@@ -218,7 +223,7 @@ public final class InventoriesConfig {
      *
      * @param firstRun What to set the flag to in the config.
      */
-    void setFirstRun(boolean firstRun) {
+    public void setFirstRun(boolean firstRun) {
         this.getConfig().set(Path.FIRST_RUN.getPath(), firstRun);
     }
 

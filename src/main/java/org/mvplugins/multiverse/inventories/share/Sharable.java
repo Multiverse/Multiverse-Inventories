@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 import java.util.ArrayList;
 import java.util.List;

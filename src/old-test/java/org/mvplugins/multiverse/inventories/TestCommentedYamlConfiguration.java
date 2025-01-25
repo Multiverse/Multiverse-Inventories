@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories;
 
-import org.mvplugins.multiverse.inventories.util.CommentedYamlConfiguration;
 import org.junit.Test;
 
 import java.io.File;
