@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.core.api.config.MVCoreConfig;
+import org.mvplugins.multiverse.core.config.MVCoreConfig;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;

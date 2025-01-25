@@ -3,5 +3,6 @@ main: org.mvplugins.multiverse.inventories.MultiverseInventories
 version: ${version}
 api-version: 1.13
 authors: ['dumptruckman', 'benwoo1110']
+website: 'https://dev.bukkit.org/projects/multiverse-inventories'
 depend: ['Multiverse-Core']
 softdepend: [MultiInv, WorldInventories]

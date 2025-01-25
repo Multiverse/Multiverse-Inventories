@@ -3,7 +3,7 @@ package org.mvplugins.multiverse.inventories;
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.mvplugins.multiverse.core.api.event.MVDebugModeEvent;
+import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 
 public class CoreDebugListener implements Listener {
 

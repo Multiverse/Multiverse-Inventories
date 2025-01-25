@@ -7,7 +7,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.mockbukkit.mockbukkit.MockBukkit
 import org.mvplugins.multiverse.core.MultiverseCore
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator
-import org.mvplugins.multiverse.core.utils.TestingMode
 import org.mvplugins.multiverse.inventories.mock.MVServerMock
 import kotlin.test.*
 
@@ -23,7 +22,6 @@ abstract class TestWithMockBukkit {
 
     @BeforeTest
     fun setUpMockBukkit() {
-        TestingMode.enable()
         server = MockBukkit.mock(MVServerMock())
         multiverseCore = MockBukkit.load(MultiverseCore::class.java)
         multiverseInventories = MockBukkit.load(MultiverseInventories::class.java)

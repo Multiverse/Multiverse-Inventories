@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.core.api.config.MVCoreConfig;
-import org.mvplugins.multiverse.core.submodules.MVCore;
-import org.mvplugins.multiverse.core.submodules.MVPlugin;
+import org.mvplugins.multiverse.core.MultiverseCoreApi;
+import org.mvplugins.multiverse.core.MultiversePlugin;
+import org.mvplugins.multiverse.core.config.MVCoreConfig;
+import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
+import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
@@ -24,10 +26,7 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -40,7 +39,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messaging {
+public class MultiverseInventories extends MultiversePlugin implements Messaging {
 
     private static final int PROTOCOL = 50;
 
@@ -63,15 +62,12 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
     private WorldGroupManager worldGroupManager = null;
     private ProfileContainerStore worldProfileContainerStore = null;
     private ProfileContainerStore groupProfileContainerStore = null;
-    private ImportManager importManager = new ImportManager(this);
+    private final ImportManager importManager = new ImportManager(this);
 
-    private MVCore core = null;
     private InventoriesConfig config = null;
     private FlatFileProfileDataSource data = null;
 
     private InventoriesDupingPatch dupingPatch;
-
-    private File serverFolder = new File(System.getProperty("user.dir"));
 
     private boolean usingSpawnChangeEvent = false;
 
@@ -81,17 +77,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
 
     public MultiverseInventories() {
         super();
-    }
-
-    /**
-     * This is for unit testing.
-     * @param loader The PluginLoader to use.
-     * @param description The Description file to use.
-     * @param dataFolder The folder that other datafiles can be found in.
-     * @param file The location of the plugin.
-     */
-    public MultiverseInventories(JavaPluginLoader loader, PluginDescriptionFile description, File dataFolder, File file) {
-        super(loader, description, dataFolder, file);
     }
 
     /**
@@ -108,37 +93,18 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public final void onEnable() {
-        this.core = (MVCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
-        if (this.core == null) {
-            Logging.severe("Core not found! You must have Multiverse-Core installed to use this plugin!");
-            Logging.severe("Grab a copy at: ");
-            Logging.severe("https://dev.bukkit.org/projects/multiverse-core");
-            Logging.severe("Disabling!");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        if (this.core.getProtocolVersion() < this.getProtocolVersion()) {
-            Logging.severe("Your Multiverse-Core is OUT OF DATE");
-            Logging.severe("This version of " + this.getDescription().getName() + " requires Protocol Level: " + this.getProtocolVersion());
-            Logging.severe("Your of Core Protocol Level is: " + this.core.getProtocolVersion());
-            Logging.severe("Grab an updated copy at: ");
-            Logging.severe("https://dev.bukkit.org/projects/multiverse-core");
-            Logging.severe("Disabling!");
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
+        super.onEnable();
         initializeDependencyInjection();
 
         Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
-        this.core.incrementPluginCount();
         this.onMVPluginEnable();
-        Logging.config("Version %s (API v%s) Enabled - By %s", this.getDescription().getVersion(), getProtocolVersion(), getAuthors());
+        Logging.config("Version %s (API v%s) Enabled - By %s",
+                this.getDescription().getVersion(), getTargetCoreProtocolVersion(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
     }
 
     private void initializeDependencyInjection() {
-        serviceLocator = core.getServiceLocatorFactory()
-                .registerPlugin(new MultiverseInventoriesPluginBinder(this), core.getServiceLocator())
+        serviceLocator = PluginServiceLocatorFactory.get()
+                .registerPlugin(new MultiverseInventoriesPluginBinder(this), MultiverseCoreApi.get().getServiceLocator())
                 .flatMap(PluginServiceLocator::enable)
                 .getOrElseThrow(exception -> {
                     Logging.severe("Failed to initialize dependency injection!");
@@ -175,9 +141,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
             usingSpawnChangeEvent = false;
         }
 
-        if (getCore().getProtocolVersion() >= 24) {
-            new CoreDebugListener(this);
-        }
+        new CoreDebugListener(this);
 
         // Register Commands
         this.registerCommands();
@@ -195,6 +159,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      */
     @Override
     public void onDisable() {
+        super.onDisable();
         for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
             //getData().updateLastWorld(player.getName(), world);
@@ -206,8 +171,6 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         }
 
         this.dupingPatch.disable();
-
-        this.core.decrementPluginCount();
         Logging.shutdown();
     }
 
@@ -244,42 +207,13 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
      * {@inheritDoc}
      */
     @Override
-    public MVCore getCore() {
-        return this.core;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getProtocolVersion() {
+    public int getTargetCoreProtocolVersion() {
         return PROTOCOL;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String getAuthors() {
-        List<String> authorsList = this.getDescription().getAuthors();
-        if (authorsList.size() == 0) {
-            return "";
-        }
-
-        StringBuilder authors = new StringBuilder();
-        authors.append(authorsList.get(0));
-
-        for (int i = 1; i < authorsList.size(); i++) {
-            if (i == authorsList.size() - 1) {
-                authors.append(" and ").append(authorsList.get(i));
-            } else {
-                authors.append(", ").append(authorsList.get(i));
-            }
-        }
-
-        return authors.toString();
-    }
-
     @Override
     public PluginServiceLocator getServiceLocator() {
         return serviceLocator;
@@ -427,29 +361,7 @@ public class MultiverseInventories extends JavaPlugin implements MVPlugin, Messa
         return groupProfileContainerStore;
     }
 
-    /**
-     * Gets the server's root-folder as {@link File}.
-     *
-     * @return The server's root-folder
-     */
-    public File getServerFolder() {
-        return serverFolder;
-    }
-
-    /**
-     * Sets this server's root-folder.
-     *
-     * @param newServerFolder The new server-root
-     */
-    public void setServerFolder(File newServerFolder) {
-        if (!newServerFolder.isDirectory()) {
-            throw new IllegalArgumentException("That's not a folder!");
-        }
-        this.serverFolder = newServerFolder;
-    }
-
     public boolean isUsingSpawnChangeEvent() {
         return usingSpawnChangeEvent;
     }
 }
-

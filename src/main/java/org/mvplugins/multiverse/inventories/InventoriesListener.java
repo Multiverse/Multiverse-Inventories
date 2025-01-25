@@ -2,11 +2,11 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.api.event.MVConfigReloadEvent;
-import org.mvplugins.multiverse.core.api.event.MVDebugModeEvent;
-import org.mvplugins.multiverse.core.api.event.MVDumpsDebugInfoEvent;
-import org.mvplugins.multiverse.core.api.world.LoadedMultiverseWorld;
-import org.mvplugins.multiverse.core.api.world.WorldManager;
+import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
+import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
+import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
+import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
+import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
