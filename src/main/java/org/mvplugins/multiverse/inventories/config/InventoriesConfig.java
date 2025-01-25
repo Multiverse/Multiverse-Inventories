@@ -1,10 +1,10 @@
 package org.mvplugins.multiverse.inventories.config;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
 import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
-import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
