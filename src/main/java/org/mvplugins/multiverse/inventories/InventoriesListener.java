@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.api.event.MVConfigReloadEvent;
 import org.mvplugins.multiverse.core.api.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.api.event.MVDumpsDebugInfoEvent;
@@ -36,7 +37,6 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
-import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Service;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.File;
