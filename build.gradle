@@ -17,6 +17,11 @@ compileJava {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+compileKotlin {
+    // We're not using Kotlin in the plugin itself, just tests!
+    enabled = false
+}
+
 compileTestJava {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
@@ -73,10 +78,6 @@ dependencies {
     // TODO update to correct version once we have it published
     implementation 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
 
-    // hk2 for annotation processing only
-    compileOnly('org.glassfish.hk2:hk2-api:3.0.3') {
-        exclude group: '*', module: '*'
-    }
 
     // Config
     api 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
@@ -103,7 +104,10 @@ dependencies {
     testImplementation 'com.natpryce:hamkrest:1.8.0.1'
     testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
 
-    // Annotation Processors
+    // hk2 for annotation processing only
+    compileOnly('org.glassfish.hk2:hk2-api:3.0.3') {
+        exclude group: '*', module: '*'
+    }
     annotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
     testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
 }
@@ -128,7 +132,6 @@ tasks.withType(Javadoc).configureEach {
     options.encoding = 'UTF-8'
 }
 
-
 configurations {
     [apiElements, runtimeElements].each {
         it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
@@ -136,34 +139,9 @@ configurations {
     }
 }
 
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = "https://maven.pkg.github.com/Multiverse/Multiverse-Inventories"
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
-
-compileKotlin {
-    // We're not using Kotlin in the plugin itself, just tests!
-    enabled = false
-}
 configurations.findAll { !it.name.startsWith('test') }.each {
     it.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
 }
-
 
 processResources {
     def props = [version: "${project.version}"]
@@ -178,19 +156,16 @@ processResources {
     outputs.upToDateWhen { false }
 }
 
-
 checkstyle {
     toolVersion = '6.1.1'
     configFile file('config/mv_checks.xml')
     ignoreFailures = true
 }
 
-
 javadoc {
     source = sourceSets.main.allJava
     classpath = configurations.compileClasspath
 }
-
 
 project.configurations.api.canBeResolved = true
 
@@ -220,3 +195,21 @@ shadowJar {
 
 build.dependsOn shadowJar
 jar.enabled = false
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/Multiverse/Multiverse-Inventories"
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
