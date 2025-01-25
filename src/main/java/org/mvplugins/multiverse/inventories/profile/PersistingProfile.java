@@ -1,6 +1,5 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.profile;
 
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 /**

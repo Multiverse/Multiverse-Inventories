@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -54,7 +54,7 @@ class GroupWorldsPrompt extends InventoriesPrompt {
             group.removeAllWorlds(false);
             group.addWorlds(worlds, false);
             if (!isCreating) {
-                plugin.getGroupManager().updateGroup(group);
+                worldGroupManager.updateGroup(group);
                 messager.normal(Message.GROUP_UPDATED, sender);
                 messager.normal(Message.INFO_GROUP, sender, group.getName());
                 messager.normal(Message.INFO_GROUPS_INFO, sender, group.getWorlds(), group.getShares());

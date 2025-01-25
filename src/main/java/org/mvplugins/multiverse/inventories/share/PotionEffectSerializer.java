@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.DataStrings;
+import org.mvplugins.multiverse.inventories.util.DataStrings;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;

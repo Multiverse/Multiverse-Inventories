@@ -9,7 +9,7 @@ public final class ProfileType {
         return new ProfileType(name);
     }
 
-    private String name;
+    private final String name;
 
     private ProfileType(String name) {
         this.name = name;

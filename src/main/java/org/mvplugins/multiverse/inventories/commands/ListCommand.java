@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
@@ -12,6 +12,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 
 import java.util.Collection;
 
@@ -20,11 +21,16 @@ import java.util.Collection;
 class ListCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
+    private final WorldGroupManager worldGroupManager;
 
     @Inject
-    ListCommand(@NotNull MVCommandManager commandManager, @NotNull MultiverseInventories plugin) {
+    ListCommand(
+            @NotNull MVCommandManager commandManager,
+            @NotNull MultiverseInventories plugin,
+            @NotNull WorldGroupManager worldGroupManager) {
         super(commandManager);
         this.plugin = plugin;
+        this.worldGroupManager = worldGroupManager;
     }
 
     @CommandAlias("mvinvlist|mvinvl")
@@ -32,7 +38,7 @@ class ListCommand extends InventoriesCommand {
     @CommandPermission("multiverse.inventories.list")
     @Description("World and Group Information")
     void onListCommand(@NotNull CommandSender sender) {
-        Collection<WorldGroup> groups = this.plugin.getGroupManager().getGroups();
+        Collection<WorldGroup> groups = worldGroupManager.getGroups();
         String groupsString = "N/A";
         if (!groups.isEmpty()) {
             StringBuilder builder = new StringBuilder();

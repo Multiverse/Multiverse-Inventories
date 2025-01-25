@@ -1,9 +1,12 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.profile.group;
 
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
@@ -13,7 +16,8 @@ import java.util.Set;
 
 public final class WorldGroup {
 
-    private final MultiverseInventories plugin;
+    private final WorldGroupManager worldGroupManager;
+    private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final String name;
     private final HashSet<String> worlds = new HashSet<>();
     private final Shares shares = Sharables.noneOf();
@@ -21,8 +25,12 @@ public final class WorldGroup {
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
 
-    WorldGroup(final MultiverseInventories inventories, final String name) {
-        this.plugin = inventories;
+    WorldGroup(
+            final WorldGroupManager worldGroupManager,
+            final ProfileContainerStoreProvider profileContainerStoreProvider,
+            final String name) {
+        this.worldGroupManager = worldGroupManager;
+        this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.name = name;
     }
 
@@ -53,7 +61,7 @@ public final class WorldGroup {
     public void addWorld(String worldName, boolean updateConfig) {
         this.getWorlds().add(worldName.toLowerCase());
         if (updateConfig) {
-            plugin.getGroupManager().updateGroup(this);
+            worldGroupManager.updateGroup(this);
         }
     }
 
@@ -84,7 +92,7 @@ public final class WorldGroup {
     public void addWorlds(Collection<String> worlds, boolean updateConfig) {
         worlds.forEach(worldName -> this.addWorld(worldName, false));
         if (updateConfig) {
-            this.plugin.getGroupManager().updateGroup(this);
+            worldGroupManager.updateGroup(this);
         }
     }
 
@@ -106,7 +114,7 @@ public final class WorldGroup {
     public void removeWorld(String worldName, boolean updateConfig) {
         this.getWorlds().remove(worldName.toLowerCase());
         if (updateConfig) {
-            plugin.getGroupManager().updateGroup(this);
+            worldGroupManager.updateGroup(this);
         }
     }
 
@@ -134,7 +142,7 @@ public final class WorldGroup {
     public void removeAllWorlds(boolean updateConfig) {
         this.worlds.clear();
         if (updateConfig) {
-            this.plugin.getGroupManager().updateGroup(this);
+            worldGroupManager.updateGroup(this);
         }
     }
 
@@ -213,7 +221,7 @@ public final class WorldGroup {
      * @return true if this is the default group.
      */
     public boolean isDefault() {
-        return AbstractWorldGroupManager.DEFAULT_GROUP_NAME.equals(getName());
+        return WorldGroupManager.DEFAULT_GROUP_NAME.equals(getName());
     }
 
     /**
@@ -222,7 +230,7 @@ public final class WorldGroup {
      * @return the profile container for this group.
      */
     public ProfileContainer getGroupProfileContainer() {
-        return plugin.getGroupProfileContainerStore().getContainer(getName());
+        return profileContainerStoreProvider.getStore(ContainerType.GROUP).getContainer(getName());
     }
 
     @Override

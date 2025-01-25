@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.migration.multiinv;
 
-import org.mvplugins.multiverse.inventories.PlayerStats;
+import org.mvplugins.multiverse.inventories.util.PlayerStats;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
@@ -12,8 +12,8 @@ import java.io.File;
  */
 public class MIPlayerFileLoader {
 
-    private YamlConfiguration playerFile;
-    private File file;
+    private final YamlConfiguration playerFile;
+    private final File file;
 
     public MIPlayerFileLoader(MultiInv plugin, OfflinePlayer player, String group) {
         // Find and load configuration file for the player

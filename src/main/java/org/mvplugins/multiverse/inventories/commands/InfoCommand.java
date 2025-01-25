@@ -1,9 +1,10 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,6 +20,8 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 
 import java.util.List;
 import java.util.Set;
@@ -28,11 +31,19 @@ import java.util.Set;
 class InfoCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
+    private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final WorldGroupManager worldGroupManager;
 
     @Inject
-    InfoCommand(@NotNull MVCommandManager commandManager, @NotNull MultiverseInventories plugin) {
+    InfoCommand(
+            @NotNull MVCommandManager commandManager,
+            @NotNull MultiverseInventories plugin,
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull WorldGroupManager worldGroupManager) {
         super(commandManager);
         this.plugin = plugin;
+        this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.worldGroupManager = worldGroupManager;
     }
 
     @CommandAlias("mvinvinfo|mvinvi")
@@ -58,14 +69,14 @@ class InfoCommand extends InventoriesCommand {
             name = ((Player) sender).getWorld().getName();
         }
 
-        ProfileContainer worldProfileContainer = this.plugin.getWorldProfileContainerStore().getContainer(name);
+        ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(name);
         plugin.getMessager().normal(Message.INFO_WORLD, sender, name);
         if (worldProfileContainer != null && Bukkit.getWorld(worldProfileContainer.getContainerName()) != null) {
             worldInfo(sender, worldProfileContainer);
         } else {
             plugin.getMessager().normal(Message.ERROR_NO_WORLD_PROFILE, sender, name);
         }
-        WorldGroup worldGroup = this.plugin.getGroupManager().getGroup(name);
+        WorldGroup worldGroup = worldGroupManager.getGroup(name);
         this.plugin.getMessager().normal(Message.INFO_GROUP, sender, name);
         if (worldGroup != null) {
             this.groupInfo(sender, worldGroup);
@@ -93,8 +104,7 @@ class InfoCommand extends InventoriesCommand {
 
     private void worldInfo(CommandSender sender, ProfileContainer worldProfileContainer) {
         StringBuilder groupsString = new StringBuilder();
-        List<WorldGroup> worldGroups = this.plugin.getGroupManager()
-                .getGroupsForWorld(worldProfileContainer.getContainerName());
+        List<WorldGroup> worldGroups = worldGroupManager.getGroupsForWorld(worldProfileContainer.getContainerName());
 
         if (worldGroups.isEmpty()) {
             groupsString.append("N/A");

@@ -2,10 +2,15 @@ package org.mvplugins.multiverse.inventories.migration.multiinv;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.migration.DataImporter;
 import org.mvplugins.multiverse.inventories.migration.MigrationException;
@@ -26,12 +31,20 @@ import java.util.Map;
  */
 public class MultiInvImporter implements DataImporter {
 
-    private MultiInv miPlugin;
-    private MultiverseInventories inventories;
+    private final MultiInv miPlugin;
+    private final InventoriesConfig config;
+    private final WorldGroupManager worldGroupManager;
+    private final ProfileDataSource profileDataSource;
+    private final ProfileContainerStore worldProfileContainerStore;
 
     public MultiInvImporter(MultiverseInventories inventories, MultiInv miPlugin) {
-        this.inventories = inventories;
         this.miPlugin = miPlugin;
+        this.config = inventories.getServiceLocator().getService(InventoriesConfig.class);
+        this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
+        this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
+        this.worldProfileContainerStore = inventories.getServiceLocator()
+                .getService(ProfileContainerStoreProvider.class)
+                .getStore(ContainerType.WORLD);
     }
 
     /**
@@ -61,23 +74,23 @@ public class MultiInvImporter implements DataImporter {
             throw new MigrationException("There is no data to import from MultiInv!");
         }
         if (!miGroupMap.isEmpty()) {
-            WorldGroup defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
+            WorldGroup defaultWorldGroup = worldGroupManager.getDefaultGroup();
             if (defaultWorldGroup != null) {
-                this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
+                worldGroupManager.removeGroup(defaultWorldGroup);
                 Logging.info("Removed automatically created world group in favor of imported groups.");
             }
         }
         for (Map.Entry<String, String> groupEntry : miGroupMap.entrySet()) {
-            WorldGroup worldGroup = this.inventories.getGroupManager().getGroup(groupEntry.getValue());
+            WorldGroup worldGroup = worldGroupManager.getGroup(groupEntry.getValue());
             if (worldGroup == null) {
-                worldGroup = this.inventories.getGroupManager().newEmptyGroup(groupEntry.getValue());
+                worldGroup = worldGroupManager.newEmptyGroup(groupEntry.getValue());
                 worldGroup.getShares().mergeShares(Sharables.allOf());
                 Logging.info("Importing group: " + groupEntry.getValue());
-                this.inventories.getGroupManager().updateGroup(worldGroup);
+                worldGroupManager.updateGroup(worldGroup);
             }
             worldGroup.addWorld(groupEntry.getValue());
         }
-        this.inventories.getMVIConfig().save();
+        config.save();
 
         for (OfflinePlayer player : Bukkit.getServer().getOfflinePlayers()) {
             Logging.info("Processing MultiInv data for player: " + player.getName());
@@ -114,16 +127,15 @@ public class MultiInvImporter implements DataImporter {
                            String dataName, ContainerType type) {
         PlayerProfile playerProfile;
         if (type.equals(ContainerType.GROUP)) {
-            WorldGroup group = this.inventories.getGroupManager()
-                    .getGroup(dataName);
+            WorldGroup group = worldGroupManager.getGroup(dataName);
             if (group == null) {
                 Logging.warning("Could not import player data for group: " + dataName);
                 return;
             }
             playerProfile = group.getGroupProfileContainer().getPlayerData(ProfileTypes.SURVIVAL, player);
         } else {
-            playerProfile = this.inventories.getWorldProfileContainerStore()
-                    .getContainer(dataName).getPlayerData(ProfileTypes.SURVIVAL, player);
+            playerProfile = worldProfileContainerStore.getContainer(dataName)
+                    .getPlayerData(ProfileTypes.SURVIVAL, player);
         }
         MIInventoryInterface inventoryInterface =
                 playerFileLoader.getInventory(GameMode.SURVIVAL.toString());
@@ -135,7 +147,7 @@ public class MultiInvImporter implements DataImporter {
         playerProfile.set(Sharables.TOTAL_EXPERIENCE, playerFileLoader.getTotalExperience());
         playerProfile.set(Sharables.LEVEL, playerFileLoader.getLevel());
         playerProfile.set(Sharables.FOOD_LEVEL, playerFileLoader.getHunger());
-        this.inventories.getData().updatePlayerData(playerProfile);
+        profileDataSource.updatePlayerData(playerProfile);
     }
 
     /**

@@ -9,11 +9,11 @@ import java.util.Map;
  */
 public final class ProfileEntry {
 
-    private static final Map<String, Sharable> STATS_MAP = new HashMap<String, Sharable>();
-    private static final Map<String, Sharable> OTHERS_MAP = new HashMap<String, Sharable>();
+    private static final Map<String, Sharable> STATS_MAP = new HashMap<>();
+    private static final Map<String, Sharable> OTHERS_MAP = new HashMap<>();
 
-    private boolean isStat;
-    private String fileTag;
+    private final boolean isStat;
+    private final String fileTag;
 
     public ProfileEntry(boolean isStat, String fileTag) {
         this.isStat = isStat;

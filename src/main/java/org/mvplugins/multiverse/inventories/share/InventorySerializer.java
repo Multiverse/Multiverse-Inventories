@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public final class InventorySerializer implements SharableSerializer<ItemStack[]> {
 
-    private int inventorySize;
+    private final int inventorySize;
 
     public InventorySerializer(final int inventorySize) {
         this.inventorySize = inventorySize;

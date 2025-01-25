@@ -1,8 +1,14 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,12 +25,18 @@ public abstract class ShareHandler {
 
     protected final MultiverseInventories inventories;
     protected final Player player;
+    protected final WorldGroupManager worldGroupManager;
+    protected final ProfileContainerStore worldProfileContainerStore;
     final AffectedProfiles affectedProfiles;
 
     ShareHandler(MultiverseInventories inventories, Player player) {
         this.inventories = inventories;
         this.player = player;
         this.affectedProfiles = new AffectedProfiles();
+        this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
+        this.worldProfileContainerStore = inventories.getServiceLocator()
+                .getService(ProfileContainerStoreProvider.class)
+                .getStore(ContainerType.WORLD);
     }
 
     /**

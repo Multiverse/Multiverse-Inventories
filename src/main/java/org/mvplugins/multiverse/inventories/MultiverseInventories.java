@@ -11,19 +11,19 @@ import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.listeners.InventoriesListener;
+import org.mvplugins.multiverse.inventories.listeners.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Messaging;
 import org.mvplugins.multiverse.inventories.migration.ImportManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.WorldGroupManager;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
@@ -38,42 +38,31 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public class MultiverseInventories extends MultiversePlugin implements Messaging {
+public final class MultiverseInventories extends MultiversePlugin implements Messaging {
 
     private static final int PROTOCOL = 50;
 
-    private static MultiverseInventories inventoriesPlugin;
-
-    public static MultiverseInventories getPlugin() {
-        return inventoriesPlugin;
-    }
-
-    private PluginServiceLocator serviceLocator;
-
     @Inject
-    private Provider<InventoriesConfig> configProvider;
+    private Provider<InventoriesConfig> inventoriesConfig;
     @Inject
     private Provider<MVCommandManager> commandManager;
     @Inject
     private Provider<MVCoreConfig> mvCoreConfig;
     @Inject
     private Provider<InventoriesListener> inventoriesListener;
+    @Inject
+    private Provider<WorldGroupManager> worldGroupManager;
+    @Inject
+    private Provider<ProfileDataSource> profileDataSource;
+    @Inject
+    private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
+    @Inject
+    private Provider<ImportManager> importManager;
 
+    private PluginServiceLocator serviceLocator;
     private Messager messager = new DefaultMessager(this);
-    private WorldGroupManager worldGroupManager = null;
-    private ProfileContainerStore worldProfileContainerStore = null;
-    private ProfileContainerStore groupProfileContainerStore = null;
-    private final ImportManager importManager = new ImportManager(this);
-
-    private FlatFileProfileDataSource data = null;
-
     private InventoriesDupingPatch dupingPatch;
-
     private boolean usingSpawnChangeEvent = false;
-
-    {
-        inventoriesPlugin = this;
-    }
 
     public MultiverseInventories() {
         super();
@@ -119,7 +108,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
         this.reloadConfig();
 
         try {
-            this.getMessager().setLocale(new Locale(this.getMVIConfig().getLocale()));
+            this.getMessager().setLocale(new Locale(inventoriesConfig.get().getLocale()));
         } catch (IllegalArgumentException e) {
             Logging.severe(e.getMessage());
             this.getServer().getPluginManager().disablePlugin(this);
@@ -141,8 +130,6 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
             usingSpawnChangeEvent = false;
         }
 
-        new CoreDebugListener(this);
-
         // Register Commands
         this.registerCommands();
 
@@ -160,15 +147,15 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public void onDisable() {
         super.onDisable();
-        for (final Player player : getServer().getOnlinePlayers()) {
-            final String world = player.getWorld().getName();
-            //getData().updateLastWorld(player.getName(), world);
-            if (getMVIConfig().usingLoggingSaveLoad()) {
-                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(Sharables.allOf(),
-                        getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
-                getData().setLoadOnLogin(player.getName(), true);
-            }
-        }
+//        for (final Player player : getServer().getOnlinePlayers()) {
+//            final String world = player.getWorld().getName();
+//            //getData().updateLastWorld(player.getName(), world);
+//            if (getMVIConfig().usingLoggingSaveLoad()) {
+//                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(Sharables.allOf(),
+//                        getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
+//                getData().setLoadOnLogin(player.getName(), true);
+//            }
+//        }
 
         this.dupingPatch.disable();
         Logging.shutdown();
@@ -188,19 +175,12 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
         final PluginManager pm = Bukkit.getPluginManager();
         Plugin plugin = pm.getPlugin("MultiInv");
         if (plugin != null) {
-            this.getImportManager().hookMultiInv((MultiInv) plugin);
+            importManager.get().hookMultiInv((MultiInv) plugin);
         }
         plugin = pm.getPlugin("WorldInventories");
         if (plugin != null) {
-            this.getImportManager().hookWorldInventories((WorldInventories) plugin);
+            importManager.get().hookWorldInventories((WorldInventories) plugin);
         }
-    }
-
-    /**
-     * @return A class used for managing importing data from other similar plugins.
-     */
-    public ImportManager getImportManager() {
-        return this.importManager;
     }
 
     /**
@@ -220,57 +200,18 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     }
 
     /**
-     * Builds a String containing Multiverse-Inventories' version info.
-     *
-     * @return The version info.
-     */
-    public String getVersionInfo() {
-        StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + this.getDescription().getVersion() + '\n'
-                + "[Multiverse-Inventories] === Settings ===" + '\n'
-                + "[Multiverse-Inventories] First Run: " + this.getMVIConfig().isFirstRun() + '\n'
-                + "[Multiverse-Inventories] Using Bypass: " + this.getMVIConfig().isUsingBypass() + '\n'
-                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + this.getMVIConfig().isDefaultingUngroupedWorlds() + '\n'
-                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + this.getMVIConfig().usingLoggingSaveLoad() + '\n'
-                + "[Multiverse-Inventories] Using GameMode Profiles: " + this.getMVIConfig().isUsingGameModeProfiles() + '\n'
-                + "[Multiverse-Inventories] === Shares ===" + '\n'
-                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + this.getMVIConfig().usingOptionalsForUngrouped() + '\n'
-                + "[Multiverse-Inventories] Enabled Optionals: " + this.getMVIConfig().getOptionalShares() + '\n'
-                + "[Multiverse-Inventories] === Groups ===" + '\n');
-
-        for (WorldGroup group : this.getGroupManager().getGroups()) {
-            versionInfo.append("[Multiverse-Inventories] ").append(group.toString()).append('\n');
-        }
-
-        return versionInfo.toString();
-    }
-
-    private String logAndAddToPasteBinBuffer(String string) {
-        Logging.info(string);
-        return Logging.getPrefixedMessage(string + '\n', false);
-    }
-
-    /**
-     * @return the Config object which contains settings for this plugin.
-     */
-    public InventoriesConfig getMVIConfig() {
-        return this.configProvider.get();
-    }
-
-    /**
      * Nulls the config object and reloads a new one, also resetting the world groups in memory.
      */
     @Override
     public void reloadConfig() {
         try {
-            this.worldGroupManager = new YamlWorldGroupManager(this, this.configProvider.get().getConfig());
-            this.worldProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.WORLD);
-            this.groupProfileContainerStore = new WeakProfileContainerStore(this, ContainerType.GROUP);
+            worldGroupManager.get().load();
+            profileContainerStoreProvider.get().clearCache();
 
-            if (data != null) {
-                this.data.clearCache();
+            if (profileDataSource.get() != null) {
+                profileDataSource.get().clearCache();
             }
 
-            //this.data = null;
             Logging.fine("Loaded config file!");
         } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
             Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
@@ -283,35 +224,17 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
             @Override
             public void run() {
                 // Create initial World Group for first run IF NO GROUPS EXIST
-                if (getMVIConfig().isFirstRun()) {
+                if (inventoriesConfig.get().isFirstRun()) {
                     Logging.info("First run!");
-                    if (getGroupManager().getGroups().isEmpty()) {
-                        getGroupManager().createDefaultGroup();
+                    if (worldGroupManager.get().getGroups().isEmpty()) {
+                        worldGroupManager.get().createDefaultGroup();
                     }
 
-                    getMVIConfig().setFirstRun(false);
+                    inventoriesConfig.get().setFirstRun(false);
                 }
-                getGroupManager().checkForConflicts(null);
+                worldGroupManager.get().checkForConflicts(null);
             }
         }, 1L);
-    }
-
-    /**
-     * @return the PlayerData object which contains data for this plugin.
-     */
-    public ProfileDataSource getData() {
-        if (this.data == null) {
-            // Loads the data
-            try {
-                this.data = new FlatFileProfileDataSource(this);
-            } catch (IOException e) {  // Catch errors loading the language file and exit out if found.
-                Logging.severe(this.getMessager().getMessage(Message.ERROR_DATA_LOAD));
-                Logging.severe(e.getMessage());
-                Bukkit.getPluginManager().disablePlugin(this);
-                return null;
-            }
-        }
-        return this.data;
     }
 
     /**
@@ -331,33 +254,6 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
             throw new IllegalArgumentException("The new messager can't be null!");
         }
         this.messager = messager;
-    }
-
-    /**
-     * @return The World Group manager for this plugin.
-     */
-    public WorldGroupManager getGroupManager() {
-        return this.worldGroupManager;
-    }
-
-    /**
-     * Returns the world profile container store for this plugin.
-     * <p>Player profiles for an individual world can be found here.</p>
-     *
-     * @return the world profile container store for this plugin.
-     */
-    public ProfileContainerStore getWorldProfileContainerStore() {
-        return worldProfileContainerStore;
-    }
-
-    /**
-     * Returns the group profile container store for this plugin.
-     * <p>Player profiles for a world group can be found here.</p>
-     *
-     * @return the group profile container store for this plugin.
-     */
-    public ProfileContainerStore getGroupProfileContainerStore() {
-        return groupProfileContainerStore;
     }
 
     public boolean isUsingSpawnChangeEvent() {

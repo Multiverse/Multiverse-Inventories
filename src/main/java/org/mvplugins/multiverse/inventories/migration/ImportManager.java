@@ -1,6 +1,9 @@
 package org.mvplugins.multiverse.inventories.migration;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.migration.multiinv.MultiInvImporter;
 import org.mvplugins.multiverse.inventories.migration.worldinventories.WorldInventoriesImporter;
@@ -10,13 +13,15 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 /**
  * Manages the import heplers for other similar plugins.
  */
+@Service
 public class ImportManager {
 
     private MultiInvImporter multiInvImporter = null;
     private WorldInventoriesImporter worldInventoriesImporter = null;
-    private MultiverseInventories inventories;
+    private final MultiverseInventories inventories;
 
-    public ImportManager(MultiverseInventories inventories) {
+    @Inject
+    public ImportManager(@NotNull MultiverseInventories inventories) {
         this.inventories = inventories;
     }
 

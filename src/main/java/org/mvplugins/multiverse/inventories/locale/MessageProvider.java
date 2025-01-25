@@ -1,5 +1,7 @@
 package org.mvplugins.multiverse.inventories.locale;
 
+import org.jvnet.hk2.annotations.Contract;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -8,6 +10,7 @@ import java.util.Locale;
  *
  * This interface describes a Multiverse-MessageProvider.
  */
+@Contract
 public interface MessageProvider {
     /**
      * The default locale.

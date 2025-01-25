@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.event;
 
-import org.mvplugins.multiverse.inventories.ShareHandler;
+import org.mvplugins.multiverse.inventories.listeners.ShareHandler;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;

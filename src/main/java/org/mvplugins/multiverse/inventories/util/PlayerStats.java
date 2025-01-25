@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.util;
 
 /**
  * A collection of values relating to a Minecraft player.

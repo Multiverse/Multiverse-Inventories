@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This is a simple patch that fixes a
@@ -40,7 +41,7 @@ import org.bukkit.plugin.Plugin;
  * @author Irmo van den Berge (bergerkiller)
  * @version 1.0
  */
-class InventoriesDupingPatch {
+final class InventoriesDupingPatch {
 
     private static final int SLOT_TIMEOUT = 5;
 

@@ -29,16 +29,12 @@ public final class ProfileTypes {
      * @return The profile type for the given game mode.
      */
     public static ProfileType forGameMode(GameMode mode) {
-        switch (mode) {
-            case SURVIVAL:
-                return SURVIVAL;
-            case CREATIVE:
-                return CREATIVE;
-            case ADVENTURE:
-                return ADVENTURE;
-            default:
-                return SURVIVAL;
-        }
+        return switch (mode) {
+            case SURVIVAL -> SURVIVAL;
+            case CREATIVE -> CREATIVE;
+            case ADVENTURE -> ADVENTURE;
+            default -> SURVIVAL;
+        };
     }
 
     private ProfileTypes() {
