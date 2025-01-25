@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 
 public final class ShareHandlingUpdater {
 
-    static void updateProfile(final MultiverseInventories inventories,
+    public static void updateProfile(final MultiverseInventories inventories,
                               final Player player,
                               final PersistingProfile profile) {
         new ShareHandlingUpdater(inventories, player, profile).updateProfile();
     }
 
-    static void updatePlayer(final MultiverseInventories inventories,
+    public static void updatePlayer(final MultiverseInventories inventories,
                              final Player player,
                              final PersistingProfile profile) {
         new ShareHandlingUpdater(inventories, player, profile).updatePlayer();
