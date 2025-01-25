@@ -9,7 +9,6 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import io.papermc.lib.PaperLib;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
