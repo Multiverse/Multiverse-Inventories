@@ -42,21 +42,7 @@ public class SpawnChangeListener implements Listener {
     }
 
     private void updatePlayerSpawn(Player player, Location location) {
-        PlayerProfile playerProfile = inventories.getWorldProfileContainerStore()
-                .getContainer(player.getWorld().getName())
-                .getPlayerData(player);
-        playerProfile.set(Sharables.BED_SPAWN, location);
-
-        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(player.getWorld().getName());
-        for (WorldGroup fromGroup : fromGroups) {
-            if (!fromGroup.isSharing(Sharables.BED_SPAWN)) {
-                continue;
-            }
-            playerProfile = inventories.getGroupProfileContainerStore()
-                    .getContainer(fromGroup.getName())
-                    .getPlayerData(player);
-            playerProfile.set(Sharables.BED_SPAWN, location);
-        }
+        SingleShareWriter.of(this.inventories, player, Sharables.BED_SPAWN).write(location);
     }
 
     public static @Nullable Location findBedFromRespawnLocation(@Nullable Location respawnLocation) {

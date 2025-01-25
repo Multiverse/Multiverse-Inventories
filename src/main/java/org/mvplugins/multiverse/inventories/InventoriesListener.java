@@ -187,6 +187,7 @@ public class InventoriesListener implements Listener {
                     inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
             inventories.getData().setLoadOnLogin(player.getName(), true);
         }
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
     }
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
@@ -256,26 +257,7 @@ public class InventoriesListener implements Listener {
         }
 
         Player player = event.getPlayer();
-
-        String fromWorldName = event.getFrom().getWorld().getName();
-        String toWorldName = event.getTo().getWorld().getName();
-
-        ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(fromWorldName);
-        PlayerProfile playerProfile = fromWorldProfileContainer.getPlayerData(player);
-        playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
-
-        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(fromWorldName);
-        for (WorldGroup fromGroup : fromGroups) {
-            playerProfile = fromGroup.getGroupProfileContainer().getPlayerData(event.getPlayer());
-
-            if (fromGroup.containsWorld(toWorldName)) {
-                if (!fromGroup.isSharing(Sharables.LAST_LOCATION)) {
-                    playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
-                }
-            } else {
-                playerProfile.set(Sharables.LAST_LOCATION, event.getFrom());
-            }
-        }
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(event.getFrom());
 
         // Possibly prevents item duping exploit
         player.closeInventory();
