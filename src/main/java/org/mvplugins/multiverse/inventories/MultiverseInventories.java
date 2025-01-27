@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
@@ -207,7 +206,10 @@ public final class MultiverseInventories extends MultiversePlugin implements Mes
     @Override
     public void reloadConfig() {
         try {
-            worldGroupManager.get().load();
+            worldGroupManager.get().load().onFailure(e -> {
+                Logging.severe("Failed to load world groups!");
+                Logging.severe(e.getMessage());
+            });
             profileContainerStoreProvider.get().clearCache();
 
             if (profileDataSource.get() != null) {
@@ -215,7 +217,7 @@ public final class MultiverseInventories extends MultiversePlugin implements Mes
             }
 
             Logging.fine("Loaded config file!");
-        } catch (IOException e) {  // Catch errors loading the config file and exit out if found.
+        } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
             Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
             Logging.severe(e.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);

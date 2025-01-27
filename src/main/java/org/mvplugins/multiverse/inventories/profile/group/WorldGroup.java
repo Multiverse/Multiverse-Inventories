@@ -221,7 +221,7 @@ public final class WorldGroup {
      * @return true if this is the default group.
      */
     public boolean isDefault() {
-        return WorldGroupManager.DEFAULT_GROUP_NAME.equals(getName());
+        return AbstractWorldGroupManager.DEFAULT_GROUP_NAME.equals(getName());
     }
 
     /**
