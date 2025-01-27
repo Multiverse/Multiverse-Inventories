@@ -213,7 +213,7 @@ public final class MultiverseInventories extends MultiversePlugin implements Mes
             profileContainerStoreProvider.get().clearCache();
 
             if (profileDataSource.get() != null) {
-                profileDataSource.get().clearCache();
+                profileDataSource.get().clearAllCache();
             }
 
             Logging.fine("Loaded config file!");
