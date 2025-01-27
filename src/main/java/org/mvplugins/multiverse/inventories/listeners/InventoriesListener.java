@@ -7,6 +7,7 @@ import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
@@ -66,7 +67,7 @@ public class InventoriesListener implements Listener {
     private final WorldGroupManager worldGroupManager;
     private final ProfileDataSource profileDataSource;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
-    private final ImportManager importManager;
+    private final Provider<ImportManager> importManager;
 
     private List<WorldGroup> currentGroups;
     private Location spawnLoc = null;
@@ -78,7 +79,7 @@ public class InventoriesListener implements Listener {
             @NotNull WorldGroupManager worldGroupManager,
             @NotNull ProfileDataSource profileDataSource,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
-            @NotNull ImportManager importManager) {
+            @NotNull Provider<ImportManager> importManager) {
         this.inventories = inventories;
         this.config = config;
         this.worldManager = worldManager;
@@ -152,9 +153,9 @@ public class InventoriesListener implements Listener {
     public void pluginEnable(PluginEnableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
-                importManager.hookMultiInv((MultiInv) event.getPlugin());
+                importManager.get().hookMultiInv((MultiInv) event.getPlugin());
             } else if (event.getPlugin() instanceof WorldInventories) {
-                importManager.hookWorldInventories((WorldInventories) event.getPlugin());
+                importManager.get().hookWorldInventories((WorldInventories) event.getPlugin());
             }
         } catch (NoClassDefFoundError ignore) {
         }
@@ -169,9 +170,9 @@ public class InventoriesListener implements Listener {
     public void pluginDisable(PluginDisableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
-                importManager.unHookMultiInv();
+                importManager.get().unHookMultiInv();
             } else if (event.getPlugin() instanceof WorldInventories) {
-                importManager.unHookWorldInventories();
+                importManager.get().unHookWorldInventories();
             }
         } catch (NoClassDefFoundError ignore) {
         }
