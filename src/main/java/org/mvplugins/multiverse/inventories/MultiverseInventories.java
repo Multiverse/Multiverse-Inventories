@@ -40,7 +40,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public final class MultiverseInventories extends MultiversePlugin implements Messaging {
+public class MultiverseInventories extends MultiversePlugin implements Messaging {
 
     private static final int PROTOCOL = 50;
 
