@@ -1,5 +1,8 @@
 package org.mvplugins.multiverse.inventories;
 
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.locale.MessageProvider;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Message;
@@ -13,9 +16,11 @@ import java.util.List;
 /**
  * Implementation of a Messager and MessageProvider using DefaultMessageProvider to implement the latter.
  */
+@Service
 final class DefaultMessager extends DefaultMessageProvider implements Messager, MessageProvider {
 
-    public DefaultMessager(JavaPlugin plugin) {
+    @Inject
+    public DefaultMessager(@NotNull MultiverseInventories plugin) {
         super(plugin);
     }
 
@@ -32,7 +37,7 @@ final class DefaultMessager extends DefaultMessageProvider implements Messager, 
      */
     @Override
     public void bad(Message message, CommandSender sender, Object... args) {
-        send(message, ChatColor.RED.toString() + this.getMessage(Message.GENERIC_ERROR), sender, args);
+        send(message, ChatColor.RED + this.getMessage(Message.GENERIC_ERROR), sender, args);
     }
 
     /**
@@ -48,7 +53,7 @@ final class DefaultMessager extends DefaultMessageProvider implements Messager, 
      */
     @Override
     public void good(Message message, CommandSender sender, Object... args) {
-        send(message, ChatColor.GREEN.toString() + this.getMessage(Message.GENERIC_SUCCESS), sender, args);
+        send(message, ChatColor.GREEN + this.getMessage(Message.GENERIC_SUCCESS), sender, args);
     }
 
     /**
@@ -56,7 +61,7 @@ final class DefaultMessager extends DefaultMessageProvider implements Messager, 
      */
     @Override
     public void info(Message message, CommandSender sender, Object... args) {
-        send(message, ChatColor.YELLOW.toString() + this.getMessage(Message.GENERIC_INFO), sender, args);
+        send(message, ChatColor.YELLOW + this.getMessage(Message.GENERIC_INFO), sender, args);
     }
 
     /**
@@ -64,7 +69,7 @@ final class DefaultMessager extends DefaultMessageProvider implements Messager, 
      */
     @Override
     public void help(Message message, CommandSender sender, Object... args) {
-        send(message, ChatColor.GRAY.toString() + this.getMessage(Message.GENERIC_HELP), sender, args);
+        send(message, ChatColor.GRAY + this.getMessage(Message.GENERIC_HELP), sender, args);
     }
 
     /**

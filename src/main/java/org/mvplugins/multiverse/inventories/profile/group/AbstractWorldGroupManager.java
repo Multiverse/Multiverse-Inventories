@@ -1,9 +1,12 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.world.WorldManager;
-import org.mvplugins.multiverse.inventories.profile.WorldGroupManager;
-import org.mvplugins.multiverse.inventories.profile.GroupingConflict;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.mvplugins.multiverse.inventories.locale.Message;
@@ -21,16 +24,25 @@ import java.util.Map;
 /**
  * Abstract implementation of GroupManager with no persistence of groups.
  */
-abstract class AbstractWorldGroupManager implements WorldGroupManager {
+@Contract
+abstract sealed class AbstractWorldGroupManager implements WorldGroupManager permits YamlWorldGroupManager {
 
     static final String DEFAULT_GROUP_NAME = "default";
     protected final Map<String, WorldGroup> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
+    protected final InventoriesConfig inventoriesConfig;
+    protected final ProfileContainerStoreProvider profileContainerStoreProvider;
     protected final WorldManager worldManager;
 
-    public AbstractWorldGroupManager(final MultiverseInventories plugin) {
+    public AbstractWorldGroupManager(
+            @NotNull MultiverseInventories plugin,
+            @NotNull InventoriesConfig config,
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull WorldManager worldManager) {
         this.plugin = plugin;
-        this.worldManager = plugin.getServiceLocator().getService(WorldManager.class);
+        this.inventoriesConfig = config;
+        this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.worldManager = worldManager;
     }
 
     /**
@@ -62,7 +74,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
             }
         }
         // Only use the default group for worlds managed by MV-Core
-        if (worldGroups.isEmpty() && plugin.getMVIConfig().isDefaultingUngroupedWorlds() &&
+        if (worldGroups.isEmpty() && inventoriesConfig.isDefaultingUngroupedWorlds() &&
                 this.worldManager.isWorld(worldName)) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());
@@ -120,7 +132,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         if (getGroup(name) != null) {
             return null;
         }
-        return new WorldGroup(plugin, name);
+        return new WorldGroup(this, profileContainerStoreProvider, name);
     }
 
     /**
@@ -142,7 +154,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
         World defaultWorld = Bukkit.getWorlds().get(0);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroup worldGroup = new WorldGroup(plugin, DEFAULT_GROUP_NAME);
+        WorldGroup worldGroup = new WorldGroup(this, profileContainerStoreProvider, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
@@ -155,7 +167,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
             worlds.append(", ").append(defaultEnd.getName());
         }
         updateGroup(worldGroup);
-        plugin.getMVIConfig().save();
+        inventoriesConfig.save();
         Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
     }
 
@@ -224,7 +236,7 @@ abstract class AbstractWorldGroupManager implements WorldGroupManager {
             plugin.getMessager().sendMessage(sender, message);
         }
         Logging.fine(message);
-        List<GroupingConflict> conflicts = plugin.getGroupManager().checkGroups();
+        List<GroupingConflict> conflicts = checkGroups();
         for (GroupingConflict conflict : conflicts) {
             message = plugin.getMessager().getMessage(Message.CONFLICT_RESULTS,
                     conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),

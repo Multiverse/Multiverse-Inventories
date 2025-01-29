@@ -1,6 +1,8 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.event.WorldChangeShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
@@ -36,7 +38,7 @@ final class WorldChangeShareHandler extends ShareHandler {
     }
 
     private List<WorldGroup> getAffectedWorldGroups(String world) {
-        return this.inventories.getGroupManager().getGroupsForWorld(world);
+        return worldGroupManager.getGroupsForWorld(world);
     }
 
     @Override
@@ -65,7 +67,7 @@ final class WorldChangeShareHandler extends ShareHandler {
     }
 
     private ProfileContainer getWorldProfile(String world) {
-        return inventories.getWorldProfileContainerStore().getContainer(world);
+        return worldProfileContainerStore.getContainer(world);
     }
 
     private boolean isPlayerAffectedByChange() {
@@ -189,7 +191,7 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private ProfileContainer getToWorldProfileContainer() {
-            return inventories.getWorldProfileContainerStore().getContainer(toWorld);
+            return worldProfileContainerStore.getContainer(toWorld);
         }
     }
 

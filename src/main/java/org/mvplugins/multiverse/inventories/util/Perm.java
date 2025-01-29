@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 /**
  * @author dumptruckman
@@ -182,7 +183,8 @@ public enum Perm {
      * @return True if player is allowed to bypass.
      */
     public boolean hasBypass(Player player, String name) {
-        if (inventories != null && !inventories.getMVIConfig().isUsingBypass()) {
+        if (inventories != null &&
+                !inventories.getServiceLocator().getService(InventoriesConfig.class).isUsingBypass()) {
             return false;
         }
         Permission bypassPerm = this.getBypassPermission(name);
@@ -190,7 +192,7 @@ public enum Perm {
         if (hasBypass) {
             Logging.fine("Player: " + player.getName() + " in World: " + player.getWorld().getName()
                     + " has permission: " + bypassPerm.getName() + "(Default: "
-                    + bypassPerm.getDefault().toString() + ")!");
+                    + bypassPerm.getDefault() + ")!");
         }
         return hasBypass;
     }

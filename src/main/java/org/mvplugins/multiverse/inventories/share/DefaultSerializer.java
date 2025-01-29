@@ -8,7 +8,7 @@ package org.mvplugins.multiverse.inventories.share;
  */
 final class DefaultSerializer<T> implements SharableSerializer<T> {
 
-    private Class<T> type;
+    private final Class<T> type;
 
     public DefaultSerializer(Class<T> type) {
         this.type = type;

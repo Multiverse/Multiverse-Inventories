@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories;
 
+import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.inventories.locale.LazyLocaleMessageProvider;
 import org.mvplugins.multiverse.inventories.locale.LocalizationLoadingException;
 import org.mvplugins.multiverse.inventories.locale.Message;
@@ -23,6 +24,7 @@ import java.util.Set;
 /**
  * Implementation of MessageProvider.
  */
+@Contract
 class DefaultMessageProvider implements LazyLocaleMessageProvider {
 
     /**

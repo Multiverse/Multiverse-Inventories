@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;

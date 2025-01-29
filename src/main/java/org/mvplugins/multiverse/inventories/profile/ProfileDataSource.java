@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
@@ -8,7 +9,8 @@ import java.util.UUID;
 /**
  * A source for updating and retrieving player profiles via persistence.
  */
-public interface ProfileDataSource {
+@Contract
+public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
 
     /**
      * Updates the persisted data for a player for a specific profile.
@@ -100,5 +102,10 @@ public interface ProfileDataSource {
      * Clears a single profile in cache.
      */
     void clearProfileCache(ProfileKey key);
+
+    /**
+     * Clears all profiles in cache.
+     */
+    void clearAllCache();
 }
 

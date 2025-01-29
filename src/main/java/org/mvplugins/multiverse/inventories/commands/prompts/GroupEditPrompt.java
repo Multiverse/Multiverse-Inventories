@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +17,7 @@ class GroupEditPrompt extends InventoriesPrompt {
     @Override
     public String getPromptText(final ConversationContext conversationContext) {
         final StringBuilder builder = new StringBuilder();
-        for (WorldGroup group : plugin.getGroupManager().getGroups()) {
+        for (WorldGroup group : worldGroupManager.getGroups()) {
             if (builder.length() == 0) {
                 builder.append(ChatColor.WHITE);
             } else {
@@ -30,7 +30,7 @@ class GroupEditPrompt extends InventoriesPrompt {
 
     @Override
     public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
-        final WorldGroup group = plugin.getGroupManager().getGroup(s);
+        final WorldGroup group = worldGroupManager.getGroup(s);
         if (group == null) {
             messager.normal(Message.ERROR_NO_GROUP, sender, s);
         } else {

@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.util;
 
 import com.dumptruckman.minecraft.util.Logging;
 import net.minidev.json.JSONArray;

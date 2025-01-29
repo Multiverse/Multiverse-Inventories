@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
@@ -47,7 +47,7 @@ class GroupSharesPrompt extends InventoriesPrompt {
         if (s.equals("@")) {
             group.getShares().clear();
             group.getShares().addAll(this.shares);
-            plugin.getGroupManager().updateGroup(group);
+            worldGroupManager.updateGroup(group);
             if (isCreating) {
                 messager.normal(Message.GROUP_CREATION_COMPLETE, sender);
             } else {
@@ -55,7 +55,7 @@ class GroupSharesPrompt extends InventoriesPrompt {
             }
             messager.normal(Message.INFO_GROUP, sender, group.getName());
             messager.normal(Message.INFO_GROUPS_INFO, sender, group.getWorlds(), group.getShares());
-            plugin.getGroupManager().checkForConflicts(sender);
+            worldGroupManager.checkForConflicts(sender);
             return nextPrompt;
         }
 

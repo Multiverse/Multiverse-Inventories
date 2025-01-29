@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.DataStrings;
+import org.mvplugins.multiverse.inventories.util.DataStrings;
 import org.bukkit.Location;
 
 import java.util.Map;

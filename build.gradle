@@ -84,7 +84,6 @@ dependencies {
     api 'net.minidev:json-smart:2.5.1'
 
     // Utils
-    api 'io.papermc:paperlib:1.0.7'
     api('com.dumptruckman.minecraft:Logging:1.1.1') {
         exclude group: 'junit', module: 'junit'
     }
@@ -173,7 +172,6 @@ shadowJar {
     relocate 'com.dumptruckman.minecraft.util.Logging', 'org.mvplugins.multiverse.inventories.utils.InvLogging'
     relocate 'com.dumptruckman.minecraft.util.DebugLog', 'org.mvplugins.multiverse.inventories.utils.DebugFileLogger'
     relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
-    relocate 'io.papermc.lib', 'org.mvplugins.multiverse.inventories.utils.paperlib'
     relocate 'net.minidev', 'org.mvplugins.multiverse.inventories.utils.minidev'
 
     configurations = [project.configurations.api]

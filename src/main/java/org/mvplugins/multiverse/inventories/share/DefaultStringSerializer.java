@@ -15,8 +15,8 @@ import java.lang.reflect.Modifier;
  */
 final class DefaultStringSerializer<T> implements SharableSerializer<T> {
 
-    private Method valueOfMethod;
-    private Class<T> clazz;
+    private final Method valueOfMethod;
+    private final Class<T> clazz;
 
     DefaultStringSerializer(Class<T> clazz) {
         this.clazz = clazz;

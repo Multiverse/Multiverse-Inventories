@@ -1,6 +1,8 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.event.GameModeChangeShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.ProfileType;
@@ -23,25 +25,23 @@ final class GameModeShareHandler extends ShareHandler {
     private final ProfileType fromType;
     private final ProfileType toType;
     private final String world;
-    private final ProfileContainer worldProfileContainer;
     private final List<WorldGroup> worldGroups;
 
     GameModeShareHandler(MultiverseInventories inventories, Player player,
-                                GameMode fromGameMode, GameMode toGameMode) {
+                         GameMode fromGameMode, GameMode toGameMode) {
         super(inventories, player);
         this.fromGameMode = fromGameMode;
         this.toGameMode = toGameMode;
         this.fromType = ProfileTypes.forGameMode(fromGameMode);
         this.toType = ProfileTypes.forGameMode(toGameMode);
         this.world = player.getWorld().getName();
-        this.worldProfileContainer = inventories.getWorldProfileContainerStore().getContainer(world);
         this.worldGroups = getAffectedWorldGroups();
 
         prepareProfiles();
     }
 
     private List<WorldGroup> getAffectedWorldGroups() {
-        return this.inventories.getGroupManager().getGroupsForWorld(world);
+        return worldGroupManager.getGroupsForWorld(world);
     }
 
     @Override
@@ -53,7 +53,7 @@ final class GameModeShareHandler extends ShareHandler {
         Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
 
-        setAlwaysWriteProfile(worldProfileContainer.getPlayerData(fromType, player));
+        setAlwaysWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player));
 
         if (isPlayerAffectedByChange()) {
             addProfiles();
@@ -78,7 +78,8 @@ final class GameModeShareHandler extends ShareHandler {
             worldGroups.forEach(this::addProfilesForWorldGroup);
         } else {
             Logging.finer("No groups for world.");
-            addReadProfile(worldProfileContainer.getPlayerData(toType, player), Sharables.allOf());
+            addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
+                    Sharables.allOf());
         }
     }
 

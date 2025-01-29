@@ -1,6 +1,5 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.group;
 
-import org.mvplugins.multiverse.inventories.WorldGroup;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.ArrayList;
@@ -11,9 +10,9 @@ import java.util.List;
  */
 public final class GroupingConflict {
 
-    private WorldGroup groupOne;
-    private WorldGroup groupTwo;
-    private Shares conflictingShares;
+    private final WorldGroup groupOne;
+    private final WorldGroup groupTwo;
+    private final Shares conflictingShares;
 
     public GroupingConflict(WorldGroup groupOne, WorldGroup groupTwo, Shares conflictingShares) {
         this.groupOne = groupOne;

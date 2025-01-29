@@ -11,8 +11,8 @@ import java.util.List;
  */
 public final class SharableGroup implements Shares {
 
-    private String[] names;
-    private Shares shares;
+    private final String[] names;
+    private final Shares shares;
 
     public SharableGroup(String name, Shares shares, String... alternateNames) {
         this.names = new String[alternateNames.length + 1];

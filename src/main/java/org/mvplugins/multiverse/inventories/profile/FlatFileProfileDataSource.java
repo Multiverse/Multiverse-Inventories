@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
@@ -7,20 +7,18 @@ import com.google.common.cache.CacheBuilder;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileKey;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.ProfileEntry;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.SharableEntry;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
-import org.mvplugins.multiverse.inventories.profile.ProfileType;
 import net.minidev.json.JSONObject;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +34,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-class FlatFileProfileDataSource implements ProfileDataSource {
+@Service
+final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
 
@@ -58,6 +57,7 @@ class FlatFileProfileDataSource implements ProfileDataSource {
     private final File groupFolder;
     private final File playerFolder;
 
+    @Inject
     FlatFileProfileDataSource(MultiverseInventories plugin) throws IOException {
         // Make the data folders
         plugin.getDataFolder().mkdirs();
@@ -592,7 +592,8 @@ class FlatFileProfileDataSource implements ProfileDataSource {
         profileCache.invalidate(key);
     }
 
-    void clearCache() {
+    @Override
+    public void clearAllCache() {
         globalProfileCache.invalidateAll();
         profileCache.invalidateAll();
     }

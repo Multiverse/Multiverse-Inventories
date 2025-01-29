@@ -2,10 +2,16 @@ package org.mvplugins.multiverse.inventories.migration.worldinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.migration.DataImporter;
 import org.mvplugins.multiverse.inventories.migration.MigrationException;
@@ -31,12 +37,20 @@ import java.util.Set;
  */
 public class WorldInventoriesImporter implements DataImporter {
 
-    private WorldInventories wiPlugin;
-    private MultiverseInventories inventories;
+    private final WorldInventories wiPlugin;
+    private final InventoriesConfig config;
+    private final WorldGroupManager worldGroupManager;
+    private final ProfileDataSource profileDataSource;
+    private final ProfileContainerStore worldProfileContainerStore;
 
     public WorldInventoriesImporter(MultiverseInventories inventories, WorldInventories wiPlugin) {
-        this.inventories = inventories;
         this.wiPlugin = wiPlugin;
+        this.config = inventories.getServiceLocator().getService(InventoriesConfig.class);
+        this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
+        this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
+        this.worldProfileContainerStore = inventories.getServiceLocator()
+                .getService(ProfileContainerStoreProvider.class)
+                .getStore(ContainerType.WORLD);
     }
 
     /**
@@ -75,16 +89,16 @@ public class WorldInventoriesImporter implements DataImporter {
         }
 
         if (!wiGroups.isEmpty()) {
-            WorldGroup defaultWorldGroup = this.inventories.getGroupManager().getDefaultGroup();
+            WorldGroup defaultWorldGroup = worldGroupManager.getDefaultGroup();
             if (defaultWorldGroup != null) {
-                this.inventories.getGroupManager().removeGroup(defaultWorldGroup);
+                worldGroupManager.removeGroup(defaultWorldGroup);
                 Logging.info("Removed automatically created world group in favor of imported groups.");
             }
         }
 
         this.createGroups(wiGroups);
         Set<ProfileContainer> noGroupWorlds = this.getWorldsWithoutGroups();
-        this.inventories.getMVIConfig().save();
+        config.save();
 
         OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
         Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer"
@@ -95,7 +109,7 @@ public class WorldInventoriesImporter implements DataImporter {
             Logging.finer("(" + playerCount + "/" + offlinePlayers.length
                     + ")Processing WorldInventories data for player: " + player.getName());
             for (Group wiGroup : wiGroups) {
-                WorldGroup worldGroup = inventories.getGroupManager().getGroup(wiGroup.getName());
+                WorldGroup worldGroup = worldGroupManager.getGroup(wiGroup.getName());
                 if (worldGroup == null) {
                     Logging.finest("Could not import player data for WorldInventories group: " + wiGroup.getName()
                             + " because there is no Multiverse-Inventories group by that name.");
@@ -118,7 +132,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 Logging.warning("Group '" + wiGroup.getName() + "' has no worlds."
                         + "  You may need to add these manually!");
             }
-            WorldGroup newGroup = inventories.getGroupManager().newEmptyGroup(wiGroup.getName());
+            WorldGroup newGroup = worldGroupManager.newEmptyGroup(wiGroup.getName());
             for (String worldName : wiGroup.getWorlds()) {
                 newGroup.addWorld(worldName);
             }
@@ -136,7 +150,7 @@ public class WorldInventoriesImporter implements DataImporter {
                 Logging.warning("Group '" + wiGroup.getName() + "' unable to import fully, sharing only inventory.");
                 newGroup.getShares().setSharing(Sharables.ALL_INVENTORY, true);
             }
-            this.inventories.getGroupManager().updateGroup(newGroup);
+            worldGroupManager.updateGroup(newGroup);
             Logging.info("Created Multiverse-Inventories group: " + wiGroup.getName());
         }
     }
@@ -144,9 +158,9 @@ public class WorldInventoriesImporter implements DataImporter {
     private Set<ProfileContainer> getWorldsWithoutGroups() {
         Set<ProfileContainer> noGroupWorlds = new LinkedHashSet<>();
         for (World world : Bukkit.getWorlds()) {
-            if (this.inventories.getGroupManager().getGroupsForWorld(world.getName()).isEmpty()) {
+            if (worldGroupManager.getGroupsForWorld(world.getName()).isEmpty()) {
                 Logging.fine("Added ungrouped world for importing.");
-                ProfileContainer container = this.inventories.getWorldProfileContainerStore().getContainer(world.getName());
+                ProfileContainer container = worldProfileContainerStore.getContainer(world.getName());
                 noGroupWorlds.add(container);
             }
         }
@@ -169,7 +183,7 @@ public class WorldInventoriesImporter implements DataImporter {
             playerProfile.set(Sharables.EXHAUSTION, wiStats.getExhaustion());
             playerProfile.set(Sharables.FOOD_LEVEL, wiStats.getFoodLevel());
         }
-        this.inventories.getData().updatePlayerData(playerProfile);
+        profileDataSource.updatePlayerData(playerProfile);
         Logging.finest("Player's data imported successfully for group: " + profileContainer.getContainerName());
     }
 

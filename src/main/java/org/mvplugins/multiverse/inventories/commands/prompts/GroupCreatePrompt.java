@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
@@ -20,13 +20,13 @@ class GroupCreatePrompt extends InventoriesPrompt {
 
     @Override
     public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
-        final WorldGroup group = plugin.getGroupManager().getGroup(s);
+        final WorldGroup group = worldGroupManager.getGroup(s);
         if (group == null) {
             if (s.isEmpty() || !s.matches("^[a-zA-Z0-9][a-zA-Z0-9_]*$")) {
                 messager.normal(Message.GROUP_INVALID_NAME, sender);
                 return this;
             }
-            final WorldGroup newGroup = plugin.getGroupManager().newEmptyGroup(s);
+            final WorldGroup newGroup = worldGroupManager.newEmptyGroup(s);
             return new GroupWorldsPrompt(plugin, sender, newGroup,
                     new GroupSharesPrompt(plugin, sender, newGroup, Prompt.END_OF_CONVERSATION, true), true);
         } else {

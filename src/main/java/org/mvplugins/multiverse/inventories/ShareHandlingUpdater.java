@@ -1,6 +1,9 @@
 package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -11,15 +14,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class ShareHandlingUpdater {
+public final class ShareHandlingUpdater {
 
-    static void updateProfile(final MultiverseInventories inventories,
+    public static void updateProfile(final MultiverseInventories inventories,
                               final Player player,
                               final PersistingProfile profile) {
         new ShareHandlingUpdater(inventories, player, profile).updateProfile();
     }
 
-    static void updatePlayer(final MultiverseInventories inventories,
+    public static void updatePlayer(final MultiverseInventories inventories,
                              final Player player,
                              final PersistingProfile profile) {
         new ShareHandlingUpdater(inventories, player, profile).updatePlayer();
@@ -53,7 +56,7 @@ class ShareHandlingUpdater {
                     + " (" + profile.getProfile().getProfileType() + ")"
                     + " for player " + profile.getProfile().getPlayer().getName());
         }
-        inventories.getData().updatePlayerData(profile.getProfile());
+        inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(profile.getProfile());
     }
 
     private void updatePlayer() {
@@ -82,13 +85,14 @@ class ShareHandlingUpdater {
     }
 
     private boolean isSharableUsed(Sharable<?> sharable) {
+        var config = inventories.getServiceLocator().getService(InventoriesConfig.class);
         if (sharable.isOptional()) {
-            if (!inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
+            if (!config.getOptionalShares().contains(sharable)) {
                 Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
                 return false;
             }
             if (profile.getProfile().getContainerType() == ContainerType.WORLD
-                    && !inventories.getMVIConfig().usingOptionalsForUngrouped()) {
+                    && !config.usingOptionalsForUngrouped()) {
                 Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
                 return false;
             }

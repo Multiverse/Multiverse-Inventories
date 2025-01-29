@@ -5,10 +5,11 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.SpawnChangeListener;
-import org.mvplugins.multiverse.inventories.WorldGroup;
-import org.mvplugins.multiverse.inventories.DataStrings;
-import org.mvplugins.multiverse.inventories.PlayerStats;
+import org.mvplugins.multiverse.inventories.listeners.SpawnChangeListener;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.util.DataStrings;
+import org.mvplugins.multiverse.inventories.util.PlayerStats;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.bukkit.Location;
@@ -680,10 +681,10 @@ public final class Sharables implements Shares {
         if (!ALL_SHARABLES.contains(sharable)) {
             // If the plugin has been enabled, we need to add this sharable to the existing groups with all sharables.
             if (inventories != null) {
-                for (WorldGroup group : inventories.getGroupManager().getGroups()) {
+                var worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
+                for (WorldGroup group : worldGroupManager.getGroups()) {
                     if (group.getShares().isSharing(Sharables.all())) {
                         group.getShares().setSharing(sharable, true);
-
                     }
                 }
             }

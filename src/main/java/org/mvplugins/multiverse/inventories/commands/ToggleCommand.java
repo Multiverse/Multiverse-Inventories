@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -23,11 +24,16 @@ import org.jvnet.hk2.annotations.Service;
 class ToggleCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
+    private final InventoriesConfig inventoriesConfig;
 
     @Inject
-    ToggleCommand(MVCommandManager commandManager, @NotNull MultiverseInventories plugin) {
+    ToggleCommand(
+            @NotNull MVCommandManager commandManager,
+            @NotNull MultiverseInventories plugin,
+            @NotNull InventoriesConfig inventoriesConfig) {
         super(commandManager);
         this.plugin = plugin;
+        this.inventoriesConfig = inventoriesConfig;
     }
 
     @CommandAlias("mvinvtoggle")
@@ -53,17 +59,17 @@ class ToggleCommand extends InventoriesCommand {
         for (Sharable sharable : shares) {
             if (sharable.isOptional()) {
                 foundOpt = true;
-                if (this.plugin.getMVIConfig().getOptionalShares().contains(sharable)) {
-                    this.plugin.getMVIConfig().getOptionalShares().remove(sharable);
+                if (inventoriesConfig.getOptionalShares().contains(sharable)) {
+                    inventoriesConfig.getOptionalShares().remove(sharable);
                     this.plugin.getMessager().normal(Message.NOW_NOT_USING_OPTIONAL, sender, sharable.getNames()[0]);
                 } else {
-                    this.plugin.getMVIConfig().getOptionalShares().add(sharable);
+                    inventoriesConfig.getOptionalShares().add(sharable);
                     this.plugin.getMessager().normal(Message.NOW_USING_OPTIONAL, sender, sharable.getNames()[0]);
                 }
             }
         }
         if (foundOpt) {
-            this.plugin.getMVIConfig().save();
+            inventoriesConfig.save();
         } else {
             this.plugin.getMessager().normal(Message.NO_OPTIONAL_SHARES, sender, shareName);
         }

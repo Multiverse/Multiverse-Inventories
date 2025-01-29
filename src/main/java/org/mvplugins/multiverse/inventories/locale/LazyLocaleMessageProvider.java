@@ -1,5 +1,7 @@
 package org.mvplugins.multiverse.inventories.locale;
 
+import org.jvnet.hk2.annotations.Contract;
+
 import java.util.Locale;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import java.util.Set;
  *
  * This interface describes a Multiverse-MessageProvider that only loads locales when they're needed.
  */
+@Contract
 public interface LazyLocaleMessageProvider extends MessageProvider {
 
     /**

@@ -1,14 +1,22 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.group;
 
-import org.mvplugins.multiverse.inventories.WorldGroup;
 import org.bukkit.command.CommandSender;
+import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
  * Manager class for manipulating the groups of this plugin that are contained in the groups configuration.
  */
-public interface WorldGroupManager {
+@Contract
+public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
+
+    /**
+     * <p>Loads the groups from storage.</p>
+     */
+    Try<Void> load();
 
     /**
      * <p>Retrieves the world group associated with the given name.</p>

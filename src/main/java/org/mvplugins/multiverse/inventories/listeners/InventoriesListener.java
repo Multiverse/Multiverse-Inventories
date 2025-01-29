@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
@@ -7,9 +7,20 @@ import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.external.jakarta.inject.Provider;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.migration.ImportManager;
+import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
@@ -51,15 +62,31 @@ import java.util.stream.Collectors;
 public class InventoriesListener implements Listener {
 
     private final MultiverseInventories inventories;
+    private final InventoriesConfig config;
     private final WorldManager worldManager;
+    private final WorldGroupManager worldGroupManager;
+    private final ProfileDataSource profileDataSource;
+    private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final Provider<ImportManager> importManager;
 
     private List<WorldGroup> currentGroups;
     private Location spawnLoc = null;
 
     @Inject
-    InventoriesListener(@NotNull MultiverseInventories inventories, @NotNull WorldManager worldManager) {
+    InventoriesListener(
+            @NotNull MultiverseInventories inventories, InventoriesConfig config,
+            @NotNull WorldManager worldManager,
+            @NotNull WorldGroupManager worldGroupManager,
+            @NotNull ProfileDataSource profileDataSource,
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull Provider<ImportManager> importManager) {
         this.inventories = inventories;
+        this.config = config;
         this.worldManager = worldManager;
+        this.worldGroupManager = worldGroupManager;
+        this.profileDataSource = profileDataSource;
+        this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.importManager = importManager;
     }
 
     /**
@@ -69,11 +96,36 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler
     public void dumpsDebugInfoRequest(MVDumpsDebugInfoEvent event) {
-        event.appendDebugInfo(this.inventories.getVersionInfo());
+        event.appendDebugInfo(getDebugInfo());
         File configFile = new File(this.inventories.getDataFolder(), "config.yml");
         File groupsFile = new File(this.inventories.getDataFolder(), "groups.yml");
         event.putDetailedDebugInfo("multiverse-inventories/config.yml", configFile);
         event.putDetailedDebugInfo("multiverse-inventories/groups.yml", groupsFile);
+    }
+
+    /**
+     * Builds a String containing Multiverse-Inventories' version info.
+     *
+     * @return The version info.
+     */
+    public String getDebugInfo() {
+        StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + inventories.getDescription().getVersion() + '\n'
+                + "[Multiverse-Inventories] === Settings ===" + '\n'
+                + "[Multiverse-Inventories] First Run: " + config.isFirstRun() + '\n'
+                + "[Multiverse-Inventories] Using Bypass: " + config.isUsingBypass() + '\n'
+                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + config.isDefaultingUngroupedWorlds() + '\n'
+                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + config.usingLoggingSaveLoad() + '\n'
+                + "[Multiverse-Inventories] Using GameMode Profiles: " + config.isUsingGameModeProfiles() + '\n'
+                + "[Multiverse-Inventories] === Shares ===" + '\n'
+                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + config.usingOptionalsForUngrouped() + '\n'
+                + "[Multiverse-Inventories] Enabled Optionals: " + config.getOptionalShares() + '\n'
+                + "[Multiverse-Inventories] === Groups ===" + '\n');
+
+        for (WorldGroup group : worldGroupManager.getGroups()) {
+            versionInfo.append("[Multiverse-Inventories] ").append(group.toString()).append('\n');
+        }
+
+        return versionInfo.toString();
     }
 
     @EventHandler
@@ -101,9 +153,9 @@ public class InventoriesListener implements Listener {
     public void pluginEnable(PluginEnableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
-                this.inventories.getImportManager().hookMultiInv((MultiInv) event.getPlugin());
+                importManager.get().hookMultiInv((MultiInv) event.getPlugin());
             } else if (event.getPlugin() instanceof WorldInventories) {
-                this.inventories.getImportManager().hookWorldInventories((WorldInventories) event.getPlugin());
+                importManager.get().hookWorldInventories((WorldInventories) event.getPlugin());
             }
         } catch (NoClassDefFoundError ignore) {
         }
@@ -118,9 +170,9 @@ public class InventoriesListener implements Listener {
     public void pluginDisable(PluginDisableEvent event) {
         try {
             if (event.getPlugin() instanceof MultiInv) {
-                this.inventories.getImportManager().unHookMultiInv();
+                importManager.get().unHookMultiInv();
             } else if (event.getPlugin() instanceof WorldInventories) {
-                this.inventories.getImportManager().unHookWorldInventories();
+                importManager.get().unHookWorldInventories();
             }
         } catch (NoClassDefFoundError ignore) {
         }
@@ -135,13 +187,13 @@ public class InventoriesListener implements Listener {
         Logging.finer("Loading global profile for Player{name:'%s', uuid:'%s'}.",
                 event.getName(), event.getUniqueId());
 
-        GlobalProfile globalProfile = inventories.getData().getGlobalProfile(event.getName(), event.getUniqueId());
+        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(event.getName(), event.getUniqueId());
         if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
             // Data must be migrated
             Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
                     event.getUniqueId(), globalProfile.getLastKnownName(), event.getName());
             try {
-                inventories.getData().migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
+                profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
                         event.getUniqueId(), true);
             } catch (IOException e) {
                 Logging.severe("An error occurred while trying to migrate playerdata.");
@@ -149,7 +201,7 @@ public class InventoriesListener implements Listener {
             }
 
             globalProfile.setLastKnownName(event.getName());
-            inventories.getData().updateGlobalProfile(globalProfile);
+            profileDataSource.updateGlobalProfile(globalProfile);
             Logging.info("Migration complete!");
         }
     }
@@ -162,13 +214,17 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final GlobalProfile globalProfile = inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId());
+        final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId());
         final String world = globalProfile.getLastWorld();
-        if (inventories.getMVIConfig().usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
-            ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(Sharables.allOf(),
-                    inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
+        if (config.usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
+            ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(
+                    Sharables.allOf(),
+                    profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                            .getContainer(world)
+                            .getPlayerData(player)
+            ));
         }
-        inventories.getData().setLoadOnLogin(player.getName(), false);
+        profileDataSource.setLoadOnLogin(player.getName(), false);
         verifyCorrectWorld(player, player.getWorld().getName(), globalProfile);
     }
 
@@ -181,24 +237,28 @@ public class InventoriesListener implements Listener {
     public void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
-        inventories.getData().updateLastWorld(player.getName(), world);
-        if (inventories.getMVIConfig().usingLoggingSaveLoad()) {
-            ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(Sharables.allOf(),
-                    inventories.getWorldProfileContainerStore().getContainer(world).getPlayerData(player)));
-            inventories.getData().setLoadOnLogin(player.getName(), true);
+        profileDataSource.updateLastWorld(player.getName(), world);
+        if (config.usingLoggingSaveLoad()) {
+            ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(
+                    Sharables.allOf(),
+                    profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                            .getContainer(world)
+                            .getPlayerData(player)
+            ));
+            profileDataSource.setLoadOnLogin(player.getName(), true);
         }
         SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
     }
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
         if (globalProfile.getLastWorld() == null) {
-            inventories.getData().updateLastWorld(player.getName(), world);
+            profileDataSource.updateLastWorld(player.getName(), world);
         } else {
             if (!world.equals(globalProfile.getLastWorld())) {
                 Logging.fine("Player did not spawn in the world they were last reported to be in!");
                 new WorldChangeShareHandler(this.inventories, player,
                         globalProfile.getLastWorld(), world).handleSharing();
-                inventories.getData().updateLastWorld(player.getName(), world);
+                profileDataSource.updateLastWorld(player.getName(), world);
             }
         }
     }
@@ -210,7 +270,7 @@ public class InventoriesListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.isCancelled() || !inventories.getMVIConfig().isUsingGameModeProfiles()) {
+        if (event.isCancelled() || !config.isUsingGameModeProfiles()) {
             return;
         }
         Player player = event.getPlayer();
@@ -240,7 +300,7 @@ public class InventoriesListener implements Listener {
         }
 
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
-        inventories.getData().updateLastWorld(player.getName(), toWorld.getName());
+        profileDataSource.updateLastWorld(player.getName(), toWorld.getName());
     }
 
     /**
@@ -252,7 +312,7 @@ public class InventoriesListener implements Listener {
     public void playerTeleport(PlayerTeleportEvent event) {
         if (event.isCancelled()
                 || event.getFrom().getWorld().equals(event.getTo().getWorld())
-                || !this.inventories.getMVIConfig().getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+                || !config.getOptionalShares().contains(Sharables.LAST_LOCATION)) {
             return;
         }
 
@@ -272,18 +332,18 @@ public class InventoriesListener implements Listener {
     public void playerDeath(PlayerDeathEvent event) {
         Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
-        ProfileContainer worldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(deathWorld);
+        ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(deathWorld);
         PlayerProfile profile = worldProfileContainer.getPlayerData(event.getEntity());
         profile.set(Sharables.LEVEL, event.getNewLevel());
         profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
         profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-        this.inventories.getData().updatePlayerData(profile);
-        for (WorldGroup worldGroup : this.inventories.getGroupManager().getGroupsForWorld(deathWorld)) {
+        profileDataSource.updatePlayerData(profile);
+        for (WorldGroup worldGroup : worldGroupManager.getGroupsForWorld(deathWorld)) {
             profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
             profile.set(Sharables.LEVEL, event.getNewLevel());
             profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
             profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-            this.inventories.getData().updatePlayerData(profile);
+            profileDataSource.updatePlayerData(profile);
         }
         Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
     }
@@ -299,7 +359,7 @@ public class InventoriesListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(inventories, new Runnable() {
             public void run() {
                 verifyCorrectWorld(player, player.getWorld().getName(),
-                        inventories.getData().getGlobalProfile(player.getName(), player.getUniqueId()));
+                        profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId()));
             }
         }, 2L);
     }
@@ -313,8 +373,7 @@ public class InventoriesListener implements Listener {
     public void lowestPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             World world = event.getPlayer().getWorld();
-            this.currentGroups = this.inventories.getGroupManager()
-                    .getGroupsForWorld(world.getName());
+            this.currentGroups = worldGroupManager.getGroupsForWorld(world.getName());
             this.handleRespawn(event, EventPriority.LOWEST);
         }
     }
@@ -427,8 +486,8 @@ public class InventoriesListener implements Listener {
             return;
         }
 
-        List<WorldGroup> fromGroups = inventories.getGroupManager().getGroupsForWorld(fromWorld.getName());
-        List<WorldGroup> toGroups = inventories.getGroupManager().getGroupsForWorld(toWorld.getName());
+        List<WorldGroup> fromGroups = worldGroupManager.getGroupsForWorld(fromWorld.getName());
+        List<WorldGroup> toGroups = worldGroupManager.getGroupsForWorld(toWorld.getName());
         // We only care about the groups that have the inventory sharable
         fromGroups = fromGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
         toGroups = toGroups.stream().filter(it -> it.isSharing(Sharables.INVENTORY)).collect(Collectors.toList());
@@ -452,10 +511,11 @@ public class InventoriesListener implements Listener {
 
         Logging.finer("Clearing data for world/groups container with '%s' world.", unloadWorldName);
 
-        ProfileContainer fromWorldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(unloadWorldName);
+        ProfileContainer fromWorldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                .getContainer(unloadWorldName);
         fromWorldProfileContainer.clearContainer();
 
-        List<WorldGroup> fromGroups = this.inventories.getGroupManager().getGroupsForWorld(unloadWorldName);
+        List<WorldGroup> fromGroups = worldGroupManager.getGroupsForWorld(unloadWorldName);
         for (WorldGroup fromGroup : fromGroups) {
             fromGroup.getGroupProfileContainer().clearContainer();
         }

@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Location;
@@ -10,13 +10,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerSpawnChangeEvent;
 import org.bukkit.event.player.PlayerSpawnChangeEvent.Cause;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
-public class SpawnChangeListener implements Listener {
+public final class SpawnChangeListener implements Listener {
 
     private final MultiverseInventories inventories;
 

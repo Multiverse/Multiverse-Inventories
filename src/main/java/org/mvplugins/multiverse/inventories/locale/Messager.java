@@ -1,12 +1,14 @@
 package org.mvplugins.multiverse.inventories.locale;
 
 import org.bukkit.command.CommandSender;
+import org.jvnet.hk2.annotations.Contract;
 
 import java.util.List;
 
 /**
  * This interface describes a Messager which sends messages to CommandSenders.
  */
+@Contract
 public interface Messager extends MessageProvider {
 
     /**

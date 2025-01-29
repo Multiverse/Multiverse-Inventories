@@ -1,11 +1,18 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.vavr.control.Try;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.DeserializationException;
-import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
@@ -16,12 +23,12 @@ import org.bukkit.event.EventPriority;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Service
 final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private final String[] groupSectionComments = {
@@ -31,47 +38,57 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             "# No support will be given for those who manually edit these groups."
     };
 
-    private final CommentedConfiguration groupsConfig;
+    private CommentedConfiguration groupsConfig;
 
-    YamlWorldGroupManager(final MultiverseInventories inventories, final Configuration config) throws IOException {
-        super(inventories);
+    @Inject
+    YamlWorldGroupManager(
+            @NotNull MultiverseInventories plugin,
+            @NotNull InventoriesConfig inventoriesConfig,
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull WorldManager worldManager) {
+        super(plugin, inventoriesConfig, profileContainerStoreProvider, worldManager);
+    }
 
-        // Check if the group config file exists. If not, create it and migrate group data.
-        File groupsConfigFile = new File(plugin.getDataFolder(), "groups.yml");
-        boolean groupsConfigFileExists = groupsConfigFile.exists();
-        boolean migrateGroups = false;
-        if (!groupsConfigFile.exists()) {
-            Logging.fine("Created groups file.");
-            groupsConfigFile.createNewFile();
-            migrateGroups = true;
-        }
-        // Load the configuration file into memory
-        groupsConfig = new CommentedConfiguration(groupsConfigFile.toPath());
-        groupsConfig.load();
+    @Override
+    public Try<Void> load() {
+        return Try.run(() -> {
+            // Check if the group config file exists. If not, create it and migrate group data.
+            File groupsConfigFile = new File(plugin.getDataFolder(), "groups.yml");
+            boolean migrateGroups = false;
+            if (!groupsConfigFile.exists()) {
+                Logging.fine("Created groups file.");
+                groupsConfigFile.createNewFile();
+                migrateGroups = true;
+            }
+            // Load the configuration file into memory
+            groupsConfig = new CommentedConfiguration(groupsConfigFile.toPath());
+            groupsConfig.load();
 
-        if (migrateGroups) {
-            migrateGroups(config);
-        }
+            if (migrateGroups) {
+                migrateGroups(inventoriesConfig.getConfig());
+            }
 
-        groupsConfig.addComment("groups", groupSectionComments);
-        if (groupsConfig.get("groups") == null) {
-            this.getConfig().createSection("groups");
-        }
+            groupsConfig.addComment("groups", groupSectionComments);
+            if (groupsConfig.get("groups") == null) {
+                this.getConfig().createSection("groups");
+            }
 
-        // Saves the configuration from memory to file
-        groupsConfig.save();
+            // Saves the configuration from memory to file
+            groupsConfig.save();
 
-        // Setup groups in memory
-        final List<WorldGroup> worldGroups = getGroupsFromConfig();
-        if (worldGroups == null) {
-            Logging.info("No world groups have been configured!");
-            Logging.info("This will cause all worlds configured for Multiverse to have separate player statistics/inventories.");
-            return;
-        }
+            // Setup groups in memory
+            final List<WorldGroup> worldGroups = getGroupsFromConfig();
+            if (worldGroups == null) {
+                Logging.info("No world groups have been configured!");
+                Logging.info("This will cause all worlds configured for Multiverse to have separate player " +
+                        "statistics/inventories.");
+                return;
+            }
 
-        for (final WorldGroup worldGroup : worldGroups) {
-            getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
-        }
+            for (final WorldGroup worldGroup : worldGroups) {
+                getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+            }
+        });
     }
 
     private void migrateGroups(final Configuration config) {
@@ -124,7 +141,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private WorldGroup deserializeGroup(final String name, final Map<String, Object> dataMap)
             throws DeserializationException {
-        WorldGroup profile = new WorldGroup(this.plugin, name);
+        WorldGroup profile = new WorldGroup(this, profileContainerStoreProvider, name);
         if (dataMap.containsKey("worlds")) {
             Object worldListObj = dataMap.get("worlds");
             if (worldListObj == null) {

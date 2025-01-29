@@ -1,7 +1,12 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 
 /**
@@ -9,7 +14,7 @@ import org.mvplugins.multiverse.inventories.share.Sharable;
  *
  * @param <T>   The sharable type.
  */
-public class SingleShareWriter<T> {
+final class SingleShareWriter<T> {
 
     public static <T> SingleShareWriter<T> of(MultiverseInventories inventories, Player player, Sharable<T> sharable) {
         return new SingleShareWriter<T>(inventories, player, sharable);
@@ -26,20 +31,23 @@ public class SingleShareWriter<T> {
     }
 
     public void write(T value) {
-        if (sharable.isOptional() && !this.inventories.getMVIConfig().getOptionalShares().contains(sharable)) {
+        if (sharable.isOptional() &&
+                !inventories.getServiceLocator().getService(InventoriesConfig.class).getOptionalShares().contains(sharable)) {
             Logging.finer("Skipping write for optional share: " + sharable);
             return;
         }
         Logging.finer("Writing single share: " + sharable.getNames()[0]);
         String worldName = this.player.getWorld().getName();
-        this.inventories.getWorldProfileContainerStore()
+        var profileContainerStoreProvider = this.inventories.getServiceLocator().getService(ProfileContainerStoreProvider.class);
+        profileContainerStoreProvider.getStore(ContainerType.WORLD)
                 .getContainer(worldName)
                 .getPlayerData(this.player)
                 .set(this.sharable, value);
 
-        this.inventories.getGroupManager().getGroupsForWorld(worldName).forEach(worldGroup -> {
-            worldGroup.getGroupProfileContainer().getPlayerData(this.player)
-                    .set(this.sharable, value);
-        });
+        this.inventories.getServiceLocator().getService(WorldGroupManager.class)
+                .getGroupsForWorld(worldName)
+                .forEach(worldGroup ->
+                        worldGroup.getGroupProfileContainer().getPlayerData(this.player)
+                                .set(this.sharable, value));
     }
 }
