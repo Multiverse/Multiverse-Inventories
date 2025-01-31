@@ -99,15 +99,6 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         return groupNamesMap;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
-    public void addGroup(final WorldGroup worldGroup, final boolean persist) {
-        updateGroup(worldGroup);
-    }
-
     @Override
     public void updateGroup(final WorldGroup worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
@@ -133,14 +124,6 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
             return null;
         }
         return new WorldGroup(this, profileContainerStoreProvider, name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
-    public void setGroups(List<WorldGroup> worldGroups) {
     }
 
     /**

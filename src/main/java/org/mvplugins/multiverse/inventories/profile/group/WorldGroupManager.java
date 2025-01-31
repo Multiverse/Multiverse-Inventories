@@ -54,25 +54,6 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
     boolean hasGroup(String worldName);
 
     /**
-     * Sets up the World Groups in memory.
-     *
-     * @param worldGroups List of World Groups to store in memory.
-     * @deprecated This feature is now completely unused.
-     */
-    @Deprecated
-    void setGroups(List<WorldGroup> worldGroups);
-
-    /**
-     * Adds a World Group to the collection in memory, also writing it to the groups configuration.
-     *
-     * @param worldGroup World group to add. Casing is ignored.
-     * @param persist    This parameter is unused due to deprecation of the method.
-     * @deprecated
-     */
-    @Deprecated
-    void addGroup(WorldGroup worldGroup, boolean persist);
-
-    /**
      * <p>Adds or updates a world group in Multiverse-Inventories.</p>
      *
      * <p>This will update an existing group by persisting changes made to it in the groups configuration.
