@@ -53,6 +53,7 @@ import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -183,27 +184,9 @@ public class InventoriesListener implements Listener {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;
         }
-
         Logging.finer("Loading global profile for Player{name:'%s', uuid:'%s'}.",
                 event.getName(), event.getUniqueId());
-
-        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(event.getName(), event.getUniqueId());
-        if (!globalProfile.getLastKnownName().equalsIgnoreCase(event.getName())) {
-            // Data must be migrated
-            Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
-                    event.getUniqueId(), globalProfile.getLastKnownName(), event.getName());
-            try {
-                profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), event.getName(),
-                        event.getUniqueId(), true);
-            } catch (IOException e) {
-                Logging.severe("An error occurred while trying to migrate playerdata.");
-                e.printStackTrace();
-            }
-
-            globalProfile.setLastKnownName(event.getName());
-            profileDataSource.updateGlobalProfile(globalProfile);
-            Logging.info("Migration complete!");
-        }
+        verifyCorrectPlayerName(event.getUniqueId(), event.getName());
     }
 
     /**
@@ -214,6 +197,9 @@ public class InventoriesListener implements Listener {
     @EventHandler
     public void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        // Just in case AsyncPlayerPreLoginEvent was still the old name
+        verifyCorrectPlayerName(player.getUniqueId(), player.getName());
+
         final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId());
         final String world = globalProfile.getLastWorld();
         if (config.usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
@@ -226,6 +212,26 @@ public class InventoriesListener implements Listener {
         }
         profileDataSource.setLoadOnLogin(player.getName(), false);
         verifyCorrectWorld(player, player.getWorld().getName(), globalProfile);
+    }
+
+    private void verifyCorrectPlayerName(UUID uuid, String name) {
+        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(name, uuid);
+        if (globalProfile.getLastKnownName().equals(name)) {
+            return;
+        }
+
+        // Data must be migrated
+        Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
+                uuid, globalProfile.getLastKnownName(), name);
+        try {
+            profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), name, uuid);
+        } catch (IOException e) {
+            Logging.severe("An error occurred while trying to migrate playerdata.");
+            e.printStackTrace();
+        }
+        globalProfile.setLastKnownName(name);
+        profileDataSource.updateGlobalProfile(globalProfile);
+        Logging.info("Migration complete!");
     }
 
     /**
