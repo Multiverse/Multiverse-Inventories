@@ -3,7 +3,6 @@ package org.mvplugins.multiverse.inventories.profile;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.SharableEntry;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
@@ -18,15 +17,6 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
     public static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
                                                     ProfileType profileType, OfflinePlayer player) {
         return new PlayerProfile(containerType, containerName, profileType, player);
-    }
-
-    /**
-     * @deprecated Needs to use UUID for players
-     */
-    @Deprecated
-    public static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
-                                                    ProfileType profileType, String playerName) {
-        return new PlayerProfile(containerType, containerName, profileType, Bukkit.getOfflinePlayer(playerName));
     }
 
     private Map<Sharable, SharableEntry> data = new HashMap<Sharable, SharableEntry>();

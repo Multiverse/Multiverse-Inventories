@@ -6,6 +6,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -423,9 +424,13 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    @Deprecated
-    public GlobalProfile getGlobalProfile(String playerName) {
-        return getGlobalProfile(playerName, Bukkit.getOfflinePlayer(playerName).getUniqueId());
+    public GlobalProfile getGlobalProfile(UUID playerUUID) {
+        return getGlobalProfile(Bukkit.getOfflinePlayer(playerUUID));
+    }
+
+    @Override
+    public GlobalProfile getGlobalProfile(OfflinePlayer player) {
+        return getGlobalProfile(player.getName(), player.getUniqueId());
     }
 
     @Override
@@ -442,7 +447,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         } catch (IOException e) {
             // This won't ever happen
             e.printStackTrace();
-            return GlobalProfile.createGlobalProfile(playerName);
+            return GlobalProfile.createGlobalProfile(playerName, playerUUID);
         }
         if (playerFile.exists()) {
             GlobalProfile profile = loadGlobalProfile(playerFile, playerName, playerUUID);
@@ -529,19 +534,15 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    @Deprecated
-    // TODO replace for UUID
-    public void updateLastWorld(String playerName, String worldName) {
-        GlobalProfile globalProfile = getGlobalProfile(playerName);
+    public void updateLastWorld(UUID playerUUID, String worldName) {
+        GlobalProfile globalProfile = getGlobalProfile(playerUUID);
         globalProfile.setLastWorld(worldName);
         updateGlobalProfile(globalProfile);
     }
 
     @Override
-    @Deprecated
-    // TODO replace for UUID
-    public void setLoadOnLogin(final String playerName, final boolean loadOnLogin) {
-        final GlobalProfile globalProfile = getGlobalProfile(playerName);
+    public void setLoadOnLogin(final UUID playerUUID, final boolean loadOnLogin) {
+        final GlobalProfile globalProfile = getGlobalProfile(playerUUID);
         globalProfile.setLoadOnLogin(loadOnLogin);
         updateGlobalProfile(globalProfile);
     }

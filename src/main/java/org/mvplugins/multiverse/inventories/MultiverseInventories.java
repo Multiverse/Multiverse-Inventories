@@ -154,7 +154,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
                         profileContainerStoreProvider.get().getStore(ContainerType.WORLD)
                                 .getContainer(world)
                                 .getPlayerData(player)));
-                profileDataSource.get().setLoadOnLogin(player.getName(), true);
+                profileDataSource.get().setLoadOnLogin(player.getUniqueId(), true);
             }
         }
 
