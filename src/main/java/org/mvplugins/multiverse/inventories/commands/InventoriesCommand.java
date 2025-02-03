@@ -1,9 +1,9 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.commandtools.MultiverseCommand;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
-import org.mvplugins.multiverse.external.jvnet.hk2.annotations.Contract;
 
 /**
  * Base class for all multiverse inventories commands.
