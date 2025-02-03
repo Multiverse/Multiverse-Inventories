@@ -1,17 +1,13 @@
 plugins {
-    id 'org.mvplugins.multiverse-plugin' version '1.0.0'
-    id 'org.mvplugins.kotlin-test-only' version '1.0.0'
+    id 'checkstyle'
+    id 'org.mvplugins.multiverse-plugin' version '1.0.1'
+    id 'org.mvplugins.kotlin-test-only' version '1.0.1'
 }
 
 group = 'org.mvplugins.multiverse.inventories'
 description = 'Multiverse-Inventories'
 
 repositories {
-    maven {
-        name = 'jitpack.io'
-        url = uri('https://jitpack.io/')
-    }
-
     maven {
         name = 'benwoo1110'
         url = uri('https://repo.c0ding.party/multiverse-beta')
@@ -63,7 +59,16 @@ shadowJar {
         exclude(dependency {
             it.moduleGroup == 'org.ow2.asm'
         })
+        exclude(dependency {
+            it.moduleGroup == 'org.jetbrains'
+        })
     }
+}
+
+checkstyle {
+    toolVersion = '6.1.1'
+    configFile file('config/mv_checks.xml')
+    ignoreFailures = true
 }
 
 publishing {
