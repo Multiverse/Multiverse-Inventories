@@ -4,6 +4,7 @@ import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -143,11 +144,26 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * @return The data file for a player.
      * @throws IOException if there was a problem creating the file.
      */
-    File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
+    private File getPlayerFile(ContainerType type, String dataName, String playerName) throws IOException {
+        return getPlayerFile(type, dataName, playerName, true);
+    }
+
+    /**
+     * Retrieves the data file for a player based on a given world/group name, creating it if necessary.
+     *
+     * @param type       Indicates whether data is for group or world.
+     * @param dataName   The name of the group or world.
+     * @param playerName The name of the player.
+     * @return The data file for a player.
+     * @throws IOException if there was a problem creating the file.
+     */
+    private File getPlayerFile(ContainerType type, String dataName, String playerName, boolean createNew) throws IOException {
         File jsonPlayerFile = new File(this.getFolder(type, dataName), playerName + JSON);
         if (!jsonPlayerFile.exists()) {
             try {
-                jsonPlayerFile.createNewFile();
+                if (createNew) {
+                    jsonPlayerFile.createNewFile();
+                }
             } catch (IOException e) {
                 throw new IOException("Could not create necessary player data file: " + jsonPlayerFile.getPath()
                         + ". Data for " + playerName + " in " + type.name().toLowerCase() + " " + dataName
@@ -547,7 +563,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     @Override
-    public void migratePlayerData(String oldName, String newName, UUID uuid, boolean removeOldData) throws IOException {
+    public void migratePlayerData(String oldName, String newName, UUID uuid) throws IOException {
+        clearPlayerCache(uuid);
+
         File[] worldFolders = worldFolder.listFiles(File::isDirectory);
         if (worldFolders == null) {
             throw new IOException("Could not enumerate world folders");
@@ -557,34 +575,39 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             throw new IOException("Could not enumerate group folders");
         }
 
-        for (File worldFolder : worldFolders) {
-            ProfileKey key = ProfileKey.createProfileKey(ContainerType.WORLD, worldFolder.getName(),
-                    ProfileTypes.ADVENTURE, uuid, oldName);
-            updatePlayerData(getPlayerData(key));
-            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
-            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
-        }
+        migrateForContainerType(worldFolders, ContainerType.WORLD, oldName, newName);
+        migrateForContainerType(groupFolders, ContainerType.GROUP, oldName, newName);
+    }
 
-        for (File groupFolder : groupFolders) {
-            ProfileKey key = ProfileKey.createProfileKey(ContainerType.GROUP, groupFolder.getName(),
-                    ProfileTypes.ADVENTURE, uuid, oldName);
-            updatePlayerData(getPlayerData(key));
-            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.CREATIVE)));
-            updatePlayerData(getPlayerData(ProfileKey.createProfileKey(key, ProfileTypes.SURVIVAL)));
+    private void migrateForContainerType(File[] folders, ContainerType containerType, String oldName, String newName) throws IOException {
+        for (File folder : folders) {
+            File oldNameFile = getPlayerFile(containerType, folder.getName(), oldName, false);
+            File newNameFile = getPlayerFile(containerType, folder.getName(), newName, false);
+            if (!oldNameFile.exists()) {
+                Logging.fine("No old data for player %s in %s %s to migrate.",
+                        oldName, containerType.name(), folder.getName());
+                continue;
+            }
+            if (newNameFile.exists()) {
+                Logging.warning("Data already exists for player %s in %s %s. Not migrating.",
+                        newName, containerType.name(), folder.getName());
+                continue;
+            }
+            if (!oldNameFile.renameTo(newNameFile)) {
+                Logging.warning("Could not rename old data file for player %s in %s %s to %s.",
+                        oldName, containerType.name(), folder.getName(), newName);
+                continue;
+            }
+            Logging.fine("Migrated data for player %s in %s %s to %s.",
+                    oldName, containerType.name(), folder.getName(), newName);
         }
+    }
 
-        if (removeOldData) {
-            for (File worldFolder : worldFolders) {
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.ADVENTURE, oldName);
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.CREATIVE, oldName);
-                removePlayerData(ContainerType.WORLD, worldFolder.getName(), ProfileTypes.SURVIVAL, oldName);
-            }
-            for (File groupFolder : groupFolders) {
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.ADVENTURE, oldName);
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.CREATIVE, oldName);
-                removePlayerData(ContainerType.GROUP, groupFolder.getName(), ProfileTypes.SURVIVAL, oldName);
-            }
-        }
+    void clearPlayerCache(UUID playerUUID) {
+        profileCache.invalidateAll(Sets.filter(
+                profileCache.asMap().keySet(),
+                key -> key.getPlayerUUID().equals(playerUUID)
+        ));
     }
 
     @Override
