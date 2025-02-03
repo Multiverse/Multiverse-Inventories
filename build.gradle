@@ -1,62 +1,12 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    id 'java-library'
-    id 'maven-publish'
-    id 'checkstyle'
-    id 'com.gradleup.shadow' version '8.3.5'
-    id "org.jetbrains.kotlin.jvm" version "2.0.21"
+    id 'org.mvplugins.multiverse-plugin' version '1.0.0'
+    id 'org.mvplugins.kotlin-test-only' version '1.0.0'
 }
 
-version = System.getenv('GITHUB_VERSION') ?: 'local'
 group = 'org.mvplugins.multiverse.inventories'
 description = 'Multiverse-Inventories'
 
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-compileKotlin {
-    // We're not using Kotlin in the plugin itself, just tests!
-    enabled = false
-}
-
-compileTestJava {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-compileTestKotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-        javaParameters.set(true)
-    }
-}
-
 repositories {
-    mavenLocal()
-    mavenCentral()
-
-    maven {
-        name = 'onarandombox'
-        url = uri('https://repo.onarandombox.com/content/groups/public')
-    }
-
-    maven {
-        name = 'spigot'
-        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-        content {
-            includeGroup 'org.bukkit'
-            includeGroup 'org.spigotmc'
-        }
-    }
-
-    maven {
-        name ='papermc'
-        url = uri('https://papermc.io/repo/repository/maven-public/')
-    }
-
     maven {
         name = 'jitpack.io'
         url = uri('https://jitpack.io/')
@@ -68,40 +18,32 @@ repositories {
     }
 }
 
-dependencies {
-    // Spigot
-    compileOnly('org.spigotmc:spigot-api:1.21.3-R0.1-SNAPSHOT') {
-        exclude group: 'junit', module: 'junit'
-    }
+configure(apiDependencies) {
+    serverApiVersion = '1.21.4-R0.1-SNAPSHOT'
+    mockBukkitServerApiVersion = '1.21'
+}
 
+dependencies {
     // Core
     // TODO update to correct version once we have it published
-    implementation 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
-
+    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
 
     // Config
-    api 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
-    api 'net.minidev:json-smart:2.5.1'
+    shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
+    shadowed 'net.minidev:json-smart:2.5.1'
 
     // Utils
-    api('com.dumptruckman.minecraft:Logging:1.1.1') {
+    shadowed('com.dumptruckman.minecraft:Logging:1.1.1') {
         exclude group: 'junit', module: 'junit'
     }
 
     // Other plugins for import
-    implementation('uk.co:MultiInv:3.0.6') {
+    externalPlugin('uk.co:MultiInv:3.0.6') {
         exclude group: '*', module: '*'
     }
-    implementation('me.drayshak:WorldInventories:1.0.2') {
+    externalPlugin('me.drayshak:WorldInventories:1.0.2') {
         exclude group: '*', module: '*'
     }
-
-    // Tests
-    testImplementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21'
-    testImplementation 'org.mockbukkit.mockbukkit:mockbukkit-v1.21:4.24.1'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test'
-    testImplementation 'com.natpryce:hamkrest:1.8.0.1'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.1.0'
 
     // hk2 for annotation processing only
     compileOnly('org.glassfish.hk2:hk2-api:3.0.3') {
@@ -111,95 +53,20 @@ dependencies {
     testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
 }
 
-
-java {
-    withSourcesJar()
-    withJavadocJar()
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(JavaCompile) {
-    configure(options) {
-        options.compilerArgs << '-Aorg.glassfish.hk2.metadata.location=META-INF/hk2-locator/Multiverse-Inventories'
-    }
-}
-
-tasks.withType(Javadoc).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifacts.removeIf { it.buildDependencies.getDependencies(null).contains(jar) }
-        it.outgoing.artifact(shadowJar)
-    }
-}
-
-configurations.findAll { !it.name.startsWith('test') }.each {
-    it.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-}
-
-processResources {
-    def props = [version: "${project.version}"]
-    inputs.properties props
-    filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
-        expand props
-    }
-
-    // This task should never be skipped. The tests depend on this having been run but we want the new version number
-    // that is created after tests are run and before we run again to publish.
-    outputs.upToDateWhen { false }
-}
-
-checkstyle {
-    toolVersion = '6.1.1'
-    configFile file('config/mv_checks.xml')
-    ignoreFailures = true
-}
-
-javadoc {
-    source = sourceSets.main.allJava
-    classpath = configurations.compileClasspath
-}
-
-project.configurations.api.canBeResolved = true
-
 shadowJar {
     relocate 'com.dumptruckman.minecraft.util.Logging', 'org.mvplugins.multiverse.inventories.utils.InvLogging'
     relocate 'com.dumptruckman.minecraft.util.DebugLog', 'org.mvplugins.multiverse.inventories.utils.DebugFileLogger'
     relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
     relocate 'net.minidev', 'org.mvplugins.multiverse.inventories.utils.minidev'
 
-    configurations = [project.configurations.api]
-
-    archiveClassifier.set('')
-
     dependencies {
-        exclude(dependency {
-            it.moduleGroup == 'org.jetbrains.kotlin'
-        })
-        exclude(dependency {
-            it.moduleGroup == 'org.jetbrains'
-        })
         exclude(dependency {
             it.moduleGroup == 'org.ow2.asm'
         })
     }
 }
 
-build.dependsOn shadowJar
-jar.enabled = false
-
 publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-        }
-    }
     repositories {
         maven {
             name = "GitHubPackages"
@@ -208,6 +75,13 @@ publishing {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
             }
+        }
+
+        maven {
+            // todo: remove before mv5 release
+            name = "multiverseBeta"
+            url = "https://repo.c0ding.party/multiverse-beta"
+            credentials(PasswordCredentials)
         }
     }
 }
