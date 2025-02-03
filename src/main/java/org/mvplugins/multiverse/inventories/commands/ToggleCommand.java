@@ -56,19 +56,21 @@ class ToggleCommand extends InventoriesCommand {
             return;
         }
         boolean foundOpt = false;
+        Shares optionalShares = inventoriesConfig.getOptionalShares();
         for (Sharable sharable : shares) {
             if (sharable.isOptional()) {
                 foundOpt = true;
-                if (inventoriesConfig.getOptionalShares().contains(sharable)) {
-                    inventoriesConfig.getOptionalShares().remove(sharable);
+                if (optionalShares.contains(sharable)) {
+                    optionalShares.remove(sharable);
                     this.plugin.getMessager().normal(Message.NOW_NOT_USING_OPTIONAL, sender, sharable.getNames()[0]);
                 } else {
-                    inventoriesConfig.getOptionalShares().add(sharable);
+                    optionalShares.add(sharable);
                     this.plugin.getMessager().normal(Message.NOW_USING_OPTIONAL, sender, sharable.getNames()[0]);
                 }
             }
         }
         if (foundOpt) {
+            inventoriesConfig.setOptionalShares(optionalShares);
             inventoriesConfig.save();
         } else {
             this.plugin.getMessager().normal(Message.NO_OPTIONAL_SHARES, sender, shareName);

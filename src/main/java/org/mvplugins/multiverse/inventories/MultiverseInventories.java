@@ -86,6 +86,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     public final void onEnable() {
         super.onEnable();
         initializeDependencyInjection();
+        inventoriesConfig.get().load().onFailure(e -> Logging.severe(e.getMessage()));
 
         Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
         this.onMVPluginEnable();
@@ -206,6 +207,10 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public void reloadConfig() {
         try {
+            inventoriesConfig.get().load().onFailure(e -> {
+                Logging.severe("Failed to load config file!");
+                Logging.severe(e.getMessage());
+            });
             worldGroupManager.get().load().onFailure(e -> {
                 Logging.severe("Failed to load world groups!");
                 Logging.severe(e.getMessage());
@@ -216,7 +221,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
                 profileDataSource.get().clearAllCache();
             }
 
-            Logging.fine("Loaded config file!");
+            Logging.fine("Reloaded all config and groups!");
         } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
             Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
             Logging.severe(e.getMessage());
