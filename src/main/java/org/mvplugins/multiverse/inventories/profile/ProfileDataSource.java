@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import org.bukkit.OfflinePlayer;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
@@ -47,19 +48,25 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
      *
-     * @param playerName The name of player to retrieve for.
+     * @param playerUUID    The UUID of the player.
      * @return The global profile for the specified player.
-     * @deprecated UUID must be supported now.
      */
-    @Deprecated
-    GlobalProfile getGlobalProfile(String playerName);
+    GlobalProfile getGlobalProfile(UUID playerUUID);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
      *
-     * @param playerName The name of the player to retrieve for. This is required for updating name last known as.
-     * @param playerUUID The UUID of the player.
-     * @return the global profile for the player with the given UUID.
+     * @param player    The player.
+     * @return The global profile for the specified player.
+     */
+    GlobalProfile getGlobalProfile(OfflinePlayer player);
+
+    /**
+     * Retrieves the global profile for a player which contains meta-data for the player.
+     *
+     * @param playerName    The name of the player.
+     * @param playerUUID    The UUID of the player.
+     * @return The global profile for the specified player.
      */
     GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
 
@@ -74,18 +81,18 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
     /**
      * A convenience method to update the GlobalProfile of a player with a specified world.
      *
-     * @param playerName The player whose global profile this will update.
+     * @param playerUUID The player whose global profile this will update.
      * @param worldName The world to update the global profile with.
      */
-    void updateLastWorld(String playerName, String worldName);
+    void updateLastWorld(UUID playerUUID, String worldName);
 
     /**
      * A convenience method for setting whether player data should be loaded on login for the specified player.
      *
-     * @param playerName The player whose data should be loaded.
+     * @param playerUUID The player whose data should be loaded.
      * @param loadOnLogin Whether or not to load on login.
      */
-    void setLoadOnLogin(String playerName, boolean loadOnLogin);
+    void setLoadOnLogin(UUID playerUUID, boolean loadOnLogin);
 
     /**
      * Copies all the data belonging to oldName to newName and removes the old data.

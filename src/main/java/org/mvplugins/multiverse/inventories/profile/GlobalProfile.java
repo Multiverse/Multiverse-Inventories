@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
@@ -12,13 +12,11 @@ public final class GlobalProfile {
     /**
      * Creates a global profile object for the given player with default values.
      *
-     * @param playerName the player to create the profile object for.
+     * @param player the player to create the profile object for.
      * @return a new GlobalProfile for the given player.
-     * @deprecated Needs to use UUID.
      */
-    @Deprecated
-    public static GlobalProfile createGlobalProfile(String playerName) {
-        return new GlobalProfile(playerName, Bukkit.getOfflinePlayer(playerName).getUniqueId());
+    public static GlobalProfile createGlobalProfile(OfflinePlayer player) {
+        return new GlobalProfile(player.getName(), player.getUniqueId());
     }
 
     /**
