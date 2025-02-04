@@ -12,7 +12,7 @@ import java.util.Map;
  * {@link org.bukkit.configuration.serialization.ConfigurationSerializable}. This remains to convert legacy data.
  */
 @Deprecated
-public final class LocationSerializer implements SharableSerializer<Location> {
+final class LocationSerializer implements SharableSerializer<Location> {
 
     @Override
     public Location deserialize(Object obj) {

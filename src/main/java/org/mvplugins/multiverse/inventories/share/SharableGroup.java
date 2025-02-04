@@ -9,7 +9,7 @@ import java.util.List;
  * This class represents a grouping of Sharable objects for the sole purpose of being able to use one keyword in
  * group setups to indicate multiple {@link Sharable}s.
  */
-public final class SharableGroup implements Shares {
+final class SharableGroup implements Shares {
 
     private final String[] names;
     private final Shares shares;

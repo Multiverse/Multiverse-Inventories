@@ -11,7 +11,7 @@ import java.util.Map;
  * A simple {@link SharableSerializer} usable with ItemStack[] which converts the ItemStack[] to the string format
  * that is used by default in Multiverse-Inventories.
  */
-public final class InventorySerializer implements SharableSerializer<ItemStack[]> {
+final class InventorySerializer implements SharableSerializer<ItemStack[]> {
 
     private final int inventorySize;
 

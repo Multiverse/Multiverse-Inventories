@@ -11,7 +11,7 @@ import java.util.List;
  * A simple {@link SharableSerializer} usable with PotionEffect[]
  * which converts the PotionEffect[] to the string format that is used by default in Multiverse-Inventories.
  */
-public final class PotionEffectSerializer implements SharableSerializer<PotionEffect[]> {
+final class PotionEffectSerializer implements SharableSerializer<PotionEffect[]> {
 
     @Override
     public PotionEffect[] deserialize(Object obj) {
