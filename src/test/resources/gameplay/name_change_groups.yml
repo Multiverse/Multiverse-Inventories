@@ -1,0 +1,12 @@
+groups:
+  default:
+    worlds:
+      - world
+      - world_nether
+    shares:
+      - all
+  test:
+    worlds:
+      - test
+    shares:
+      - all

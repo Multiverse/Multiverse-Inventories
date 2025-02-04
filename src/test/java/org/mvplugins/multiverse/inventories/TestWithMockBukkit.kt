@@ -4,10 +4,15 @@ import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Location
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.mockbukkit.mockbukkit.MockBukkit
+import org.mockbukkit.mockbukkit.inventory.ItemStackMock
 import org.mvplugins.multiverse.core.MultiverseCore
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator
 import org.mvplugins.multiverse.inventories.mock.MVServerMock
+import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 import kotlin.test.*
 
 /**
@@ -22,6 +27,8 @@ abstract class TestWithMockBukkit {
 
     @BeforeTest
     fun setUpMockBukkit() {
+        ConfigurationSerialization.registerClass(ItemStackMock::class.java)
+
         server = MockBukkit.mock(MVServerMock())
         multiverseCore = MockBukkit.load(MultiverseCore::class.java)
         multiverseInventories = MockBukkit.load(MultiverseInventories::class.java)
@@ -32,10 +39,19 @@ abstract class TestWithMockBukkit {
 
     @AfterTest
     fun tearDownMockBukkit() {
+        server.pluginManager.disablePlugin(multiverseInventories)
+        server.pluginManager.disablePlugin(multiverseCore)
         MockBukkit.unmock()
     }
 
     fun getResourceAsText(path: String): String? = object {}.javaClass.getResource(path)?.readText()
+
+    fun writeResourceToConfigFile(resourcePath: String, configPath: String) {
+        val configResource = getResourceAsText(resourcePath)
+        assertNotNull(configResource)
+        File(Path.of(multiverseInventories.dataFolder.absolutePath, configPath).absolutePathString())
+            .writeText(configResource)
+    }
 
     fun assertConfigEquals(expectedPath: String, actualPath: String) {
         val actualString = multiverseInventories.dataFolder.toPath().resolve(actualPath).toFile().readText()
