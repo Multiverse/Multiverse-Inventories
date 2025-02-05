@@ -626,19 +626,19 @@ public final class Sharables implements Shares {
     /**
      * Grouping for inventory sharables.
      */
-    public static final SharableGroup ALL_INVENTORY = new SharableGroup("inventory",
+    public static final Shares ALL_INVENTORY = new SharableGroup("inventory",
             fromSharables(INVENTORY, ARMOR, ENDER_CHEST, OFF_HAND), "inv", "inventories");
 
     /**
      * Grouping for experience sharables.
      */
-    public static final SharableGroup ALL_EXPERIENCE = new SharableGroup("experience",
+    public static final Shares ALL_EXPERIENCE = new SharableGroup("experience",
             fromSharables(EXPERIENCE, TOTAL_EXPERIENCE, LEVEL), "exp", "level");
 
     /**
      * Grouping for air/breath related sharables.
      */
-    public static final SharableGroup AIR = new SharableGroup("air",
+    public static final Shares AIR = new SharableGroup("air",
             fromSharables(REMAINING_AIR, MAXIMUM_AIR), "breath");
 
     /**

@@ -1,0 +1,10 @@
+groups:
+  test:
+    worlds:
+      - test2
+      - test1
+    shares:
+      - inventory_contents
+      - armor_contents
+      - ender_chest
+      - off_hand

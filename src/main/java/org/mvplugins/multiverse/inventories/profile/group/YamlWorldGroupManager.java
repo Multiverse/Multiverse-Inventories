@@ -88,6 +88,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             for (final WorldGroup worldGroup : worldGroups) {
                 getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
             }
+            Logging.fine("Loaded " + worldGroups.size() + " world groups from config.");
         });
     }
 
