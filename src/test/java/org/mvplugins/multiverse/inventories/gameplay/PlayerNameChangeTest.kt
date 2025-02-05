@@ -60,7 +60,7 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
 
         server.getWorld("world")?.let { player.teleport(it.spawnLocation) }
         assertEquals(5.0, player.health)
-        assertEquals(Material.STONE_BRICKS, player.inventory.getItem(0)?.type) //TODO change to ItemStack equals after mockbukkit fix
+        assertEquals(stack, player.inventory.getItem(0))
 
         // check files
         assertTrue(Path.of(multiverseInventories.dataFolder.absolutePath, "worlds", "world", "benthecat10.json").toFile().exists())
