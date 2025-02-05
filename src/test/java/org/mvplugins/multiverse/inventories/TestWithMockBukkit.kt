@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories
 
-import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Location
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
@@ -8,12 +7,17 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.mockbukkit.mockbukkit.MockBukkit
 import org.mockbukkit.mockbukkit.inventory.ItemStackMock
 import org.mvplugins.multiverse.core.MultiverseCore
+import org.mvplugins.multiverse.core.config.MVCoreConfig
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator
 import org.mvplugins.multiverse.inventories.mock.MVServerMock
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 /**
  * Basic abstract test class that sets up MockBukkit and MultiverseCore.
@@ -31,8 +35,8 @@ abstract class TestWithMockBukkit {
 
         server = MockBukkit.mock(MVServerMock())
         multiverseCore = MockBukkit.load(MultiverseCore::class.java)
+        multiverseCore.serviceLocator.getService(MVCoreConfig::class.java).globalDebug = 3
         multiverseInventories = MockBukkit.load(MultiverseInventories::class.java)
-        Logging.setDebugLevel(3)
         serviceLocator = multiverseInventories.serviceLocator
         assertNotNull(server.commandMap)
     }
