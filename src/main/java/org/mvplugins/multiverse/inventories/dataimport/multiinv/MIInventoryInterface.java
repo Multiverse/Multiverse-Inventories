@@ -1,11 +1,11 @@
-package org.mvplugins.multiverse.inventories.migration.multiinv;
+package org.mvplugins.multiverse.inventories.dataimport.multiinv;
 
 import org.bukkit.inventory.ItemStack;
 
 /**
  * A little interface for retrieving normal ItemStack from the MultiInv inventory classes.
  */
-public interface MIInventoryInterface {
+sealed interface MIInventoryInterface permits MIInventoryWrapper, MIInventoryOldWrapper {
 
     /**
      * @return The inventory contents.

@@ -11,7 +11,6 @@ import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.migration.ImportManager;
 import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -68,7 +67,6 @@ public class InventoriesListener implements Listener {
     private final WorldGroupManager worldGroupManager;
     private final ProfileDataSource profileDataSource;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
-    private final Provider<ImportManager> importManager;
 
     private List<WorldGroup> currentGroups;
     private Location spawnLoc = null;
@@ -79,15 +77,13 @@ public class InventoriesListener implements Listener {
             @NotNull WorldManager worldManager,
             @NotNull WorldGroupManager worldGroupManager,
             @NotNull ProfileDataSource profileDataSource,
-            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
-            @NotNull Provider<ImportManager> importManager) {
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider) {
         this.inventories = inventories;
         this.config = config;
         this.worldManager = worldManager;
         this.worldGroupManager = worldGroupManager;
         this.profileDataSource = profileDataSource;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
-        this.importManager = importManager;
     }
 
     /**
@@ -143,40 +139,6 @@ public class InventoriesListener implements Listener {
     public void configReload(MVConfigReloadEvent event) {
         this.inventories.reloadConfig();
         event.addConfig("Multiverse-Inventories - config.yml");
-    }
-
-    /**
-     * Called when a plugin is enabled.
-     *
-     * @param event The plugin enable event.
-     */
-    @EventHandler
-    public void pluginEnable(PluginEnableEvent event) {
-        try {
-            if (event.getPlugin() instanceof MultiInv) {
-                importManager.get().hookMultiInv((MultiInv) event.getPlugin());
-            } else if (event.getPlugin() instanceof WorldInventories) {
-                importManager.get().hookWorldInventories((WorldInventories) event.getPlugin());
-            }
-        } catch (NoClassDefFoundError ignore) {
-        }
-    }
-
-    /**
-     * Called when a plugin is disabled.
-     *
-     * @param event The plugin disable event.
-     */
-    @EventHandler
-    public void pluginDisable(PluginDisableEvent event) {
-        try {
-            if (event.getPlugin() instanceof MultiInv) {
-                importManager.get().unHookMultiInv();
-            } else if (event.getPlugin() instanceof WorldInventories) {
-                importManager.get().unHookWorldInventories();
-            }
-        } catch (NoClassDefFoundError ignore) {
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -9,13 +9,18 @@ description = 'Multiverse-Inventories'
 
 repositories {
     maven {
+        name = 'codemc'
+        url = uri('https://repo.codemc.org/repository/maven-releases')
+    }
+
+    maven {
         name = 'benwoo1110'
         url = uri('https://repo.c0ding.party/multiverse-beta')
     }
 }
 
 configure(apiDependencies) {
-    serverApiVersion = '1.21.4-R0.1-SNAPSHOT'
+    serverApiVersion = '1.21.3-R0.1-SNAPSHOT'
     mockBukkitServerApiVersion = '1.21'
     mockBukkitVersion = '4.31.1'
 }
@@ -35,10 +40,14 @@ dependencies {
     }
 
     // Other plugins for import
-    externalPlugin('uk.co:MultiInv:3.0.6') {
+    compileOnly('uk.co:MultiInv:3.0.6') {
         exclude group: '*', module: '*'
     }
-    externalPlugin('me.drayshak:WorldInventories:1.0.2') {
+    compileOnly('me.drayshak:WorldInventories:1.0.2') {
+        exclude group: '*', module: '*'
+    }
+    // perworldinventory is weird and has snakeyaml included in the jar, so we can only use compileOnly for build to work properly
+    compileOnly('me.ebonjaeger:perworldinventory-kt:2.3.2') {
         exclude group: '*', module: '*'
     }
 

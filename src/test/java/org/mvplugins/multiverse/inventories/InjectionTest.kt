@@ -3,6 +3,7 @@ package org.mvplugins.multiverse.inventories
 import org.junit.jupiter.api.Test
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig
+import org.mvplugins.multiverse.inventories.dataimport.DataImportManager
 import org.mvplugins.multiverse.inventories.listeners.InventoriesListener
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider
@@ -14,7 +15,7 @@ class InjectionTest : TestWithMockBukkit() {
 
     @Test
     fun `InventoriesCommand are available as a service`() {
-        assertEquals(5, serviceLocator.getAllActiveServices(InventoriesCommand::class.java).size)
+        assertEquals(6, serviceLocator.getAllActiveServices(InventoriesCommand::class.java).size)
     }
 
     @Test
@@ -40,5 +41,10 @@ class InjectionTest : TestWithMockBukkit() {
     @Test
     fun `WorldGroupManager is available as a service`() {
         assertNotNull(serviceLocator.getActiveService(WorldGroupManager::class.java))
+    }
+
+    @Test
+    fun `DataImportManager is available as a service`() {
+        assertNotNull(serviceLocator.getActiveService(DataImportManager::class.java))
     }
 }

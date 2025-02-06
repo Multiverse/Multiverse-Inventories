@@ -11,12 +11,13 @@ import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
+import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.listeners.InventoriesListener;
 import org.mvplugins.multiverse.inventories.listeners.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Messaging;
-import org.mvplugins.multiverse.inventories.migration.ImportManager;
 import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -24,17 +25,13 @@ import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerSt
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.Perm;
-import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.vavr.control.Try;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 /**
  * Multiverse-Inventories plugin main class.
@@ -59,7 +56,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Inject
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
     @Inject
-    private Provider<ImportManager> importManager;
+    private Provider<DataImportManager> dataImportManager;
 
     private PluginServiceLocator serviceLocator;
     private Messager messager = new DefaultMessager(this);
@@ -86,9 +83,9 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     public final void onEnable() {
         super.onEnable();
         initializeDependencyInjection();
+        Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
         inventoriesConfig.get().load().onFailure(e -> Logging.severe(e.getMessage()));
 
-        Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
         this.onMVPluginEnable();
         Logging.config("Version %s (API v%s) Enabled - By %s",
                 this.getDescription().getVersion(), getTargetCoreProtocolVersion(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
@@ -174,15 +171,9 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     }
 
     private void hookImportables() {
-        final PluginManager pm = Bukkit.getPluginManager();
-        Plugin plugin = pm.getPlugin("MultiInv");
-        if (plugin != null) {
-            importManager.get().hookMultiInv((MultiInv) plugin);
-        }
-        plugin = pm.getPlugin("WorldInventories");
-        if (plugin != null) {
-            importManager.get().hookWorldInventories((WorldInventories) plugin);
-        }
+        serviceLocator.getAllServices(DataImporter.class).forEach(dataImporter -> {
+            dataImportManager.get().register(dataImporter);
+        });
     }
 
     /**
@@ -207,6 +198,8 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public void reloadConfig() {
         try {
+            Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
+
             inventoriesConfig.get().load().onFailure(e -> {
                 Logging.severe("Failed to load config file!");
                 Logging.severe(e.getMessage());

@@ -1,14 +1,14 @@
-package org.mvplugins.multiverse.inventories.migration.multiinv;
+package org.mvplugins.multiverse.inventories.dataimport.multiinv;
 
 import org.bukkit.inventory.ItemStack;
-import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventoryOld;
+import uk.co.tggl.pluckerpluck.multiinv.inventory.MIInventory;
 
 /**
- * Wraps MIInventoryOld to provide a way of accessing the inventory/armor contents.
+ * Wraps MIInventory to provide a way of accessing the inventory/armor contents.
  */
-public class MIInventoryOldWrapper extends MIInventoryOld implements MIInventoryInterface {
+final class MIInventoryWrapper extends MIInventory implements MIInventoryInterface {
 
-    public MIInventoryOldWrapper(String inventoryString) {
+    public MIInventoryWrapper(String inventoryString) {
         super(inventoryString);
     }
 
