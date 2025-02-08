@@ -529,24 +529,19 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     void clearPlayerCache(UUID playerUUID) {
-        profileCache.invalidateAll(Sets.filter(
-                profileCache.asMap().keySet(),
-                key -> key.getPlayerUUID().equals(playerUUID)
-        ));
-        configCache.invalidateAll(Sets.filter(
-                configCache.asMap().keySet(),
-                key -> key.getPlayerUUID().equals(playerUUID)
-        ));
+        clearProfileCache(key -> key.getPlayerUUID().equals(playerUUID));
     }
 
     @Override
     public void clearProfileCache(ProfileKey key) {
+        configCache.invalidate(key);
         profileCache.invalidate(key);
     }
 
     @Override
     public void clearProfileCache(Predicate<ProfileKey> predicate) {
         configCache.invalidateAll(Sets.filter(configCache.asMap().keySet(), predicate::test));
+        profileCache.invalidateAll(Sets.filter(profileCache.asMap().keySet(), predicate::test));
     }
 
     @Override
