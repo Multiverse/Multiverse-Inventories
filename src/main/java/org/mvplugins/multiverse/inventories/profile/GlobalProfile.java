@@ -1,7 +1,11 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
+import org.mvplugins.multiverse.inventories.util.DataStrings;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -15,7 +19,7 @@ public final class GlobalProfile {
      * @param player the player to create the profile object for.
      * @return a new GlobalProfile for the given player.
      */
-    public static GlobalProfile createGlobalProfile(OfflinePlayer player) {
+    static GlobalProfile createGlobalProfile(OfflinePlayer player) {
         return new GlobalProfile(player.getName(), player.getUniqueId());
     }
 
@@ -26,7 +30,7 @@ public final class GlobalProfile {
      * @param playerUUID the UUID of the player to create the profile for.
      * @return a new GlobalProfile for the given player.
      */
-    public static GlobalProfile createGlobalProfile(String playerName, UUID playerUUID) {
+    static GlobalProfile createGlobalProfile(String playerName, UUID playerUUID) {
         return new GlobalProfile(playerName, playerUUID);
     }
 
@@ -38,6 +42,13 @@ public final class GlobalProfile {
     private GlobalProfile(String name, UUID uuid) {
         this.uuid = uuid;
         this.lastKnownName = name;
+    }
+
+    public GlobalProfile(UUID uuid, String lastWorld, String lastKnownName, boolean loadOnLogin) {
+        this.uuid = uuid;
+        this.lastWorld = lastWorld;
+        this.lastKnownName = lastKnownName;
+        this.loadOnLogin = loadOnLogin;
     }
 
     /**
@@ -126,5 +137,38 @@ public final class GlobalProfile {
                 ", lastKnownName='" + lastKnownName + '\'' +
                 ", loadOnLogin=" + loadOnLogin +
                 '}';
+    }
+
+    /**
+     * Converts a global profile to a map that can be serialized into the profile data file.
+     *
+     * @param profile    The global profile data.
+     * @return The serialized profile map.
+     */
+    Map<String, Object> serialize(GlobalProfile profile) {
+        Map<String, Object> result = new HashMap<>(3);
+        if (profile.getLastWorld() != null) {
+            result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
+        }
+        result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
+        result.put(DataStrings.PLAYER_LAST_KNOWN_NAME, profile.getLastKnownName());
+        return result;
+    }
+
+    /**
+     * Converts a configuration section to a global profile.
+     *
+     * @param playerName    The player name.
+     * @param playerUUID    The player UUID.
+     * @param data          The configuration section to convert.
+     * @return The global profile.
+     */
+    static GlobalProfile deserialize(String playerName, UUID playerUUID, ConfigurationSection data) {
+        return new GlobalProfile(
+                playerUUID,
+                data.getString(DataStrings.PLAYER_LAST_WORLD, null),
+                data.getString(DataStrings.PLAYER_LAST_KNOWN_NAME, playerName),
+                data.getBoolean(DataStrings.PLAYER_SHOULD_LOAD, false)
+        );
     }
 }

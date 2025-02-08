@@ -1,7 +1,9 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
@@ -63,12 +65,22 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
+     * Creates the profile if it doesn't exist.
      *
      * @param playerName    The name of the player.
      * @param playerUUID    The UUID of the player.
      * @return The global profile for the specified player.
      */
-    GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
+    @NotNull GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
+
+    /**
+     * Retrieves the global profile for a player which contains meta-data for the player if it exists.
+     *
+     * @param playerName    The name of the player.
+     * @param playerUUID    The UUID of the player.
+     * @return The global profile for the specified player or empty if it doesn't exist.
+     */
+    @NotNull Option<GlobalProfile> getExistingGlobalProfile(String playerName, UUID playerUUID);
 
     /**
      * Update the file for a player's global profile.
