@@ -4,7 +4,6 @@ import org.bukkit.command.CommandSender;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -51,7 +50,7 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
      * @param worldName Name of the world to check.
      * @return true if this world has one or more groups.
      */
-    boolean hasGroup(String worldName);
+    boolean hasConfiguredGroup(String worldName);
 
     /**
      * <p>Adds or updates a world group in Multiverse-Inventories.</p>

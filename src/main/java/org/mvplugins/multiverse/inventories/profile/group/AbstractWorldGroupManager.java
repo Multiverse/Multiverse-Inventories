@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Abstract implementation of GroupManager with no persistence of groups.
@@ -86,8 +88,9 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      * {@inheritDoc}
      */
     @Override
-    public boolean hasGroup(String worldName) {
-        return !getGroupsForWorld(worldName).isEmpty();
+    public boolean hasConfiguredGroup(String worldName) {
+        return groupNamesMap.values().stream()
+                .anyMatch(worldGroup -> worldGroup.getWorlds().contains(worldName));
     }
 
     /**
@@ -102,9 +105,6 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     @Override
     public void updateGroup(final WorldGroup worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
-    }
-
-    protected void persistGroup(final WorldGroup worldGroup) {
     }
 
     /**
@@ -134,24 +134,24 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         if (getGroup(DEFAULT_GROUP_NAME) != null) {
             return;
         }
-        World defaultWorld = Bukkit.getWorlds().get(0);
+        World defaultWorld = worldManager.getDefaultWorld()
+                .flatMap(LoadedMultiverseWorld::getBukkitWorld)
+                .fold(() -> Bukkit.getWorlds().get(0), world -> world);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
         WorldGroup worldGroup = new WorldGroup(this, profileContainerStoreProvider, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
-        StringBuilder worlds = new StringBuilder().append(defaultWorld.getName());
         if (defaultNether != null) {
             worldGroup.addWorld(defaultNether);
-            worlds.append(", ").append(defaultNether.getName());
         }
         if (defaultEnd != null) {
             worldGroup.addWorld(defaultEnd);
-            worlds.append(", ").append(defaultEnd.getName());
         }
         updateGroup(worldGroup);
         inventoriesConfig.save();
-        Logging.info("Created a default group for you containing all of your default worlds: " + worlds.toString());
+        Logging.info("Created a default group for you containing all of your default worlds: "
+                + String.join(", ", worldGroup.getWorlds()));
     }
 
     /**

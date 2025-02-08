@@ -144,6 +144,11 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private boolean isFromWorldNotInToWorldGroup(WorldGroup worldGroup) {
+            if (inventoriesConfig.isDefaultingUngroupedWorlds()
+                    && !worldGroupManager.hasConfiguredGroup(fromWorld)
+                    && worldGroup.equals(worldGroupManager.getDefaultGroup())) {
+                return false;
+            }
             return !worldGroup.containsWorld(fromWorld);
         }
 
