@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import com.dumptruckman.minecraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
@@ -17,6 +16,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
+import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
@@ -48,13 +48,7 @@ final class ImportCommand extends InventoriesCommand {
             @Single
             @Syntax("<MultiInv|WorldInventories|PerWorldInventory>")
             String pluginName) {
-        commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to import data from {plugin}? This will override existing Multiverse-Inventories playerdata!!!",
-                                replace("{plugin}").with(pluginName)))
-                .action(() -> doDataImport(issuer, pluginName)));
-    }
 
-    void doDataImport(MVCommandIssuer issuer, String pluginName) {
         dataImportManager.getImporter(pluginName)
                 .onEmpty(() -> issuer.sendMessage("No importer found for " + pluginName))
                 .peek(dataImporter -> {
@@ -62,11 +56,19 @@ final class ImportCommand extends InventoriesCommand {
                         issuer.sendMessage("Plugin " + pluginName + " is not running on your server!");
                         return;
                     }
-                    if (dataImporter.importData()) {
-                        issuer.sendMessage("Successfully to imported data from " + pluginName + "!");
-                    } else {
-                        issuer.sendMessage("Failed to import data from " + pluginName + ".");
-                    }
+                    commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
+                            .prompt(Message.of("Are you sure you want to import data from {plugin}? " +
+                                            "This will override existing Multiverse-Inventories playerdata!!!",
+                                    replace("{plugin}").with(pluginName)))
+                            .action(() -> doDataImport(issuer, dataImporter)));
                 });
+    }
+
+    void doDataImport(MVCommandIssuer issuer, DataImporter dataImporter) {
+        if (dataImporter.importData()) {
+            issuer.sendMessage("Successfully to imported data from " + dataImporter.getPluginName() + "!");
+        } else {
+            issuer.sendMessage("Failed to import data from " + dataImporter.getPluginName() + ".");
+        }
     }
 }
