@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.migration.multiinv;
+package org.mvplugins.multiverse.inventories.dataimport.multiinv;
 
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.bukkit.inventory.ItemStack;
@@ -7,7 +7,7 @@ import uk.co.tggl.pluckerpluck.multiinv.inventory.MIItemStack;
 /**
  * Utility class for converting proprietary shit from MultiInv.
  */
-public class MIInventoryConverter {
+final class MIInventoryConverter {
 
     /**
      * @param oldContents Proprietary shiet from MultiInv.

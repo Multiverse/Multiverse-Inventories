@@ -1,20 +1,6 @@
-package org.mvplugins.multiverse.inventories.migration.worldinventories;
+package org.mvplugins.multiverse.inventories.dataimport.worldinventories;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
-import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
-import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
-import org.mvplugins.multiverse.inventories.share.Sharables;
-import org.mvplugins.multiverse.inventories.migration.DataImporter;
-import org.mvplugins.multiverse.inventories.migration.MigrationException;
 import me.drayshak.WorldInventories.Group;
 import me.drayshak.WorldInventories.WIPlayerInventory;
 import me.drayshak.WorldInventories.WIPlayerStats;
@@ -22,7 +8,18 @@ import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.dataimport.DataImportException;
+import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
+import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
+import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,60 +29,41 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Handles the importing of data from WorldInventories.
- */
-public class WorldInventoriesImporter implements DataImporter {
+final class WorldInventoriesImportHelper {
 
-    private final WorldInventories wiPlugin;
-    private final InventoriesConfig config;
+    @NotNull
+    private final WorldInventories worldInventories;
     private final WorldGroupManager worldGroupManager;
+    private final InventoriesConfig inventoriesConfig;
+    private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final ProfileDataSource profileDataSource;
-    private final ProfileContainerStore worldProfileContainerStore;
 
-    public WorldInventoriesImporter(MultiverseInventories inventories, WorldInventories wiPlugin) {
-        this.wiPlugin = wiPlugin;
-        this.config = inventories.getServiceLocator().getService(InventoriesConfig.class);
-        this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
-        this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
-        this.worldProfileContainerStore = inventories.getServiceLocator()
-                .getService(ProfileContainerStoreProvider.class)
-                .getStore(ContainerType.WORLD);
+    WorldInventoriesImportHelper(
+            @NotNull WorldInventories worldInventories,
+            @NotNull WorldGroupManager worldGroupManager,
+            @NotNull InventoriesConfig inventoriesConfig,
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull ProfileDataSource profileDataSource) {
+        super();
+        this.worldInventories = worldInventories;
+        this.worldGroupManager = worldGroupManager;
+        this.inventoriesConfig = inventoriesConfig;
+        this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.profileDataSource = profileDataSource;
     }
 
-    /**
-     * @return The WorldInventories plugin hooked to the importer.
-     */
-    public WorldInventories getWIPlugin() {
-        return this.wiPlugin;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Plugin getPlugin() {
-        return this.getWIPlugin();
-    }
-
-    /**
-     * Imports the data from WorldInventories into MultiverseInventories.
-     *
-     * @throws MigrationException If there was any MAJOR issues importing the data.
-     */
-    @Override
-    public void importData() throws MigrationException {
+    void importData() throws DataImportException {
         List<Group> wiGroups;
         try {
-            wiGroups = this.getWIPlugin().getGroups();
+            wiGroups = worldInventories.getGroups();
         } catch (Exception e) {
-            throw new MigrationException("Unable to import from this version of WorldInventories!")
+            throw new DataImportException("Unable to import from this version of WorldInventories!")
                     .setCauseException(e);
         } catch (Error e) {
-            throw new MigrationException("Unable to import from this version of WorldInventories!");
+            throw new DataImportException("Unable to import from this version of WorldInventories!");
         }
         if (wiGroups == null) {
-            throw new MigrationException("No data to import from WorldInventories!");
+            throw new DataImportException("No data to import from WorldInventories!");
         }
 
         if (!wiGroups.isEmpty()) {
@@ -98,7 +76,7 @@ public class WorldInventoriesImporter implements DataImporter {
 
         this.createGroups(wiGroups);
         Set<ProfileContainer> noGroupWorlds = this.getWorldsWithoutGroups();
-        config.save();
+        inventoriesConfig.save();
 
         OfflinePlayer[] offlinePlayers = Bukkit.getServer().getOfflinePlayers();
         Logging.info("Processing data for " + offlinePlayers.length + " players.  The larger than number, the longer"
@@ -121,9 +99,6 @@ public class WorldInventoriesImporter implements DataImporter {
                 this.transferData(player, null, container);
             }
         }
-
-        Logging.info("Import from WorldInventories finished.  Disabling WorldInventories.");
-        Bukkit.getPluginManager().disablePlugin(this.getWIPlugin());
     }
 
     private void createGroups(List<Group> wiGroups) {
@@ -160,7 +135,8 @@ public class WorldInventoriesImporter implements DataImporter {
         for (World world : Bukkit.getWorlds()) {
             if (worldGroupManager.getGroupsForWorld(world.getName()).isEmpty()) {
                 Logging.fine("Added ungrouped world for importing.");
-                ProfileContainer container = worldProfileContainerStore.getContainer(world.getName());
+                ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                        .getContainer(world.getName());
                 noGroupWorlds.add(container);
             }
         }
@@ -197,7 +173,7 @@ public class WorldInventoriesImporter implements DataImporter {
         } else {
             path.append(group.getName());
         }
-        path.insert(0, this.getWIPlugin().getDataFolder().getAbsolutePath());
+        path.insert(0, worldInventories.getDataFolder().getAbsolutePath());
         path.append(File.separator).append(player.getName()).append(dataType.fileExtension);
 
         File file = new File(path.toString());
@@ -271,6 +247,7 @@ public class WorldInventoriesImporter implements DataImporter {
         return playerstats;
     }
 
+
     /**
      * Indicates the type of data we're importing for.
      */
@@ -285,4 +262,3 @@ public class WorldInventoriesImporter implements DataImporter {
         }
     }
 }
-

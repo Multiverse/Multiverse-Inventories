@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.migration.multiinv;
+package org.mvplugins.multiverse.inventories.dataimport.multiinv;
 
 import org.mvplugins.multiverse.inventories.util.PlayerStats;
 import org.bukkit.OfflinePlayer;
@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * A replacement for MultiInv's MIPlayerFile class so that it may accept an OfflinePlayer instead of Player.
  */
-public class MIPlayerFileLoader {
+final class MIPlayerFileLoader {
 
     private final YamlConfiguration playerFile;
     private final File file;
