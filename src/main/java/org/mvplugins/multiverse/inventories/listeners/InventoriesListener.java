@@ -242,6 +242,7 @@ public class InventoriesListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
         new GameModeShareHandler(this.inventories, player,
                 player.getGameMode(), event.getNewGameMode()).handleSharing();
     }
