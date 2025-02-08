@@ -177,23 +177,24 @@ public class InventoriesListener implements Listener {
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
-        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(name, uuid);
-        if (globalProfile.getLastKnownName().equals(name)) {
-            return;
-        }
+        profileDataSource.getExistingGlobalProfile(name, uuid).peek(globalProfile -> {
+            if (globalProfile.getLastKnownName().equals(name)) {
+                return;
+            }
 
-        // Data must be migrated
-        Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
-                uuid, globalProfile.getLastKnownName(), name);
-        try {
-            profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), name, uuid);
-        } catch (IOException e) {
-            Logging.severe("An error occurred while trying to migrate playerdata.");
-            e.printStackTrace();
-        }
-        globalProfile.setLastKnownName(name);
-        profileDataSource.updateGlobalProfile(globalProfile);
-        Logging.info("Migration complete!");
+            // Data must be migrated
+            Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
+                    uuid, globalProfile.getLastKnownName(), name);
+            try {
+                profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), name, uuid);
+            } catch (IOException e) {
+                Logging.severe("An error occurred while trying to migrate playerdata.");
+                e.printStackTrace();
+            }
+            globalProfile.setLastKnownName(name);
+            profileDataSource.updateGlobalProfile(globalProfile);
+            Logging.info("Migration complete!");
+        });
     }
 
     /**
