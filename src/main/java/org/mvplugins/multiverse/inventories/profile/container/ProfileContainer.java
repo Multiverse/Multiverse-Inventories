@@ -101,7 +101,7 @@ public final class ProfileContainer {
      */
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), null, player.getName());
+        profileDataSource.removePlayerData(getContainerType(), getContainerName(), null, player.getUniqueId());
     }
 
     /**
@@ -112,7 +112,7 @@ public final class ProfileContainer {
      */
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), profileType, player.getName());
+        profileDataSource.removePlayerData(getContainerType(), getContainerName(), profileType, player.getUniqueId());
     }
 
     /**

@@ -13,11 +13,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Service
 final class ProfileFileIO {
 
-    private final ExecutorService fileIOExecutorService = Executors.newWorkStealingPool();
+    private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
 
     @Inject
     public ProfileFileIO() {
@@ -25,12 +27,10 @@ final class ProfileFileIO {
 
     FileConfiguration waitForConfigHandle(File file) {
         Future<FileConfiguration> future = fileIOExecutorService.submit(new ConfigLoader(file));
-        while (true) {
-            try {
-                return future.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+        try {
+            return future.get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -54,21 +54,7 @@ final class ProfileFileIO {
         }
     }
 
-    Future<Void> queueWrite(Runnable action) {
-        return fileIOExecutorService.submit(new FileWriter(action));
-    }
-
-    private static class FileWriter implements Callable<Void> {
-        private final Runnable action;
-
-        private FileWriter(Runnable action) {
-            this.action = action;
-        }
-
-        @Override
-        public Void call() {
-            action.run();
-            return null;
-        }
+    void queueAction(Runnable action) {
+        fileIOExecutorService.submit(action);
     }
 }

@@ -42,10 +42,10 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param dataName   The name of the world/group the player's data is associated with.
      * @param profileType The type of profile we're removing, as per {@link ProfileType}. If null, this will remove
      *                    remove all profile types.
-     * @param playerName The name of the player whose data is being removed.
+     * @param playerUUID The UUID of the player whose data is being removed.
      * @return True if successfully removed.
      */
-    boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName);
+    boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
