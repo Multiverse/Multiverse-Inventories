@@ -139,11 +139,8 @@ public final class ProfileContainer {
      * Clears all cached data in the container.
      */
     public void clearContainer() {
-        for (Map<ProfileType, PlayerProfile> profiles : playerData.values()) {
-            for (PlayerProfile profile : profiles.values()) {
-                profileDataSource.clearProfileCache(ProfileKey.createProfileKey(profile));
-            }
-        }
+        profileDataSource.clearProfileCache(key ->
+                key.getContainerType().equals(type) && key.getDataName().equals(name));
         this.playerData.clear();
     }
 }

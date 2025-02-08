@@ -8,6 +8,7 @@ import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * A source for updating and retrieving player profiles via persistence.
@@ -120,6 +121,11 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Clears a single profile in cache.
      */
     void clearProfileCache(ProfileKey key);
+
+    /**
+     * Clears a single profile in cache.
+     */
+    void clearProfileCache(Predicate<ProfileKey> predicate);
 
     /**
      * Clears all profiles in cache.

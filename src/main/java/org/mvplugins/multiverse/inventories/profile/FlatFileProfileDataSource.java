@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 @Service
@@ -541,6 +542,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public void clearProfileCache(ProfileKey key) {
         profileCache.invalidate(key);
+    }
+
+    @Override
+    public void clearProfileCache(Predicate<ProfileKey> predicate) {
+        configCache.invalidateAll(Sets.filter(configCache.asMap().keySet(), predicate::test));
     }
 
     @Override
