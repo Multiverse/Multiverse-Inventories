@@ -1,8 +1,10 @@
 package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
@@ -26,6 +28,7 @@ public abstract class ShareHandler {
 
     protected final MultiverseInventories inventories;
     protected final Player player;
+    protected final @Nullable InventoriesConfig inventoriesConfig;
     protected final WorldGroupManager worldGroupManager;
     protected final ProfileContainerStore worldProfileContainerStore;
     final AffectedProfiles affectedProfiles;
@@ -34,6 +37,7 @@ public abstract class ShareHandler {
         this.inventories = inventories;
         this.player = player;
         this.affectedProfiles = new AffectedProfiles();
+        this.inventoriesConfig = inventories.getServiceLocator().getService(InventoriesConfig.class);
         this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
         this.worldProfileContainerStore = inventories.getServiceLocator()
                 .getService(ProfileContainerStoreProvider.class)
