@@ -1,25 +1,23 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import org.mvplugins.multiverse.inventories.share.Sharable;
-import org.mvplugins.multiverse.inventories.share.SharableEntry;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.bukkit.OfflinePlayer;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
  * Contains all the world/group specific data for a player.
  */
-public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
+public final class PlayerProfile implements Cloneable {
 
-    public static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
+    static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
                                                     ProfileType profileType, OfflinePlayer player) {
         return new PlayerProfile(containerType, containerName, profileType, player);
     }
 
-    private Map<Sharable, SharableEntry> data = new HashMap<Sharable, SharableEntry>();
+    private final Map<Sharable, Object> data = new HashMap<>();
 
     private final OfflinePlayer player;
     private final ContainerType containerType;
@@ -69,8 +67,7 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
      * @return The value of the sharable for this profile. Null if no value is set.
      */
     public <T> T get(Sharable<T> sharable) {
-        SharableEntry entry = this.data.get(sharable);
-        return sharable.getType().cast(entry != null ? entry.getValue() : null);
+        return sharable.getType().cast(this.data.get(sharable));
     }
 
     /**
@@ -81,7 +78,7 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
      * @param <T>      The type of value to be expected.
      */
     public <T> void set(Sharable<T> sharable, T value) {
-        this.data.put(sharable, new SharableEntry<T>(sharable, value));
+        this.data.put(sharable, value);
     }
 
     public PlayerProfile clone() {
@@ -92,33 +89,7 @@ public final class PlayerProfile implements Cloneable, Iterable<SharableEntry> {
         }
     }
 
-    @Override
-    public Iterator<SharableEntry> iterator() {
-        return new SharablesIterator(data.values().iterator());
-    }
-
-    private static class SharablesIterator implements Iterator<SharableEntry> {
-
-        private final Iterator<SharableEntry> backingIterator;
-
-        private SharablesIterator(Iterator<SharableEntry> backingIterator) {
-            this.backingIterator = backingIterator;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return backingIterator.hasNext();
-        }
-
-        @Override
-        public SharableEntry next() {
-            return backingIterator.next();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
+    public Map<Sharable, Object> getData() {
+        return data;
     }
 }
-

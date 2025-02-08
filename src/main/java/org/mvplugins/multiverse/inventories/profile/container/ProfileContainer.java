@@ -101,7 +101,7 @@ public final class ProfileContainer {
      */
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), null, player.getName());
+        profileDataSource.removePlayerData(getContainerType(), getContainerName(), null, player.getUniqueId());
     }
 
     /**
@@ -112,7 +112,7 @@ public final class ProfileContainer {
      */
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), profileType, player.getName());
+        profileDataSource.removePlayerData(getContainerType(), getContainerName(), profileType, player.getUniqueId());
     }
 
     /**
@@ -139,11 +139,8 @@ public final class ProfileContainer {
      * Clears all cached data in the container.
      */
     public void clearContainer() {
-        for (Map<ProfileType, PlayerProfile> profiles : playerData.values()) {
-            for (PlayerProfile profile : profiles.values()) {
-                profileDataSource.clearProfileCache(ProfileKey.createProfileKey(profile));
-            }
-        }
+        profileDataSource.clearProfileCache(key ->
+                key.getContainerType().equals(type) && key.getDataName().equals(name));
         this.playerData.clear();
     }
 }

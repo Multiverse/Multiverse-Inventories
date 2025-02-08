@@ -1,11 +1,14 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /**
  * A source for updating and retrieving player profiles via persistence.
@@ -40,10 +43,10 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param dataName   The name of the world/group the player's data is associated with.
      * @param profileType The type of profile we're removing, as per {@link ProfileType}. If null, this will remove
      *                    remove all profile types.
-     * @param playerName The name of the player whose data is being removed.
+     * @param playerUUID The UUID of the player whose data is being removed.
      * @return True if successfully removed.
      */
-    boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, String playerName);
+    boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
@@ -63,12 +66,22 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
+     * Creates the profile if it doesn't exist.
      *
      * @param playerName    The name of the player.
      * @param playerUUID    The UUID of the player.
      * @return The global profile for the specified player.
      */
-    GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
+    @NotNull GlobalProfile getGlobalProfile(String playerName, UUID playerUUID);
+
+    /**
+     * Retrieves the global profile for a player which contains meta-data for the player if it exists.
+     *
+     * @param playerName    The name of the player.
+     * @param playerUUID    The UUID of the player.
+     * @return The global profile for the specified player or empty if it doesn't exist.
+     */
+    @NotNull Option<GlobalProfile> getExistingGlobalProfile(String playerName, UUID playerUUID);
 
     /**
      * Update the file for a player's global profile.
@@ -108,6 +121,11 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Clears a single profile in cache.
      */
     void clearProfileCache(ProfileKey key);
+
+    /**
+     * Clears a single profile in cache.
+     */
+    void clearProfileCache(Predicate<ProfileKey> predicate);
 
     /**
      * Clears all profiles in cache.

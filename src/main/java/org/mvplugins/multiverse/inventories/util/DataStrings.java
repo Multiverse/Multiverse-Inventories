@@ -53,6 +53,10 @@ public class DataStrings {
      */
     public static final String PLAYER_LAST_LOCATION = "lastLocation";
     /**
+     * Player global profile data
+     */
+    public static final String PLAYER_DATA = "playerData";
+    /**
      * Player last world identifier.
      */
     public static final String PLAYER_LAST_WORLD = "lastWorld";
