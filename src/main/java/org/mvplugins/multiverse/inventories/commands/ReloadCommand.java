@@ -1,8 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.locale.Message;
-import org.bukkit.command.CommandSender;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
@@ -11,6 +10,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
 @CommandAlias("mvinv")
@@ -28,8 +28,8 @@ class ReloadCommand extends InventoriesCommand {
     @Subcommand("reload")
     @CommandPermission("multiverse.inventories.reload")
     @Description("Reloads config file")
-    void onReloadCommand(@NotNull CommandSender sender) {
+    void onReloadCommand(@NotNull MVCommandIssuer issuer) {
         this.plugin.reloadConfig();
-        this.plugin.getMessager().normal(Message.RELOAD_COMPLETE, sender);
+        issuer.sendInfo(MVInvi18n.RELOAD_COMPLETE);
     }
 }

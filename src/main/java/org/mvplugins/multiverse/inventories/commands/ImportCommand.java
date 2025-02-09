@@ -17,6 +17,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
@@ -50,25 +51,23 @@ final class ImportCommand extends InventoriesCommand {
             String pluginName) {
 
         dataImportManager.getImporter(pluginName)
-                .onEmpty(() -> issuer.sendMessage("No importer found for " + pluginName))
+                .onEmpty(() -> issuer.sendError(MVInvi18n.IMPORT_UNSUPPORTEDPLUGIN, replace("{plugin}").with(pluginName)))
                 .peek(dataImporter -> {
                     if (!dataImporter.isEnabled()) {
-                        issuer.sendMessage("Plugin " + pluginName + " is not running on your server!");
+                        issuer.sendError(MVInvi18n.IMPORT_PLUGINNOTENABLED, replace("{plugin}").with(pluginName));
                         return;
                     }
                     commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                            .prompt(Message.of("Are you sure you want to import data from {plugin}? " +
-                                            "This will override existing Multiverse-Inventories playerdata!!!",
-                                    replace("{plugin}").with(pluginName)))
+                            .prompt(Message.of(MVInvi18n.IMPORT_CONFIRMPROMPT, replace("{plugin}").with(pluginName)))
                             .action(() -> doDataImport(issuer, dataImporter)));
                 });
     }
 
     void doDataImport(MVCommandIssuer issuer, DataImporter dataImporter) {
         if (dataImporter.importData()) {
-            issuer.sendMessage("Successfully to imported data from " + dataImporter.getPluginName() + "!");
+            issuer.sendInfo(MVInvi18n.IMPORT_SUCCESS, replace("{plugin}").with(dataImporter.getPluginName()));
         } else {
-            issuer.sendMessage("Failed to import data from " + dataImporter.getPluginName() + ".");
+            issuer.sendError(MVInvi18n.IMPORT_FAILED, replace("{plugin}").with(dataImporter.getPluginName()));
         }
     }
 }

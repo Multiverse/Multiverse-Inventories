@@ -2,6 +2,8 @@ package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
@@ -10,10 +12,9 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 /**
  * Abstract implementation of GroupManager with no persistence of groups.
@@ -32,16 +34,19 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     static final String DEFAULT_GROUP_NAME = "default";
     protected final Map<String, WorldGroup> groupNamesMap = new LinkedHashMap<>();
     protected final MultiverseInventories plugin;
+    protected final MVCommandManager commandManager;
     protected final InventoriesConfig inventoriesConfig;
     protected final ProfileContainerStoreProvider profileContainerStoreProvider;
     protected final WorldManager worldManager;
 
     public AbstractWorldGroupManager(
             @NotNull MultiverseInventories plugin,
+            @NotNull MVCommandManager commandManager,
             @NotNull InventoriesConfig config,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull WorldManager worldManager) {
         this.plugin = plugin;
+        this.commandManager = commandManager;
         this.inventoriesConfig = config;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.worldManager = worldManager;
@@ -213,35 +218,24 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      * {@inheritDoc}
      */
     @Override
-    public void checkForConflicts(CommandSender sender) {
-        String message = plugin.getMessager().getMessage(Message.CONFLICT_CHECKING);
-        if (sender != null) {
-            plugin.getMessager().sendMessage(sender, message);
+    public void checkForConflicts(MVCommandIssuer issuer) {
+        if (issuer == null) {
+            issuer = commandManager.getCommandIssuer(Bukkit.getConsoleSender());
         }
-        Logging.fine(message);
+
+        issuer.sendInfo(MVInvi18n.CONFLICT_CHECKING);
         List<GroupingConflict> conflicts = checkGroups();
         for (GroupingConflict conflict : conflicts) {
-            message = plugin.getMessager().getMessage(Message.CONFLICT_RESULTS,
-                    conflict.getFirstGroup().getName(), conflict.getSecondGroup().getName(),
-                    conflict.getConflictingShares().toString(), conflict.getWorldsString());
-            if (sender != null) {
-                plugin.getMessager().sendMessage(sender, message);
-            }
-            Logging.info(message);
+            issuer.sendInfo(MVInvi18n.CONFLICT_RESULTS,
+                    replace("{group1}").with(conflict.getFirstGroup().getName()),
+                    replace("{group2}").with(conflict.getSecondGroup().getName()),
+                    replace("{shares}").with(conflict.getConflictingShares().toString()),
+                    replace("{worlds}").with(conflict.getWorldsString()));
         }
         if (!conflicts.isEmpty()) {
-            message = plugin.getMessager().getMessage(Message.CONFLICT_FOUND);
-            if (sender != null) {
-                plugin.getMessager().sendMessage(sender, message);
-            }
-            Logging.info(message);
+            issuer.sendInfo(MVInvi18n.CONFLICT_FOUND);
         } else {
-            message = plugin.getMessager().getMessage(Message.CONFLICT_NOT_FOUND);
-            if (sender != null) {
-                plugin.getMessager().sendMessage(sender, message);
-            }
-            Logging.fine(message);
+            issuer.sendInfo(MVInvi18n.CONFLICT_NOTFOUND);
         }
     }
 }
-

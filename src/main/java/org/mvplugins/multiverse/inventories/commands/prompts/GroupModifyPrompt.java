@@ -1,35 +1,40 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
+import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
-import org.mvplugins.multiverse.inventories.locale.Message;
-import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 class GroupModifyPrompt extends InventoriesPrompt {
 
     protected final WorldGroup group;
 
-    public GroupModifyPrompt(final MultiverseInventories plugin, final CommandSender sender,
+    public GroupModifyPrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer,
                              final WorldGroup group) {
-        super(plugin, sender);
+        super(plugin, issuer);
         this.group = group;
     }
 
+    @NotNull
     @Override
-    public String getPromptText(final ConversationContext conversationContext) {
-        return messager.getMessage(Message.GROUP_MODIFY_PROMPT, group.getName());
+    public Message getPromptMessage(@NotNull final ConversationContext conversationContext) {
+        return Message.of(MVInvi18n.GROUP_MODIFYPROMPT, replace("{group}").with(group.getName()));
     }
 
     @Override
-    public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
-        if (s.equalsIgnoreCase("worlds")) {
-            return new GroupWorldsPrompt(plugin, sender, group, this, false);
-        } else if (s.equalsIgnoreCase("shares")) {
-            return new GroupSharesPrompt(plugin, sender, group, this, false);
+    public Prompt acceptInput(@NotNull final ConversationContext conversationContext, final String input) {
+        if ("worlds".equalsIgnoreCase(input)) {
+            return new GroupWorldsPrompt(plugin, issuer, group, this, false);
+        } else if (input.equalsIgnoreCase("shares")) {
+            return new GroupSharesPrompt(plugin, issuer, group, this, false);
         } else {
-            messager.normal(Message.INVALID_PROMPT_OPTION, sender);
+            issuer.sendError(MVInvi18n.GROUP_INVALIDOPTION);
             return this;
         }
     }

@@ -3,6 +3,7 @@ package org.mvplugins.multiverse.inventories.profile.group;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -43,10 +44,11 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
     @Inject
     YamlWorldGroupManager(
             @NotNull MultiverseInventories plugin,
+            @NotNull MVCommandManager commandManager,
             @NotNull InventoriesConfig inventoriesConfig,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull WorldManager worldManager) {
-        super(plugin, inventoriesConfig, profileContainerStoreProvider, worldManager);
+        super(plugin, commandManager, inventoriesConfig, profileContainerStoreProvider, worldManager);
     }
 
     @Override

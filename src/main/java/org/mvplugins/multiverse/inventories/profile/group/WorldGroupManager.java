@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile.group;
 
 import org.bukkit.command.CommandSender;
 import org.jvnet.hk2.annotations.Contract;
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.util.List;
@@ -104,10 +105,10 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
     List<GroupingConflict> checkGroups();
 
     /**
-     * Runs a check for conflicts between groups and displays them to console and sender if not null.
+     * Runs a check for conflicts between groups and displays them to issuer or console.
      *
-     * @param sender The sender to relay information to. If null, info only displayed in console.
+     * @param issuer The issuer to relay information to. If null, info only displayed in console.
      */
-    void checkForConflicts(CommandSender sender);
+    void checkForConflicts(MVCommandIssuer issuer);
 }
 

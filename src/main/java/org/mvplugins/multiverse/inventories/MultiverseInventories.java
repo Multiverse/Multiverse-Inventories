@@ -1,7 +1,5 @@
 package org.mvplugins.multiverse.inventories;
 
-import java.util.Locale;
-
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -17,9 +15,6 @@ import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
-import org.mvplugins.multiverse.inventories.locale.Message;
-import org.mvplugins.multiverse.inventories.locale.Messager;
-import org.mvplugins.multiverse.inventories.locale.Messaging;
 import org.mvplugins.multiverse.inventories.handleshare.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -39,7 +34,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public class MultiverseInventories extends MultiversePlugin implements Messaging {
+public class MultiverseInventories extends MultiversePlugin {
 
     private static final int PROTOCOL = 50;
 
@@ -63,7 +58,6 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     private Provider<DataImportManager> dataImportManager;
 
     private PluginServiceLocator serviceLocator;
-    private Messager messager = new DefaultMessager(this);
     private InventoriesDupingPatch dupingPatch;
     private boolean usingSpawnChangeEvent = false;
 
@@ -86,38 +80,10 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public final void onEnable() {
         super.onEnable();
+
         initializeDependencyInjection();
-        Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
-        inventoriesConfig.get().load().onFailure(e -> Logging.severe(e.getMessage()));
-
-        this.onMVPluginEnable();
-        Logging.config("Version %s (API v%s) Enabled - By %s",
-                this.getDescription().getVersion(), getTargetCoreProtocolVersion(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
-    }
-
-    private void initializeDependencyInjection() {
-        serviceLocator = PluginServiceLocatorFactory.get()
-                .registerPlugin(new MultiverseInventoriesPluginBinder(this), MultiverseCoreApi.get().getServiceLocator())
-                .flatMap(PluginServiceLocator::enable)
-                .getOrElseThrow(exception -> {
-                    Logging.severe("Failed to initialize dependency injection!");
-                    getServer().getPluginManager().disablePlugin(this);
-                    return new RuntimeException(exception);
-                });
-    }
-
-    private void onMVPluginEnable() {
         Perm.register(this);
-
         this.reloadConfig();
-
-        try {
-            this.getMessager().setLocale(new Locale(inventoriesConfig.get().getLocale()));
-        } catch (IllegalArgumentException e) {
-            Logging.severe(e.getMessage());
-            this.getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
 
         // Register Events
         PluginManager pluginManager = this.getServer().getPluginManager();
@@ -135,13 +101,24 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
 
         // Register Commands
         this.registerCommands();
-
         // Hook plugins that can be imported from
         this.hookImportables();
-
         Sharables.init(this);
-
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
+
+        Logging.config("Version %s (API v%s) Enabled - By %s",
+                this.getDescription().getVersion(), getTargetCoreProtocolVersion(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
+    }
+
+    private void initializeDependencyInjection() {
+        serviceLocator = PluginServiceLocatorFactory.get()
+                .registerPlugin(new MultiverseInventoriesPluginBinder(this), MultiverseCoreApi.get().getServiceLocator())
+                .flatMap(PluginServiceLocator::enable)
+                .getOrElseThrow(exception -> {
+                    Logging.severe("Failed to initialize dependency injection!");
+                    getServer().getPluginManager().disablePlugin(this);
+                    return new RuntimeException(exception);
+                });
     }
 
     /**
@@ -150,6 +127,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Override
     public void onDisable() {
         super.onDisable();
+
         for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
             if (inventoriesConfig.get().usingLoggingSaveLoad()) {
@@ -168,8 +146,12 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
 
     private void registerCommands() {
         Try.of(() -> commandManager.get())
-                .andThenTry(commandManager -> serviceLocator.getAllServices(InventoriesCommand.class)
-                        .forEach(commandManager::registerCommand))
+                .andThenTry(commandManager -> {
+                    commandManager.getLocales().addFileResClassLoader(this);
+                    commandManager.getLocales().addBundleClassLoader(this.getClassLoader());
+                    commandManager.getLocales().addMessageBundles("multiverse-inventories");
+                    serviceLocator.getAllServices(InventoriesCommand.class).forEach(commandManager::registerCommand);
+                })
                 .onFailure(e -> {
                     Logging.severe("Failed to register commands");
                     e.printStackTrace();
@@ -222,7 +204,7 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
 
             Logging.fine("Reloaded all config and groups!");
         } catch (Exception e) {  // Catch errors loading the config file and exit out if found.
-            Logging.severe(this.getMessager().getMessage(Message.ERROR_CONFIG_LOAD));
+            Logging.severe("Encountered an error while loading the configuration file. Disabling...");
             Logging.severe(e.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);
             return;
@@ -243,25 +225,6 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
                 worldGroupManager.get().checkForConflicts(null);
             }
         }, 1L);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Messager getMessager() {
-        return messager;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setMessager(Messager messager) {
-        if (messager == null) {
-            throw new IllegalArgumentException("The new messager can't be null!");
-        }
-        this.messager = messager;
     }
 
     public boolean isUsingSpawnChangeEvent() {

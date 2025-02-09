@@ -1,8 +1,8 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
@@ -18,6 +18,9 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 @CommandAlias("mvinv")
@@ -43,7 +46,7 @@ class ToggleCommand extends InventoriesCommand {
     @Syntax("<share-name>")
     @Description("Toggles the usage of optional sharables")
     void onToggleCommand(
-            @NotNull CommandSender sender,
+            @NotNull MVCommandIssuer issuer,
 
             @Single
             @Syntax("<share-name>")
@@ -52,7 +55,7 @@ class ToggleCommand extends InventoriesCommand {
     ) {
         Shares shares = Sharables.lookup(shareName.toLowerCase());
         if (shares == null) {
-            this.plugin.getMessager().normal(Message.ERROR_NO_SHARES_SPECIFIED, sender);
+            issuer.sendError(MVInvi18n.ERROR_NOSHARESSPECIFIED);
             return;
         }
         boolean foundOpt = false;
@@ -62,10 +65,10 @@ class ToggleCommand extends InventoriesCommand {
                 foundOpt = true;
                 if (optionalShares.contains(sharable)) {
                     optionalShares.remove(sharable);
-                    this.plugin.getMessager().normal(Message.NOW_NOT_USING_OPTIONAL, sender, sharable.getNames()[0]);
+                    issuer.sendInfo(MVInvi18n.TOGGLE_NOWNOTUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
                 } else {
                     optionalShares.add(sharable);
-                    this.plugin.getMessager().normal(Message.NOW_USING_OPTIONAL, sender, sharable.getNames()[0]);
+                    issuer.sendInfo(MVInvi18n.TOGGLE_NOWUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
                 }
             }
         }
@@ -73,7 +76,7 @@ class ToggleCommand extends InventoriesCommand {
             inventoriesConfig.setOptionalShares(optionalShares);
             inventoriesConfig.save();
         } else {
-            this.plugin.getMessager().normal(Message.NO_OPTIONAL_SHARES, sender, shareName);
+            issuer.sendError(MVInvi18n.TOGGLE_NOOPTIONALSHARES, replace("{share}").with(shareName));
         }
     }
 }

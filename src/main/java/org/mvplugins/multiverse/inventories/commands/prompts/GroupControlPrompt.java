@@ -1,32 +1,36 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
+import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.locale.Message;
-import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 public class GroupControlPrompt extends InventoriesPrompt {
 
-    public GroupControlPrompt(final MultiverseInventories plugin, final CommandSender sender) {
-        super(plugin, sender);
+    public GroupControlPrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer) {
+        super(plugin, issuer);
+    }
+
+    @NotNull
+    @Override
+    Message getPromptMessage(@NotNull final ConversationContext conversationContext) {
+        return Message.of(MVInvi18n.GROUP_COMMANDPROMPT);
     }
 
     @Override
-    public String getPromptText(final ConversationContext conversationContext) {
-        return messager.getMessage(Message.GROUP_COMMAND_PROMPT);
-    }
-
-    @Override
-    public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
-        if (s.equalsIgnoreCase("delete")) {
-            return new GroupDeletePrompt(plugin, sender);
-        } else if (s.equalsIgnoreCase("create")) {
-            return new GroupCreatePrompt(plugin, sender);
-        } else if (s.equalsIgnoreCase("edit")) {
-            return new GroupEditPrompt(plugin, sender);
+    public Prompt acceptInput(@NotNull final ConversationContext conversationContext, final String input) {
+        if (input.equalsIgnoreCase("delete")) {
+            return new GroupDeletePrompt(plugin, issuer);
+        } else if (input.equalsIgnoreCase("create")) {
+            return new GroupCreatePrompt(plugin, issuer);
+        } else if (input.equalsIgnoreCase("edit")) {
+            return new GroupEditPrompt(plugin, issuer);
         } else {
-            messager.normal(Message.INVALID_PROMPT_OPTION, sender);
+            issuer.sendError(MVInvi18n.GROUP_INVALIDOPTION);
             return this;
         }
     }

@@ -1,13 +1,11 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
-import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
@@ -22,9 +20,12 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.List;
 import java.util.Set;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 @CommandAlias("mvinv")
@@ -53,7 +54,7 @@ class InfoCommand extends InventoriesCommand {
     @Syntax("<world|group>")
     @Description("World and Group Information")
     void onInfoCommand(
-            @NotNull CommandSender sender,
+            @NotNull MVCommandIssuer issuer,
 
             @Optional
             @Single
@@ -62,30 +63,30 @@ class InfoCommand extends InventoriesCommand {
             @NotNull String name
     ) {
         if (name == null) {
-            if (!(sender instanceof Player)) {
-                this.plugin.getMessager().normal(Message.INFO_ZERO_ARG, sender);
+            if (!issuer.isPlayer()) {
+                issuer.sendError(MVInvi18n.INFO_ZEROARG);
                 return;
             }
-            name = ((Player) sender).getWorld().getName();
+            name = issuer.getPlayer().getWorld().getName();
         }
 
         ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(name);
-        plugin.getMessager().normal(Message.INFO_WORLD, sender, name);
+        issuer.sendInfo(MVInvi18n.INFO_WORLD, replace("{world}").with(name));
         if (worldProfileContainer != null && Bukkit.getWorld(worldProfileContainer.getContainerName()) != null) {
-            worldInfo(sender, worldProfileContainer);
+            worldInfo(issuer, worldProfileContainer);
         } else {
-            plugin.getMessager().normal(Message.ERROR_NO_WORLD_PROFILE, sender, name);
+            issuer.sendError(MVInvi18n.ERROR_NOWORLDPROFILE, replace("{world}").with(name));
         }
         WorldGroup worldGroup = worldGroupManager.getGroup(name);
-        this.plugin.getMessager().normal(Message.INFO_GROUP, sender, name);
+        issuer.sendInfo(MVInvi18n.INFO_GROUP, replace("{group}").with(name));
         if (worldGroup != null) {
-            this.groupInfo(sender, worldGroup);
+            this.groupInfo(issuer, worldGroup);
         } else {
-            this.plugin.getMessager().normal(Message.ERROR_NO_GROUP, sender, name);
+            issuer.sendError(MVInvi18n.ERROR_NOGROUP, replace("{group}").with(name));
         }
     }
 
-    private void groupInfo(CommandSender sender, WorldGroup worldGroup) {
+    private void groupInfo(MVCommandIssuer issuer, WorldGroup worldGroup) {
         StringBuilder worldsString = new StringBuilder();
         Set<String> worlds = worldGroup.getWorlds();
         if (worlds.isEmpty()) {
@@ -98,11 +99,11 @@ class InfoCommand extends InventoriesCommand {
                 worldsString.append(world);
             }
         }
-        this.plugin.getMessager().normal(Message.INFO_GROUPS_INFO,
-                sender, worldsString, worldGroup.getShares().toString());
+        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldsString));
+        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
     }
 
-    private void worldInfo(CommandSender sender, ProfileContainer worldProfileContainer) {
+    private void worldInfo(MVCommandIssuer issuer, ProfileContainer worldProfileContainer) {
         StringBuilder groupsString = new StringBuilder();
         List<WorldGroup> worldGroups = worldGroupManager.getGroupsForWorld(worldProfileContainer.getContainerName());
 
@@ -116,8 +117,6 @@ class InfoCommand extends InventoriesCommand {
                 groupsString.append(worldGroup.getName());
             }
         }
-
-        this.plugin.getMessager().normal(Message.INFO_WORLD_INFO,
-                sender, groupsString.toString());
+        issuer.sendInfo(MVInvi18n.INFO_WORLD_INFO, replace("{groups}").with(groupsString));
     }
 }

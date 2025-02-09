@@ -1,8 +1,8 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.commands.prompts.GroupControlPrompt;
-import org.mvplugins.multiverse.inventories.locale.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.Conversable;
 import org.bukkit.conversations.Conversation;
@@ -15,6 +15,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
 @CommandAlias("mvinv")
@@ -31,14 +32,14 @@ class GroupCommand extends InventoriesCommand {
     @CommandAlias("mvinvgroup|mvinvg")
     @Subcommand("group")
     @CommandPermission("multiverse.inventories.group")
-    @Description("Manage a world group wiht prompts!")
-    void onGroupCommand(@NotNull CommandSender sender) {
-        if (!(sender instanceof Conversable conversable)) {
-            this.plugin.getMessager().normal(Message.NON_CONVERSABLE, sender);
+    @Description("Manage a world group with prompts!")
+    void onGroupCommand(@NotNull MVCommandIssuer issuer) {
+        if (!(issuer.getIssuer() instanceof Conversable conversable)) {
+            issuer.sendError(MVInvi18n.GROUP_NONCONVERSABLE);
             return;
         }
         Conversation conversation = new ConversationFactory(plugin)
-                .withFirstPrompt(new GroupControlPrompt(plugin, sender))
+                .withFirstPrompt(new GroupControlPrompt(plugin, issuer))
                 .withEscapeSequence("##")
                 .withModality(false).buildConversation(conversable);
         conversation.begin();

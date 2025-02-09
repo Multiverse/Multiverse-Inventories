@@ -1,36 +1,41 @@
 package org.mvplugins.multiverse.inventories.commands.prompts;
 
+import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
-import org.mvplugins.multiverse.inventories.locale.Message;
-import org.bukkit.command.CommandSender;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 class GroupCreatePrompt extends InventoriesPrompt {
 
-    public GroupCreatePrompt(final MultiverseInventories plugin, final CommandSender sender) {
-        super(plugin, sender);
+    public GroupCreatePrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer) {
+        super(plugin, issuer);
+    }
+
+    @NotNull
+    @Override
+    Message getPromptMessage(@NotNull final ConversationContext conversationContext) {
+        return Message.of(MVInvi18n.GROUP_CREATEPROMPT);
     }
 
     @Override
-    public String getPromptText(final ConversationContext conversationContext) {
-        return messager.getMessage(Message.GROUP_CREATE_PROMPT);
-    }
-
-    @Override
-    public Prompt acceptInput(final ConversationContext conversationContext, final String s) {
+    public Prompt acceptInput(@NotNull final ConversationContext conversationContext, final String s) {
         final WorldGroup group = worldGroupManager.getGroup(s);
         if (group == null) {
             if (s.isEmpty() || !s.matches("^[a-zA-Z0-9][a-zA-Z0-9_]*$")) {
-                messager.normal(Message.GROUP_INVALID_NAME, sender);
+                issuer.sendError(MVInvi18n.GROUP_INVALIDNAME);
                 return this;
             }
             final WorldGroup newGroup = worldGroupManager.newEmptyGroup(s);
-            return new GroupWorldsPrompt(plugin, sender, newGroup,
-                    new GroupSharesPrompt(plugin, sender, newGroup, Prompt.END_OF_CONVERSATION, true), true);
+            return new GroupWorldsPrompt(plugin, issuer, newGroup,
+                    new GroupSharesPrompt(plugin, issuer, newGroup, Prompt.END_OF_CONVERSATION, true), true);
         } else {
-            messager.normal(Message.GROUP_EXISTS, sender, s);
+            issuer.sendError(MVInvi18n.GROUP_EXISTS, replace("{group}").with(s));
         }
         return Prompt.END_OF_CONVERSATION;
     }
