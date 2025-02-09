@@ -162,13 +162,13 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                         profile.addWorld(worldNameObj.toString(), false);
                         World world = Bukkit.getWorld(worldNameObj.toString());
                         if (world == null) {
-                            if (builder.length() != 0) {
+                            if (!builder.isEmpty()) {
                                 builder.append(", ");
                             }
-                            builder.append(worldNameObj.toString());
+                            builder.append(worldNameObj);
                         }
                     }
-                    if (builder.length() > 0) {
+                    if (!builder.isEmpty()) {
                         Logging.config("The following worlds for group '%s' are not loaded: %s", name, builder.toString());
                     }
                 }

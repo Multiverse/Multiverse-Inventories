@@ -63,7 +63,7 @@ public class PlayerStats {
     public static final int MAXIMUM_AIR = 300;
 
     private PlayerStats() {
-        throw new AssertionError();
+        throw new IllegalStateException();
     }
 }
 

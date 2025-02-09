@@ -78,7 +78,7 @@ final class InventoriesDupingPatch {
                 return; // Saves performance for most common case
             }
             InventoryHolder holder = event.getInventory().getHolder();
-            if (holder instanceof Player && timeouts.containsKey(((Player) holder).getUniqueId())) {
+            if (holder instanceof Player player && timeouts.containsKey(player.getUniqueId())) {
                 event.setResult(Result.DENY);
             }
         }
@@ -115,9 +115,9 @@ final class InventoriesDupingPatch {
             Iterator<Map.Entry<UUID, Integer>> iter = timeouts.entrySet().iterator();
             while (iter.hasNext()) {
                 Map.Entry<UUID, Integer> e = iter.next();
-                int value = e.getValue().intValue() - 1;
+                int value = e.getValue() - 1;
                 if (value > 0) {
-                    e.setValue(Integer.valueOf(value));
+                    e.setValue(value);
                 } else {
                     iter.remove();
                 }

@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.util.DataStrings;
 import org.bukkit.potion.PotionEffect;
+import org.mvplugins.multiverse.inventories.util.LegacyParsers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,9 +23,9 @@ final class PotionEffectSerializer implements SharableSerializer<PotionEffect[]>
                     resultList.add((PotionEffect) o);
                 }
             }
-            return resultList.toArray(new PotionEffect[resultList.size()]);
+            return resultList.toArray(new PotionEffect[0]);
         } else {
-            return DataStrings.parsePotionEffects(obj.toString());
+            return LegacyParsers.parsePotionEffects(obj.toString());
         }
     }
 

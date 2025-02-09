@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.util.DataStrings;
 import org.bukkit.Location;
+import org.mvplugins.multiverse.inventories.util.LegacyParsers;
 
 import java.util.Map;
 
@@ -18,15 +18,14 @@ final class LocationSerializer implements SharableSerializer<Location> {
     public Location deserialize(Object obj) {
         if (obj instanceof Location) {
             return (Location) obj;
-        } else if (obj instanceof String) {
-            return DataStrings.parseLocation(obj.toString());
-        } else {
-            if (obj instanceof Map) {
-                return DataStrings.parseLocation((Map) obj);
-            } else {
-                return DataStrings.parseLocation(obj.toString());
-            }
         }
+        if (obj instanceof String) {
+            return LegacyParsers.parseLocation(obj.toString());
+        }
+        if (obj instanceof Map) {
+            return LegacyParsers.parseLocation((Map) obj);
+        }
+        return LegacyParsers.parseLocation(obj.toString());
     }
 
     @Override
