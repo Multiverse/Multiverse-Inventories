@@ -5,7 +5,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.listeners.SpawnChangeListener;
+import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
 
 /**
  * The Sharables class is where all the default Sharable instances are located as constants as well as a factory class
@@ -503,7 +505,7 @@ public final class Sharables implements Shares {
                     Location bedSpawnLocation = null;
                     try {
                         Logging.finer("profile bed: " + player.getBedSpawnLocation());
-                        bedSpawnLocation = SpawnChangeListener.findBedFromRespawnLocation(player.getBedSpawnLocation());
+                        bedSpawnLocation = findBedFromRespawnLocation(player.getBedSpawnLocation());
                     } catch (NullPointerException e) {
                         // TODO this is a temporary fix for the bug occurring in 1.16.X CB/Spigot/Paper
                         StackTraceElement[] stackTrace = e.getStackTrace();

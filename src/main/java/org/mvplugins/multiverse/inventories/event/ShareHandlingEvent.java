@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.event;
 
-import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
-import org.mvplugins.multiverse.inventories.listeners.ShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.AffectedProfiles;
+import org.mvplugins.multiverse.inventories.handleshare.PersistingProfile;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -20,7 +20,7 @@ public abstract class ShareHandlingEvent extends Event implements Cancellable {
     private final List<PersistingProfile> writeProfiles;
     private final List<PersistingProfile> readProfiles;
 
-    ShareHandlingEvent(Player player, ShareHandler.AffectedProfiles affectedProfiles) {
+    ShareHandlingEvent(Player player, AffectedProfiles affectedProfiles) {
         this.player = player;
         this.alwaysWriteProfile = affectedProfiles.getAlwaysWriteProfile();
         this.writeProfiles = affectedProfiles.getWriteProfiles();

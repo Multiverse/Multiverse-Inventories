@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.event;
 
-import org.mvplugins.multiverse.inventories.listeners.ShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.AffectedProfiles;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -20,8 +20,11 @@ public class WorldChangeShareHandlingEvent extends ShareHandlingEvent implements
     private final String fromWorld;
     private final String toWorld;
 
-    public WorldChangeShareHandlingEvent(Player player, ShareHandler.AffectedProfiles affectedProfiles,
-                                         String fromWorld, String toWorld) {
+    public WorldChangeShareHandlingEvent(
+            Player player,
+            AffectedProfiles affectedProfiles,
+            String fromWorld,
+            String toWorld) {
         super(player, affectedProfiles);
         this.fromWorld = fromWorld;
         this.toWorld = toWorld;
@@ -48,5 +51,4 @@ public class WorldChangeShareHandlingEvent extends ShareHandlingEvent implements
     public String getToWorld() {
         return this.toWorld;
     }
-
 }

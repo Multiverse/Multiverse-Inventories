@@ -1,18 +1,15 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.share.Sharable;
-import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public final class ShareHandlingUpdater {
 
@@ -32,10 +29,6 @@ public final class ShareHandlingUpdater {
     private final Player player;
     private final PersistingProfile profile;
 
-    private final List<Sharable<?>> saved = new ArrayList<>(Sharables.all().size());
-    private final List<Sharable<?>> loaded = new ArrayList<>(Sharables.all().size());
-    private final List<Sharable<?>> defaulted = new ArrayList<>(Sharables.all().size());
-
     private ShareHandlingUpdater(MultiverseInventories inventories, Player player, PersistingProfile profile) {
         this.inventories = inventories;
         this.player = player;
@@ -43,27 +36,31 @@ public final class ShareHandlingUpdater {
     }
 
     private void updateProfile() {
-        for (Sharable<?> sharable : profile.getShares()) {
+        final List<Sharable<?>> saved = new ArrayList<>(profile.shares().size());
+        for (Sharable<?> sharable : profile.shares()) {
             if (isSharableUsed(sharable)) {
                 saved.add(sharable);
-                sharable.getHandler().updateProfile(profile.getProfile(), player);
+                sharable.getHandler().updateProfile(profile.profile(), player);
             }
         }
         if (!saved.isEmpty()) {
-            Logging.finer("Persisted: "
-                    + saved.stream().map(Objects::toString).collect(Collectors.joining(", ")) + " to "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")"
-                    + " for player " + profile.getProfile().getPlayer().getName());
+            Logging.finer("Persisted: " + saved + " to "
+                    + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
+                    + " (" + profile.profile().getProfileType() + ")"
+                    + " for player " + profile.profile().getPlayer().getName());
         }
-        inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(profile.getProfile());
+        inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(profile.profile());
     }
 
     private void updatePlayer() {
         player.closeInventory();
-        for (Sharable<?> sharable : profile.getShares()) {
+
+        final List<Sharable<?>> loaded = new ArrayList<>(profile.shares().size());
+        final List<Sharable<?>> defaulted = new ArrayList<>(profile.shares().size());
+
+        for (Sharable<?> sharable : profile.shares()) {
             if (isSharableUsed(sharable)) {
-                if (sharable.getHandler().updatePlayer(player, profile.getProfile())) {
+                if (sharable.getHandler().updatePlayer(player, profile.profile())) {
                     loaded.add(sharable);
                 } else {
                     defaulted.add(sharable);
@@ -71,16 +68,16 @@ public final class ShareHandlingUpdater {
             }
         }
         if (!loaded.isEmpty()) {
-            Logging.finer("Updated: " + loaded.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")");
+            Logging.finer("Updated: " + loaded + " for "
+                    + profile.profile().getPlayer().getName() + " for "
+                    + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
+                    + " (" + profile.profile().getProfileType() + ")");
         }
         if (!defaulted.isEmpty()) {
-            Logging.finer("Defaulted: " + defaulted.toString() + " for "
-                    + profile.getProfile().getPlayer().getName() + " for "
-                    + profile.getProfile().getContainerType() + ":" + profile.getProfile().getContainerName()
-                    + " (" + profile.getProfile().getProfileType() + ")");
+            Logging.finer("Defaulted: " + defaulted + " for "
+                    + profile.profile().getPlayer().getName() + " for "
+                    + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
+                    + " (" + profile.profile().getProfileType() + ")");
         }
     }
 
@@ -91,7 +88,7 @@ public final class ShareHandlingUpdater {
                 Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
                 return false;
             }
-            if (profile.getProfile().getContainerType() == ContainerType.WORLD
+            if (profile.profile().getContainerType() == ContainerType.WORLD
                     && !config.usingOptionalsForUngrouped()) {
                 Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
                 return false;

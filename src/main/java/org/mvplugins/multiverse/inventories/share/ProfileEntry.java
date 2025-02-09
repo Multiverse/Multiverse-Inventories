@@ -7,23 +7,16 @@ import java.util.Map;
  * Indicates how a Sharable should be stored in the profile file. Serves as a lookup for finding a sharable based on
  * it's file tag.
  */
-public final class ProfileEntry {
+public record ProfileEntry(boolean isStat, String fileTag) {
 
     private static final Map<String, Sharable> STATS_MAP = new HashMap<>();
     private static final Map<String, Sharable> OTHERS_MAP = new HashMap<>();
 
-    private final boolean isStat;
-    private final String fileTag;
-
-    public ProfileEntry(boolean isStat, String fileTag) {
-        this.isStat = isStat;
-        this.fileTag = fileTag;
-    }
-
     /**
      * @return True if this indicates a {@link Sharable} whose data will be stored in the stats string of the player
-     *         file.
+     * file.
      */
+    @Override
     public boolean isStat() {
         return this.isStat;
     }
@@ -31,7 +24,8 @@ public final class ProfileEntry {
     /**
      * @return The String that represents where this file is stored in the player profile.
      */
-    public String getFileTag() {
+    @Override
+    public String fileTag() {
         return this.fileTag;
     }
 
@@ -47,9 +41,9 @@ public final class ProfileEntry {
             return;
         }
         if (entry.isStat()) {
-            STATS_MAP.put(entry.getFileTag(), sharable);
+            STATS_MAP.put(entry.fileTag(), sharable);
         } else {
-            OTHERS_MAP.put(entry.getFileTag(), sharable);
+            OTHERS_MAP.put(entry.fileTag(), sharable);
         }
     }
 

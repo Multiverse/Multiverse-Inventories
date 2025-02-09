@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.listeners;
+package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
@@ -17,7 +17,7 @@ import org.mvplugins.multiverse.inventories.share.Sharable;
 final class SingleShareWriter<T> {
 
     public static <T> SingleShareWriter<T> of(MultiverseInventories inventories, Player player, Sharable<T> sharable) {
-        return new SingleShareWriter<T>(inventories, player, sharable);
+        return new SingleShareWriter<>(inventories, player, sharable);
     }
 
     private final MultiverseInventories inventories;

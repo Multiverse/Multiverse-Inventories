@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.event;
 
-import org.mvplugins.multiverse.inventories.listeners.ShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.AffectedProfiles;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -21,7 +21,7 @@ public class GameModeChangeShareHandlingEvent extends ShareHandlingEvent impleme
     private final GameMode fromGameMode;
     private final GameMode toGameMode;
 
-    public GameModeChangeShareHandlingEvent(Player player, ShareHandler.AffectedProfiles affectedProfiles,
+    public GameModeChangeShareHandlingEvent(Player player, AffectedProfiles affectedProfiles,
                                             GameMode fromGameMode, GameMode toGameMode) {
         super(player, affectedProfiles);
         this.fromGameMode = fromGameMode;

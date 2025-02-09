@@ -1,17 +1,13 @@
-package org.mvplugins.multiverse.inventories.listeners;
+package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
 import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
-import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
-import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -21,7 +17,6 @@ import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
-import me.drayshak.WorldInventories.WorldInventories;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -41,13 +36,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
-import uk.co.tggl.pluckerpluck.multiinv.MultiInv;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,10 +48,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * PlayerListener for MultiverseInventories.
+ * Events related to handling of player profile changes.
  */
 @Service
-public class InventoriesListener implements Listener {
+public final class ShareHandleListener implements Listener {
 
     private final MultiverseInventories inventories;
     private final InventoriesConfig config;
@@ -68,11 +60,8 @@ public class InventoriesListener implements Listener {
     private final ProfileDataSource profileDataSource;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
 
-    private List<WorldGroup> currentGroups;
-    private Location spawnLoc = null;
-
     @Inject
-    InventoriesListener(
+    ShareHandleListener(
             @NotNull MultiverseInventories inventories, InventoriesConfig config,
             @NotNull WorldManager worldManager,
             @NotNull WorldGroupManager worldGroupManager,
@@ -92,7 +81,7 @@ public class InventoriesListener implements Listener {
      * @param event The MVVersionEvent that this plugin will listen for.
      */
     @EventHandler
-    public void dumpsDebugInfoRequest(MVDumpsDebugInfoEvent event) {
+    void dumpsDebugInfoRequest(MVDumpsDebugInfoEvent event) {
         event.appendDebugInfo(getDebugInfo());
         File configFile = new File(this.inventories.getDataFolder(), "config.yml");
         File groupsFile = new File(this.inventories.getDataFolder(), "groups.yml");
@@ -105,7 +94,7 @@ public class InventoriesListener implements Listener {
      *
      * @return The version info.
      */
-    public String getDebugInfo() {
+    private String getDebugInfo() {
         StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + inventories.getDescription().getVersion() + '\n'
                 + "[Multiverse-Inventories] === Settings ===" + '\n'
                 + "[Multiverse-Inventories] First Run: " + config.isFirstRun() + '\n'
@@ -126,7 +115,7 @@ public class InventoriesListener implements Listener {
     }
 
     @EventHandler
-    public void onDebugModeChange(MVDebugModeEvent event) {
+    void onDebugModeChange(MVDebugModeEvent event) {
         Logging.setDebugLevel(event.getLevel());
     }
 
@@ -136,13 +125,13 @@ public class InventoriesListener implements Listener {
      * @param event The MVConfigReloadEvent that this plugin will listen for.
      */
     @EventHandler
-    public void configReload(MVConfigReloadEvent event) {
+    void configReload(MVConfigReloadEvent event) {
         this.inventories.reloadConfig();
         event.addConfig("Multiverse-Inventories - config.yml");
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerPreLogin(AsyncPlayerPreLoginEvent event) {
+    void playerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;
         }
@@ -157,7 +146,7 @@ public class InventoriesListener implements Listener {
      * @param event The player join event.
      */
     @EventHandler
-    public void playerJoin(final PlayerJoinEvent event) {
+    void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         // Just in case AsyncPlayerPreLoginEvent was still the old name
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
@@ -203,7 +192,7 @@ public class InventoriesListener implements Listener {
      * @param event The player quit event.
      */
     @EventHandler
-    public void playerQuit(final PlayerQuitEvent event) {
+    void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
         profileDataSource.updateLastWorld(player.getUniqueId(), world);
@@ -238,7 +227,7 @@ public class InventoriesListener implements Listener {
      * @param event The game mode change event.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerGameModeChange(PlayerGameModeChangeEvent event) {
+    void playerGameModeChange(PlayerGameModeChangeEvent event) {
         if (event.isCancelled() || !config.isUsingGameModeProfiles()) {
             return;
         }
@@ -254,7 +243,7 @@ public class InventoriesListener implements Listener {
      * @param event The world change event.
      */
     @EventHandler(priority = EventPriority.LOW)
-    public void playerChangedWorld(PlayerChangedWorldEvent event) {
+    void playerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
         World toWorld = player.getWorld();
@@ -279,7 +268,7 @@ public class InventoriesListener implements Listener {
      * @param event The player teleport event.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerTeleport(PlayerTeleportEvent event) {
+    void playerTeleport(PlayerTeleportEvent event) {
         if (event.isCancelled()
                 || event.getFrom().getWorld().equals(event.getTo().getWorld())
                 || !config.getOptionalShares().contains(Sharables.LAST_LOCATION)) {
@@ -299,7 +288,7 @@ public class InventoriesListener implements Listener {
      * @param event The player death event.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerDeath(PlayerDeathEvent event) {
+    void playerDeath(PlayerDeathEvent event) {
         Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
         ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(deathWorld);
@@ -319,120 +308,24 @@ public class InventoriesListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerRespawn(PlayerRespawnEvent event) {
+    void playerRespawn(PlayerRespawnEvent event) {
         Location respawnLoc = event.getRespawnLocation();
         if (respawnLoc == null) {
             // This probably only happens if a naughty plugin sets the location to null...
             return;
         }
         final Player player = event.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(inventories, new Runnable() {
-            public void run() {
-                verifyCorrectWorld(player, player.getWorld().getName(),
-                        profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId()));
-            }
-        }, 2L);
-    }
-
-    /**
-     * Handles player respawns at the LOWEST priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void lowestPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            World world = event.getPlayer().getWorld();
-            this.currentGroups = worldGroupManager.getGroupsForWorld(world.getName());
-            this.handleRespawn(event, EventPriority.LOWEST);
-        }
-    }
-
-    /**
-     * Handles player respawns at the LOW priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.LOW)
-    public void lowPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            this.handleRespawn(event, EventPriority.LOW);
-        }
-    }
-
-    /**
-     * Handles player respawns at the NORMAL priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void normalPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            this.handleRespawn(event, EventPriority.NORMAL);
-        }
-    }
-
-    /**
-     * Handles player respawns at the HIGH priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void highPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            this.handleRespawn(event, EventPriority.HIGH);
-        }
-    }
-
-    /**
-     * Handles player respawns at the HIGHEST priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void highestPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            this.handleRespawn(event, EventPriority.HIGHEST);
-        }
-    }
-
-    /**
-     * Handles player respawns at the MONITOR priority.
-     *
-     * @param event The player respawn event.
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void monitorPriorityRespawn(PlayerRespawnEvent event) {
-        if (!event.isBedSpawn()) {
-            this.handleRespawn(event, EventPriority.MONITOR);
-            this.updateCompass(event);
-        }
-    }
-
-    private void handleRespawn(PlayerRespawnEvent event, EventPriority priority) {
-        for (WorldGroup group : this.currentGroups) {
-            if (group.getSpawnPriority().equals(priority)) {
-                String spawnWorldName = group.getSpawnWorld();
-                if (spawnWorldName != null) {
-                    LoadedMultiverseWorld mvWorld = this.worldManager.getLoadedWorld(spawnWorldName).getOrNull();
-                    if (mvWorld != null) {
-                        this.spawnLoc = mvWorld.getSpawnLocation();
-                        event.setRespawnLocation(this.spawnLoc);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    private void updateCompass(PlayerRespawnEvent event) {
-        if (event.getRespawnLocation().equals(this.spawnLoc)) {
-            event.getPlayer().setCompassTarget(this.spawnLoc);
-        }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(
+                inventories,
+                () -> verifyCorrectWorld(
+                        player,
+                        player.getWorld().getName(),
+                        profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId())),
+                2L);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void entityPortal(EntityPortalEvent event) {
+    void entityPortal(EntityPortalEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Item) && !(entity instanceof InventoryHolder)) {
             return;
@@ -476,7 +369,7 @@ public class InventoriesListener implements Listener {
     }
 
     @EventHandler
-    public void worldUnload(WorldUnloadEvent event) {
+    void worldUnload(WorldUnloadEvent event) {
         String unloadWorldName = event.getWorld().getName();
 
         Logging.finer("Clearing data for world/groups container with '%s' world.", unloadWorldName);
@@ -491,4 +384,3 @@ public class InventoriesListener implements Listener {
         }
     }
 }
-

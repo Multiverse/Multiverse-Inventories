@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.MultiversePlugin;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
@@ -13,12 +14,13 @@ import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
-import org.mvplugins.multiverse.inventories.listeners.InventoriesListener;
-import org.mvplugins.multiverse.inventories.listeners.SpawnChangeListener;
+import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
+import org.mvplugins.multiverse.inventories.handleshare.ShareHandlingUpdater;
+import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.locale.Message;
 import org.mvplugins.multiverse.inventories.locale.Messager;
 import org.mvplugins.multiverse.inventories.locale.Messaging;
-import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
+import org.mvplugins.multiverse.inventories.handleshare.PersistingProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -48,7 +50,9 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
     @Inject
     private Provider<MVCoreConfig> mvCoreConfig;
     @Inject
-    private Provider<InventoriesListener> inventoriesListener;
+    private Provider<ShareHandleListener> shareHandleListener;
+    @Inject
+    private Provider<RespawnListener> respawnListener;
     @Inject
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
@@ -116,10 +120,12 @@ public class MultiverseInventories extends MultiversePlugin implements Messaging
         }
 
         // Register Events
-        Bukkit.getPluginManager().registerEvents(inventoriesListener.get(), this);
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(shareHandleListener.get(), this);
+        pluginManager.registerEvents(respawnListener.get(), this);
         try {
             Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
-            Bukkit.getPluginManager().registerEvents(new SpawnChangeListener(this), this);
+            pluginManager.registerEvents(new SpawnChangeListener(this), this);
             usingSpawnChangeEvent = true;
             Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
         } catch (ClassNotFoundException e) {

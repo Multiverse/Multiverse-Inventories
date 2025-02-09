@@ -178,7 +178,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 continue;
             }
 
-            String fileTag = profileEntry.getFileTag();
+            String fileTag = profileEntry.fileTag();
             Object serializedValue = serializer.serialize(sharableValue);
             if (profileEntry.isStat()) {
                 jsonStats.put(fileTag, serializedValue);

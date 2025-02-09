@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager
-import org.mvplugins.multiverse.inventories.listeners.InventoriesListener
+import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager
@@ -25,7 +25,7 @@ class InjectionTest : TestWithMockBukkit() {
 
     @Test
     fun `InventoriesListener is available as a service`() {
-        assertNotNull(serviceLocator.getActiveService(InventoriesListener::class.java))
+        assertNotNull(serviceLocator.getActiveService(ShareHandleListener::class.java))
     }
 
     @Test

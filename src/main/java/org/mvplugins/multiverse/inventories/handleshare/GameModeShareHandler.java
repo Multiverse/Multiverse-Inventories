@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.listeners;
+package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;

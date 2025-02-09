@@ -1,11 +1,9 @@
-package org.mvplugins.multiverse.inventories.listeners;
+package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.profile.PersistingProfile;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -16,19 +14,16 @@ import org.mvplugins.multiverse.inventories.share.Shares;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.LinkedList;
 import java.util.List;
-
-import static org.mvplugins.multiverse.inventories.share.Sharables.allOf;
 
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
  */
-public abstract class ShareHandler {
+sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShareHandler {
 
     protected final MultiverseInventories inventories;
     protected final Player player;
-    protected final @Nullable InventoriesConfig inventoriesConfig;
+    protected final InventoriesConfig inventoriesConfig;
     protected final WorldGroupManager worldGroupManager;
     protected final ProfileContainerStore worldProfileContainerStore;
     final AffectedProfiles affectedProfiles;
@@ -52,9 +47,11 @@ public abstract class ShareHandler {
         ShareHandlingEvent event = this.createEvent();
 
         Bukkit.getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
-            this.completeSharing(event);
+        if (event.isCancelled()) {
+            Logging.fine("Share handling has been cancelled by another plugin!");
+            return;
         }
+        this.completeSharing(event);
     }
 
     protected final void setAlwaysWriteProfile(PlayerProfile profile) {
@@ -132,47 +129,6 @@ public abstract class ShareHandler {
 
     private void logHandlingComplete(ShareHandlingEvent event) {
         Logging.finer("=== %s complete for %s ===", event.getPlayer().getName(), event.getEventName());
-    }
-
-    public static class AffectedProfiles {
-
-        private PersistingProfile alwaysWriteProfile;
-        private final List<PersistingProfile> writeProfiles = new LinkedList<>();
-        private final List<PersistingProfile> readProfiles = new LinkedList<>();
-
-        AffectedProfiles() { }
-
-        protected final void setAlwaysWriteProfile(PlayerProfile profile) {
-            alwaysWriteProfile = new PersistingProfile(allOf(), profile);
-        }
-
-        /**
-         * @param profile   The player profile that will need data saved to.
-         * @param shares    What from this group needs to be saved.
-         */
-        protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
-            writeProfiles.add(new PersistingProfile(shares, profile));
-        }
-
-        /**
-         * @param profile   The player profile that will need data loaded from.
-         * @param shares    What from this group needs to be loaded.
-         */
-        protected final void addReadProfile(PlayerProfile profile, Shares shares) {
-            readProfiles.add(new PersistingProfile(shares, profile));
-        }
-
-        public PersistingProfile getAlwaysWriteProfile() {
-            return alwaysWriteProfile;
-        }
-
-        public List<PersistingProfile> getWriteProfiles() {
-            return writeProfiles;
-        }
-
-        public List<PersistingProfile> getReadProfiles() {
-            return readProfiles;
-        }
     }
 
 }
