@@ -3,7 +3,9 @@ package org.mvplugins.multiverse.inventories.share;
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.attribute.AttributeInstance;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
+import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
@@ -65,7 +67,10 @@ public final class Sharables implements Shares {
         if (Sharables.safetyTeleporter == null) {
             Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
         }
-        Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max-health"));
+        Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max_health"));
+        if (Sharables.maxHealthAttr == null) {
+            Logging.warning("Could not find max_health attribute. Health related sharables may not work as expected.");
+        }
     }
 
     /**
@@ -178,8 +183,10 @@ public final class Sharables implements Shares {
                 public void updateProfile(PlayerProfile profile, Player player) {
                     double health = player.getHealth();
                     // Player is dead, so health should be regained to full.
-                    if (health <= 0 && maxHealthAttr != null) {
-                        health = player.getAttribute(maxHealthAttr).getValue();
+                    if (health <= 0) {
+                        health = Option.of(maxHealthAttr).map(player::getAttribute)
+                                .map(AttributeInstance::getValue)
+                                .getOrElse(PlayerStats.HEALTH);
                     }
                     profile.set(HEALTH, health);
                 }
@@ -195,9 +202,10 @@ public final class Sharables implements Shares {
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        if (maxHealthAttr != null) {
-                            player.setHealth(player.getAttribute(maxHealthAttr).getValue());
-                        }
+                        Option.of(maxHealthAttr).map(player::getAttribute)
+                                .map(AttributeInstance::getValue)
+                                .peek(player::setHealth)
+                                .onEmpty(() -> player.setHealth(PlayerStats.HEALTH));
                         return false;
                     }
                     return true;
