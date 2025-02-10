@@ -258,8 +258,10 @@ public final class ShareHandleListener implements Listener {
             Logging.fine("The from or to world is not managed by Multiverse-Core!");
         }
 
+        long startTime = System.nanoTime();
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
         profileDataSource.updateLastWorld(player.getUniqueId(), toWorld.getName());
+        Logging.finest("WorldChangeShareHandler took " + (System.nanoTime() - startTime) / 1000000 + " ms.");
     }
 
     /**
