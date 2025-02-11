@@ -3,8 +3,6 @@ package org.mvplugins.multiverse.inventories.profile;
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,13 +14,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Service
 final class ProfileFileIO {
 
-    private final ExecutorService fileIOExecutorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService fileIOExecutorService;
 
-    @Inject
-    public ProfileFileIO() {
+    ProfileFileIO() {
+        fileIOExecutorService = Executors.newSingleThreadExecutor();
     }
 
     FileConfiguration waitForConfigHandle(File file) {

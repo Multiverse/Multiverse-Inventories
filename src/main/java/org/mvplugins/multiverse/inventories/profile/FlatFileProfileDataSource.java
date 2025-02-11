@@ -60,11 +60,13 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private final File groupFolder;
     private final File playerFolder;
 
-    private final ProfileFileIO profileFileIO;
+    private final ProfileFileIO playerProfileIO;
+    private final ProfileFileIO globalProfileIO;
 
     @Inject
-    FlatFileProfileDataSource(@NotNull MultiverseInventories plugin, @NotNull ProfileFileIO profileFileIO) throws IOException {
-        this.profileFileIO = profileFileIO;
+    FlatFileProfileDataSource(@NotNull MultiverseInventories plugin) throws IOException {
+        this.playerProfileIO = new ProfileFileIO();
+        this.globalProfileIO = new ProfileFileIO();
 
         // Make the data folders
         plugin.getDataFolder().mkdirs();
@@ -123,7 +125,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public void updatePlayerData(PlayerProfile playerProfile) {
-        profileFileIO.queueAction(() -> processProfileWrite(playerProfile.clone()));
+        playerProfileIO.queueAction(() -> processProfileWrite(playerProfile.clone()));
     }
 
     private void processProfileWrite(PlayerProfile playerProfile) {
@@ -142,7 +144,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             FileConfiguration playerData = configCache.getIfPresent(fileProfileKey);
             if (playerData == null) {
                 playerData = playerFile.exists()
-                        ? profileFileIO.getConfigHandleNow(playerFile)
+                        ? playerProfileIO.getConfigHandleNow(playerFile)
                         : new JsonConfiguration();
                 configCache.put(fileProfileKey, playerData);
             }
@@ -219,7 +221,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         ProfileKey fileProfileKey = ProfileKey.createProfileKey(key, (ProfileType) null);
         FileConfiguration playerData = configCache.getIfPresent(fileProfileKey);
         if (playerData == null) {
-            playerData = profileFileIO.waitForConfigHandle(playerFile);
+            playerData = playerProfileIO.waitForConfigHandle(playerFile);
             configCache.put(fileProfileKey, playerData);
         }
         if (convertConfig(playerData)) {
@@ -359,12 +361,12 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 if (!playerFile.exists()) {
                     return false;
                 }
-                playerData = profileFileIO.getConfigHandleNow(playerFile);
+                playerData = playerProfileIO.getConfigHandleNow(playerFile);
             }
             playerData.set(profileType.getName(), null);
             profileCache.invalidate(profileKey);
             FileConfiguration finalPlayerData = playerData;
-            profileFileIO.queueAction(() -> {
+            playerProfileIO.queueAction(() -> {
                 try {
                     finalPlayerData.save(playerFile);
                 } catch (IOException e) {
@@ -437,7 +439,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private GlobalProfile loadGlobalProfile(File globalFile, String playerName, UUID playerUUID) {
-        FileConfiguration playerData = profileFileIO.waitForConfigHandle(globalFile);
+        FileConfiguration playerData = globalProfileIO.waitForConfigHandle(globalFile);
         ConfigurationSection section = playerData.getConfigurationSection(DataStrings.PLAYER_DATA);
         if (section == null) {
             section = playerData.createSection(DataStrings.PLAYER_DATA);
@@ -449,7 +451,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public boolean updateGlobalProfile(GlobalProfile globalProfile) {
+    public void updateGlobalProfile(GlobalProfile globalProfile) {
+        globalProfileIO.queueAction(() -> processGlobalProfileWrite(globalProfile));
+    }
+
+    private void processGlobalProfileWrite(GlobalProfile globalProfile) {
         File playerFile = getGlobalFile(globalProfile.getPlayerUUID().toString());
         FileConfiguration playerData = new JsonConfiguration();
         playerData.createSection(DataStrings.PLAYER_DATA, globalProfile.serialize(globalProfile));
@@ -458,9 +464,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         } catch (IOException e) {
             Logging.severe("Could not save global data for player: " + globalProfile);
             Logging.severe(e.getMessage());
-            return false;
         }
-        return true;
     }
 
     /**

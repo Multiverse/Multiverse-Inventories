@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.junit.jupiter.api.Test
+import org.mvplugins.multiverse.core.world.WorldManager
+import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType
 import org.mvplugins.multiverse.inventories.share.Sharables
@@ -16,16 +18,21 @@ import java.util.function.Consumer
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class FilePerformanceTest : TestWithMockBukkit() {
 
+    private lateinit var worldManager: WorldManager
     private lateinit var profileDataSource: ProfileDataSource
 
     @BeforeTest
     fun setUp() {
+        worldManager = serviceLocator.getActiveService(WorldManager::class.java).takeIf { it != null } ?: run {
+            throw IllegalStateException("WorldManager is not available as a service") }
         profileDataSource = serviceLocator.getService(ProfileDataSource::class.java).takeIf { it != null } ?: run {
             throw IllegalStateException("ProfileDataSource is not available as a service") }
         Logging.setDebugLevel(0)
+        assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world")).isSuccess)
     }
 
     @Test
@@ -115,5 +122,23 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val itemStack = ItemStack(material, amount)
         modify.accept(itemStack)
         return itemStack
+    }
+
+    @Test
+    fun `Teleport 50 players consecutively`() {
+        assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world2")).isSuccess)
+        server.setPlayers(50)
+        val startTime = System.nanoTime()
+        for (player in server.playerList.onlinePlayers) {
+            server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
+        }
+        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
+    }
+
+    @Test
+    fun `50 players join the server consecutively`() {
+        val startTime = System.nanoTime()
+        server.setPlayers(50)
+        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
     }
 }
