@@ -161,8 +161,9 @@ public final class ShareHandleListener implements Listener {
                             .getPlayerData(player)
             ));
         }
-        profileDataSource.setLoadOnLogin(player.getUniqueId(), false);
+        globalProfile.setLoadOnLogin(false);
         verifyCorrectWorld(player, player.getWorld().getName(), globalProfile);
+        profileDataSource.updateGlobalProfile(globalProfile);
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
@@ -210,13 +211,13 @@ public final class ShareHandleListener implements Listener {
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
         if (globalProfile.getLastWorld() == null) {
-            profileDataSource.updateLastWorld(player.getUniqueId(), world);
+            globalProfile.setLastWorld(world);
         } else {
             if (!world.equals(globalProfile.getLastWorld())) {
                 Logging.fine("Player did not spawn in the world they were last reported to be in!");
                 new WorldChangeShareHandler(this.inventories, player,
                         globalProfile.getLastWorld(), world).handleSharing();
-                profileDataSource.updateLastWorld(player.getUniqueId(), world);
+                globalProfile.setLastWorld(world);
             }
         }
     }
