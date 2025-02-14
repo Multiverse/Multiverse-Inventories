@@ -267,39 +267,39 @@ public class InventoriesListener implements Listener {
         player.closeInventory();
     }
 
-/**
- * Called when a player dies.
- *
- * @param event The player death event.
- */
-@EventHandler(priority = EventPriority.MONITOR)
-public void playerDeath(PlayerDeathEvent event) {
-    Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
-    String deathWorld = event.getEntity().getWorld().getName();
-    ProfileContainer worldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(deathWorld);
-    PlayerProfile profile = worldProfileContainer.getPlayerData(event.getEntity());
-    profile.set(Sharables.LEVEL, event.getNewLevel());
-    profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
-    profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-
-    // Remove last location on death
-    profile.set(Sharables.LAST_LOCATION, null);
-
-    this.inventories.getData().updatePlayerData(profile);
-
-    for (WorldGroup worldGroup : this.inventories.getGroupManager().getGroupsForWorld(deathWorld)) {
-        profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
+    /**
+     * Called when a player dies.
+     *
+     * @param event The player death event.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerDeath(PlayerDeathEvent event) {
+        Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
+        String deathWorld = event.getEntity().getWorld().getName();
+        ProfileContainer worldProfileContainer = this.inventories.getWorldProfileContainerStore().getContainer(deathWorld);
+        PlayerProfile profile = worldProfileContainer.getPlayerData(event.getEntity());
         profile.set(Sharables.LEVEL, event.getNewLevel());
         profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
         profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-
-        // Remove last location in all groups
-        profile.set(Sharables.LAST_LOCATION, null);
-        this.inventories.getData().updatePlayerData(profile);
-    }
     
-    Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
-}
+        // Remove last location on death
+        profile.set(Sharables.LAST_LOCATION, null);
+    
+        this.inventories.getData().updatePlayerData(profile);
+    
+        for (WorldGroup worldGroup : this.inventories.getGroupManager().getGroupsForWorld(deathWorld)) {
+            profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
+            profile.set(Sharables.LEVEL, event.getNewLevel());
+            profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
+            profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
+    
+            // Remove last location in all groups
+            profile.set(Sharables.LAST_LOCATION, null);
+            this.inventories.getData().updatePlayerData(profile);
+        }
+        
+        Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerRespawn(PlayerRespawnEvent event) {
