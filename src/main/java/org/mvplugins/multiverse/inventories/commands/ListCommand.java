@@ -20,7 +20,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 @CommandAlias("mvinv")
-class ListCommand extends InventoriesCommand {
+final class ListCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
     private final WorldGroupManager worldGroupManager;

@@ -128,6 +128,16 @@ public final class WorldGroup {
     }
 
     /**
+     * Removes multiple worlds from this World Group.
+     *
+     * @param removeWorlds  A collection of world names to remove.
+     * @return True if any of the worlds were removed.
+     */
+    public boolean removeWorlds(Collection<String> removeWorlds) {
+        return this.getWorlds().removeAll(removeWorlds);
+    }
+
+    /**
      * Remove all the worlds in this World Group.
      */
     public void removeAllWorlds() {

@@ -40,7 +40,7 @@ import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFr
  */
 public final class Sharables implements Shares {
 
-    private static final Shares ALL_SHARABLES = new Sharables(new LinkedHashSet<Sharable>());
+    private static final Shares ALL_SHARABLES = new Sharables(new LinkedHashSet<>());
 
     /**
      * The map used to lookup a Sharable or set of Sharables by their name.
@@ -756,6 +756,13 @@ public final class Sharables implements Shares {
      */
     public static Shares lookup(String name) {
         return LOOKUP_MAP.get(name.toLowerCase());
+    }
+
+    /**
+     * @return A collection of all registered {@link Shares}. This is NOT to be modified and serves only as a reference.
+     */
+    public static Collection<String> getShareNames() {
+        return LOOKUP_MAP.keySet();
     }
 
     /**

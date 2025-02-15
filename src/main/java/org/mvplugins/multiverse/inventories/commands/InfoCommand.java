@@ -29,7 +29,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 @CommandAlias("mvinv")
-class InfoCommand extends InventoriesCommand {
+final class InfoCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;

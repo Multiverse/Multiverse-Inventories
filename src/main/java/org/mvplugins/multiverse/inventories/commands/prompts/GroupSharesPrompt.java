@@ -56,7 +56,7 @@ class GroupSharesPrompt extends InventoriesPrompt {
             group.getShares().addAll(this.shares);
             worldGroupManager.updateGroup(group);
             if (isCreating) {
-                issuer.sendInfo(MVInvi18n.GROUP_CREATIONCOMPLETE);
+                issuer.sendInfo(MVInvi18n.GROUP_CREATIONCOMPLETE, replace("{group}").with(group.getName()));
             } else {
                 issuer.sendInfo(MVInvi18n.GROUP_UPDATED);
             }

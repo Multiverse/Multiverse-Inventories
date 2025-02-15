@@ -24,7 +24,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 @CommandAlias("mvinv")
-class ToggleCommand extends InventoriesCommand {
+final class ToggleCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
     private final InventoriesConfig inventoriesConfig;

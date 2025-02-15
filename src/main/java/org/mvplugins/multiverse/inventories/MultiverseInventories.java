@@ -9,6 +9,8 @@ import org.mvplugins.multiverse.core.config.MVCoreConfig;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
+import org.mvplugins.multiverse.inventories.commandtools.MVInvCommandCompletion;
+import org.mvplugins.multiverse.inventories.commandtools.MVInvCommandContexts;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
@@ -56,6 +58,10 @@ public class MultiverseInventories extends MultiversePlugin {
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
     @Inject
     private Provider<DataImportManager> dataImportManager;
+    @Inject
+    private Provider<MVInvCommandCompletion> mvInvCommandCompletion;
+    @Inject
+    private Provider<MVInvCommandContexts> mvInvCommandContexts;
 
     private PluginServiceLocator serviceLocator;
     private InventoriesDupingPatch dupingPatch;
@@ -150,6 +156,10 @@ public class MultiverseInventories extends MultiversePlugin {
                     commandManager.getLocales().addFileResClassLoader(this);
                     commandManager.getLocales().addBundleClassLoader(this.getClassLoader());
                     commandManager.getLocales().addMessageBundles("multiverse-inventories");
+
+                    mvInvCommandCompletion.get();
+                    mvInvCommandContexts.get();
+
                     serviceLocator.getAllServices(InventoriesCommand.class).forEach(commandManager::registerCommand);
                 })
                 .onFailure(e -> {

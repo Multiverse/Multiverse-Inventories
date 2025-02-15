@@ -43,7 +43,7 @@ final class ImportCommand extends InventoriesCommand {
     @CommandPermission("multiverse.inventories.import")
     @CommandCompletion("MultiInv|WorldInventories|PerWorldInventory")
     @Description("Import inventories from MultiInv/WorldInventories/PerWorldInventory plugin.")
-    public void onImportCommand(
+    void onImportCommand(
             MVCommandIssuer issuer,
 
             @Single

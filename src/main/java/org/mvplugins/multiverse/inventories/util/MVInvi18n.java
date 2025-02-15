@@ -88,6 +88,9 @@ public enum MVInvi18n implements MessageKeyProvider {
     IMPORT_CONFIRMPROMPT,
     IMPORT_SUCCESS,
     IMPORT_FAILED,
+
+    DELETEGROUP_CONFIRMPROMPT,
+    DELETEGROUP_SUCCESS,
     ;
 
     private final MessageKey key = MessageKey.of("mv-inventories." + this.name().replace('_', '.')
