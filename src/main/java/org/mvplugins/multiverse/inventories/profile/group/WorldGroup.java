@@ -237,14 +237,14 @@ public final class WorldGroup {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.getName()).append(": {Worlds: [");
-        String[] worldsString = this.getWorlds().toArray(new String[this.getWorlds().size()]);
+        String[] worldsString = this.getWorlds().toArray(new String[0]);
         for (int i = 0; i < worldsString.length; i++) {
             if (i != 0) {
                 builder.append(", ");
             }
             builder.append(worldsString[i]);
         }
-        builder.append("], Shares: [").append(this.getShares().toString()).append("]");
+        builder.append("], Shares: [").append(this.getShares()).append("]");
         if (this.getSpawnWorld() != null) {
             builder.append(", Spawn World: ").append(this.getSpawnWorld());
             builder.append(", Spawn Priority: ").append(this.getSpawnPriority().toString());

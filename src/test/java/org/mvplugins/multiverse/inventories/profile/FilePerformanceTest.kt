@@ -125,17 +125,6 @@ class FilePerformanceTest : TestWithMockBukkit() {
     }
 
     @Test
-    fun `Teleport 50 players consecutively`() {
-        assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world2")).isSuccess)
-        server.setPlayers(50)
-        val startTime = System.nanoTime()
-        for (player in server.playerList.onlinePlayers) {
-            server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
-        }
-        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-    }
-
-    @Test
     fun `50 players join the server consecutively`() {
         val startTime = System.nanoTime()
         server.setPlayers(50)

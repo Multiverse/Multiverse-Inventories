@@ -21,7 +21,7 @@ class WorldChangeTest : TestWithMockBukkit() {
     }
 
     @Test
-    fun `Test shares`() {
+    fun `Shares updates correctly on world change`() {
         writeResourceToConfigFile("/gameplay/world_change_groups.yml", "groups.yml")
         multiverseInventories.reloadConfig()
         val player = server.addPlayer("Benji_0224")
@@ -35,6 +35,16 @@ class WorldChangeTest : TestWithMockBukkit() {
         assertNotEquals(stack, player.inventory.getItem(0))
         server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
         assertEquals(stack, player.inventory.getItem(0))
+        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
+    }
+
+    @Test
+    fun `World change performance with 50 players`() {
+        server.setPlayers(50)
+        val startTime = System.nanoTime()
+        for (player in server.playerList.onlinePlayers) {
+            server.getWorld("world3")?.let { player.teleport(it.spawnLocation) }
+        }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
     }
 }

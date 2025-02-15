@@ -65,7 +65,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      */
     @Override
     public List<WorldGroup> getGroups() {
-        return Collections.unmodifiableList(new ArrayList<WorldGroup>(getGroupNames().values()));
+        return List.copyOf(getGroupNames().values());
     }
 
     /**
@@ -178,7 +178,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      */
     @Override
     public List<GroupingConflict> checkGroups() {
-        List<GroupingConflict> conflicts = new ArrayList<GroupingConflict>();
+        List<GroupingConflict> conflicts = new ArrayList<>();
         Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<>();
         for (WorldGroup checkingGroup : getGroupNames().values()) {
             for (String worldName : checkingGroup.getWorlds()) {
