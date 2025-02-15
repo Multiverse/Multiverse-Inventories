@@ -87,7 +87,6 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Update the file for a player's global profile.
      *
      * @param globalProfile The GlobalProfile object to update the file for.
-     * @return True if data successfully saved to file.
      */
     void updateGlobalProfile(GlobalProfile globalProfile);
 

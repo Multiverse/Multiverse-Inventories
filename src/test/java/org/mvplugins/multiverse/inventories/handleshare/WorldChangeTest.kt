@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.gameplay
+package org.mvplugins.multiverse.inventories.handleshare
 
 import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Material

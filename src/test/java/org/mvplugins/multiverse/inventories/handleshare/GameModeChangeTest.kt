@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.gameplay
+package org.mvplugins.multiverse.inventories.handleshare
 
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 

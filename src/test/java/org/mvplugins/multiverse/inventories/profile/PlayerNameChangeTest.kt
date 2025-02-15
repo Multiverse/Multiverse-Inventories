@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.gameplay
+package org.mvplugins.multiverse.inventories.profile
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -6,7 +6,6 @@ import org.mockbukkit.mockbukkit.entity.PlayerMock
 import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSource
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager
 import java.nio.file.Path
 import kotlin.test.BeforeTest

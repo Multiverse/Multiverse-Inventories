@@ -175,6 +175,31 @@ public final class Sharables implements Shares {
                     new DefaultSerializer<>(ItemStack.class)).altName("shield").build();
 
     /**
+     * Sharing Max Health.
+     */
+    public static final Sharable<Double> MAX_HEALTH = new Sharable.Builder<>("max_hit_points", Double.class,
+            new SharableHandler<Double>() {
+                @Override
+                public void updateProfile(PlayerProfile profile, Player player) {
+                    profile.set(MAX_HEALTH, getMaxHealth(player));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                    Double value = profile.get(MAX_HEALTH);
+                    if (value == null) {
+                        Option.of(maxHealthAttr).map(player::getAttribute)
+                                .peek(attr -> attr.setBaseValue(attr.getDefaultValue()));
+                        return false;
+                    }
+                    Option.of(maxHealthAttr).map(player::getAttribute)
+                            .peek(attr -> attr.setBaseValue(value));
+                    return true;
+                }
+            }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_HEALTH))
+            .altName("maxhealth").altName("maxhp").altName("maxhitpoints").build();
+
+    /**
      * Sharing Health.
      */
     public static final Sharable<Double> HEALTH = new Sharable.Builder<Double>("hit_points", Double.class,
@@ -184,9 +209,7 @@ public final class Sharables implements Shares {
                     double health = player.getHealth();
                     // Player is dead, so health should be regained to full.
                     if (health <= 0) {
-                        health = Option.of(maxHealthAttr).map(player::getAttribute)
-                                .map(AttributeInstance::getValue)
-                                .getOrElse(PlayerStats.HEALTH);
+                        health = getMaxHealth(player);
                     }
                     profile.set(HEALTH, health);
                 }
@@ -199,19 +222,30 @@ public final class Sharables implements Shares {
                         return false;
                     }
                     try {
+                        double maxHealth = getMaxHealth(player);
+                        // This share may handled before MAX_HEALTH.
+                        // Thus this is needed to ensure there is no loss in health stored
+                        if (value > maxHealth) {
+                            Option.of(maxHealthAttr).map(player::getAttribute)
+                                    .peek(attr -> attr.setBaseValue(maxHealth));
+                        }
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
                         Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        Option.of(maxHealthAttr).map(player::getAttribute)
-                                .map(AttributeInstance::getValue)
-                                .peek(player::setHealth)
-                                .onEmpty(() -> player.setHealth(PlayerStats.HEALTH));
+                        player.setHealth(PlayerStats.HEALTH);
                         return false;
                     }
                     return true;
                 }
+
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
             .altName("health").altName("hp").altName("hitpoints").build();
+
+    private static double getMaxHealth(Player player) {
+        return Option.of(maxHealthAttr).map(player::getAttribute)
+                .map(AttributeInstance::getValue)
+                .getOrElse(PlayerStats.MAX_HEALTH);
+    }
 
     /**
      * Sharing Remaining Air.
@@ -661,21 +695,21 @@ public final class Sharables implements Shares {
      * Grouping for player health related sharables.
      */
     public static final SharableGroup ALL_HEALTH = new SharableGroup("health",
-            fromSharables(HEALTH, REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
+            fromSharables(HEALTH, MAX_HEALTH, REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS));
 
     /**
      * Grouping for player stat related sharables not including inventory.
      */
     public static final SharableGroup STATS = new SharableGroup("stats",
-            fromSharables(HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
+            fromSharables(HEALTH, MAX_HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
                     REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS));
 
     /**
      * Grouping for ALL default sharables.
      * TODO: make this really mean all, including 3rd party.
      */
-    public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, ECONOMY,
-            FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
+    public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, MAX_HEALTH,
+            ECONOMY, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
             MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
             "*", "everything");
 

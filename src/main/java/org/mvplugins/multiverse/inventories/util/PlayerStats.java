@@ -18,6 +18,10 @@ public class PlayerStats {
      */
     public static final int ENDER_CHEST_SIZE = 27;
     /**
+     * Default max health value.
+     */
+    public static final double MAX_HEALTH = 20;
+    /**
      * Default health value.
      */
     public static final double HEALTH = 20;
