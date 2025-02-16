@@ -15,7 +15,7 @@ class InjectionTest : TestWithMockBukkit() {
 
     @Test
     fun `InventoriesCommand are available as a service`() {
-        assertEquals(12, serviceLocator.getAllActiveServices(InventoriesCommand::class.java).size)
+        assertEquals(14, serviceLocator.getAllActiveServices(InventoriesCommand::class.java).size)
     }
 
     @Test
