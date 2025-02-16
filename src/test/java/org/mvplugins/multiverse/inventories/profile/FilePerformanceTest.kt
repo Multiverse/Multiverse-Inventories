@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile
 
 import com.dumptruckman.minecraft.util.Logging
+import com.google.common.cache.CacheStats
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -8,6 +9,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.junit.jupiter.api.Test
+import org.mockbukkit.mockbukkit.inventory.ItemStackMock
 import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
@@ -85,9 +87,6 @@ class FilePerformanceTest : TestWithMockBukkit() {
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
 
-        profileDataSource.clearAllCache()
-        Thread.sleep(800) // Wait for files to write finish
-
         val startTime2 = System.nanoTime()
         for (i in 0..999) {
             val player = server.getPlayer(i)
@@ -116,6 +115,12 @@ class FilePerformanceTest : TestWithMockBukkit() {
             }
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime3) / 1000000 + "ms")
+
+        Thread.sleep(1000) // Wait for files to write finish
+
+        val cacheStats = profileDataSource.getCacheStats()
+        Logging.info("Cache stats: $cacheStats")
+
     }
 
     fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {

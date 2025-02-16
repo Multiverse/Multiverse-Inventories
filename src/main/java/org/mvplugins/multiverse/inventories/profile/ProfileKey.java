@@ -1,6 +1,8 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.google.common.base.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.bukkit.Bukkit;
 
@@ -8,33 +10,24 @@ import java.util.UUID;
 
 public final class ProfileKey {
 
-    public static ProfileKey createProfileKey(ContainerType containerType, String dataName,
-                                              ProfileType profileType, UUID playerUUID, String playerName) {
+    public static ProfileKey create(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            UUID playerUUID,
+            String playerName) {
         return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
     }
 
-    public static ProfileKey createProfileKey(ContainerType containerType, String dataName,
-                                              ProfileType profileType, UUID playerUUID) {
-        return new ProfileKey(containerType, dataName, profileType, playerUUID);
+    public static ProfileKey create(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            UUID playerUUID) {
+        return new ProfileKey(containerType, dataName, profileType, playerUUID, Bukkit.getOfflinePlayer(playerUUID).getName());
     }
 
-    public static ProfileKey createProfileKey(ProfileKey copyKey, ContainerType containerType) {
-        return new ProfileKey(containerType, copyKey.getDataName(), copyKey.getProfileType(), copyKey.getPlayerUUID(),
-                copyKey.getPlayerName());
-    }
-
-    public static ProfileKey createProfileKey(ProfileKey copyKey, ProfileType profileType) {
-        return new ProfileKey(copyKey.getContainerType(), copyKey.getDataName(), profileType, copyKey.getPlayerUUID(),
-                copyKey.getPlayerName());
-    }
-
-    public static ProfileKey createProfileKey(ProfileKey copyKey, ContainerType containerType,
-                                              ProfileType profileType) {
-        return new ProfileKey(containerType, copyKey.getDataName(), profileType, copyKey.getPlayerUUID(),
-                copyKey.getPlayerName());
-    }
-
-    public static ProfileKey createProfileKey(PlayerProfile profile) {
+    public static ProfileKey fromPlayerProfile(PlayerProfile profile) {
         return new ProfileKey(profile.getContainerType(), profile.getContainerName(), profile.getProfileType(),
                 profile.getPlayer().getUniqueId(), profile.getPlayer().getName());
     }
@@ -44,14 +37,7 @@ public final class ProfileKey {
     private final ProfileType profileType;
     private final String playerName;
     private final UUID playerUUID;
-
-    private ProfileKey(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        this.containerType = containerType;
-        this.dataName = dataName;
-        this.profileType = profileType;
-        this.playerUUID = playerUUID;
-        this.playerName = Bukkit.getOfflinePlayer(playerUUID).getName();
-    }
+    private final int hashCode;
 
     private ProfileKey(ContainerType containerType, String dataName, ProfileType profileType,
                        UUID playerUUID, String playerName) {
@@ -60,6 +46,15 @@ public final class ProfileKey {
         this.profileType = profileType;
         this.playerUUID = playerUUID;
         this.playerName = playerName;
+        this.hashCode = Objects.hashCode(getContainerType(), getDataName(), getProfileType(), getPlayerName(), getPlayerUUID());
+    }
+
+    public ProfileKey forProfileType(@Nullable ProfileType profileType) {
+        return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
+    }
+
+    public ProfileKey forContainerType(@NotNull ContainerType containerType) {
+        return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
     }
 
     public ContainerType getContainerType() {
@@ -85,8 +80,7 @@ public final class ProfileKey {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProfileKey)) return false;
-        final ProfileKey that = (ProfileKey) o;
+        if (!(o instanceof ProfileKey that)) return false;
         return getContainerType() == that.getContainerType() &&
                 Objects.equal(getDataName(), that.getDataName()) &&
                 Objects.equal(getProfileType(), that.getProfileType()) &&
@@ -96,7 +90,7 @@ public final class ProfileKey {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getContainerType(), getDataName(), getProfileType(), getPlayerName(), getPlayerUUID());
+        return hashCode;
     }
 
     @Override

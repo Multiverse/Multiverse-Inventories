@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 final class ProfileFileIO {
 
@@ -53,5 +54,17 @@ final class ProfileFileIO {
 
     void queueAction(Runnable action) {
         fileIOExecutorService.submit(action);
+    }
+
+    <T> Future<T> queueSupplier(Supplier<T> supplier) {
+        return fileIOExecutorService.submit(supplier::get);
+    }
+
+    <T> T waitForData(Supplier<T> supplier) {
+        try {
+            return queueSupplier(supplier).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

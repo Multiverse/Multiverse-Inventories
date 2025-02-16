@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import com.google.common.cache.CacheStats;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
@@ -7,6 +8,7 @@ import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -122,7 +124,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
     void clearProfileCache(ProfileKey key);
 
     /**
-     * Clears a single profile in cache.
+     * Clears all profiles in cache that match the predicate.
      */
     void clearProfileCache(Predicate<ProfileKey> predicate);
 
@@ -130,5 +132,12 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Clears all profiles in cache.
      */
     void clearAllCache();
+
+    /**
+     * Gets the cache stats for the profile data source.
+     *
+     * @return The cache stats.
+     */
+    Map<String, CacheStats> getCacheStats();
 }
 

@@ -4,6 +4,7 @@ import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheStats;
 import com.google.common.collect.Sets;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -42,18 +43,21 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     // TODO these probably need configurable max sizes
     private final Cache<ProfileKey, FileConfiguration> configCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
-            .maximumSize(1000)
+            .expireAfterAccess(60, TimeUnit.MINUTES)
+            .maximumSize(2000)
+            .recordStats()
             .build();
 
     private final Cache<ProfileKey, PlayerProfile> profileCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
-            .maximumSize(1000)
+            .expireAfterAccess(60, TimeUnit.MINUTES)
+            .maximumSize(6000)
+            .recordStats()
             .build();
 
     private final Cache<UUID, GlobalProfile> globalProfileCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .expireAfterAccess(60, TimeUnit.MINUTES)
             .maximumSize(500)
+            .recordStats()
             .build();
 
     private final File worldFolder;
@@ -135,7 +139,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 playerProfile.getPlayer().getName()
         );
         try {
-            ProfileKey fileProfileKey = ProfileKey.createProfileKey(
+            ProfileKey fileProfileKey = ProfileKey.create(
                     playerProfile.getContainerType(),
                     playerProfile.getContainerName(),
                     null,
@@ -201,7 +205,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public PlayerProfile getPlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        return getPlayerData(ProfileKey.createProfileKey(containerType, dataName, profileType, playerUUID));
+        return getPlayerData(ProfileKey.create(containerType, dataName, profileType, playerUUID));
     }
 
     private PlayerProfile getPlayerData(ProfileKey key) {
@@ -216,12 +220,19 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             profileCache.put(key, playerProfile);
             return playerProfile;
         }
+        return playerProfileIO.waitForData(() -> loadPlayerData(key, playerFile));
+    }
 
+    private PlayerProfile loadPlayerData(ProfileKey key, File playerFile) {
         // Migrate from none profile-type data
-        ProfileKey fileProfileKey = ProfileKey.createProfileKey(key, (ProfileType) null);
+        ProfileKey fileProfileKey = key.forProfileType(null);
         FileConfiguration playerData = configCache.getIfPresent(fileProfileKey);
         if (playerData == null) {
-            playerData = playerProfileIO.waitForConfigHandle(playerFile);
+            try {
+                playerData = playerProfileIO.getConfigHandleNow(playerFile);
+            } catch (IOException | InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
             configCache.put(fileProfileKey, playerData);
         }
         if (convertConfig(playerData)) {
@@ -316,7 +327,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         parsePlayerStatsIntoProfile(jsonStats, profile);
     }
 
-    // TODO Remove this conversion
+    @Deprecated
     private boolean convertConfig(FileConfiguration config) {
         ConfigurationSection section = config.getConfigurationSection(DataStrings.PLAYER_DATA);
         if (section == null) {
@@ -335,7 +346,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public boolean removePlayerData(ContainerType containerType, String dataName, ProfileType profileType, UUID playerUUID) {
-        ProfileKey profileKey = ProfileKey.createProfileKey(containerType, dataName, profileType, playerUUID);
+        ProfileKey profileKey = ProfileKey.create(containerType, dataName, profileType, playerUUID);
         if (profileKey.getProfileType() == null) {
             try {
                 File playerFile = getPlayerFile(containerType, dataName, profileKey.getPlayerName());
@@ -346,7 +357,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                                 && key.getContainerType().equals(containerType)
                                 && key.getDataName().equals(dataName)
                 ));
-                return playerFile.delete();
+                playerProfileIO.queueAction(playerFile::delete);
             } catch (Exception ignore) {
                 Logging.warning("Attempted to delete file that did not exist for player " + profileKey.getPlayerName()
                         + " in " + containerType.name().toLowerCase() + " " + dataName);
@@ -354,32 +365,35 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             }
         }
         try {
-            File playerFile = getPlayerFile(containerType, dataName, profileKey.getPlayerName());
-            ProfileKey fileProfileKey = ProfileKey.createProfileKey(profileKey, (ProfileType) null);
-            FileConfiguration playerData = configCache.getIfPresent(fileProfileKey);
-            if (playerData == null) {
-                if (!playerFile.exists()) {
-                    return false;
-                }
-                playerData = playerProfileIO.getConfigHandleNow(playerFile);
-            }
-            playerData.set(profileType.getName(), null);
             profileCache.invalidate(profileKey);
-            FileConfiguration finalPlayerData = playerData;
-            playerProfileIO.queueAction(() -> {
-                try {
-                    finalPlayerData.save(playerFile);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (InvalidConfigurationException | IOException e) {
+            playerProfileIO.queueAction(() -> processProfileRemove(profileKey));
+        } catch (Exception e) {
             Logging.severe("Could not delete data for player: " + profileKey.getPlayerName()
                     + " for " + containerType.toString() + ": " + dataName);
             Logging.severe(e.getMessage());
             return false;
         }
         return true;
+    }
+
+    private void processProfileRemove(ProfileKey profileKey) {
+        try {
+            File playerFile = getPlayerFile(profileKey.getContainerType(), profileKey.getDataName(), profileKey.getPlayerName());
+            ProfileKey fileProfileKey = profileKey.forProfileType(null);
+            FileConfiguration playerData = configCache.getIfPresent(fileProfileKey);
+            if (playerData == null) {
+                if (!playerFile.exists()) {
+                    return;
+                }
+                playerData = playerProfileIO.getConfigHandleNow(playerFile);
+                configCache.put(fileProfileKey, playerData);
+            }
+            playerData.set(profileKey.getProfileType().getName(), null);
+            FileConfiguration finalPlayerData = playerData;
+            finalPlayerData.save(playerFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Map<String, Object> convertSection(ConfigurationSection section) {
@@ -553,5 +567,14 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         configCache.invalidateAll();
         globalProfileCache.invalidateAll();
         profileCache.invalidateAll();
+    }
+
+    @Override
+    public Map<String, CacheStats> getCacheStats() {
+        Map<String, CacheStats> stats = new HashMap<>();
+        stats.put("configCache", configCache.stats());
+        stats.put("globalProfileCache", globalProfileCache.stats());
+        stats.put("profileCache", profileCache.stats());
+        return stats;
     }
 }

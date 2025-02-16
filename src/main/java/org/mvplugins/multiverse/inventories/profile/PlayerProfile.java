@@ -3,6 +3,7 @@ package org.mvplugins.multiverse.inventories.profile;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.bukkit.OfflinePlayer;
+import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public final class PlayerProfile implements Cloneable {
         return new PlayerProfile(containerType, containerName, profileType, player);
     }
 
-    private final Map<Sharable, Object> data = new HashMap<>();
+    private final Map<Sharable, Object> data = new HashMap<>(Sharables.all().size());
 
     private final OfflinePlayer player;
     private final ContainerType containerType;
