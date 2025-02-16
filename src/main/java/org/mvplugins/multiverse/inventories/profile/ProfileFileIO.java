@@ -1,11 +1,11 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
-import org.bukkit.configuration.InvalidConfigurationException;
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 
 final class ProfileFileIO {
 
@@ -23,48 +22,33 @@ final class ProfileFileIO {
         fileIOExecutorService = Executors.newSingleThreadExecutor();
     }
 
-    FileConfiguration waitForConfigHandle(File file) {
-        Future<FileConfiguration> future = fileIOExecutorService.submit(new ConfigLoader(file));
+    Future<?> queueAction(Runnable action) {
+        return fileIOExecutorService.submit(action);
+    }
+
+    <T> Future<T> queueCallable(Callable<T> callable) {
+        return fileIOExecutorService.submit(callable);
+    }
+
+    <T> T waitForData(Callable<T> callable) {
         try {
-            return future.get(10, TimeUnit.SECONDS);
+            return queueCallable(callable).get(10, TimeUnit.SECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
     }
 
-    FileConfiguration getConfigHandleNow(File file) throws IOException, InvalidConfigurationException {
+    FileConfiguration waitForConfigHandle(File file) {
+        return waitForData(() -> getConfigHandleNow(file));
+    }
+
+    FileConfiguration getConfigHandleNow(File file) {
         JsonConfiguration jsonConfiguration = new JsonConfiguration();
         jsonConfiguration.options().continueOnSerializationError(true);
-        jsonConfiguration.load(file);
-        return jsonConfiguration;
-    }
-
-    private class ConfigLoader implements Callable<FileConfiguration> {
-        private final File file;
-
-        private ConfigLoader(File file) {
-            this.file = file;
-        }
-
-        @Override
-        public FileConfiguration call() throws Exception {
-            return getConfigHandleNow(file);
-        }
-    }
-
-    void queueAction(Runnable action) {
-        fileIOExecutorService.submit(action);
-    }
-
-    <T> Future<T> queueSupplier(Supplier<T> supplier) {
-        return fileIOExecutorService.submit(supplier::get);
-    }
-
-    <T> T waitForData(Supplier<T> supplier) {
-        try {
-            return queueSupplier(supplier).get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        Try.run(() -> jsonConfiguration.load(file)).getOrElseThrow(e -> {
+            Logging.severe("Could not load file: " + file);
             throw new RuntimeException(e);
-        }
+        });
+        return jsonConfiguration;
     }
 }

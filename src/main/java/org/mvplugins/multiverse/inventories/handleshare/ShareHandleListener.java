@@ -151,7 +151,7 @@ public final class ShareHandleListener implements Listener {
         // Just in case AsyncPlayerPreLoginEvent was still the old name
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
-        final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId());
+        final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
         final String world = globalProfile.getLastWorld();
         if (config.usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
             ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(
@@ -167,7 +167,7 @@ public final class ShareHandleListener implements Listener {
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
-        profileDataSource.getExistingGlobalProfile(name, uuid).peek(globalProfile -> {
+        profileDataSource.getExistingGlobalProfile(uuid, name).peek(globalProfile -> {
             if (globalProfile.getLastKnownName().equals(name)) {
                 return;
             }
@@ -196,7 +196,8 @@ public final class ShareHandleListener implements Listener {
     void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
-        profileDataSource.updateLastWorld(player.getUniqueId(), world);
+        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
+        globalProfile.setLastWorld(world);
         if (config.usingLoggingSaveLoad()) {
             ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(
                     Sharables.allOf(),
@@ -204,8 +205,9 @@ public final class ShareHandleListener implements Listener {
                             .getContainer(world)
                             .getPlayerData(player)
             ));
-            profileDataSource.setLoadOnLogin(player.getUniqueId(), true);
+            globalProfile.setLoadOnLogin(true);
         }
+        profileDataSource.updateGlobalProfile(globalProfile);
         SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
     }
 
@@ -261,7 +263,7 @@ public final class ShareHandleListener implements Listener {
 
         long startTime = System.nanoTime();
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
-        profileDataSource.updateLastWorld(player.getUniqueId(), toWorld.getName());
+        profileDataSource.modifyGlobalProfile(player, profile -> profile.setLastWorld(toWorld.getName()));
         Logging.finest("WorldChangeShareHandler took " + (System.nanoTime() - startTime) / 1000000 + " ms.");
     }
 
@@ -323,7 +325,7 @@ public final class ShareHandleListener implements Listener {
                 () -> verifyCorrectWorld(
                         player,
                         player.getWorld().getName(),
-                        profileDataSource.getGlobalProfile(player.getName(), player.getUniqueId())),
+                        profileDataSource.getGlobalProfile(player)),
                 2L);
     }
 

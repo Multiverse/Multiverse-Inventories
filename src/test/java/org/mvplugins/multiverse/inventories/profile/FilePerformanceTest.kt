@@ -41,7 +41,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
     fun `Test 10K global profiles`() {
         val startTime = System.nanoTime()
         for (i in 0..9999) {
-            val globalProfile = profileDataSource.getGlobalProfile("player-$i", UUID.randomUUID())
+            val globalProfile = profileDataSource.getGlobalProfile(UUID.randomUUID())
             globalProfile.setLoadOnLogin(true)
             profileDataSource.updateGlobalProfile(globalProfile)
         }
@@ -52,7 +52,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
 
         val startTime2 = System.nanoTime()
         for (i in 0..9999) {
-            val globalProfile = profileDataSource.getGlobalProfile("player-$i", UUID.randomUUID())
+            val globalProfile = profileDataSource.getGlobalProfile(UUID.randomUUID())
             globalProfile.setLoadOnLogin(false)
             profileDataSource.updateGlobalProfile(globalProfile)
         }
@@ -67,7 +67,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 val playerProfile = profileDataSource.getPlayerData(
-                    ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 playerProfile.set(Sharables.HEALTH, 5.0)
                 playerProfile.set(Sharables.OFF_HAND, ItemStack(Material.STONE_BRICKS, 10))
                 playerProfile.set(Sharables.INVENTORY, arrayOf(
@@ -92,8 +92,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 val playerProfile = profileDataSource.getPlayerData(
-                    ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId
-                )
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 assertEquals(5.0, playerProfile.get(Sharables.HEALTH))
                 assertEquals(ItemStack(Material.STONE_BRICKS, 10), playerProfile.get(Sharables.OFF_HAND))
             }
@@ -105,11 +104,9 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 profileDataSource.removePlayerData(
-                    ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId
-                )
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 val playerProfile = profileDataSource.getPlayerData(
-                    ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId
-                )
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 assertNull(playerProfile.get(Sharables.HEALTH))
                 assertNull(playerProfile.get(Sharables.OFF_HAND))
             }
@@ -119,8 +116,10 @@ class FilePerformanceTest : TestWithMockBukkit() {
         Thread.sleep(1000) // Wait for files to write finish
 
         val cacheStats = profileDataSource.getCacheStats()
-        Logging.info("Cache stats: $cacheStats")
-
+        Logging.info(cacheStats.values.toString())
+        for (cacheStat in cacheStats) {
+            Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
+        }
     }
 
     fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {
