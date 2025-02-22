@@ -139,11 +139,21 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return folder;
     }
 
+    private FileConfiguration parseToConfiguration(File file) {
+        JsonConfiguration jsonConfiguration = new JsonConfiguration();
+        jsonConfiguration.options().continueOnSerializationError(true);
+        Try.run(() -> jsonConfiguration.load(file)).getOrElseThrow(e -> {
+            Logging.severe("Could not load file: " + file);
+            throw new RuntimeException(e);
+        });
+        return jsonConfiguration;
+    }
+
     private FileConfiguration getOrLoadProfileFile(ProfileKey profileKey, File playerFile) {
         ProfileKey fileProfileKey = profileKey.forProfileType(null);
         return Try.of(() ->
                 configCache.get(fileProfileKey, () -> playerFile.exists()
-                        ? playerProfileIO.getConfigHandleNow(playerFile)
+                        ? parseToConfiguration(playerFile)
                         : new JsonConfiguration())
         ).getOrElseThrow(e -> {
             Logging.severe("Could not load profile data for player: " + fileProfileKey);
@@ -481,7 +491,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private GlobalProfile loadGlobalProfile(File globalFile, String playerName, UUID playerUUID) {
-        FileConfiguration playerData = globalProfileIO.waitForConfigHandle(globalFile);
+        FileConfiguration playerData = globalProfileIO.waitForData(() -> parseToConfiguration(globalFile));
         ConfigurationSection section = playerData.getConfigurationSection(DataStrings.PLAYER_DATA);
         if (section == null) {
             section = playerData.createSection(DataStrings.PLAYER_DATA);

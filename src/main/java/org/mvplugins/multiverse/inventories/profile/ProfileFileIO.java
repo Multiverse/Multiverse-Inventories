@@ -1,11 +1,5 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
-import com.dumptruckman.minecraft.util.Logging;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.mvplugins.multiverse.external.vavr.control.Try;
-
-import java.io.File;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -36,19 +30,5 @@ final class ProfileFileIO {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    FileConfiguration waitForConfigHandle(File file) {
-        return waitForData(() -> getConfigHandleNow(file));
-    }
-
-    FileConfiguration getConfigHandleNow(File file) {
-        JsonConfiguration jsonConfiguration = new JsonConfiguration();
-        jsonConfiguration.options().continueOnSerializationError(true);
-        Try.run(() -> jsonConfiguration.load(file)).getOrElseThrow(e -> {
-            Logging.severe("Could not load file: " + file);
-            throw new RuntimeException(e);
-        });
-        return jsonConfiguration;
     }
 }
