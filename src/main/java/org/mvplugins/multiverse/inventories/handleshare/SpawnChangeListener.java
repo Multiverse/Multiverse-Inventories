@@ -47,6 +47,7 @@ public final class SpawnChangeListener implements Listener {
     }
 
     private void updatePlayerSpawn(Player player, Location location) {
-        SingleShareWriter.of(this.inventories, player, Sharables.BED_SPAWN).write(location);
+        SingleShareWriter.of(this.inventories, player, Sharables.BED_SPAWN)
+                .write(location == null ? null : location.clone(), true);
     }
 }
