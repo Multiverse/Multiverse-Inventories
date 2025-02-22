@@ -26,11 +26,11 @@ public final class GlobalProfile {
     /**
      * Creates a global profile object for the given player with default values.
      *
-     * @param playerName the player to create the profile object for.
      * @param playerUUID the UUID of the player to create the profile for.
+     * @param playerName the player to create the profile object for.
      * @return a new GlobalProfile for the given player.
      */
-    static GlobalProfile createGlobalProfile(String playerName, UUID playerUUID) {
+    static GlobalProfile createGlobalProfile(UUID playerUUID, String playerName) {
         return new GlobalProfile(playerName, playerUUID);
     }
 

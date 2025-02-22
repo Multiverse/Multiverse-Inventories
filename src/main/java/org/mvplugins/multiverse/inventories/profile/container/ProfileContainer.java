@@ -4,6 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileType;
@@ -75,8 +76,11 @@ public final class ProfileContainer {
         Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getName());
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
-            playerProfile = profileDataSource.getPlayerData(getContainerType(),
-                    getContainerName(), profileType, player.getUniqueId());
+            playerProfile = profileDataSource.getPlayerData(ProfileKey.create(
+                    getContainerType(),
+                    getContainerName(),
+                    profileType,
+                    player));
             Logging.finer("[%s - %s - %s - %s] not cached, loading from disk...",
                     profileType, getContainerType(), playerProfile.getContainerName(), player.getName());
             profileMap.put(profileType, playerProfile);
@@ -100,7 +104,11 @@ public final class ProfileContainer {
      */
     public void removeAllPlayerData(OfflinePlayer player) {
         this.getPlayerData(player.getName()).clear();
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), null, player.getUniqueId());
+        profileDataSource.removePlayerData(ProfileKey.create(
+                getContainerType(),
+                getContainerName(),
+                null,
+                player.getUniqueId()));
     }
 
     /**
@@ -111,7 +119,11 @@ public final class ProfileContainer {
      */
     public void removePlayerData(ProfileType profileType, OfflinePlayer player) {
         this.getPlayerData(player.getName()).remove(profileType);
-        profileDataSource.removePlayerData(getContainerType(), getContainerName(), profileType, player.getUniqueId());
+        profileDataSource.removePlayerData(ProfileKey.create(
+                getContainerType(),
+                getContainerName(),
+                profileType,
+                player.getUniqueId()));
     }
 
     /**

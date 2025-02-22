@@ -34,13 +34,16 @@ final class CacheCommand extends InventoriesCommand {
     void onCacheStatsCommand(MVCommandIssuer issuer) {
         Map<String, CacheStats> stats = this.profileDataSource.getCacheStats();
         for (Map.Entry<String, CacheStats> entry : stats.entrySet()) {
-            issuer.sendInfo("Cache: " + entry.getKey());
-            issuer.sendInfo("  hits count: " + entry.getValue().hitCount());
-            issuer.sendInfo("  misses count: " + entry.getValue().missCount());
-            issuer.sendInfo("  loads count: " + entry.getValue().loadCount());
-            issuer.sendInfo("  avg load time: " + entry.getValue().averageLoadPenalty());
-            issuer.sendInfo("  exceptions: " + entry.getValue().loadExceptionCount());
-            issuer.sendInfo("  evictions: " + entry.getValue().evictionCount());
+            issuer.sendMessage("Cache: " + entry.getKey());
+            issuer.sendMessage("  hits count: " + entry.getValue().hitCount());
+            issuer.sendMessage("  misses count: " + entry.getValue().missCount());
+            issuer.sendMessage("  loads count: " + entry.getValue().loadCount());
+            issuer.sendMessage("  exceptions: " + entry.getValue().loadExceptionCount());
+            issuer.sendMessage("  evictions: " + entry.getValue().evictionCount());
+            issuer.sendMessage("  hit rate: " + entry.getValue().hitRate() * 100 + "%");
+            issuer.sendMessage("  miss rate: " + entry.getValue().missRate() * 100 + "%");
+            issuer.sendMessage("  avg load penalty: " + entry.getValue().averageLoadPenalty() / 1000000 + "ms");
+            issuer.sendMessage("--------");
         }
     }
 

@@ -142,7 +142,7 @@ public class MultiverseInventories extends MultiversePlugin {
                         profileContainerStoreProvider.get().getStore(ContainerType.WORLD)
                                 .getContainer(world)
                                 .getPlayerData(player)));
-                profileDataSource.get().setLoadOnLogin(player.getUniqueId(), true);
+                profileDataSource.get().modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true));
             }
         }
 

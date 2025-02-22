@@ -205,11 +205,11 @@ class PwiImportHelper {
     private List<PlayerProfile> getMVPlayerData(
             @NotNull OfflinePlayer offlinePlayer, @NotNull Group group, @NotNull GameMode gameMode) {
         List<PlayerProfile> profiles = new ArrayList<>();
-        profiles.add(profileDataSource.getPlayerData(
-                ContainerType.GROUP, group.getName(), ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId()));
+        profiles.add(profileDataSource.getPlayerData(org.mvplugins.multiverse.inventories.profile.ProfileKey
+                        .create(ContainerType.GROUP, group.getName(), ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         for (var worldName : group.getWorlds()) {
-            profiles.add(profileDataSource.getPlayerData(
-                    ContainerType.WORLD, worldName, ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId()));
+            profiles.add(profileDataSource.getPlayerData(org.mvplugins.multiverse.inventories.profile.ProfileKey
+                            .create(ContainerType.WORLD, worldName, ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         }
         return profiles;
     }

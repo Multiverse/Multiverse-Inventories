@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.google.common.base.Objects;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -17,6 +18,14 @@ public final class ProfileKey {
             UUID playerUUID,
             String playerName) {
         return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
+    }
+
+    public static ProfileKey create(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            OfflinePlayer offlinePlayer) {
+        return new ProfileKey(containerType, dataName, profileType, offlinePlayer.getUniqueId(), offlinePlayer.getName());
     }
 
     public static ProfileKey create(
