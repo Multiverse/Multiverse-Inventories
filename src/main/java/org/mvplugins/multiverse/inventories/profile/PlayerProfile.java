@@ -93,4 +93,14 @@ public final class PlayerProfile implements Cloneable {
     public Map<Sharable, Object> getData() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return "PlayerProfile{" +
+                "player=" + player.getName() +
+                ", containerType=" + containerType +
+                ", containerName='" + containerName + '\'' +
+                ", profileType=" + profileType +
+                '}';
+    }
 }

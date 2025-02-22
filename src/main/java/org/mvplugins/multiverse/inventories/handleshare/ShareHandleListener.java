@@ -208,7 +208,7 @@ public final class ShareHandleListener implements Listener {
             globalProfile.setLoadOnLogin(true);
         }
         profileDataSource.updateGlobalProfile(globalProfile);
-        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
     }
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
@@ -235,7 +235,7 @@ public final class ShareHandleListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation());
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
         new GameModeShareHandler(this.inventories, player,
                 player.getGameMode(), event.getNewGameMode()).handleSharing();
     }
@@ -281,7 +281,7 @@ public final class ShareHandleListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(event.getFrom());
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(event.getFrom().clone());
 
         // Possibly prevents item duping exploit
         player.closeInventory();

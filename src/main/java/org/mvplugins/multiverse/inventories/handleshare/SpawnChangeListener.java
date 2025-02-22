@@ -32,9 +32,6 @@ public final class SpawnChangeListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     void onSpawnChange(PlayerSpawnChangeEvent event) {
         Player player = event.getPlayer();
-
-        Logging.fine("Respawn cause: %s", event.getCause());
-
         if (event.getCause() == Cause.BED) {
             updatePlayerSpawn(player, findBedFromRespawnLocation(event.getNewSpawn()));
             return;
@@ -47,6 +44,7 @@ public final class SpawnChangeListener implements Listener {
     }
 
     private void updatePlayerSpawn(Player player, Location location) {
-        SingleShareWriter.of(this.inventories, player, Sharables.BED_SPAWN).write(location);
+        SingleShareWriter.of(this.inventories, player, Sharables.BED_SPAWN)
+                .write(location == null ? null : location.clone(), true);
     }
 }
