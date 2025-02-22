@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -154,7 +155,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public Future<?> updatePlayerData(PlayerProfile playerProfile) {
+    public Future<Void> updatePlayerData(PlayerProfile playerProfile) {
         return playerProfileIO.queueAction(() -> processUpdatePlayerData(playerProfile.clone()));
     }
 
@@ -354,7 +355,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public boolean removePlayerData(ProfileKey profileKey) {
+    public Future<Void> removePlayerData(ProfileKey profileKey) {
         if (profileKey.getProfileType() == null) {
             clearProfileCache(key -> key.getPlayerUUID().equals(profileKey.getPlayerUUID())
                     && key.getContainerType().equals(profileKey.getContainerType())
@@ -363,14 +364,12 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             if (!playerFile.exists()) {
                 Logging.warning("Attempted to delete file that did not exist for player " + profileKey.getPlayerName()
                         + " in " + profileKey.getContainerType() + " " + profileKey.getDataName());
-                return false;
+                return CompletableFuture.completedFuture(null);
             }
-            playerProfileIO.queueAction(playerFile::delete);
-            return true;
+            return playerProfileIO.queueAction(playerFile::delete);
         }
         profileCache.invalidate(profileKey);
-        playerProfileIO.queueAction(() -> processRemovePlayerData(profileKey));
-        return true;
+        return playerProfileIO.queueAction(() -> processRemovePlayerData(profileKey));
     }
 
     private void processRemovePlayerData(ProfileKey profileKey) {
@@ -490,15 +489,15 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return GlobalProfile.deserialize(playerName, playerUUID, section);
     }
 
-    public Future<?> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer) {
+    public Future<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer) {
         return modifyGlobalProfile(getGlobalProfile(playerUUID), consumer);
     }
 
-    public Future<?> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer) {
+    public Future<Void> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer) {
         return modifyGlobalProfile(getGlobalProfile(offlinePlayer), consumer);
     }
 
-    private Future<?> modifyGlobalProfile(GlobalProfile globalProfile, Consumer<GlobalProfile> consumer) {
+    private Future<Void> modifyGlobalProfile(GlobalProfile globalProfile, Consumer<GlobalProfile> consumer) {
         consumer.accept(globalProfile);
         return updateGlobalProfile(globalProfile);
     }
@@ -507,7 +506,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public Future<?> updateGlobalProfile(GlobalProfile globalProfile) {
+    public Future<Void> updateGlobalProfile(GlobalProfile globalProfile) {
         return globalProfileIO.queueAction(() -> processGlobalProfileWrite(globalProfile));
     }
 

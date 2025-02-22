@@ -22,8 +22,8 @@ final class ProfileFileIO {
         fileIOExecutorService = Executors.newSingleThreadExecutor();
     }
 
-    Future<?> queueAction(Runnable action) {
-        return fileIOExecutorService.submit(action);
+    Future<Void> queueAction(Runnable action) {
+        return (Future<Void>) fileIOExecutorService.submit(action);
     }
 
     <T> Future<T> queueCallable(Callable<T> callable) {

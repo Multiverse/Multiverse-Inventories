@@ -25,7 +25,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      *
      * @param playerProfile The profile for the player that is being updated.
      */
-    Future<?> updatePlayerData(PlayerProfile playerProfile);
+    Future<Void> updatePlayerData(PlayerProfile playerProfile);
 
     /**
      * Retrieves a PlayerProfile from the data source.
@@ -42,7 +42,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param profileKey The key of the profile to remove.
      * @return True if successfully removed.
      */
-    boolean removePlayerData(ProfileKey profileKey);
+    Future<Void> removePlayerData(ProfileKey profileKey);
 
     /**
      * Copies all the data belonging to oldName to newName and removes the old data.
@@ -89,16 +89,16 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      */
     @NotNull Option<GlobalProfile> getExistingGlobalProfile(UUID playerUUID, String playerName);
 
-    Future<?> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer);
+    Future<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer);
 
-    Future<?> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer);
+    Future<Void> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer);
 
     /**
      * Update the file for a player's global profile.
      *
      * @param globalProfile The GlobalProfile object to update the file for.
      */
-    Future<?> updateGlobalProfile(GlobalProfile globalProfile);
+    Future<Void> updateGlobalProfile(GlobalProfile globalProfile);
 
     /**
      * Clears a single profile in cache.
