@@ -70,6 +70,7 @@ final class SingleShareWriter<T> {
         if (Objects.equals(profile.get(sharable), value)) {
             return;
         }
+        Logging.finest("Writing %s value: %s for profile %s", sharable, value, profile);
         profile.set(sharable, value);
         if (save) {
             profileDataSource.updatePlayerData(profile);
