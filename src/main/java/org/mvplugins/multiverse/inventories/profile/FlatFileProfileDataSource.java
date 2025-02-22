@@ -246,9 +246,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         if (section == null) {
             section = playerData.createSection(key.getProfileType().getName());
         }
-        PlayerProfile playerProfile = deserializePlayerProfile(key, convertSection(section));
-        profileCache.put(key, playerProfile);
-        return playerProfile;
+        return deserializePlayerProfile(key, convertSection(section));
     }
 
     @Deprecated
