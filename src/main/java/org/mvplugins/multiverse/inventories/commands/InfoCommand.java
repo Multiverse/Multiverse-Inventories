@@ -31,18 +31,15 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 @CommandAlias("mvinv")
 final class InfoCommand extends InventoriesCommand {
 
-    private final MultiverseInventories plugin;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final WorldGroupManager worldGroupManager;
 
     @Inject
     InfoCommand(
             @NotNull MVCommandManager commandManager,
-            @NotNull MultiverseInventories plugin,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull WorldGroupManager worldGroupManager) {
         super(commandManager);
-        this.plugin = plugin;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.worldGroupManager = worldGroupManager;
     }

@@ -22,16 +22,13 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 @CommandAlias("mvinv")
 final class ListCommand extends InventoriesCommand {
 
-    private final MultiverseInventories plugin;
     private final WorldGroupManager worldGroupManager;
 
     @Inject
     ListCommand(
             @NotNull MVCommandManager commandManager,
-            @NotNull MultiverseInventories plugin,
             @NotNull WorldGroupManager worldGroupManager) {
         super(commandManager);
-        this.plugin = plugin;
         this.worldGroupManager = worldGroupManager;
     }
 

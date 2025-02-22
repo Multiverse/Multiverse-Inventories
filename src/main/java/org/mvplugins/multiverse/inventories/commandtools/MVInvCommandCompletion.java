@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commandtools;
 
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandCompletions;
@@ -9,6 +10,7 @@ import org.mvplugins.multiverse.external.acf.commands.BukkitCommandCompletionCon
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -26,20 +28,28 @@ public final class MVInvCommandCompletion {
 
     private final InventoriesConfig inventoriesConfig;
     private final WorldGroupManager worldGroupManager;
+    private final DataImportManager dataImportManager;
 
     @Inject
     private MVInvCommandCompletion(
             @NotNull InventoriesConfig inventoriesConfig,
             @NotNull WorldGroupManager worldGroupManager,
+            @NotNull DataImportManager dataImportManager,
             @NotNull MVCommandManager mvCommandManager) {
         this.inventoriesConfig = inventoriesConfig;
         this.worldGroupManager = worldGroupManager;
+        this.dataImportManager = dataImportManager;
 
         MVCommandCompletions commandCompletions = mvCommandManager.getCommandCompletions();
+        commandCompletions.registerAsyncCompletion("dataimporters", this::suggestDataImporters);
         commandCompletions.registerAsyncCompletion("sharables", this::suggestSharables);
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
         commandCompletions.registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
         commandCompletions.registerAsyncCompletion("worldGroupWorlds", this::suggestWorldGroupWorlds);
+    }
+
+    private Collection<String> suggestDataImporters(BukkitCommandCompletionContext context) {
+        return dataImportManager.getEnabledImporterNames();
     }
 
     private Collection<String> suggestSharables(BukkitCommandCompletionContext context) {
