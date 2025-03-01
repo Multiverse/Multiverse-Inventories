@@ -51,6 +51,8 @@ public class MultiverseInventories extends MultiversePlugin {
     @Inject
     private Provider<RespawnListener> respawnListener;
     @Inject
+    private Provider<MVEventsListener> mvEventsListener;
+    @Inject
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
     private Provider<ProfileDataSource> profileDataSource;
@@ -96,6 +98,7 @@ public class MultiverseInventories extends MultiversePlugin {
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(shareHandleListener.get(), this);
         pluginManager.registerEvents(respawnListener.get(), this);
+        pluginManager.registerEvents(mvEventsListener.get(), this);
         try {
             Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
             pluginManager.registerEvents(new SpawnChangeListener(this), this);
