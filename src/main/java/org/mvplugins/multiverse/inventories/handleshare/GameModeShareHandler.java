@@ -36,8 +36,6 @@ final class GameModeShareHandler extends ShareHandler {
         this.toType = ProfileTypes.forGameMode(toGameMode);
         this.world = player.getWorld().getName();
         this.worldGroups = getAffectedWorldGroups();
-
-        prepareProfiles();
     }
 
     private List<WorldGroup> getAffectedWorldGroups() {
@@ -49,11 +47,12 @@ final class GameModeShareHandler extends ShareHandler {
         return new GameModeChangeShareHandlingEvent(player, affectedProfiles, fromGameMode, toGameMode);
     }
 
-    private void prepareProfiles() {
+    @Override
+    protected void prepareProfiles() {
         Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
 
-        setAlwaysWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player));
+        affectedProfiles.setAlwaysWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player));
 
         if (isPlayerAffectedByChange()) {
             addProfiles();
@@ -78,7 +77,7 @@ final class GameModeShareHandler extends ShareHandler {
             worldGroups.forEach(this::addProfilesForWorldGroup);
         } else {
             Logging.finer("No groups for world.");
-            addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
+            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
                     Sharables.allOf());
         }
     }
@@ -89,8 +88,8 @@ final class GameModeShareHandler extends ShareHandler {
 
     private void addProfilesForWorldGroup(WorldGroup worldGroup) {
         ProfileContainer container = worldGroup.getGroupProfileContainer();
-        addWriteProfile(container.getPlayerData(fromType, player), Sharables.allOf());
-        addReadProfile(container.getPlayerData(toType, player), Sharables.allOf());
+        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), Sharables.allOf());
+        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), Sharables.allOf());
     }
 }
 

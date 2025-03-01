@@ -793,9 +793,9 @@ public final class Sharables implements Shares {
      * contained in the shares argument.
      */
     public static Shares complimentOf(Shares shares) {
-        Set<Sharable> compliment = Sharables.allOf();
+        Shares compliment = Sharables.allOf();
         compliment.removeAll(shares);
-        return new Sharables(compliment);
+        return compliment;
     }
 
     /**
