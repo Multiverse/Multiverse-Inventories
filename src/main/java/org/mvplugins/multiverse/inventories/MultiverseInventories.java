@@ -90,6 +90,7 @@ public class MultiverseInventories extends MultiversePlugin {
         initializeDependencyInjection();
         Perm.register(this);
         this.reloadConfig();
+        inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
 
         // Register Events
         PluginManager pluginManager = this.getServer().getPluginManager();
@@ -136,13 +137,15 @@ public class MultiverseInventories extends MultiversePlugin {
 
         for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
-            if (inventoriesConfig.get().usingLoggingSaveLoad()) {
+            if (inventoriesConfig.get().getSavePlayerdataOnQuit()) {
                 ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(
                         Sharables.allOf(),
                         profileContainerStoreProvider.get().getStore(ContainerType.WORLD)
                                 .getContainer(world)
                                 .getPlayerData(player)));
-                profileDataSource.get().modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true));
+                if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
+                    profileDataSource.get().modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true));
+                }
             }
         }
 
@@ -224,7 +227,7 @@ public class MultiverseInventories extends MultiversePlugin {
             @Override
             public void run() {
                 // Create initial World Group for first run IF NO GROUPS EXIST
-                if (inventoriesConfig.get().isFirstRun()) {
+                if (inventoriesConfig.get().getFirstRun()) {
                     Logging.info("First run!");
                     if (worldGroupManager.get().getGroups().isEmpty()) {
                         worldGroupManager.get().createDefaultGroup();

@@ -19,19 +19,19 @@ class ToggleCommandTest : AbstractCommandTest() {
 
     @Test
     fun `Toggle last_location on and off`() {
-        assertFalse(config.optionalShares.contains(Sharables.LAST_LOCATION))
+        assertFalse(config.activeOptionalShares.contains(Sharables.LAST_LOCATION))
         server.dispatchCommand(console, "mvinv toggle last_location")
-        assertTrue(config.optionalShares.contains(Sharables.LAST_LOCATION))
+        assertTrue(config.activeOptionalShares.contains(Sharables.LAST_LOCATION))
         server.dispatchCommand(console, "mvinv toggle last_location")
-        assertFalse(config.optionalShares.contains(Sharables.LAST_LOCATION))
+        assertFalse(config.activeOptionalShares.contains(Sharables.LAST_LOCATION))
     }
 
     @Test
     fun `Toggle economy on and off`() {
-        assertFalse(config.optionalShares.contains(Sharables.ECONOMY))
+        assertFalse(config.activeOptionalShares.contains(Sharables.ECONOMY))
         server.dispatchCommand(console, "mvinv toggle economy")
-        assertTrue(config.optionalShares.contains(Sharables.ECONOMY))
+        assertTrue(config.activeOptionalShares.contains(Sharables.ECONOMY))
         server.dispatchCommand(console, "mvinv toggle economy")
-        assertFalse(config.optionalShares.contains(Sharables.ECONOMY))
+        assertFalse(config.activeOptionalShares.contains(Sharables.ECONOMY))
     }
 }

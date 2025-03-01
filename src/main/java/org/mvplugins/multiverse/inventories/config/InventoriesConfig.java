@@ -4,6 +4,9 @@ import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.configuration.handle.CommentedConfigurationHandle;
 import org.mvplugins.multiverse.core.configuration.handle.StringPropertyHandle;
+import org.mvplugins.multiverse.core.configuration.migration.ConfigMigrator;
+import org.mvplugins.multiverse.core.configuration.migration.MoveMigratorAction;
+import org.mvplugins.multiverse.core.configuration.migration.VersionMigrator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
@@ -32,6 +35,17 @@ public final class InventoriesConfig {
         var configPath = Path.of(inventories.getDataFolder().getPath(), CONFIG_FILENAME);
         this.configHandle = CommentedConfigurationHandle.builder(configPath, this.configNodes.getNodes())
                 .logger(Logging.getLogger())
+                .migrator(ConfigMigrator.builder(this.configNodes.version)
+                        .addVersionMigrator(VersionMigrator.builder(5.0)
+                                .addAction(MoveMigratorAction.of("settings.first_run", "first-run"))
+                                .addAction(MoveMigratorAction.of("settings.use_bypass", "share-handling.enable-bypass-permissions"))
+                                .addAction(MoveMigratorAction.of("settings.default_ungrouped_worlds", "share-handling.default-ungrouped-worlds"))
+                                .addAction(MoveMigratorAction.of("settings.save_load_on_log_in_out", "performance.save-playerdata-on-quit"))
+                                .addAction(MoveMigratorAction.of("settings.use_game_mode_profiles", "share-handling.enable-gamemode-share-handling"))
+                                .addAction(MoveMigratorAction.of("shares.optionals_for_ungrouped_worlds", "share-handling.use-optionals-for-ungrouped-worlds"))
+                                .addAction(MoveMigratorAction.of("shares.use_optionals", "share-handling.active-optional-shares"))
+                                .build())
+                        .build())
                 .build();
         this.stringPropertyHandle = new StringPropertyHandle(this.configHandle);
     }
@@ -49,16 +63,166 @@ public final class InventoriesConfig {
     }
 
     /**
-     * Retrieves the locale string from the config.
-     *
-     * @return The locale string.
+     * @return True if we should check for bypass permissions.
      */
-    public String getLocale() {
-        return this.configHandle.get(configNodes.locale);
+    public boolean getEnableBypassPermissions() {
+        return this.configHandle.get(configNodes.enableBypassPermissions);
     }
 
-    public Try<Void> setLocale(String locale) {
-        return this.configHandle.set(configNodes.locale, locale);
+    /**
+     * @param useBypass Whether or not to check for bypass permissions.
+     */
+    public Try<Void> setEnableBypassPermissions(boolean useBypass) {
+        return this.configHandle.set(configNodes.enableBypassPermissions, useBypass);
+    }
+
+    /**
+     * @return True if using separate data for game modes.
+     */
+    public boolean getEnableGamemodeShareHandling() {
+        return this.configHandle.get(configNodes.enableGamemodeShareHandling);
+    }
+
+    /**
+     * @param useGameModeProfile whether to use separate data for game modes.
+     */
+    public Try<Void> setEnableGamemodeShareHandling(boolean useGameModeProfile) {
+        return this.configHandle.set(configNodes.enableGamemodeShareHandling, useGameModeProfile);
+    }
+
+    /**
+     * @return true if worlds with no group should be considered part of the default group.
+     */
+    public boolean getDefaultUngroupedWorlds() {
+        return this.configHandle.get(configNodes.defaultUngroupedWorlds);
+    }
+
+    /**
+     * @param useDefaultGroup Set this to true to use the default group for ungrouped worlds.
+     */
+    public Try<Void> setDefaultUngroupedWorlds(boolean useDefaultGroup) {
+        return this.configHandle.set(configNodes.defaultUngroupedWorlds, useDefaultGroup);
+    }
+
+    /**
+     * Whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @return true if should utilize optional shares in worlds that are not grouped.
+     */
+    public boolean getUseOptionalsForUngroupedWorlds() {
+        return this.configHandle.get(configNodes.useOptionalsForUngroupedWorlds);
+    }
+
+    /**
+     * Sets whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
+     *
+     * @param usingOptionalsForUngrouped true if should utilize optional shares in worlds that are not grouped.
+     */
+    public Try<Void> setUseOptionalsForUngroupedWorlds(final boolean usingOptionalsForUngrouped) {
+        return this.configHandle.set(configNodes.useOptionalsForUngroupedWorlds, usingOptionalsForUngrouped);
+    }
+
+    /**
+     * @return A list of optional {@link Sharable}s to be treated as
+     *         regular {@link Sharable}s throughout the code.
+     *         A {@link Sharable} marked as optional is ignored if it is not
+     *         contained in this list.
+     */
+    public Shares getActiveOptionalShares() {
+        return this.configHandle.get(configNodes.activeOptionalShares);
+    }
+
+    /**
+     * Sets the optional shares to be used.
+     *
+     * @param shares    The optional shares to be used.
+     * @return True if successful.
+     */
+    public Try<Void> setActiveOptionalShares(Shares shares) {
+        return this.configHandle.set(configNodes.activeOptionalShares, shares);
+    }
+
+    /**
+     * Tells whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @return True if should save and load on player log out and in.
+     */
+    public boolean getSavePlayerdataOnQuit() {
+        return this.configHandle.get(configNodes.savePlayerdataOnQuit);
+    }
+
+    /**
+     * Sets whether Multiverse-Inventories should save on player logout and load on player login.
+     *
+     * @param useLoggingSaveLoad true if should save and load on player log out and in.
+     */
+    public Try<Void> setSavePlayerdataOnQuit(boolean useLoggingSaveLoad) {
+        return this.configHandle.set(configNodes.savePlayerdataOnQuit, useLoggingSaveLoad);
+    }
+
+    public boolean getApplyPlayerdataOnJoin() {
+        return this.configHandle.get(configNodes.applyPlayerdataOnJoin);
+    }
+
+    public Try<Void> setApplyPlayerdataOnJoin(boolean applyPlayerdataOnJoin) {
+        return this.configHandle.set(configNodes.applyPlayerdataOnJoin, applyPlayerdataOnJoin);
+    }
+
+    public boolean getAlwaysWriteWorldProfile() {
+        return this.configHandle.get(configNodes.alwaysWriteWorldProfile);
+    }
+
+    public Try<Void> setAlwaysWriteWorldProfile(boolean alwaysWriteWorldProfile) {
+        return this.configHandle.set(configNodes.alwaysWriteWorldProfile, alwaysWriteWorldProfile);
+    }
+
+
+    public int getPlayerFileCacheSize() {
+        return this.configHandle.get(configNodes.playerFileCacheSize);
+    }
+
+    public Try<Void> setPlayerFileCacheSize(int playerFileCacheSize) {
+        return this.configHandle.set(configNodes.playerFileCacheSize, playerFileCacheSize);
+    }
+
+    public int getPlayerFileCacheExpiry() {
+        return this.configHandle.get(configNodes.playerFileCacheExpiry);
+    }
+
+    public Try<Void> setPlayerFileCacheExpiry(int playerFileCacheExpiry) {
+        return this.configHandle.set(configNodes.playerFileCacheExpiry, playerFileCacheExpiry);
+    }
+
+    public int getPlayerProfileCacheSize() {
+        return this.configHandle.get(configNodes.playerProfileCacheSize);
+    }
+
+    public Try<Void> setPlayerProfileCacheSize(int playerProfileCacheSize) {
+        return this.configHandle.set(configNodes.playerProfileCacheSize, playerProfileCacheSize);
+    }
+
+    public int getPlayerProfileCacheExpiry() {
+        return this.configHandle.get(configNodes.playerProfileCacheExpiry);
+    }
+
+    public Try<Void> setPlayerProfileCacheExpiry(int playerProfileCacheExpiry) {
+        return this.configHandle.set(configNodes.playerProfileCacheExpiry, playerProfileCacheExpiry);
+    }
+
+    public int getGlobalProfileCacheSize() {
+        return this.configHandle.get(configNodes.globalProfileCacheSize);
+    }
+
+    public Try<Void> setGlobalProfileCacheSize(int globalProfileCacheSize) {
+        return this.configHandle.set(configNodes.globalProfileCacheSize, globalProfileCacheSize);
+    }
+
+    public int getGlobalProfileCacheExpiry() {
+        return this.configHandle.get(configNodes.globalProfileCacheExpiry);
+    }
+
+    public Try<Void> setGlobalProfileCacheExpiry(int globalProfileCacheExpiry) {
+        return this.configHandle.set(configNodes.globalProfileCacheExpiry, globalProfileCacheExpiry);
     }
 
     /**
@@ -66,7 +230,7 @@ public final class InventoriesConfig {
      *
      * @return True if first_run is set to true in config.
      */
-    public boolean isFirstRun() {
+    public boolean getFirstRun() {
         return this.configHandle.get(configNodes.firstRun);
     }
 
@@ -77,104 +241,6 @@ public final class InventoriesConfig {
      */
     public Try<Void> setFirstRun(boolean firstRun) {
         return this.configHandle.set(configNodes.firstRun, firstRun);
-    }
-
-    /**
-     * @return True if we should check for bypass permissions.
-     */
-    public boolean isUsingBypass() {
-        return this.configHandle.get(configNodes.useBypass);
-    }
-
-    /**
-     * @param useBypass Whether or not to check for bypass permissions.
-     */
-    public Try<Void> setUsingBypass(boolean useBypass) {
-        return this.configHandle.set(configNodes.useBypass, useBypass);
-    }
-
-    /**
-     * Tells whether Multiverse-Inventories should save on player logout and load on player login.
-     *
-     * @return True if should save and load on player log out and in.
-     */
-    public boolean usingLoggingSaveLoad() {
-        return this.configHandle.get(configNodes.loggingSaveLoad);
-    }
-
-    /**
-     * Sets whether Multiverse-Inventories should save on player logout and load on player login.
-     *
-     * @param useLoggingSaveLoad true if should save and load on player log out and in.
-     */
-    public Try<Void> setUsingLoggingSaveLoad(boolean useLoggingSaveLoad) {
-        return this.configHandle.set(configNodes.loggingSaveLoad, useLoggingSaveLoad);
-    }
-
-    /**
-     * @return A list of optional {@link Sharable}s to be treated as
-     *         regular {@link Sharable}s throughout the code.
-     *         A {@link Sharable} marked as optional is ignored if it is not
-     *         contained in this list.
-     */
-    public Shares getOptionalShares() {
-        return this.configHandle.get(configNodes.optionalShares);
-    }
-
-    /**
-     * Sets the optional shares to be used.
-     *
-     * @param shares    The optional shares to be used.
-     * @return True if successful.
-     */
-    public Try<Void> setOptionalShares(Shares shares) {
-        return this.configHandle.set(configNodes.optionalShares, shares);
-    }
-
-    /**
-     * @return true if worlds with no group should be considered part of the default group.
-     */
-    public boolean isDefaultingUngroupedWorlds() {
-        return this.configHandle.get(configNodes.defaultUngroupedWorlds);
-    }
-
-    /**
-     * @param useDefaultGroup Set this to true to use the default group for ungrouped worlds.
-     */
-    public Try<Void> setDefaultingUngroupedWorlds(boolean useDefaultGroup) {
-        return this.configHandle.set(configNodes.defaultUngroupedWorlds, useDefaultGroup);
-    }
-
-    /**
-     * @return True if using separate data for game modes.
-     */
-    public boolean isUsingGameModeProfiles() {
-        return this.configHandle.get(configNodes.useGameModeProfiles);
-    }
-
-    /**
-     * @param useGameModeProfile whether to use separate data for game modes.
-     */
-    public Try<Void> setUsingGameModeProfiles(boolean useGameModeProfile) {
-        return this.configHandle.set(configNodes.useGameModeProfiles, useGameModeProfile);
-    }
-
-    /**
-     * Whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
-     *
-     * @return true if should utilize optional shares in worlds that are not grouped.
-     */
-    public boolean usingOptionalsForUngrouped() {
-        return this.configHandle.get(configNodes.useOptionalsForUngrouped);
-    }
-
-    /**
-     * Sets whether Multiverse-Inventories will utilize optional shares in worlds that are not grouped.
-     *
-     * @param usingOptionalsForUngrouped true if should utilize optional shares in worlds that are not grouped.
-     */
-    public Try<Void> setUsingOptionalsForUngrouped(final boolean usingOptionalsForUngrouped) {
-        return this.configHandle.set(configNodes.useOptionalsForUngrouped, usingOptionalsForUngrouped);
     }
 
     /**

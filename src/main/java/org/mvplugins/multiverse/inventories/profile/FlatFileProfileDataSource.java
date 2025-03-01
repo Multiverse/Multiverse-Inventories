@@ -15,6 +15,7 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.share.ProfileEntry;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -47,23 +48,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE);
 
     // TODO these probably need configurable max sizes
-    private final Cache<ProfileKey, FileConfiguration> configCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(60, TimeUnit.MINUTES)
-            .maximumSize(2000)
-            .recordStats()
-            .build();
-
-    private final Cache<ProfileKey, PlayerProfile> profileCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(60, TimeUnit.MINUTES)
-            .maximumSize(6000)
-            .recordStats()
-            .build();
-
-    private final Cache<UUID, GlobalProfile> globalProfileCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(60, TimeUnit.MINUTES)
-            .maximumSize(500)
-            .recordStats()
-            .build();
+    private final Cache<ProfileKey, FileConfiguration> playerFileCache;
+    private final Cache<ProfileKey, PlayerProfile> playerProfileCache;
+    private final Cache<UUID, GlobalProfile> globalProfileCache;
 
     private final File worldFolder;
     private final File groupFolder;
@@ -73,7 +60,25 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private final ProfileFileIO globalProfileIO;
 
     @Inject
-    FlatFileProfileDataSource(@NotNull MultiverseInventories plugin) throws IOException {
+    FlatFileProfileDataSource(@NotNull MultiverseInventories plugin, @NotNull InventoriesConfig inventoriesConfig) throws IOException {
+        this.playerFileCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(inventoriesConfig.getPlayerFileCacheExpiry(), TimeUnit.MINUTES)
+                .maximumSize(inventoriesConfig.getPlayerFileCacheSize())
+                .recordStats()
+                .build();
+
+        this.playerProfileCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(inventoriesConfig.getPlayerProfileCacheExpiry(), TimeUnit.MINUTES)
+                .maximumSize(inventoriesConfig.getPlayerProfileCacheSize())
+                .recordStats()
+                .build();
+
+        this.globalProfileCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(inventoriesConfig.getGlobalProfileCacheExpiry(), TimeUnit.MINUTES)
+                .maximumSize(inventoriesConfig.getGlobalProfileCacheSize())
+                .recordStats()
+                .build();
+
         this.playerProfileIO = new ProfileFileIO();
         this.globalProfileIO = new ProfileFileIO();
 
@@ -152,7 +157,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private FileConfiguration getOrLoadProfileFile(ProfileKey profileKey, File playerFile) {
         ProfileKey fileProfileKey = profileKey.forProfileType(null);
         return Try.of(() ->
-                configCache.get(fileProfileKey, () -> playerFile.exists()
+                playerFileCache.get(fileProfileKey, () -> playerFile.exists()
                         ? parseToConfiguration(playerFile)
                         : new JsonConfiguration())
         ).getOrElseThrow(e -> {
@@ -224,7 +229,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public PlayerProfile getPlayerData(ProfileKey key) {
         try {
-            return profileCache.get(key, () -> {
+            return playerProfileCache.get(key, () -> {
                 File playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
                 if (!playerFile.exists()) {
                     return PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
@@ -378,7 +383,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             }
             return playerProfileIO.queueAction(playerFile::delete);
         }
-        profileCache.invalidate(profileKey);
+        playerProfileCache.invalidate(profileKey);
         return playerProfileIO.queueAction(() -> processRemovePlayerData(profileKey));
     }
 
@@ -548,29 +553,29 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     @Override
     public void clearProfileCache(ProfileKey key) {
-        configCache.invalidate(key);
-        profileCache.invalidate(key);
+        playerFileCache.invalidate(key);
+        playerProfileCache.invalidate(key);
     }
 
     @Override
     public void clearProfileCache(Predicate<ProfileKey> predicate) {
-        configCache.invalidateAll(Sets.filter(configCache.asMap().keySet(), predicate::test));
-        profileCache.invalidateAll(Sets.filter(profileCache.asMap().keySet(), predicate::test));
+        playerFileCache.invalidateAll(Sets.filter(playerFileCache.asMap().keySet(), predicate::test));
+        playerProfileCache.invalidateAll(Sets.filter(playerProfileCache.asMap().keySet(), predicate::test));
     }
 
     @Override
     public void clearAllCache() {
-        configCache.invalidateAll();
+        playerFileCache.invalidateAll();
         globalProfileCache.invalidateAll();
-        profileCache.invalidateAll();
+        playerProfileCache.invalidateAll();
     }
 
     @Override
     public Map<String, CacheStats> getCacheStats() {
         Map<String, CacheStats> stats = new HashMap<>();
-        stats.put("configCache", configCache.stats());
+        stats.put("configCache", playerFileCache.stats());
         stats.put("globalProfileCache", globalProfileCache.stats());
-        stats.put("profileCache", profileCache.stats());
+        stats.put("profileCache", playerProfileCache.stats());
         return stats;
     }
 }

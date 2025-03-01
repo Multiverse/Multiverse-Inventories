@@ -109,10 +109,10 @@ class PwiImportHelper {
      * Set similar/supported config options in MultiverseInventories with the values used in PerWorldInventory.
      */
     private void transferConfigOptions() {
-        inventoriesConfig.setUsingGameModeProfiles(this.pwiSettings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES));
-        inventoriesConfig.setUsingLoggingSaveLoad(this.pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
-        inventoriesConfig.setDefaultingUngroupedWorlds(this.pwiSettings.getProperty(PluginSettings.SHARE_IF_UNCONFIGURED));
-        inventoriesConfig.getOptionalShares().setSharing(Sharables.ECONOMY, this.pwiSettings.getProperty(PlayerSettings.USE_ECONOMY));
+        inventoriesConfig.setEnableGamemodeShareHandling(this.pwiSettings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES));
+        inventoriesConfig.setSavePlayerdataOnQuit(this.pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
+        inventoriesConfig.setDefaultUngroupedWorlds(this.pwiSettings.getProperty(PluginSettings.SHARE_IF_UNCONFIGURED));
+        inventoriesConfig.getActiveOptionalShares().setSharing(Sharables.ECONOMY, this.pwiSettings.getProperty(PlayerSettings.USE_ECONOMY));
         inventoriesConfig.save();
     }
 
@@ -138,7 +138,7 @@ class PwiImportHelper {
      */
     private Collection<Group> getPWIGroups() {
         Set<Group> groups = new HashSet<>(this.pwiGroupManager.getGroups().values());
-        if (!inventoriesConfig.isDefaultingUngroupedWorlds()) {
+        if (!inventoriesConfig.getDefaultUngroupedWorlds()) {
             worldManager.getWorlds().forEach(world ->
                     groups.add(this.pwiGroupManager.getGroupFromWorld(world.getName())));
         }

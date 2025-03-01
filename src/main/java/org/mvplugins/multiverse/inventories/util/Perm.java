@@ -184,7 +184,7 @@ public enum Perm {
      */
     public boolean hasBypass(Player player, String name) {
         if (inventories != null &&
-                !inventories.getServiceLocator().getService(InventoriesConfig.class).isUsingBypass()) {
+                !inventories.getServiceLocator().getService(InventoriesConfig.class).getEnableBypassPermissions()) {
             return false;
         }
         Permission bypassPerm = this.getBypassPermission(name);

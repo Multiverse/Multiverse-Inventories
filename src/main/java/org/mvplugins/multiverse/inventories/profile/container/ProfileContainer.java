@@ -57,7 +57,7 @@ public final class ProfileContainer {
      */
     public PlayerProfile getPlayerData(Player player) {
         ProfileType type;
-        if (config.isUsingGameModeProfiles()) {
+        if (config.getEnableGamemodeShareHandling()) {
             type = ProfileTypes.forGameMode(player.getGameMode());
         } else {
             type = ProfileTypes.SURVIVAL;

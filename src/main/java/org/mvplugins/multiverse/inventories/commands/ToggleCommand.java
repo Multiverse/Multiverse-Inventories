@@ -47,7 +47,7 @@ final class ToggleCommand extends InventoriesCommand {
             @Description("Share to toggle")
             @NotNull Sharable<?> sharable
     ) {
-        Shares optionalShares = inventoriesConfig.getOptionalShares();
+        Shares optionalShares = inventoriesConfig.getActiveOptionalShares();
         if (!sharable.isOptional()) {
             issuer.sendError(MVInvi18n.TOGGLE_NOOPTIONALSHARES, replace("{share}").with(sharable.toString()));
             return;
@@ -59,7 +59,7 @@ final class ToggleCommand extends InventoriesCommand {
             optionalShares.add(sharable);
             issuer.sendInfo(MVInvi18n.TOGGLE_NOWUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
         }
-        inventoriesConfig.setOptionalShares(optionalShares);
+        inventoriesConfig.setActiveOptionalShares(optionalShares);
         inventoriesConfig.save();
     }
 }

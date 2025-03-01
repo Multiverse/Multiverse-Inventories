@@ -84,12 +84,12 @@ public final class ShareHandlingUpdater {
     private boolean isSharableUsed(Sharable<?> sharable) {
         var config = inventories.getServiceLocator().getService(InventoriesConfig.class);
         if (sharable.isOptional()) {
-            if (!config.getOptionalShares().contains(sharable)) {
+            if (!config.getActiveOptionalShares().contains(sharable)) {
                 Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
                 return false;
             }
             if (profile.profile().getContainerType() == ContainerType.WORLD
-                    && !config.usingOptionalsForUngrouped()) {
+                    && !config.getUseOptionalsForUngroupedWorlds()) {
                 Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
                 return false;
             }

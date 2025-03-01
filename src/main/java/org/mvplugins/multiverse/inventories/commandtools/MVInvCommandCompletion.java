@@ -1,11 +1,9 @@
 package org.mvplugins.multiverse.inventories.commandtools;
 
-import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandCompletions;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
-import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandCompletionContext;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
@@ -58,7 +56,7 @@ public final class MVInvCommandCompletion {
         return Sharables.all().stream()
                 .filter(sharable -> switch (scope) {
                     case "enabled" ->
-                            !sharable.isOptional() || inventoriesConfig.getOptionalShares().contains(sharable);
+                            !sharable.isOptional() || inventoriesConfig.getActiveOptionalShares().contains(sharable);
                     case "optional" -> sharable.isOptional();
                     default -> true;
                 })

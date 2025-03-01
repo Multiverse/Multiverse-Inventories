@@ -17,7 +17,6 @@ import org.bukkit.World;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,7 +80,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
             }
         }
         // Only use the default group for worlds managed by MV-Core
-        if (worldGroups.isEmpty() && inventoriesConfig.isDefaultingUngroupedWorlds() &&
+        if (worldGroups.isEmpty() && inventoriesConfig.getDefaultUngroupedWorlds() &&
                 this.worldManager.isWorld(worldName)) {
             Logging.finer("Returning default group for world: " + worldName);
             worldGroups.add(getDefaultGroup());

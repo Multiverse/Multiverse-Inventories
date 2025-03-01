@@ -46,7 +46,7 @@ public interface Sharable<T> {
 
     /**
      * @return True if this Sharable is optional. That is to say that it is completely ignored when share handling
-     * takes place UNLESS it is present in {@link InventoriesConfig#getOptionalShares()}.
+     * takes place UNLESS it is present in {@link InventoriesConfig#getActiveOptionalShares()}.
      */
     boolean isOptional();
 

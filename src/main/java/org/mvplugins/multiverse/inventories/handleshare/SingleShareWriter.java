@@ -42,7 +42,7 @@ final class SingleShareWriter<T> {
 
     public void write(T value, boolean save) {
         if (sharable.isOptional() &&
-                !inventories.getServiceLocator().getService(InventoriesConfig.class).getOptionalShares().contains(sharable)) {
+                !inventories.getServiceLocator().getService(InventoriesConfig.class).getActiveOptionalShares().contains(sharable)) {
             Logging.finer("Skipping write for optional share: " + sharable);
             return;
         }

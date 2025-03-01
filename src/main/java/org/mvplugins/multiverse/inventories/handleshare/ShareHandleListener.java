@@ -97,14 +97,14 @@ public final class ShareHandleListener implements Listener {
     private String getDebugInfo() {
         StringBuilder versionInfo = new StringBuilder("[Multiverse-Inventories] Multiverse-Inventories Version: " + inventories.getDescription().getVersion() + '\n'
                 + "[Multiverse-Inventories] === Settings ===" + '\n'
-                + "[Multiverse-Inventories] First Run: " + config.isFirstRun() + '\n'
-                + "[Multiverse-Inventories] Using Bypass: " + config.isUsingBypass() + '\n'
-                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + config.isDefaultingUngroupedWorlds() + '\n'
-                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + config.usingLoggingSaveLoad() + '\n'
-                + "[Multiverse-Inventories] Using GameMode Profiles: " + config.isUsingGameModeProfiles() + '\n'
+                + "[Multiverse-Inventories] First Run: " + config.getFirstRun() + '\n'
+                + "[Multiverse-Inventories] Using Bypass: " + config.getEnableBypassPermissions() + '\n'
+                + "[Multiverse-Inventories] Default Ungrouped Worlds: " + config.getDefaultUngroupedWorlds() + '\n'
+                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + config.getSavePlayerdataOnQuit() + '\n'
+                + "[Multiverse-Inventories] Using GameMode Profiles: " + config.getEnableGamemodeShareHandling() + '\n'
                 + "[Multiverse-Inventories] === Shares ===" + '\n'
-                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + config.usingOptionalsForUngrouped() + '\n'
-                + "[Multiverse-Inventories] Enabled Optionals: " + config.getOptionalShares() + '\n'
+                + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + config.getUseOptionalsForUngroupedWorlds() + '\n'
+                + "[Multiverse-Inventories] Enabled Optionals: " + config.getActiveOptionalShares() + '\n'
                 + "[Multiverse-Inventories] === Groups ===" + '\n');
 
         for (WorldGroup group : worldGroupManager.getGroups()) {
@@ -153,7 +153,7 @@ public final class ShareHandleListener implements Listener {
 
         final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
         final String world = globalProfile.getLastWorld();
-        if (config.usingLoggingSaveLoad() && globalProfile.shouldLoadOnLogin()) {
+        if (config.getApplyPlayerdataOnJoin() && globalProfile.shouldLoadOnLogin()) {
             ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(
                     Sharables.allOf(),
                     profileContainerStoreProvider.getStore(ContainerType.WORLD)
@@ -198,14 +198,16 @@ public final class ShareHandleListener implements Listener {
         final String world = event.getPlayer().getWorld().getName();
         GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
         globalProfile.setLastWorld(world);
-        if (config.usingLoggingSaveLoad()) {
+        if (config.getSavePlayerdataOnQuit()) {
             ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(
                     Sharables.allOf(),
                     profileContainerStoreProvider.getStore(ContainerType.WORLD)
                             .getContainer(world)
                             .getPlayerData(player)
             ));
-            globalProfile.setLoadOnLogin(true);
+            if (config.getApplyPlayerdataOnJoin()) {
+                globalProfile.setLoadOnLogin(true);
+            }
         }
         profileDataSource.updateGlobalProfile(globalProfile);
         SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
@@ -231,7 +233,7 @@ public final class ShareHandleListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     void playerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.isCancelled() || !config.isUsingGameModeProfiles()) {
+        if (event.isCancelled() || !config.getEnableGamemodeShareHandling()) {
             return;
         }
         Player player = event.getPlayer();
@@ -276,7 +278,7 @@ public final class ShareHandleListener implements Listener {
     void playerTeleport(PlayerTeleportEvent event) {
         if (event.isCancelled()
                 || event.getFrom().getWorld().equals(event.getTo().getWorld())
-                || !config.getOptionalShares().contains(Sharables.LAST_LOCATION)) {
+                || !config.getActiveOptionalShares().contains(Sharables.LAST_LOCATION)) {
             return;
         }
 
