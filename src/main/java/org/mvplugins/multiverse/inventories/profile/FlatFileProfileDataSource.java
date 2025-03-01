@@ -573,7 +573,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public Map<String, CacheStats> getCacheStats() {
         Map<String, CacheStats> stats = new HashMap<>();
-        stats.put("configCache", playerFileCache.stats());
+        stats.put("playerFileCache", playerFileCache.stats());
         stats.put("globalProfileCache", globalProfileCache.stats());
         stats.put("profileCache", playerProfileCache.stats());
         return stats;
