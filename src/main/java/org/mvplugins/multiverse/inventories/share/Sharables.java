@@ -7,7 +7,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
@@ -41,15 +41,22 @@ import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFr
 public final class Sharables implements Shares {
 
     private static final Shares ALL_SHARABLES = new Sharables(new LinkedHashSet<>());
+    private static final Shares STANDARD_SHARABLES = new Sharables(new LinkedHashSet<>());
+    private static final Shares OPTIONAL_SHARABLES = new Sharables(new LinkedHashSet<>());
 
     /**
      * The map used to lookup a Sharable or set of Sharables by their name.
      */
     static final Map<String, Shares> LOOKUP_MAP = new HashMap<String, Shares>();
 
+    private static Shares enabledShares = noneOf();
+
     private static MultiverseInventories inventories = null;
+    private static InventoriesConfig inventoriesConfig = null;
+    private static WorldGroupManager worldGroupManager = null;
     private static MVEconomist economist = null;
     private static AsyncSafetyTeleporter safetyTeleporter = null;
+
     private static Attribute maxHealthAttr = null;
 
     /**
@@ -66,6 +73,12 @@ public final class Sharables implements Shares {
         }
         if (Sharables.safetyTeleporter == null) {
             Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
+        }
+        if (Sharables.inventoriesConfig == null) {
+            Sharables.inventoriesConfig = inventories.getServiceLocator().getService(InventoriesConfig.class);
+        }
+        if (Sharables.worldGroupManager == null) {
+            Sharables.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
         }
         Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max_health"));
         if (Sharables.maxHealthAttr == null) {
@@ -591,7 +604,7 @@ public final class Sharables implements Shares {
                 @Override
                 public boolean updatePlayer(Player player, PlayerProfile profile) {
                     Location loc = profile.get(LAST_LOCATION);
-                    if (loc == null) {
+                    if (loc == null || loc.getWorld() == null || loc.equals(player.getLocation())) {
                         return false;
                     }
                     safetyTeleporter.to(loc).checkSafety(false).teleport(player);
@@ -734,6 +747,11 @@ public final class Sharables implements Shares {
             }
         }
         if (ALL_SHARABLES.add(sharable)) {
+            if (sharable.isOptional()) {
+                OPTIONAL_SHARABLES.add(sharable);
+            } else {
+                STANDARD_SHARABLES.add(sharable);
+            }
             for (String name : sharable.getNames()) {
                 String key = name.toLowerCase();
                 Shares shares = LOOKUP_MAP.get(key);
@@ -774,17 +792,59 @@ public final class Sharables implements Shares {
     }
 
     /**
+     * @return A {@link Shares} collection containing ALL registered standard {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
+     */
+    public static Shares standard() {
+        return STANDARD_SHARABLES;
+    }
+
+    /**
+     * @return A {@link Shares} collection containing ALL registered enabled {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #allOf()}.
+     */
+    public static Shares enabled() {
+        return enabledShares;
+    }
+
+    /**
+     * @return A {@link Shares} collection containing ALL registered optional {@link Sharable}s. This is NOT to be modified and
+     * serves only as a reference. For a version you can do what you want with, see {@link #optionalOf()}.
+     */
+    public static Shares optional() {
+        return OPTIONAL_SHARABLES;
+    }
+
+    /**
      * @return A new {@link Shares} instance containing ALL registered {@link Sharable}s for your own devices.
      */
     public static Shares allOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(ALL_SHARABLES));
+        return new Sharables(new LinkedHashSet<>(ALL_SHARABLES));
+    }
+
+    /**
+     * @return A new {@link Shares} instance containing ALL enabled optional {@link Sharable}s for your own devices.
+     */
+    public static Shares enabledOf() {
+        return new Sharables(new LinkedHashSet<>(enabledShares));
+    }
+
+    public static Shares standardOf() {
+        return new Sharables(new LinkedHashSet<>(STANDARD_SHARABLES));
+    }
+
+    /**
+     * @return A new {@link Shares} instance containing ALL registered optional {@link Sharable}s for your own devices.
+     */
+    public static Shares optionalOf() {
+        return new Sharables(new LinkedHashSet<>(OPTIONAL_SHARABLES));
     }
 
     /**
      * @return A new empty {@link Shares} instance for your own devices.
      */
     public static Shares noneOf() {
-        return new Sharables(new LinkedHashSet<Sharable>(ALL_SHARABLES.size()));
+        return new Sharables(new LinkedHashSet<>(ALL_SHARABLES.size()));
     }
 
     /**
@@ -884,6 +944,12 @@ public final class Sharables implements Shares {
             }
         }
         return shares;
+    }
+
+    public static void recalculateEnabledShares() {
+        enabledShares = standardOf();
+        enabledShares.addAll(inventoriesConfig.getActiveOptionalShares());
+        worldGroupManager.recalculateApplicableShares();
     }
 
     private Set<Sharable> sharables;

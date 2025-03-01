@@ -59,11 +59,16 @@ final class SingleShareWriter<T> {
 
         this.inventories.getServiceLocator().getService(WorldGroupManager.class)
                 .getGroupsForWorld(worldName)
-                .forEach(worldGroup -> writeNewValueToProfile(
-                                worldGroup.getGroupProfileContainer().getPlayerData(this.player),
-                                value,
-                                save
-                ));
+                .forEach(worldGroup -> {
+                    if (worldGroup.getDisabledShares().contains(sharable)) {
+                        return;
+                    }
+                    writeNewValueToProfile(
+                            worldGroup.getGroupProfileContainer().getPlayerData(this.player),
+                            value,
+                            save
+                    );
+                });
     }
 
     private void writeNewValueToProfile(PlayerProfile profile, T value, boolean save) {

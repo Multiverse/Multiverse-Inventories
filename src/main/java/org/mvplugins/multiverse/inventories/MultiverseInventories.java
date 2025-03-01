@@ -90,6 +90,7 @@ public class MultiverseInventories extends MultiversePlugin {
         super.onEnable();
 
         initializeDependencyInjection();
+        Sharables.init(this);
         Perm.register(this);
         this.reloadConfig();
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
@@ -114,7 +115,6 @@ public class MultiverseInventories extends MultiversePlugin {
         this.registerCommands();
         // Hook plugins that can be imported from
         this.hookImportables();
-        Sharables.init(this);
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
 
         Logging.config("Version %s (API v%s) Enabled - By %s",

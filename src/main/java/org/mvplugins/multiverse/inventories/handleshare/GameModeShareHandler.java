@@ -78,7 +78,7 @@ final class GameModeShareHandler extends ShareHandler {
         } else {
             Logging.finer("No groups for world.");
             affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
-                    Sharables.allOf());
+                    inventoriesConfig.getUseOptionalsForUngroupedWorlds() ? Sharables.enabled() : Sharables.standardOf());
         }
     }
 
@@ -88,8 +88,7 @@ final class GameModeShareHandler extends ShareHandler {
 
     private void addProfilesForWorldGroup(WorldGroup worldGroup) {
         ProfileContainer container = worldGroup.getGroupProfileContainer();
-        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), Sharables.allOf());
-        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), Sharables.allOf());
+        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), Sharables.enabled());
+        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), Sharables.enabled());
     }
 }
-

@@ -36,19 +36,16 @@ public final class ShareHandlingUpdater {
     }
 
     private void updateProfile() {
-        final List<Sharable<?>> saved = new ArrayList<>(profile.shares().size());
+        if (profile.shares().isEmpty()) {
+            return;
+        }
         for (Sharable<?> sharable : profile.shares()) {
-            if (isSharableUsed(sharable)) {
-                saved.add(sharable);
-                sharable.getHandler().updateProfile(profile.profile(), player);
-            }
+            sharable.getHandler().updateProfile(profile.profile(), player);
         }
-        if (!saved.isEmpty()) {
-            Logging.finer("Persisted: " + saved + " to "
-                    + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
-                    + " (" + profile.profile().getProfileType() + ")"
-                    + " for player " + profile.profile().getPlayer().getName());
-        }
+        Logging.finer("Persisted: " + profile.shares() + " to "
+                + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
+                + " (" + profile.profile().getProfileType() + ")"
+                + " for player " + profile.profile().getPlayer().getName());
         inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(profile.profile());
     }
 
@@ -59,12 +56,10 @@ public final class ShareHandlingUpdater {
         final List<Sharable<?>> defaulted = new ArrayList<>(profile.shares().size());
 
         for (Sharable<?> sharable : profile.shares()) {
-            if (isSharableUsed(sharable)) {
-                if (sharable.getHandler().updatePlayer(player, profile.profile())) {
-                    loaded.add(sharable);
-                } else {
-                    defaulted.add(sharable);
-                }
+            if (sharable.getHandler().updatePlayer(player, profile.profile())) {
+                loaded.add(sharable);
+            } else {
+                defaulted.add(sharable);
             }
         }
         if (!loaded.isEmpty()) {
@@ -79,21 +74,5 @@ public final class ShareHandlingUpdater {
                     + profile.profile().getContainerType() + ":" + profile.profile().getContainerName()
                     + " (" + profile.profile().getProfileType() + ")");
         }
-    }
-
-    private boolean isSharableUsed(Sharable<?> sharable) {
-        var config = inventories.getServiceLocator().getService(InventoriesConfig.class);
-        if (sharable.isOptional()) {
-            if (!config.getActiveOptionalShares().contains(sharable)) {
-                Logging.finest("Ignoring optional share: " + sharable.getNames()[0]);
-                return false;
-            }
-            if (profile.profile().getContainerType() == ContainerType.WORLD
-                    && !config.getUseOptionalsForUngroupedWorlds()) {
-                Logging.finest("Ignoring optional share '" + sharable.getNames()[0] + "' for ungrouped world!");
-                return false;
-            }
-        }
-        return true;
     }
 }

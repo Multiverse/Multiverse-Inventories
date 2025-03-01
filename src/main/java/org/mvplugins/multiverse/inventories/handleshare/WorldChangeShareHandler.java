@@ -112,7 +112,8 @@ final class WorldChangeShareHandler extends ShareHandler {
             if (isFromWorldNotInToWorldGroup(worldGroup)) {
                 addReadProfileForWorldGroup(worldGroup);
             }
-            handledShares.addAll(worldGroup.getShares());
+            handledShares.addAll(worldGroup.getApplicableShares());
+            handledShares.addAll(worldGroup.getDisabledShares());
         }
 
         private boolean isPlayerAffectedByChange(WorldGroup worldGroup) {
@@ -138,7 +139,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         private void addReadProfileForWorldGroup(WorldGroup worldGroup) {
             PlayerProfile playerProfile = getWorldGroupPlayerData(worldGroup);
-            affectedProfiles.addReadProfile(playerProfile, worldGroup.getShares());
+            affectedProfiles.addReadProfile(playerProfile, worldGroup.getApplicableShares());
         }
 
         private PlayerProfile getWorldGroupPlayerData(WorldGroup worldGroup) {
@@ -147,7 +148,11 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         private void useToWorldForMissingShares() {
             // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
-            Shares unhandledShares = Sharables.complimentOf(handledShares);
+            Shares unhandledShares = Sharables.enabledOf();
+            unhandledShares.removeAll(handledShares);
+            if (!inventoriesConfig.getUseOptionalsForUngroupedWorlds()) {
+                unhandledShares.removeAll(Sharables.optional());
+            }
             if (unhandledShares.isEmpty()) {
                 return;
             }
@@ -168,21 +173,9 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private void conditionallyAddWriteProfiles() {
-            if (isEligibleForWrite()) {
+            if (!worldGroup.containsWorld(toWorld)) {
                 addWriteProfiles();
             }
-        }
-
-        boolean isEligibleForWrite() {
-            return groupDoesNotContainWorld(toWorld) || isNotSharingAll();
-        }
-
-        private boolean groupDoesNotContainWorld(String world) {
-            return !worldGroup.containsWorld(world);
-        }
-
-        private boolean isNotSharingAll() {
-            return !worldGroup.getShares().isSharing(Sharables.all());
         }
 
         void addWriteProfiles() {
@@ -191,7 +184,7 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private Shares getWorldGroupShares() {
-            return Sharables.fromShares(worldGroup.getShares());
+            return Sharables.fromShares(worldGroup.getApplicableShares());
         }
     }
 }

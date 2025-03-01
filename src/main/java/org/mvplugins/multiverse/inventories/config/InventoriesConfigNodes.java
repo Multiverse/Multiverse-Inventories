@@ -101,6 +101,7 @@ final class InventoriesConfigNodes {
                     return sharables.toStringList();
                 }
             })
+            .onSetValue((oldValue, newValue) -> Sharables.recalculateEnabledShares())
             .build());
 
     private final ConfigHeaderNode sharablesHeader = node(ConfigHeaderNode.builder("sharables")

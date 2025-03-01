@@ -6,7 +6,7 @@ import org.mvplugins.multiverse.inventories.share.Shares;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.mvplugins.multiverse.inventories.share.Sharables.allOf;
+import static org.mvplugins.multiverse.inventories.share.Sharables.enabled;
 
 public final class AffectedProfiles {
 
@@ -18,7 +18,7 @@ public final class AffectedProfiles {
     }
 
     void setAlwaysWriteProfile(PlayerProfile profile) {
-        alwaysWriteProfile = new PersistingProfile(allOf(), profile);
+        alwaysWriteProfile = new PersistingProfile(enabled(), profile);
     }
 
     /**
