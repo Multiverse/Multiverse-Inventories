@@ -245,18 +245,22 @@ public final class ShareHandleListener implements Listener {
         String deathWorld = event.getEntity().getWorld().getName();
         ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(deathWorld);
         PlayerProfile profile = worldProfileContainer.getPlayerData(event.getEntity());
+        resetStatsOnDeath(event, profile);
+        for (WorldGroup worldGroup : worldGroupManager.getGroupsForWorld(deathWorld)) {
+            profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
+            resetStatsOnDeath(event, profile);
+        }
+        Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
+    }
+
+    private void resetStatsOnDeath(PlayerDeathEvent event, PlayerProfile profile) {
         profile.set(Sharables.LEVEL, event.getNewLevel());
         profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
         profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-        profileDataSource.updatePlayerData(profile);
-        for (WorldGroup worldGroup : worldGroupManager.getGroupsForWorld(deathWorld)) {
-            profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
-            profile.set(Sharables.LEVEL, event.getNewLevel());
-            profile.set(Sharables.EXPERIENCE, (float) event.getNewExp());
-            profile.set(Sharables.TOTAL_EXPERIENCE, event.getNewTotalExp());
-            profileDataSource.updatePlayerData(profile);
+        if (config.getResetLastLocationOnDeath()) {
+            profile.set(Sharables.LAST_LOCATION, null);
         }
-        Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
+        profileDataSource.updatePlayerData(profile);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

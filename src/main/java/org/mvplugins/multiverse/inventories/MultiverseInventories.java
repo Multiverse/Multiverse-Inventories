@@ -99,14 +99,15 @@ public class MultiverseInventories extends MultiversePlugin {
         pluginManager.registerEvents(shareHandleListener.get(), this);
         pluginManager.registerEvents(respawnListener.get(), this);
         pluginManager.registerEvents(mvEventsListener.get(), this);
-        try {
-            Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
-            pluginManager.registerEvents(new SpawnChangeListener(this), this);
-            usingSpawnChangeEvent = true;
-            Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
-        } catch (ClassNotFoundException e) {
-            Logging.fine("PlayerSpawnChangeEvent will not be used!");
-            usingSpawnChangeEvent = false;
+        if (inventoriesConfig.get().getUseImprovedRespawnLocationDetection()) {
+            try {
+                Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
+                pluginManager.registerEvents(new SpawnChangeListener(this), this);
+                usingSpawnChangeEvent = true;
+                Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
+            } catch (ClassNotFoundException e) {
+                Logging.fine("PlayerSpawnChangeEvent will not be used!");
+            }
         }
 
         // Register Commands
