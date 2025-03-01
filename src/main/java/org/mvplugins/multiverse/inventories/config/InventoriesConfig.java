@@ -142,19 +142,43 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.activeOptionalShares, shares);
     }
 
+    public boolean getUseImprovedRespawnLocationDetection() {
+        return this.configHandle.get(configNodes.useImprovedRespawnLocationDetection);
+    }
+
+    public Try<Void> setUseImprovedRespawnLocationDetection(boolean useImprovedRespawnLocationDetection) {
+        return this.configHandle.set(configNodes.useImprovedRespawnLocationDetection, useImprovedRespawnLocationDetection);
+    }
+
+    public boolean getResetLastLocationOnDeath() {
+        return this.configHandle.get(configNodes.resetLastLocationOnDeath);
+    }
+
+    public Try<Void> setResetLastLocationOnDeath(boolean resetLastLocationOnDeath) {
+        return this.configHandle.set(configNodes.resetLastLocationOnDeath, resetLastLocationOnDeath);
+    }
+
+    public boolean getApplyLastLocationForAllTeleports() {
+        return this.configHandle.get(configNodes.applyLastLocationForAllTeleports);
+    }
+
+    public Try<Void> setApplyLastLocationForAllTeleports(boolean applyLastLocationForAllTeleports) {
+        return this.configHandle.set(configNodes.applyLastLocationForAllTeleports, applyLastLocationForAllTeleports);
+    }
+
     /**
-     * Tells whether Multiverse-Inventories should save on player logout and load on player login.
+     * Tells whether Multiverse-Inventories should save on player logout.
      *
-     * @return True if should save and load on player log out and in.
+     * @return True if should save on player log out.
      */
     public boolean getSavePlayerdataOnQuit() {
         return this.configHandle.get(configNodes.savePlayerdataOnQuit);
     }
 
     /**
-     * Sets whether Multiverse-Inventories should save on player logout and load on player login.
+     * Sets whether Multiverse-Inventories should save on player logout.
      *
-     * @param useLoggingSaveLoad true if should save and load on player log out and in.
+     * @param useLoggingSaveLoad true if should save on player log out.
      */
     public Try<Void> setSavePlayerdataOnQuit(boolean useLoggingSaveLoad) {
         return this.configHandle.set(configNodes.savePlayerdataOnQuit, useLoggingSaveLoad);

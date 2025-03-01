@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -18,19 +19,24 @@ public final class WorldGroup {
 
     private final WorldGroupManager worldGroupManager;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final InventoriesConfig inventoriesConfig;
     private final String name;
     private final HashSet<String> worlds = new HashSet<>();
     private final Shares shares = Sharables.noneOf();
+    private final Shares disabledShares = Sharables.noneOf();
 
+    private Shares applicableShares = Sharables.noneOf();
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
 
     WorldGroup(
             final WorldGroupManager worldGroupManager,
             final ProfileContainerStoreProvider profileContainerStoreProvider,
+            final InventoriesConfig inventoriesConfig,
             final String name) {
         this.worldGroupManager = worldGroupManager;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.inventoriesConfig = inventoriesConfig;
         this.name = name;
     }
 
@@ -185,6 +191,22 @@ public final class WorldGroup {
      */
     public Shares getShares() {
         return this.shares;
+    }
+
+    public Shares getDisabledShares() {
+        return this.disabledShares;
+    }
+
+    public Shares getApplicableShares() {
+        return this.applicableShares;
+    }
+
+    public void recalculateApplicableShares() {
+        this.applicableShares = Sharables.fromShares(this.shares);
+        this.applicableShares.removeAll(this.disabledShares);
+        Shares disabledOptionalShares = Sharables.optionalOf();
+        disabledOptionalShares.removeAll(this.inventoriesConfig.getActiveOptionalShares());
+        this.applicableShares.removeAll(disabledOptionalShares);
     }
 
     /**

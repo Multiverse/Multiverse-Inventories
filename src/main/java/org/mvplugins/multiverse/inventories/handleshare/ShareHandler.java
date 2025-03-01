@@ -26,7 +26,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
     protected final InventoriesConfig inventoriesConfig;
     protected final WorldGroupManager worldGroupManager;
     protected final ProfileContainerStore worldProfileContainerStore;
-    final AffectedProfiles affectedProfiles;
+    protected final AffectedProfiles affectedProfiles;
 
     ShareHandler(MultiverseInventories inventories, Player player) {
         this.inventories = inventories;
@@ -44,8 +44,8 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
      * inventories/stats for a player and persisting the changes.
      */
     final void handleSharing() {
+        this.prepareProfiles();
         ShareHandlingEvent event = this.createEvent();
-
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             Logging.fine("Share handling has been cancelled by another plugin!");
@@ -54,28 +54,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
         this.completeSharing(event);
     }
 
-    protected final void setAlwaysWriteProfile(PlayerProfile profile) {
-        affectedProfiles.setAlwaysWriteProfile(profile);
-    }
-
-    /**
-     * @param profile   The player profile that will need data saved to.
-     * @param shares    What from this group needs to be saved.
-     */
-    protected final void addWriteProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addWriteProfile(profile, shares);
-    }
-
-    /**
-     * Finalizes the transfer from one world to another. This handles the switching
-     * inventories/stats for a player and persisting the changes.
-     *
-     * @param profile   The player profile that will need data loaded from.
-     * @param shares    What from this group needs to be loaded.
-     */
-    protected final void addReadProfile(PlayerProfile profile, Shares shares) {
-        affectedProfiles.addReadProfile(profile, shares);
-    }
+    protected abstract void prepareProfiles();
 
     protected abstract ShareHandlingEvent createEvent();
 
@@ -130,5 +109,4 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
     private void logHandlingComplete(ShareHandlingEvent event) {
         Logging.finer("=== %s complete for %s ===", event.getPlayer().getName(), event.getEventName());
     }
-
 }

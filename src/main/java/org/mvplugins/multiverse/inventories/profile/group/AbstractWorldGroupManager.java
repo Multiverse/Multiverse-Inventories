@@ -109,6 +109,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     @Override
     public void updateGroup(final WorldGroup worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+        worldGroup.recalculateApplicableShares();
     }
 
     /**
@@ -127,7 +128,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         if (getGroup(name) != null) {
             return null;
         }
-        return new WorldGroup(this, profileContainerStoreProvider, name);
+        return new WorldGroup(this, profileContainerStoreProvider, inventoriesConfig, name);
     }
 
     /**
@@ -143,7 +144,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
                 .fold(() -> Bukkit.getWorlds().get(0), world -> world);
         World defaultNether = Bukkit.getWorld(defaultWorld.getName() + "_nether");
         World defaultEnd = Bukkit.getWorld(defaultWorld.getName() + "_the_end");
-        WorldGroup worldGroup = new WorldGroup(this, profileContainerStoreProvider, DEFAULT_GROUP_NAME);
+        WorldGroup worldGroup = new WorldGroup(this, profileContainerStoreProvider, inventoriesConfig, DEFAULT_GROUP_NAME);
         worldGroup.getShares().mergeShares(Sharables.allOf());
         worldGroup.addWorld(defaultWorld);
         if (defaultNether != null) {
@@ -153,7 +154,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
             worldGroup.addWorld(defaultEnd);
         }
         updateGroup(worldGroup);
-        inventoriesConfig.save();
+        worldGroup.recalculateApplicableShares();
         Logging.info("Created a default group for you containing all of your default worlds: "
                 + String.join(", ", worldGroup.getWorlds()));
     }
@@ -236,5 +237,10 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         } else {
             issuer.sendInfo(MVInvi18n.CONFLICT_NOTFOUND);
         }
+    }
+
+    @Override
+    public void recalculateApplicableShares() {
+        getGroupNames().values().forEach(WorldGroup::recalculateApplicableShares);
     }
 }

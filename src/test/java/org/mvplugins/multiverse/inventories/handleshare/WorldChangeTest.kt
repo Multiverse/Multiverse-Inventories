@@ -29,19 +29,23 @@ class WorldChangeTest : TestWithMockBukkit() {
         val stack = ItemStack.of(Material.STONE_BRICKS, 64)
         player.inventory.setItem(0, stack)
         player.health = 5.5
+        player.totalExperience = 10
 
         val startTime = System.nanoTime()
         server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
         assertEquals(stack, player.inventory.getItem(0))
         assertEquals(5.5, player.health)
+        assertEquals(10, player.totalExperience)
 
         server.getWorld("world4")?.let { player.teleport(it.spawnLocation) }
         assertNotEquals(stack, player.inventory.getItem(0))
         assertNotEquals(5.5, player.health)
+        assertEquals(player.totalExperience, 0)
 
         server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
         assertEquals(stack, player.inventory.getItem(0))
         assertEquals(5.5, player.health)
+        assertEquals(player.totalExperience, 0)
 
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
     }

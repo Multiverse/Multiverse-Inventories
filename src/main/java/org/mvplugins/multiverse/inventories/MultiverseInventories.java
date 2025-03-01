@@ -51,6 +51,8 @@ public class MultiverseInventories extends MultiversePlugin {
     @Inject
     private Provider<RespawnListener> respawnListener;
     @Inject
+    private Provider<MVEventsListener> mvEventsListener;
+    @Inject
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
     private Provider<ProfileDataSource> profileDataSource;
@@ -88,6 +90,7 @@ public class MultiverseInventories extends MultiversePlugin {
         super.onEnable();
 
         initializeDependencyInjection();
+        Sharables.init(this);
         Perm.register(this);
         this.reloadConfig();
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
@@ -96,21 +99,22 @@ public class MultiverseInventories extends MultiversePlugin {
         PluginManager pluginManager = this.getServer().getPluginManager();
         pluginManager.registerEvents(shareHandleListener.get(), this);
         pluginManager.registerEvents(respawnListener.get(), this);
-        try {
-            Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
-            pluginManager.registerEvents(new SpawnChangeListener(this), this);
-            usingSpawnChangeEvent = true;
-            Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
-        } catch (ClassNotFoundException e) {
-            Logging.fine("PlayerSpawnChangeEvent will not be used!");
-            usingSpawnChangeEvent = false;
+        pluginManager.registerEvents(mvEventsListener.get(), this);
+        if (inventoriesConfig.get().getUseImprovedRespawnLocationDetection()) {
+            try {
+                Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
+                pluginManager.registerEvents(new SpawnChangeListener(this), this);
+                usingSpawnChangeEvent = true;
+                Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
+            } catch (ClassNotFoundException e) {
+                Logging.fine("PlayerSpawnChangeEvent will not be used!");
+            }
         }
 
         // Register Commands
         this.registerCommands();
         // Hook plugins that can be imported from
         this.hookImportables();
-        Sharables.init(this);
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
 
         Logging.config("Version %s (API v%s) Enabled - By %s",

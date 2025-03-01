@@ -6,6 +6,8 @@ groups:
     shares:
       - inventory_contents
       - hit_points
+    disabled-shares:
+      - total_xp
   group2:
     worlds:
       - world3

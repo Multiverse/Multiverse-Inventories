@@ -101,6 +101,36 @@ final class InventoriesConfigNodes {
                     return sharables.toStringList();
                 }
             })
+            .onSetValue((oldValue, newValue) -> Sharables.recalculateEnabledShares())
+            .build());
+
+    private final ConfigHeaderNode sharablesHeader = node(ConfigHeaderNode.builder("sharables")
+            .comment("")
+            .comment("")
+            .build());
+
+    final ConfigNode<Boolean> useImprovedRespawnLocationDetection = node(ConfigNode.builder("sharables.use-improved-respawn-location-detection", Boolean.class)
+            .comment("")
+            .comment("When enabled, we will use 1.21's PlayerSpawnChangeEvent to better detect bed and anchor respawn locations.")
+            .comment("This options is not applicable for older minecraft server versions.")
+            .defaultValue(true)
+            .name("use-improved-respawn-location-detection")
+            .build());
+
+    final ConfigNode<Boolean> resetLastLocationOnDeath = node(ConfigNode.builder("sharables.reset-last-location-on-death", Boolean.class)
+            .comment("When set to true, the last location of the player will be reset when they die.")
+            .comment("This is useful if they respawn in a different world and you do not want them to return to their death location.")
+            .defaultValue(false)
+            .name("reset-last-location-on-death")
+            .build());
+
+    final ConfigNode<Boolean> applyLastLocationForAllTeleports = node(ConfigNode.builder("sharables.apply-last-location-for-all-teleports", Boolean.class)
+            .comment("")
+            .comment("When enabled, the last location of the player will be applied for any teleportation.")
+            .comment("This is useful as you want to use the last location for any teleportation, such as the warp system.")
+            .comment("When disabled, you can only use `/mvinv tplastlocation [player] <world>` to teleport to the player's last location.")
+            .defaultValue(true)
+            .name("apply-last-location-for-all-teleports")
             .build());
 
     private final ConfigHeaderNode performanceHeader = node(ConfigHeaderNode.builder("performance")

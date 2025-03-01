@@ -110,5 +110,10 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
      * @param issuer The issuer to relay information to. If null, info only displayed in console.
      */
     void checkForConflicts(MVCommandIssuer issuer);
+
+    /**
+     * Recalculates the applicable shares for all groups removing disabled optional shares.
+     */
+    void recalculateApplicableShares();
 }
 

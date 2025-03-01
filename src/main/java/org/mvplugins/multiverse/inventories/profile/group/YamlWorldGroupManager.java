@@ -90,6 +90,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             for (final WorldGroup worldGroup : worldGroups) {
                 getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
             }
+            recalculateApplicableShares();
             Logging.fine("Loaded " + worldGroups.size() + " world groups from config.");
         });
     }
@@ -144,7 +145,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private WorldGroup deserializeGroup(final String name, final Map<String, Object> dataMap)
             throws DeserializationException {
-        WorldGroup profile = new WorldGroup(this, profileContainerStoreProvider, name);
+        WorldGroup profile = new WorldGroup(this, profileContainerStoreProvider, inventoriesConfig, name);
         if (dataMap.containsKey("worlds")) {
             Object worldListObj = dataMap.get("worlds");
             if (worldListObj == null) {
@@ -183,6 +184,14 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                 Logging.warning("Shares formatted incorrectly for group: " + name);
             }
         }
+        if (dataMap.containsKey("disabled-shares")) {
+            Object sharesListObj = dataMap.get("disabled-shares");
+            if (sharesListObj instanceof List) {
+                profile.getDisabledShares().mergeShares(Sharables.fromList((List) sharesListObj));
+            } else {
+                Logging.warning("Disabled shares formatted incorrectly for group: " + name);
+            }
+        }
         if (dataMap.containsKey("spawn")) {
             Object spawnPropsObj = dataMap.get("spawn");
             if (spawnPropsObj instanceof ConfigurationSection) {
@@ -205,6 +214,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                 Logging.warning("Spawn settings for group formatted incorrectly");
             }
         }
+        profile.recalculateApplicableShares();
         return profile;
     }
 
@@ -219,6 +229,10 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
         List<String> sharesList = profile.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             results.put("shares", sharesList);
+        }
+        List<String> disabledSharesList = profile.getDisabledShares().toStringList();
+        if (!disabledSharesList.isEmpty()) {
+            results.put("disabled-shares", disabledSharesList);
         }
         Map<String, Object> spawnProps = new LinkedHashMap<String, Object>();
         if (profile.getSpawnWorld() != null) {
