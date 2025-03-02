@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -23,11 +24,11 @@ final class ProfileFileIO {
         fileIOExecutorService = Executors.newWorkStealingPool();
     }
 
-    @SuppressWarnings("unchecked")
-    Future<Void> queueAction(File file, Runnable action) {
+    CompletableFuture<Void> queueAction(File file, Runnable action) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
-        return (Future<Void>) fileIOExecutorService.submit(() -> {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        fileIOExecutorService.submit(() -> {
             if (toWaitLatch != null) {
                 try {
                     toWaitLatch.await(10, TimeUnit.SECONDS);
@@ -38,13 +39,16 @@ final class ProfileFileIO {
             action.run();
             thisLatch.countDown();
             fileLocks.remove(file);
+            future.complete(null);
         });
+        return future;
     }
 
-    <T> Future<T> queueCallable(File file, Supplier<T> callable) {
+    <T> CompletableFuture<T> queueCallable(File file, Supplier<T> callable) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
-        return fileIOExecutorService.submit(() -> {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        fileIOExecutorService.submit(() -> {
             if (toWaitLatch != null) {
                 try {
                     toWaitLatch.await(10, TimeUnit.SECONDS);
@@ -55,8 +59,9 @@ final class ProfileFileIO {
             T result = callable.get();
             thisLatch.countDown();
             fileLocks.remove(file);
-            return result;
+            future.complete(result);
         });
+        return future;
     }
 
     <T> T waitForData(File file, Supplier<T> callable) {

@@ -76,7 +76,7 @@ public final class ProfileContainer {
         Map<ProfileType, PlayerProfile> profileMap = this.getPlayerData(player.getName());
         PlayerProfile playerProfile = profileMap.get(profileType);
         if (playerProfile == null) {
-            playerProfile = profileDataSource.getPlayerData(ProfileKey.create(
+            playerProfile = profileDataSource.getPlayerDataNow(ProfileKey.create(
                     getContainerType(),
                     getContainerName(),
                     profileType,

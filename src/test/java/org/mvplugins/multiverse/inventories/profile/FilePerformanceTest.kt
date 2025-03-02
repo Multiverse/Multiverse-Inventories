@@ -73,7 +73,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                val playerProfile = profileDataSource.getPlayerData(
+                val playerProfile = profileDataSource.getPlayerDataNow(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 playerProfile.set(Sharables.HEALTH, 5.0)
                 playerProfile.set(Sharables.OFF_HAND, ItemStack(Material.STONE_BRICKS, 10))
@@ -101,7 +101,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                val playerProfile = profileDataSource.getPlayerData(
+                val playerProfile = profileDataSource.getPlayerDataNow(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 assertEquals(5.0, playerProfile.get(Sharables.HEALTH))
                 assertEquals(ItemStack(Material.STONE_BRICKS, 10), playerProfile.get(Sharables.OFF_HAND))
@@ -116,7 +116,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             for (gameMode in GameMode.entries) {
                 futures3.add(profileDataSource.removePlayerData(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
-                val playerProfile = profileDataSource.getPlayerData(
+                val playerProfile = profileDataSource.getPlayerDataNow(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
                 assertNull(playerProfile.get(Sharables.HEALTH))
                 assertNull(playerProfile.get(Sharables.OFF_HAND))

@@ -29,7 +29,7 @@ class ShareHandlingUpdaterTest : TestWithMockBukkit() {
         player.health = 4.4
         player.maxHealth = 15.1
 
-        val playerProfile = profileDataSource.getPlayerData(
+        val playerProfile = profileDataSource.getPlayerDataNow(
             ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, player.uniqueId))
         ShareHandlingUpdater.updateProfile(multiverseInventories, player, PersistingProfile(Sharables.allOf(), playerProfile))
 
@@ -39,7 +39,7 @@ class ShareHandlingUpdaterTest : TestWithMockBukkit() {
 
     @Test
     fun `Test updating player`() {
-        val playerProfile = profileDataSource.getPlayerData(
+        val playerProfile = profileDataSource.getPlayerDataNow(
             ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, player.uniqueId))
         playerProfile.set(Sharables.HEALTH, 4.4)
         playerProfile.set(Sharables.MAX_HEALTH, 15.1)

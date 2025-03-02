@@ -2,9 +2,10 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheStats;
+import com.github.benmanes.caffeine.cache.AsyncCache;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import com.google.common.collect.Sets;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -34,8 +35,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -47,9 +48,8 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE);
 
-    // TODO these probably need configurable max sizes
     private final Cache<ProfileKey, FileConfiguration> playerFileCache;
-    private final Cache<ProfileKey, PlayerProfile> playerProfileCache;
+    private final AsyncCache<ProfileKey, PlayerProfile> playerProfileCache;
     private final Cache<UUID, GlobalProfile> globalProfileCache;
 
     private final File worldFolder;
@@ -61,19 +61,19 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     @Inject
     FlatFileProfileDataSource(@NotNull MultiverseInventories plugin, @NotNull InventoriesConfig inventoriesConfig) throws IOException {
-        this.playerFileCache = CacheBuilder.newBuilder()
+        this.playerFileCache = Caffeine.newBuilder()
                 .expireAfterAccess(inventoriesConfig.getPlayerFileCacheExpiry(), TimeUnit.MINUTES)
                 .maximumSize(inventoriesConfig.getPlayerFileCacheSize())
                 .recordStats()
                 .build();
 
-        this.playerProfileCache = CacheBuilder.newBuilder()
+        this.playerProfileCache = Caffeine.newBuilder()
                 .expireAfterAccess(inventoriesConfig.getPlayerProfileCacheExpiry(), TimeUnit.MINUTES)
                 .maximumSize(inventoriesConfig.getPlayerProfileCacheSize())
                 .recordStats()
-                .build();
+                .buildAsync();
 
-        this.globalProfileCache = CacheBuilder.newBuilder()
+        this.globalProfileCache = Caffeine.newBuilder()
                 .expireAfterAccess(inventoriesConfig.getGlobalProfileCacheExpiry(), TimeUnit.MINUTES)
                 .maximumSize(inventoriesConfig.getGlobalProfileCacheSize())
                 .recordStats()
@@ -157,7 +157,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private FileConfiguration getOrLoadProfileFile(ProfileKey profileKey, File playerFile) {
         ProfileKey fileProfileKey = profileKey.forProfileType(null);
         return Try.of(() ->
-                playerFileCache.get(fileProfileKey, () -> playerFile.exists()
+                playerFileCache.get(fileProfileKey, (key) -> playerFile.exists()
                         ? parseToConfiguration(playerFile)
                         : new JsonConfiguration())
         ).getOrElseThrow(e -> {
@@ -170,7 +170,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public Future<Void> updatePlayerData(PlayerProfile playerProfile) {
+    public CompletableFuture<Void> updatePlayerData(PlayerProfile playerProfile) {
         ProfileKey profileKey = ProfileKey.fromPlayerProfile(playerProfile);
         File playerFile = getPlayerFile(profileKey);
         return playerProfileIO.queueAction(playerFile, () -> processUpdatePlayerData(profileKey, playerFile, playerProfile.clone()));
@@ -227,19 +227,31 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public PlayerProfile getPlayerData(ProfileKey key) {
+    public PlayerProfile getPlayerDataNow(ProfileKey profileKey) {
         try {
-            return playerProfileCache.get(key, () -> {
+            return getPlayerData(profileKey).get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<PlayerProfile> getPlayerData(ProfileKey profileKey) {
+        try {
+            return playerProfileCache.get(profileKey, (key, executor) -> {
                 File playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
                 if (!playerFile.exists()) {
-                    return PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
-                            key.getProfileType(), Bukkit.getOfflinePlayer(key.getPlayerUUID()));
+                    return CompletableFuture.completedFuture(PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
+                            key.getProfileType(), Bukkit.getOfflinePlayer(key.getPlayerUUID())));
                 }
-                return playerProfileIO.waitForData(playerFile, () -> getPlayerDataFromDisk(key, playerFile));
+                return playerProfileIO.queueCallable(playerFile, () -> getPlayerDataFromDisk(key, playerFile));
             });
-        } catch (ExecutionException e) {
-            Logging.severe("Could not get data for player: " + key.getPlayerName()
-                    + " for " + key.getContainerType().toString() + ": " + key.getDataName());
+        } catch (Exception e) {
+            Logging.severe("Could not get data for player: " + profileKey.getPlayerName()
+                    + " for " + profileKey.getContainerType().toString() + ": " + profileKey.getDataName());
             throw new RuntimeException(e);
         }
     }
@@ -370,11 +382,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public Future<Void> removePlayerData(ProfileKey profileKey) {
+    public CompletableFuture<Void> removePlayerData(ProfileKey profileKey) {
         File playerFile = getPlayerFile(profileKey);
         if (profileKey.getProfileType() == null) {
             for (var type : ProfileTypes.getTypes()) {
-                Option.of(playerProfileCache.getIfPresent(profileKey.forProfileType(type)))
+                Option.of(playerProfileCache.synchronous().getIfPresent(profileKey.forProfileType(type)))
                         .peek(profile -> profile.getData().clear());
             }
             if (!playerFile.exists()) {
@@ -384,7 +396,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             }
             return playerProfileIO.queueAction(playerFile, playerFile::delete);
         }
-        Option.of(playerProfileCache.getIfPresent(profileKey)).peek(profile -> profile.getData().clear());
+        Option.of(playerProfileCache.synchronous().getIfPresent(profileKey)).peek(profile -> profile.getData().clear());
         return playerProfileIO.queueAction(playerFile, () -> processRemovePlayerData(profileKey, playerFile));
     }
 
@@ -460,8 +472,8 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public GlobalProfile getGlobalProfile(UUID playerUUID, String playerName) {
         try {
-            return globalProfileCache.get(playerUUID, () -> getGlobalProfileFromDisk(playerUUID, playerName));
-        } catch (ExecutionException e) {
+            return globalProfileCache.get(playerUUID, (key) -> getGlobalProfileFromDisk(playerUUID, playerName));
+        } catch (Exception e) {
             Logging.severe("Unable to get global profile for player: " + playerName);
             throw new RuntimeException(e);
         }
@@ -504,15 +516,15 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return GlobalProfile.deserialize(playerName, playerUUID, section);
     }
 
-    public Future<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer) {
+    public CompletableFuture<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer) {
         return modifyGlobalProfile(getGlobalProfile(playerUUID), consumer);
     }
 
-    public Future<Void> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer) {
+    public CompletableFuture<Void> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer) {
         return modifyGlobalProfile(getGlobalProfile(offlinePlayer), consumer);
     }
 
-    private Future<Void> modifyGlobalProfile(GlobalProfile globalProfile, Consumer<GlobalProfile> consumer) {
+    private CompletableFuture<Void> modifyGlobalProfile(GlobalProfile globalProfile, Consumer<GlobalProfile> consumer) {
         consumer.accept(globalProfile);
         return updateGlobalProfile(globalProfile);
     }
@@ -521,7 +533,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public Future<Void> updateGlobalProfile(GlobalProfile globalProfile) {
+    public CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile) {
         File globalFile = getGlobalFile(globalProfile.getPlayerUUID().toString());
         return globalProfileIO.queueAction(globalFile, () -> processGlobalProfileWrite(globalProfile, globalFile));
     }
@@ -554,20 +566,20 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public void clearProfileCache(ProfileKey key) {
         playerFileCache.invalidate(key);
-        playerProfileCache.invalidate(key);
+        playerProfileCache.synchronous().invalidate(key);
     }
 
     @Override
     public void clearProfileCache(Predicate<ProfileKey> predicate) {
         playerFileCache.invalidateAll(Sets.filter(playerFileCache.asMap().keySet(), predicate::test));
-        playerProfileCache.invalidateAll(Sets.filter(playerProfileCache.asMap().keySet(), predicate::test));
+        playerProfileCache.synchronous().invalidateAll(Sets.filter(playerProfileCache.asMap().keySet(), predicate::test));
     }
 
     @Override
     public void clearAllCache() {
         playerFileCache.invalidateAll();
         globalProfileCache.invalidateAll();
-        playerProfileCache.invalidateAll();
+        playerProfileCache.synchronous().invalidateAll();
     }
 
     @Override
@@ -575,7 +587,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         Map<String, CacheStats> stats = new HashMap<>();
         stats.put("playerFileCache", playerFileCache.stats());
         stats.put("globalProfileCache", globalProfileCache.stats());
-        stats.put("profileCache", playerProfileCache.stats());
+        stats.put("profileCache", playerProfileCache.synchronous().stats());
         return stats;
     }
 }
