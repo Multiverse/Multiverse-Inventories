@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandCompletions;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.configuration.handle.PropertyModifyAction;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandCompletionContext;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
@@ -40,6 +41,8 @@ public final class MVInvCommandCompletion {
 
         MVCommandCompletions commandCompletions = mvCommandManager.getCommandCompletions();
         commandCompletions.registerAsyncCompletion("dataimporters", this::suggestDataImporters);
+        commandCompletions.registerStaticCompletion("mvinvconfigs", inventoriesConfig.getStringPropertyHandle().getAllPropertyNames());
+        commandCompletions.registerAsyncCompletion("mvinvconfigvalues", this::suggestConfigValues);
         commandCompletions.registerAsyncCompletion("sharables", this::suggestSharables);
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
         commandCompletions.registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
@@ -48,6 +51,13 @@ public final class MVInvCommandCompletion {
 
     private Collection<String> suggestDataImporters(BukkitCommandCompletionContext context) {
         return dataImportManager.getEnabledImporterNames();
+    }
+
+    private Collection<String> suggestConfigValues(BukkitCommandCompletionContext context) {
+        return Try.of(() -> context.getContextValue(String.class))
+                .map(propertyName -> inventoriesConfig.getStringPropertyHandle()
+                        .getSuggestedPropertyValue(propertyName, context.getInput(), PropertyModifyAction.SET))
+                .getOrElse(Collections.emptyList());
     }
 
     private Collection<String> suggestSharables(BukkitCommandCompletionContext context) {

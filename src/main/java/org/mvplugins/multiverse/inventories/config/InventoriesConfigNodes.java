@@ -86,7 +86,7 @@ final class InventoriesConfigNodes {
             .comment("You must specify optional shares you wish to use here or they will be ignored.")
             .comment("The only built-in optional shares are \"economy\" and \"last_location\".")
             .defaultValue(Sharables.noneOf())
-            .name(null)
+            .hidden()
             .serializer(new NodeSerializer<>() {
                 @Override
                 public Shares deserialize(Object o, Class<Shares> aClass) {
