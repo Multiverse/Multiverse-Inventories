@@ -2,9 +2,6 @@ package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
-import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
-import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
@@ -41,11 +38,9 @@ import org.bukkit.inventory.InventoryHolder;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Events related to handling of player profile changes.
@@ -338,11 +333,11 @@ public final class ShareHandleListener implements Listener {
 
         ProfileContainer fromWorldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD)
                 .getContainer(unloadWorldName);
-        fromWorldProfileContainer.clearContainer();
+        fromWorldProfileContainer.clearContainerCache();
 
         List<WorldGroup> fromGroups = worldGroupManager.getGroupsForWorld(unloadWorldName);
         for (WorldGroup fromGroup : fromGroups) {
-            fromGroup.getGroupProfileContainer().clearContainer();
+            fromGroup.getGroupProfileContainer().clearContainerCache();
         }
     }
 }
