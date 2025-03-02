@@ -29,7 +29,7 @@ final class ConfigCommand extends InventoriesCommand {
     }
 
     @Subcommand("config")
-    @CommandPermission("multiverse.core.config")
+    @CommandPermission("multiverse.inventories.config")
     @CommandCompletion("@mvinvconfigs @mvinvconfigvalues")
     @Syntax("<name> [value]")
     @Description("Show or set a config value.")
