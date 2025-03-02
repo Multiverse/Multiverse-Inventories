@@ -171,12 +171,12 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public Future<Void> updatePlayerData(PlayerProfile playerProfile) {
-        return playerProfileIO.queueAction(() -> processUpdatePlayerData(playerProfile.clone()));
-    }
-
-    private void processUpdatePlayerData(PlayerProfile playerProfile) {
         ProfileKey profileKey = ProfileKey.fromPlayerProfile(playerProfile);
         File playerFile = getPlayerFile(profileKey);
+        return playerProfileIO.queueAction(playerFile, () -> processUpdatePlayerData(profileKey, playerFile, playerProfile.clone()));
+    }
+
+    private void processUpdatePlayerData(ProfileKey profileKey, File playerFile, PlayerProfile playerProfile) {
         FileConfiguration playerData = getOrLoadProfileFile(profileKey, playerFile);
         Map<String, Object> serializedData = serializePlayerProfile(playerProfile);
         if (serializedData.isEmpty()) {
@@ -235,7 +235,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                     return PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
                             key.getProfileType(), Bukkit.getOfflinePlayer(key.getPlayerUUID()));
                 }
-                return playerProfileIO.waitForData(() -> getPlayerDataFromDisk(key, playerFile));
+                return playerProfileIO.waitForData(playerFile, () -> getPlayerDataFromDisk(key, playerFile));
             });
         } catch (ExecutionException e) {
             Logging.severe("Could not get data for player: " + key.getPlayerName()
@@ -371,25 +371,25 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public Future<Void> removePlayerData(ProfileKey profileKey) {
+        File playerFile = getPlayerFile(profileKey);
         if (profileKey.getProfileType() == null) {
-            clearProfileCache(key -> key.getPlayerUUID().equals(profileKey.getPlayerUUID())
-                    && key.getContainerType().equals(profileKey.getContainerType())
-                    && key.getDataName().equals(profileKey.getDataName()));
-            File playerFile = getPlayerFile(profileKey);
+            for (var type : ProfileTypes.getTypes()) {
+                Option.of(playerProfileCache.getIfPresent(profileKey.forProfileType(type)))
+                        .peek(profile -> profile.getData().clear());
+            }
             if (!playerFile.exists()) {
                 Logging.warning("Attempted to delete file that did not exist for player " + profileKey.getPlayerName()
                         + " in " + profileKey.getContainerType() + " " + profileKey.getDataName());
                 return CompletableFuture.completedFuture(null);
             }
-            return playerProfileIO.queueAction(playerFile::delete);
+            return playerProfileIO.queueAction(playerFile, playerFile::delete);
         }
-        playerProfileCache.invalidate(profileKey);
-        return playerProfileIO.queueAction(() -> processRemovePlayerData(profileKey));
+        Option.of(playerProfileCache.getIfPresent(profileKey)).peek(profile -> profile.getData().clear());
+        return playerProfileIO.queueAction(playerFile, () -> processRemovePlayerData(profileKey, playerFile));
     }
 
-    private void processRemovePlayerData(ProfileKey profileKey) {
+    private void processRemovePlayerData(ProfileKey profileKey, File playerFile) {
         try {
-            File playerFile = getPlayerFile(profileKey.getContainerType(), profileKey.getDataName(), profileKey.getPlayerName());
             FileConfiguration playerData = getOrLoadProfileFile(profileKey, playerFile);
             playerData.set(profileKey.getProfileType().getName(), null);
             playerData.save(playerFile);
@@ -496,7 +496,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private GlobalProfile loadGlobalProfile(File globalFile, String playerName, UUID playerUUID) {
-        FileConfiguration playerData = globalProfileIO.waitForData(() -> parseToConfiguration(globalFile));
+        FileConfiguration playerData = globalProfileIO.waitForData(globalFile, () -> parseToConfiguration(globalFile));
         ConfigurationSection section = playerData.getConfigurationSection(DataStrings.PLAYER_DATA);
         if (section == null) {
             section = playerData.createSection(DataStrings.PLAYER_DATA);
@@ -522,15 +522,15 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public Future<Void> updateGlobalProfile(GlobalProfile globalProfile) {
-        return globalProfileIO.queueAction(() -> processGlobalProfileWrite(globalProfile));
+        File globalFile = getGlobalFile(globalProfile.getPlayerUUID().toString());
+        return globalProfileIO.queueAction(globalFile, () -> processGlobalProfileWrite(globalProfile, globalFile));
     }
 
-    private void processGlobalProfileWrite(GlobalProfile globalProfile) {
-        File playerFile = getGlobalFile(globalProfile.getPlayerUUID().toString());
+    private void processGlobalProfileWrite(GlobalProfile globalProfile, File globalFile) {
         FileConfiguration playerData = new JsonConfiguration();
         playerData.createSection(DataStrings.PLAYER_DATA, globalProfile.serialize(globalProfile));
         try {
-            playerData.save(playerFile);
+            playerData.save(globalFile);
         } catch (IOException e) {
             Logging.severe("Could not save global data for player: " + globalProfile);
             Logging.severe(e.getMessage());

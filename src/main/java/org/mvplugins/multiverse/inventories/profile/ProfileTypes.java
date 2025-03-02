@@ -2,25 +2,40 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.GameMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Static class for profile type lookup and protected registration.
  */
 public final class ProfileTypes {
 
+    private static final List<ProfileType> types = new ArrayList<>();
+
+    private static ProfileType createProfileType(String name) {
+        ProfileType type = ProfileType.createProfileType(name);
+        types.add(type);
+        return type;
+    }
+
+    public static List<ProfileType> getTypes() {
+        return types;
+    }
+
     /**
      * The profile type for the SURVIVAL Game Mode.
      */
-    public static final ProfileType SURVIVAL = ProfileType.createProfileType("SURVIVAL");
+    public static final ProfileType SURVIVAL = createProfileType("SURVIVAL");
 
     /**
      * The profile type for the CREATIVE Game Mode.
      */
-    public static final ProfileType CREATIVE = ProfileType.createProfileType("CREATIVE");
+    public static final ProfileType CREATIVE = createProfileType("CREATIVE");
 
     /**
      * The profile type for the ADVENTURE Game Mode.
      */
-    public static final ProfileType ADVENTURE = ProfileType.createProfileType("ADVENTURE");
+    public static final ProfileType ADVENTURE = createProfileType("ADVENTURE");
 
     /**
      * Returns the appropriate ProfileType for the given game mode.
