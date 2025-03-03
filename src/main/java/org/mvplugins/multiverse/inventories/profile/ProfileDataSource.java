@@ -69,7 +69,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param playerUUID    The UUID of the player.
      * @return The global profile for the specified player.
      */
-    @NotNull GlobalProfile getGlobalProfile(UUID playerUUID);
+    @NotNull GlobalProfile getGlobalProfileNow(UUID playerUUID);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
@@ -77,7 +77,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param player    The player.
      * @return The global profile for the specified player.
      */
-    @NotNull GlobalProfile getGlobalProfile(OfflinePlayer player);
+    @NotNull GlobalProfile getGlobalProfileNow(OfflinePlayer player);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
@@ -87,7 +87,7 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param playerName    The name of the player.
      * @return The global profile for the specified player.
      */
-    @NotNull GlobalProfile getGlobalProfile(UUID playerUUID, String playerName);
+    @NotNull GlobalProfile getGlobalProfileNow(UUID playerUUID, String playerName);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player if it exists.
@@ -96,7 +96,15 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param playerName The name of the player.
      * @return The global profile for the specified player or empty if it doesn't exist.
      */
-    @NotNull Option<GlobalProfile> getExistingGlobalProfile(UUID playerUUID, String playerName);
+    @NotNull Option<GlobalProfile> getExistingGlobalProfileNow(UUID playerUUID, String playerName);
+
+    CompletableFuture<GlobalProfile> getGlobalProfile(UUID playerUUID);
+
+    CompletableFuture<GlobalProfile> getGlobalProfile(OfflinePlayer player);
+
+    @NotNull CompletableFuture<GlobalProfile> getGlobalProfile(UUID playerUUID, String playerName);
+
+    @NotNull CompletableFuture<Option<GlobalProfile>> getExistingGlobalProfile(UUID playerUUID, String playerName);
 
     CompletableFuture<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer);
 

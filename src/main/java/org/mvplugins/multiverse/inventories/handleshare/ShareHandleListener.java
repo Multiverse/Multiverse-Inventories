@@ -41,6 +41,7 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Events related to handling of player profile changes.
@@ -91,7 +92,7 @@ public final class ShareHandleListener implements Listener {
         // Just in case AsyncPlayerPreLoginEvent was still the old name
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
-        final GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
+        final GlobalProfile globalProfile = profileDataSource.getGlobalProfileNow(player);
         final String world = globalProfile.getLastWorld();
         if (config.getApplyPlayerdataOnJoin() && globalProfile.shouldLoadOnLogin()) {
             ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(
@@ -107,7 +108,7 @@ public final class ShareHandleListener implements Listener {
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
-        profileDataSource.getExistingGlobalProfile(uuid, name).peek(globalProfile -> {
+        profileDataSource.getExistingGlobalProfileNow(uuid, name).peek(globalProfile -> {
             if (globalProfile.getLastKnownName().equals(name)) {
                 return;
             }
@@ -136,8 +137,8 @@ public final class ShareHandleListener implements Listener {
     void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
-        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(player);
-        globalProfile.setLastWorld(world);
+        CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(player);
+        globalProfile.thenAccept(p -> p.setLastWorld(world));
         if (config.getSavePlayerdataOnQuit()) {
             ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(
                     Sharables.allOf(),
@@ -146,10 +147,10 @@ public final class ShareHandleListener implements Listener {
                             .getPlayerData(player)
             ));
             if (config.getApplyPlayerdataOnJoin()) {
-                globalProfile.setLoadOnLogin(true);
+                globalProfile.thenAccept(p -> p.setLoadOnLogin(true));
             }
         }
-        profileDataSource.updateGlobalProfile(globalProfile);
+        globalProfile.thenAccept(profileDataSource::updateGlobalProfile);
         SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
     }
 
@@ -269,7 +270,7 @@ public final class ShareHandleListener implements Listener {
                 () -> verifyCorrectWorld(
                         player,
                         player.getWorld().getName(),
-                        profileDataSource.getGlobalProfile(player)),
+                        profileDataSource.getGlobalProfileNow(player)),
                 2L);
     }
 

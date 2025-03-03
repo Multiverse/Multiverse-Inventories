@@ -180,7 +180,7 @@ class PwiImportHelper {
     }
 
     private void saveMVDataForPlayer(Group group, OfflinePlayer offlinePlayer) throws DataImportException {
-        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(offlinePlayer);
+        GlobalProfile globalProfile = profileDataSource.getGlobalProfileNow(offlinePlayer);
         globalProfile.setLoadOnLogin(pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
         profileDataSource.updateGlobalProfile(globalProfile);
         for (GameMode gameMode : GameMode.values()) {

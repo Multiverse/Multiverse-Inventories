@@ -43,26 +43,14 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         val futures = ArrayList<Future<Void>>(10000)
         for (i in 0..9999) {
-            val globalProfile = profileDataSource.getGlobalProfile(UUID.randomUUID())
-            globalProfile.setLoadOnLogin(true)
-            futures.add(profileDataSource.updateGlobalProfile(globalProfile))
+            futures.add(profileDataSource.modifyGlobalProfile(UUID.randomUUID(), { globalProfile ->
+                globalProfile.setLoadOnLogin(true)
+            }))
         }
         for (future in futures) {
             future.get()
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-
-        val startTime2 = System.nanoTime()
-        val futures2 = ArrayList<Future<Void>>(10000)
-        for (i in 0..9999) {
-            val globalProfile = profileDataSource.getGlobalProfile(UUID.randomUUID())
-            globalProfile.setLoadOnLogin(false)
-            futures2.add(profileDataSource.updateGlobalProfile(globalProfile))
-        }
-        for (future in futures2) {
-            future.get()
-        }
-        Logging.info("Time taken: " + (System.nanoTime() - startTime2) / 1000000 + "ms")
     }
 
     @Test

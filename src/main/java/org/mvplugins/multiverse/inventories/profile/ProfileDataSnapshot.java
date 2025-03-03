@@ -12,12 +12,12 @@ public class ProfileDataSnapshot implements Cloneable, ProfileData {
     private final Map<Sharable, Object> data;
 
     public ProfileDataSnapshot() {
-        this.data = new HashMap<>(Sharables.all().size());
+        this.data = new HashMap<>(Sharables.all().size(), 1);
     }
 
     @Override
     public <T> T get(Sharable<T> sharable) {
-        return sharable.getType().cast(this.data.get(sharable));
+        return (T) this.data.get(sharable);
     }
 
     @Override

@@ -75,6 +75,6 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertFalse(Path.of(multiverseInventories.dataFolder.absolutePath, "groups", "test", "Benji_0224.json").toFile().exists())
 
         // check player profile
-        assertEquals("benthecat10", profileDataSource.getGlobalProfile(player)?.lastKnownName)
+        assertEquals("benthecat10", profileDataSource.getGlobalProfileNow(player)?.lastKnownName)
     }
 }
