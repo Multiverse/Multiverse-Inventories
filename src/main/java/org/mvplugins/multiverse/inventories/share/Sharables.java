@@ -1046,19 +1046,20 @@ public final class Sharables implements Shares {
      * {@inheritDoc}
      */
     @Override
-    public void setSharing(Sharable sharable, boolean sharing) {
+    public Shares setSharing(Sharable sharable, boolean sharing) {
         if (sharing) {
             this.add(sharable);
         } else {
             this.remove(sharable);
         }
+        return this;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setSharing(Shares sharables, boolean sharing) {
+    public Shares setSharing(Shares sharables, boolean sharing) {
         for (Sharable sharable : sharables) {
             if (sharing) {
                 this.add(sharable);
@@ -1066,6 +1067,7 @@ public final class Sharables implements Shares {
                 this.remove(sharable);
             }
         }
+        return this;
     }
 
     @Override

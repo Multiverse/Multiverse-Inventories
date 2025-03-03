@@ -71,7 +71,6 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
         updatePlayer();
         Logging.finest("Updated player in %4.4f ms", (System.nanoTime() - s4) / 1000000.0);
         long s5 = System.nanoTime();
-        updateAlwaysWriteProfile(snapshot);
         updateProfiles(snapshot);
         Logging.finest("Updated profiles in %4.4f ms", (System.nanoTime() - s5) / 1000000.0);
         double timeTaken = (System.nanoTime() - startTime) / 1000000.0;
@@ -87,8 +86,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
     }
 
     private void logAffectedProfilesCount() {
-        PersistingProfile alwaysWriteProfile = affectedProfiles.getAlwaysWriteProfile();
-        int writeProfiles = affectedProfiles.getWriteProfiles().size() + (alwaysWriteProfile != null ? 1 : 0);
+        int writeProfiles = affectedProfiles.getWriteProfiles().size();
 
         Logging.finer("Change affected by %d fromProfiles and %d toProfiles", writeProfiles,
                 affectedProfiles.getReadProfiles().size());
@@ -106,17 +104,9 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
         }
     }
 
-    private void updateAlwaysWriteProfile(ProfileDataSnapshot snapshot) {
-        if (affectedProfiles.getAlwaysWriteProfile() == null) {
-            Logging.warning("No fromWorld to save to");
-            return;
-        }
-        updatePersistingProfile(affectedProfiles.getAlwaysWriteProfile(), snapshot);
-    }
-
     private void updateProfiles(ProfileDataSnapshot snapshot) {
-        if (affectedProfiles.getReadProfiles().isEmpty()) {
-            Logging.finest("No profiles to read from - nothing more to do.");
+        if (affectedProfiles.getWriteProfiles().isEmpty()) {
+            Logging.finest("No profiles to write - nothing more to do.");
             return;
         }
         for (PersistingProfile writeProfile : affectedProfiles.getWriteProfiles()) {
@@ -125,7 +115,11 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
     }
 
     private void updatePersistingProfile(PersistingProfile persistingProfile, ProfileDataSnapshot snapshot) {
-        persistingProfile.getProfile().thenAccept(playerProfile -> {
+        if (persistingProfile.getShares().isEmpty()) {
+            Logging.finest("No shares to write - nothing more to do.");
+            return;
+        }
+        persistingProfile.getProfile().thenAcceptAsync(playerProfile -> {
             Logging.finer("Persisted: " + persistingProfile.getShares() + " to "
                     + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                     + " (" + playerProfile.getProfileType() + ")"

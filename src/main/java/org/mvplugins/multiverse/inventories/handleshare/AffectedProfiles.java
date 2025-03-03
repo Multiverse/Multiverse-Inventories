@@ -7,19 +7,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static org.mvplugins.multiverse.inventories.share.Sharables.enabled;
-
 public final class AffectedProfiles {
 
-    private PersistingProfile alwaysWriteProfile;
     private final List<PersistingProfile> writeProfiles = new LinkedList<>();
     private final List<PersistingProfile> readProfiles = new LinkedList<>();
 
     AffectedProfiles() {
-    }
-
-    void setAlwaysWriteProfile(CompletableFuture<PlayerProfile> profile) {
-        alwaysWriteProfile = new PersistingProfile(enabled(), profile);
     }
 
     /**
@@ -36,10 +29,6 @@ public final class AffectedProfiles {
      */
     void addReadProfile(CompletableFuture<PlayerProfile> profile, Shares shares) {
         readProfiles.add(new PersistingProfile(shares, profile));
-    }
-
-    public PersistingProfile getAlwaysWriteProfile() {
-        return alwaysWriteProfile;
     }
 
     public List<PersistingProfile> getWriteProfiles() {

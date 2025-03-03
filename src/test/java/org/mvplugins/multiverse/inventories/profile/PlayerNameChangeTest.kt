@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile
 
+import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.mockbukkit.mockbukkit.entity.PlayerMock
@@ -60,6 +61,8 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         server.getWorld("world")?.let { player.teleport(it.spawnLocation) }
         assertEquals(5.0, player.health)
         assertEquals(stack, player.inventory.getItem(0))
+
+        Thread.sleep(100) // wait for files to save
 
         // check files
         assertTrue(Path.of(multiverseInventories.dataFolder.absolutePath, "worlds", "world", "benthecat10.json").toFile().exists())

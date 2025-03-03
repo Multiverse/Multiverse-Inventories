@@ -67,7 +67,8 @@ shadowJar {
     relocate 'com.dumptruckman.minecraft.util.DebugLog', 'org.mvplugins.multiverse.inventories.utils.DebugFileLogger'
     relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
     relocate 'net.minidev', 'org.mvplugins.multiverse.inventories.utils.minidev'
-    relocate 'com.github.ben-manes', 'org.mvplugins.multiverse.inventories.utils.ben-manes'
+    relocate 'com.github.benmanes', 'org.mvplugins.multiverse.inventories.utils.benmanes'
+    relocate 'come.google.errorprone', 'org.mvplugins.multiverse.inventories.utils.errorprone'
 
     dependencies {
         exclude(dependency {

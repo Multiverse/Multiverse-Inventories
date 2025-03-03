@@ -5,7 +5,6 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
 import org.mvplugins.multiverse.inventories.event.WorldChangeShareHandlingEvent;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
@@ -43,16 +42,18 @@ final class WorldChangeShareHandler extends ShareHandler {
     @Override
     protected void prepareProfiles() {
         Logging.fine("=== %s traveling from world: %s to world: %s ===", player.getName(), fromWorld, toWorld);
-        setAlwaysWriteWorldProfile();
         if (isPlayerAffectedByChange()) {
             addWriteProfiles();
             addReadProfiles();
+        } else if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
+            // Write to world profile to ensure data is saved incase bypass is removed
+            affectedProfiles.addWriteProfile(
+                    worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player),
+                    (fromWorldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
+                            ? Sharables.standard()
+                            : Sharables.enabled()
+            );
         }
-    }
-
-    private void setAlwaysWriteWorldProfile() {
-        // We will always save everything to the world they come from.
-        affectedProfiles.setAlwaysWriteProfile(worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player));
     }
 
     private boolean isPlayerAffectedByChange() {
@@ -68,11 +69,7 @@ final class WorldChangeShareHandler extends ShareHandler {
     }
 
     private void addWriteProfiles() {
-        if (fromWorldGroups.isEmpty()) {
-            Logging.finer("No groups for fromWorld.");
-            return;
-        }
-        fromWorldGroups.forEach(wg -> new WorldGroupWrapper(wg).conditionallyAddWriteProfiles());
+        new WriteProfileAggregator().conditionallyAddWriteProfiles();
     }
 
     private void addReadProfiles() {
@@ -81,11 +78,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
     private class ReadProfilesAggregator {
 
-        private final Shares handledShares;
-
-        private ReadProfilesAggregator() {
-            this.handledShares = Sharables.noneOf();
-        }
+        private final Shares handledShares = Sharables.noneOf();
 
         private void addReadProfiles() {
             addReadProfilesFromToWorldGroups();
@@ -141,11 +134,9 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         private void useToWorldForMissingShares() {
             // We need to fill in any sharables that are not going to be transferred with what's saved in the world file.
-            Shares unhandledShares = Sharables.enabledOf();
+            Shares unhandledShares = (toWorldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
+                    ? Sharables.standardOf() : Sharables.enabledOf();
             unhandledShares.removeAll(handledShares);
-            if (!inventoriesConfig.getUseOptionalsForUngroupedWorlds()) {
-                unhandledShares.removeAll(Sharables.optional());
-            }
             if (unhandledShares.isEmpty()) {
                 return;
             }
@@ -157,20 +148,31 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
     }
 
-    private class WorldGroupWrapper {
-        private final WorldGroup worldGroup;
+    private class WriteProfileAggregator {
 
-        public WorldGroupWrapper(WorldGroup worldGroup) {
-            this.worldGroup = worldGroup;
-        }
+        private final Shares handledShares = Sharables.noneOf();
 
         private void conditionallyAddWriteProfiles() {
-            if (!worldGroup.containsWorld(toWorld)) {
-                addWriteProfiles();
+            fromWorldGroups.forEach(this::conditionallyAddWriteProfileForGroup);
+            Shares sharesToWrite = inventoriesConfig.getAlwaysWriteWorldProfile()
+                    ? Sharables.enabled()
+                    : Sharables.enabledOf().setSharing(handledShares, false);
+            if (!sharesToWrite.isEmpty()) {
+                affectedProfiles.addWriteProfile(
+                        worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player),
+                        sharesToWrite);
             }
         }
 
-        void addWriteProfiles() {
+        private void conditionallyAddWriteProfileForGroup(WorldGroup worldGroup) {
+            if (!worldGroup.containsWorld(toWorld)) {
+                addWriteProfileForGroup(worldGroup);
+            }
+            handledShares.addAll(worldGroup.getApplicableShares());
+            handledShares.addAll(worldGroup.getDisabledShares());
+        }
+
+        void addWriteProfileForGroup(WorldGroup worldGroup) {
             ProfileContainer container = worldGroup.getGroupProfileContainer();
             affectedProfiles.addWriteProfile(container.getPlayerData(player), worldGroup.getApplicableShares());
         }
