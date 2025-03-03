@@ -40,13 +40,13 @@ public interface Shares extends Cloneable, Iterable<Sharable>, Collection<Sharab
      * @param sharable The Sharable you wish to set sharing for.
      * @param sharing  Whether to share or not.
      */
-    void setSharing(Sharable sharable, boolean sharing);
+    Shares setSharing(Sharable sharable, boolean sharing);
 
     /**
      * @param sharables a Set of Sharables you wish to set sharing for.
      * @param sharing   Whether to share or not.
      */
-    void setSharing(Shares sharables, boolean sharing);
+    Shares setSharing(Shares sharables, boolean sharing);
 
     /**
      * @return These shares as a string list.

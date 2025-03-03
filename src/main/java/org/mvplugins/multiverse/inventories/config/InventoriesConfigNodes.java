@@ -3,11 +3,13 @@ package org.mvplugins.multiverse.inventories.config;
 import org.mvplugins.multiverse.core.configuration.functions.NodeSerializer;
 import org.mvplugins.multiverse.core.configuration.node.ConfigHeaderNode;
 import org.mvplugins.multiverse.core.configuration.node.ConfigNode;
+import org.mvplugins.multiverse.core.configuration.node.ListConfigNode;
 import org.mvplugins.multiverse.core.configuration.node.Node;
 import org.mvplugins.multiverse.core.configuration.node.NodeGroup;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -158,6 +160,20 @@ final class InventoriesConfigNodes {
             .comment("")
             .defaultValue(true)
             .name("always-write-world-profile")
+            .build());
+
+    private final ConfigHeaderNode preloadHeader = node(ConfigHeaderNode.builder("performance.preload-data-on-join")
+            .comment("")
+            .build());
+
+    final ListConfigNode<String> preloadDataOnJoinWorlds = node(ListConfigNode.listBuilder("performance.preload-data-on-join.worlds", String.class)
+            .defaultValue(ArrayList::new)
+            .name("preload-data-on-join-worlds")
+            .build());
+
+    final ListConfigNode<String> preloadDataOnJoinGroups = node(ListConfigNode.listBuilder("performance.preload-data-on-join.groups", String.class)
+            .defaultValue(ArrayList::new)
+            .name("preload-data-on-join-groups")
             .build());
 
     private final ConfigHeaderNode cacheHeader = node(ConfigHeaderNode.builder("performance.cache")

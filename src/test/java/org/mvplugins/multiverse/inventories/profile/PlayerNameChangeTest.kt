@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile
 
+import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.mockbukkit.mockbukkit.entity.PlayerMock
@@ -61,6 +62,8 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertEquals(5.0, player.health)
         assertEquals(stack, player.inventory.getItem(0))
 
+        Thread.sleep(100) // wait for files to save
+
         // check files
         assertTrue(Path.of(multiverseInventories.dataFolder.absolutePath, "worlds", "world", "benthecat10.json").toFile().exists())
         assertTrue(Path.of(multiverseInventories.dataFolder.absolutePath, "worlds", "world_nether", "benthecat10.json").toFile().exists())
@@ -75,6 +78,6 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertFalse(Path.of(multiverseInventories.dataFolder.absolutePath, "groups", "test", "Benji_0224.json").toFile().exists())
 
         // check player profile
-        assertEquals("benthecat10", profileDataSource.getGlobalProfile(player)?.lastKnownName)
+        assertEquals("benthecat10", profileDataSource.getGlobalProfileNow(player)?.lastKnownName)
     }
 }

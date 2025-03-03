@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
@@ -207,6 +208,7 @@ public final class WorldGroup {
         Shares disabledOptionalShares = Sharables.optionalOf();
         disabledOptionalShares.removeAll(this.inventoriesConfig.getActiveOptionalShares());
         this.applicableShares.removeAll(disabledOptionalShares);
+        Logging.finest("Applicable shares for " + this.getName() + ": " + this.applicableShares);
     }
 
     /**

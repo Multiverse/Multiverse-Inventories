@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.share;
 
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.profile.ProfileData;
 
 /**
  * This class is used to handle the transition of data from a player profile to a player and vice versa, typically
@@ -19,7 +20,7 @@ public interface SharableHandler<T> {
      *                with the values of the player.
      * @param player  The player whose values will be used to update the given profile.
      */
-    void updateProfile(PlayerProfile profile, Player player);
+    void updateProfile(ProfileData profile, Player player);
 
     /**
      * This method is called during share handling (aka PlayerChangeWorldEvent). It will perform updates to
@@ -30,5 +31,5 @@ public interface SharableHandler<T> {
      * @param profile The profile whose values will be used to update the give player.
      * @return True if player was updated from existing profile. False if default was used (new profile).
      */
-    boolean updatePlayer(Player player, PlayerProfile profile);
+    boolean updatePlayer(Player player, ProfileData profile);
 }

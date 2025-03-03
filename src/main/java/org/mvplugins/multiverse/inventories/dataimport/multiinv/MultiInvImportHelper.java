@@ -106,10 +106,10 @@ final class MultiInvImportHelper {
                 Logging.warning("Could not import player data for group: " + dataName);
                 return;
             }
-            playerProfile = group.getGroupProfileContainer().getPlayerData(ProfileTypes.SURVIVAL, player);
+            playerProfile = group.getGroupProfileContainer().getPlayerDataNow(ProfileTypes.SURVIVAL, player);
         } else {
             playerProfile = profileContainerStoreProvider.getStore(type)
-                    .getContainer(dataName).getPlayerData(ProfileTypes.SURVIVAL, player);
+                    .getContainer(dataName).getPlayerDataNow(ProfileTypes.SURVIVAL, player);
         }
         MIInventoryInterface inventoryInterface =
                 playerFileLoader.getInventory(GameMode.SURVIVAL.toString());

@@ -1,6 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import com.google.common.cache.CacheStats;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import org.bukkit.entity.Player;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
@@ -38,7 +38,6 @@ final class CacheCommand extends InventoriesCommand {
             issuer.sendMessage("  hits count: " + entry.getValue().hitCount());
             issuer.sendMessage("  misses count: " + entry.getValue().missCount());
             issuer.sendMessage("  loads count: " + entry.getValue().loadCount());
-            issuer.sendMessage("  exceptions: " + entry.getValue().loadExceptionCount());
             issuer.sendMessage("  evictions: " + entry.getValue().evictionCount());
             issuer.sendMessage("  hit rate: " + entry.getValue().hitRate() * 100 + "%");
             issuer.sendMessage("  miss rate: " + entry.getValue().missRate() * 100 + "%");

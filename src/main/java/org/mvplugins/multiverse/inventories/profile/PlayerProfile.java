@@ -11,14 +11,12 @@ import java.util.Map;
 /**
  * Contains all the world/group specific data for a player.
  */
-public final class PlayerProfile implements Cloneable {
+public final class PlayerProfile extends ProfileDataSnapshot {
 
     static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
                                                     ProfileType profileType, OfflinePlayer player) {
         return new PlayerProfile(containerType, containerName, profileType, player);
     }
-
-    private final Map<Sharable, Object> data = new HashMap<>(Sharables.all().size());
 
     private final OfflinePlayer player;
     private final ContainerType containerType;
@@ -26,6 +24,7 @@ public final class PlayerProfile implements Cloneable {
     private final ProfileType profileType;
 
     private PlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, OfflinePlayer player) {
+        super();
         this.containerType = containerType;
         this.profileType = profileType;
         this.containerName = containerName;
@@ -60,38 +59,8 @@ public final class PlayerProfile implements Cloneable {
         return this.profileType;
     }
 
-    /**
-     * Retrieves the profile's value of the {@link Sharable} passed in.
-     *
-     * @param sharable Represents the key for the data wanted from the profile.
-     * @param <T>      This indicates the type of return value to be expected.
-     * @return The value of the sharable for this profile. Null if no value is set.
-     */
-    public <T> T get(Sharable<T> sharable) {
-        return sharable.getType().cast(this.data.get(sharable));
-    }
-
-    /**
-     * Sets the profile's value for the {@link Sharable} passed in.
-     *
-     * @param sharable Represents the key for the data to store.
-     * @param value    The value of the data.
-     * @param <T>      The type of value to be expected.
-     */
-    public <T> void set(Sharable<T> sharable, T value) {
-        this.data.put(sharable, value);
-    }
-
     public PlayerProfile clone() {
-        try {
-            return (PlayerProfile) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Map<Sharable, Object> getData() {
-        return data;
+        return (PlayerProfile) super.clone();
     }
 
     @Override
