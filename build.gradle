@@ -68,7 +68,7 @@ shadowJar {
     relocate 'com.dumptruckman.bukkit.configuration', 'org.mvplugins.multiverse.inventories.utils.configuration'
     relocate 'net.minidev', 'org.mvplugins.multiverse.inventories.utils.minidev'
     relocate 'com.github.benmanes', 'org.mvplugins.multiverse.inventories.utils.benmanes'
-    relocate 'come.google.errorprone', 'org.mvplugins.multiverse.inventories.utils.errorprone'
+    relocate 'com.google.errorprone', 'org.mvplugins.multiverse.inventories.utils.errorprone'
 
     dependencies {
         exclude(dependency {
