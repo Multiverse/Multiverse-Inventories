@@ -203,10 +203,8 @@ public final class ShareHandleListener implements Listener {
             Logging.fine("The from or to world is not managed by Multiverse-Core!");
         }
 
-        long startTime = System.nanoTime();
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
         profileDataSource.modifyGlobalProfile(player, profile -> profile.setLastWorld(toWorld.getName()));
-        Logging.finest("WorldChangeShareHandler took " + (System.nanoTime() - startTime) / 1000000 + " ms.");
     }
 
     /**
@@ -239,10 +237,10 @@ public final class ShareHandleListener implements Listener {
         Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
         ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(deathWorld);
-        PlayerProfile profile = worldProfileContainer.getPlayerData(event.getEntity());
+        PlayerProfile profile = worldProfileContainer.getPlayerDataNow(event.getEntity());
         resetStatsOnDeath(event, profile);
         for (WorldGroup worldGroup : worldGroupManager.getGroupsForWorld(deathWorld)) {
-            profile = worldGroup.getGroupProfileContainer().getPlayerData(event.getEntity());
+            profile = worldGroup.getGroupProfileContainer().getPlayerDataNow(event.getEntity());
             resetStatsOnDeath(event, profile);
         }
         Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");

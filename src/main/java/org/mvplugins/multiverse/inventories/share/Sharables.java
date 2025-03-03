@@ -8,6 +8,7 @@ import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.ProfileData;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
@@ -92,12 +93,12 @@ public final class Sharables implements Shares {
     public static final Sharable<ItemStack[]> ENDER_CHEST = new Sharable.Builder<ItemStack[]>("ender_chest",
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
         @Override
-        public void updateProfile(PlayerProfile profile, Player player) {
+        public void updateProfile(ProfileData profile, Player player) {
             profile.set(ENDER_CHEST, player.getEnderChest().getContents());
         }
 
         @Override
-        public boolean updatePlayer(Player player, PlayerProfile profile) {
+        public boolean updatePlayer(Player player, ProfileData profile) {
             ItemStack[] value = profile.get(ENDER_CHEST);
             if (value == null) {
                 player.getEnderChest().setContents(MinecraftTools.fillWithAir(
@@ -116,12 +117,12 @@ public final class Sharables implements Shares {
     public static final Sharable<ItemStack[]> INVENTORY = new Sharable.Builder<ItemStack[]>("inventory_contents",
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(INVENTORY, player.getInventory().getContents());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     ItemStack[] value = profile.get(INVENTORY);
                     if (value == null) {
                         player.getInventory().setContents(MinecraftTools.fillWithAir(
@@ -142,12 +143,12 @@ public final class Sharables implements Shares {
     public static final Sharable<ItemStack[]> ARMOR = new Sharable.Builder<ItemStack[]>("armor_contents",
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(ARMOR, player.getInventory().getArmorContents());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     ItemStack[] value = profile.get(ARMOR);
                     if (value == null) {
                         player.getInventory().setArmorContents(MinecraftTools.fillWithAir(
@@ -168,12 +169,12 @@ public final class Sharables implements Shares {
     public static final Sharable<ItemStack> OFF_HAND = new Sharable.Builder<ItemStack>("off_hand",
             ItemStack.class, new SharableHandler<ItemStack>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(OFF_HAND, player.getInventory().getItemInOffHand());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     ItemStack value = profile.get(OFF_HAND);
                     if (value == null) {
                         player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
@@ -193,12 +194,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Double> MAX_HEALTH = new Sharable.Builder<>("max_hit_points", Double.class,
             new SharableHandler<Double>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(MAX_HEALTH, getMaxHealth(player));
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Double value = profile.get(MAX_HEALTH);
                     if (value == null) {
                         Option.of(maxHealthAttr).map(player::getAttribute)
@@ -218,7 +219,7 @@ public final class Sharables implements Shares {
     public static final Sharable<Double> HEALTH = new Sharable.Builder<Double>("hit_points", Double.class,
             new SharableHandler<Double>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     double health = player.getHealth();
                     // Player is dead, so health should be regained to full.
                     if (health <= 0) {
@@ -228,7 +229,7 @@ public final class Sharables implements Shares {
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Double value = profile.get(HEALTH);
                     if (value == null) {
                         player.setHealth(PlayerStats.HEALTH);
@@ -266,12 +267,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> REMAINING_AIR = new Sharable.Builder<Integer>("remaining_air", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(REMAINING_AIR, player.getRemainingAir());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(REMAINING_AIR);
                     if (value == null) {
                         player.setRemainingAir(PlayerStats.REMAINING_AIR);
@@ -294,12 +295,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> MAXIMUM_AIR = new Sharable.Builder<Integer>("maximum_air", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(MAXIMUM_AIR, player.getMaximumAir());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(MAXIMUM_AIR);
                     if (value == null) {
                         player.setMaximumAir(PlayerStats.MAXIMUM_AIR);
@@ -322,12 +323,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Float> FALL_DISTANCE = new Sharable.Builder<Float>("fall_distance", Float.class,
             new SharableHandler<Float>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(FALL_DISTANCE, player.getFallDistance());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Float value = profile.get(FALL_DISTANCE);
                     if (value == null) {
                         player.setFallDistance(PlayerStats.FALL_DISTANCE);
@@ -351,12 +352,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> FIRE_TICKS = new Sharable.Builder<Integer>("fire_ticks", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(FIRE_TICKS, player.getFireTicks());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(FIRE_TICKS);
                     if (value == null) {
                         player.setFireTicks(PlayerStats.FIRE_TICKS);
@@ -381,12 +382,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Float> EXPERIENCE = new Sharable.Builder<Float>("xp", Float.class,
             new SharableHandler<Float>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(EXPERIENCE, player.getExp());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Float value = profile.get(EXPERIENCE);
                     if (value == null) {
                         player.setExp(PlayerStats.EXPERIENCE);
@@ -409,12 +410,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> LEVEL = new Sharable.Builder<Integer>("lvl", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(LEVEL, player.getLevel());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(LEVEL);
                     if (value == null) {
                         player.setLevel(PlayerStats.LEVEL);
@@ -437,12 +438,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> TOTAL_EXPERIENCE = new Sharable.Builder<Integer>("total_xp", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(TOTAL_EXPERIENCE, player.getTotalExperience());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(TOTAL_EXPERIENCE);
                     if (value == null) {
                         player.setTotalExperience(PlayerStats.TOTAL_EXPERIENCE);
@@ -465,12 +466,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Integer> FOOD_LEVEL = new Sharable.Builder<Integer>("food_level", Integer.class,
             new SharableHandler<Integer>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(FOOD_LEVEL, player.getFoodLevel());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Integer value = profile.get(FOOD_LEVEL);
                     if (value == null) {
                         player.setFoodLevel(PlayerStats.FOOD_LEVEL);
@@ -494,12 +495,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Float> EXHAUSTION = new Sharable.Builder<Float>("exhaustion", Float.class,
             new SharableHandler<Float>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(EXHAUSTION, player.getExhaustion());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Float value = profile.get(EXHAUSTION);
                     if (value == null) {
                         player.setExhaustion(PlayerStats.EXHAUSTION);
@@ -523,12 +524,12 @@ public final class Sharables implements Shares {
     public static final Sharable<Float> SATURATION = new Sharable.Builder<Float>("saturation", Float.class,
             new SharableHandler<Float>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     profile.set(SATURATION, player.getSaturation());
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Float value = profile.get(SATURATION);
                     if (value == null) {
                         player.setSaturation(PlayerStats.SATURATION);
@@ -552,7 +553,7 @@ public final class Sharables implements Shares {
     public static final Sharable<Location> BED_SPAWN = new Sharable.Builder<Location>("bed_spawn", Location.class,
             new SharableHandler<Location>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     if (inventories.isUsingSpawnChangeEvent()) {
                         // Bed spawn location already updated during PlayerSpawnChangeEvent
                         return;
@@ -576,7 +577,7 @@ public final class Sharables implements Shares {
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
                         Logging.finer("No bed location saved");
@@ -596,13 +597,13 @@ public final class Sharables implements Shares {
     public static final Sharable<Location> LAST_LOCATION = new Sharable.Builder<Location>("last_location", Location.class,
             new SharableHandler<Location>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     /* It's too late to update the profile for last location here because the world change has already
                        happened. The update occurs in the PlayerTeleportEvent handler in InventoriesListener. */
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     Location loc = profile.get(LAST_LOCATION);
                     if (loc == null || loc.getWorld() == null || loc.equals(player.getLocation())) {
                         return false;
@@ -629,7 +630,7 @@ public final class Sharables implements Shares {
                 }
 
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     if (!hasValidEconomyHandler()) {
                         return;
                     }
@@ -637,7 +638,7 @@ public final class Sharables implements Shares {
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     if (!hasValidEconomyHandler()) {
                         return false;
                     }
@@ -658,13 +659,13 @@ public final class Sharables implements Shares {
     public static final Sharable<PotionEffect[]> POTIONS = new Sharable.Builder<PotionEffect[]>("potion_effects", PotionEffect[].class,
             new SharableHandler<PotionEffect[]>() {
                 @Override
-                public void updateProfile(PlayerProfile profile, Player player) {
+                public void updateProfile(ProfileData profile, Player player) {
                     Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
                     profile.set(POTIONS, potionEffects.toArray(new PotionEffect[potionEffects.size()]));
                 }
 
                 @Override
-                public boolean updatePlayer(Player player, PlayerProfile profile) {
+                public boolean updatePlayer(Player player, ProfileData profile) {
                     PotionEffect[] effects = profile.get(POTIONS);
                     for (PotionEffect effect : player.getActivePotionEffects()) {
                         player.removePotionEffect(effect.getType());
@@ -947,6 +948,7 @@ public final class Sharables implements Shares {
     }
 
     public static void recalculateEnabledShares() {
+        Logging.finer("Recalculating enabled shares...");
         enabledShares = standardOf();
         enabledShares.addAll(inventoriesConfig.getActiveOptionalShares());
         worldGroupManager.recalculateApplicableShares();

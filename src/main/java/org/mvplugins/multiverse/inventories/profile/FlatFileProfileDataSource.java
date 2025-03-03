@@ -186,7 +186,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         Try.run(() -> playerData.save(playerFile)).onFailure(e -> {
             Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
                     + " for " + playerProfile.getContainerType() + ": " + playerProfile.getContainerName());
-            Logging.severe(e.getMessage());
+            e.printStackTrace();
         });
     }
 
@@ -247,6 +247,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                     return CompletableFuture.completedFuture(PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
                             key.getProfileType(), Bukkit.getOfflinePlayer(key.getPlayerUUID())));
                 }
+                Logging.finer("%s not cached. loading from disk...", profileKey);
                 return playerProfileIO.queueCallable(playerFile, () -> getPlayerDataFromDisk(key, playerFile));
             });
         } catch (Exception e) {
@@ -266,7 +267,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             } catch (IOException e) {
                 Logging.severe("Could not save data for player: " + key.getPlayerName()
                         + " for " + key.getContainerType().toString() + ": " + key.getDataName() + " after conversion.");
-                Logging.severe(e.getMessage());
+                e.printStackTrace();
             }
         }
 

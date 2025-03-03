@@ -11,7 +11,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 /**
  * A container for player profiles in a given world or world group (based on {@link #getContainerType()}),
@@ -32,6 +31,21 @@ public final class ProfileContainer {
         this.config = inventories.getServiceLocator().getService(InventoriesConfig.class);
     }
 
+    public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
+        ProfileType type = config.getEnableGamemodeShareHandling()
+                ? ProfileTypes.forGameMode(player.getGameMode())
+                : ProfileTypes.SURVIVAL;
+        return getPlayerData(type, player);
+    }
+
+    public CompletableFuture<PlayerProfile> getPlayerData(ProfileType profileType, OfflinePlayer player) {
+        return profileDataSource.getPlayerData(ProfileKey.create(
+                getContainerType(),
+                getContainerName(),
+                profileType,
+                player));
+    }
+
     /**
      * Retrieves the profile for the given player.
      * <p>If game mode profiles are enabled, the profile for their current game mode will be returned, otherwise their
@@ -40,14 +54,11 @@ public final class ProfileContainer {
      * @param player Player to get profile for.
      * @return The profile for the given player.
      */
-    public PlayerProfile getPlayerData(Player player) {
-        ProfileType type;
-        if (config.getEnableGamemodeShareHandling()) {
-            type = ProfileTypes.forGameMode(player.getGameMode());
-        } else {
-            type = ProfileTypes.SURVIVAL;
-        }
-        return getPlayerData(type, player);
+    public PlayerProfile getPlayerDataNow(Player player) {
+        ProfileType type = config.getEnableGamemodeShareHandling()
+                ? ProfileTypes.forGameMode(player.getGameMode())
+                : ProfileTypes.SURVIVAL;
+        return getPlayerDataNow(type, player);
     }
 
     /**
@@ -57,7 +68,7 @@ public final class ProfileContainer {
      * @param player Player to get profile for.
      * @return The profile of the given type for the given player.
      */
-    public PlayerProfile getPlayerData(ProfileType profileType, OfflinePlayer player) {
+    public PlayerProfile getPlayerDataNow(ProfileType profileType, OfflinePlayer player) {
         return profileDataSource.getPlayerDataNow(ProfileKey.create(
                 getContainerType(),
                 getContainerName(),

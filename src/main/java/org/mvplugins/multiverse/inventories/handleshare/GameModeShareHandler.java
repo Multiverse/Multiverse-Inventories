@@ -49,7 +49,7 @@ final class GameModeShareHandler extends ShareHandler {
 
     @Override
     protected void prepareProfiles() {
-        Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
+        Logging.fine("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
 
         affectedProfiles.setAlwaysWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player));

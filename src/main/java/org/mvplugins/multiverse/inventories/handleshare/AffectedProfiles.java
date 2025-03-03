@@ -5,6 +5,7 @@ import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.mvplugins.multiverse.inventories.share.Sharables.enabled;
 
@@ -17,7 +18,7 @@ public final class AffectedProfiles {
     AffectedProfiles() {
     }
 
-    void setAlwaysWriteProfile(PlayerProfile profile) {
+    void setAlwaysWriteProfile(CompletableFuture<PlayerProfile> profile) {
         alwaysWriteProfile = new PersistingProfile(enabled(), profile);
     }
 
@@ -25,7 +26,7 @@ public final class AffectedProfiles {
      * @param profile The player profile that will need data saved to.
      * @param shares  What from this group needs to be saved.
      */
-    void addWriteProfile(PlayerProfile profile, Shares shares) {
+    void addWriteProfile(CompletableFuture<PlayerProfile> profile, Shares shares) {
         writeProfiles.add(new PersistingProfile(shares, profile));
     }
 
@@ -33,7 +34,7 @@ public final class AffectedProfiles {
      * @param profile The player profile that will need data loaded from.
      * @param shares  What from this group needs to be loaded.
      */
-    void addReadProfile(PlayerProfile profile, Shares shares) {
+    void addReadProfile(CompletableFuture<PlayerProfile> profile, Shares shares) {
         readProfiles.add(new PersistingProfile(shares, profile));
     }
 

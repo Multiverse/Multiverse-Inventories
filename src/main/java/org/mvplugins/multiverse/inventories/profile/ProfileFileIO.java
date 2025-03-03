@@ -17,11 +17,10 @@ import java.util.function.Supplier;
 
 final class ProfileFileIO {
 
-    private final ExecutorService fileIOExecutorService;
+    private final ExecutorService fileIOExecutorService = Executors.newWorkStealingPool();
     private final Map<File, CountDownLatch> fileLocks = new ConcurrentHashMap<>();
 
     ProfileFileIO() {
-        fileIOExecutorService = Executors.newWorkStealingPool();
     }
 
     CompletableFuture<Void> queueAction(File file, Runnable action) {

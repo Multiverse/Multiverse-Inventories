@@ -42,7 +42,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
     @Override
     protected void prepareProfiles() {
-        Logging.finer("=== %s traveling from world: %s to world: %s ===", player.getName(), fromWorld, toWorld);
+        Logging.fine("=== %s traveling from world: %s to world: %s ===", player.getName(), fromWorld, toWorld);
         setAlwaysWriteWorldProfile();
         if (isPlayerAffectedByChange()) {
             addWriteProfiles();
@@ -52,12 +52,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
     private void setAlwaysWriteWorldProfile() {
         // We will always save everything to the world they come from.
-        PlayerProfile fromWorldProfile = getWorldPlayerProfile(fromWorld, player);
-        affectedProfiles.setAlwaysWriteProfile(fromWorldProfile);
-    }
-
-    private PlayerProfile getWorldPlayerProfile(String world, Player player) {
-        return worldProfileContainerStore.getContainer(world).getPlayerData(player);
+        affectedProfiles.setAlwaysWriteProfile(worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player));
     }
 
     private boolean isPlayerAffectedByChange() {
@@ -138,12 +133,10 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private void addReadProfileForWorldGroup(WorldGroup worldGroup) {
-            PlayerProfile playerProfile = getWorldGroupPlayerData(worldGroup);
-            affectedProfiles.addReadProfile(playerProfile, worldGroup.getApplicableShares());
-        }
-
-        private PlayerProfile getWorldGroupPlayerData(WorldGroup worldGroup) {
-            return worldGroup.getGroupProfileContainer().getPlayerData(player);
+            affectedProfiles.addReadProfile(
+                    worldGroup.getGroupProfileContainer().getPlayerData(player),
+                    worldGroup.getApplicableShares()
+            );
         }
 
         private void useToWorldForMissingShares() {
@@ -157,11 +150,10 @@ final class WorldChangeShareHandler extends ShareHandler {
                 return;
             }
             Logging.finer("%s are left unhandled, defaulting to toWorld", unhandledShares);
-            affectedProfiles.addReadProfile(getToWorldPlayerData(), unhandledShares);
-        }
-
-        private PlayerProfile getToWorldPlayerData() {
-            return worldProfileContainerStore.getContainer(toWorld).getPlayerData(player);
+            affectedProfiles.addReadProfile(
+                    worldProfileContainerStore.getContainer(toWorld).getPlayerData(player),
+                    unhandledShares
+            );
         }
     }
 
@@ -180,11 +172,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         void addWriteProfiles() {
             ProfileContainer container = worldGroup.getGroupProfileContainer();
-            affectedProfiles.addWriteProfile(container.getPlayerData(player), getWorldGroupShares());
-        }
-
-        private Shares getWorldGroupShares() {
-            return Sharables.fromShares(worldGroup.getApplicableShares());
+            affectedProfiles.addWriteProfile(container.getPlayerData(player), worldGroup.getApplicableShares());
         }
     }
 }
