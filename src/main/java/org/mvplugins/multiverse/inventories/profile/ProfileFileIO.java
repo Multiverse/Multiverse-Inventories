@@ -1,5 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import com.dumptruckman.minecraft.util.Logging;
+
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -8,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -25,8 +28,9 @@ final class ProfileFileIO {
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<Void> future = new CompletableFuture<>();
         fileIOExecutorService.submit(() -> {
-            if (toWaitLatch != null) {
+            if (toWaitLatch != null && toWaitLatch.getCount() > 0) {
                 try {
+                    Logging.finest("Waiting for lock on " + file);
                     toWaitLatch.await(10, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -45,8 +49,9 @@ final class ProfileFileIO {
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<T> future = new CompletableFuture<>();
         fileIOExecutorService.submit(() -> {
-            if (toWaitLatch != null) {
+            if (toWaitLatch != null && toWaitLatch.getCount() > 0) {
                 try {
+                    Logging.finest("Waiting for lock on " + file);
                     toWaitLatch.await(10, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

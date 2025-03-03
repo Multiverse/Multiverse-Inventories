@@ -15,6 +15,7 @@ import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType
 import org.mvplugins.multiverse.inventories.share.Sharables
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.function.Consumer
 import kotlin.test.BeforeTest
@@ -84,16 +85,21 @@ class FilePerformanceTest : TestWithMockBukkit() {
             future.get()
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
+        profileDataSource.clearAllCache()
 
         val startTime2 = System.nanoTime()
+        val futures2 = ArrayList<CompletableFuture<PlayerProfile>>(1000)
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                val playerProfile = profileDataSource.getPlayerDataNow(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
-                assertEquals(5.0, playerProfile.get(Sharables.HEALTH))
-                assertEquals(ItemStack(Material.STONE_BRICKS, 10), playerProfile.get(Sharables.OFF_HAND))
+                futures2.add(profileDataSource.getPlayerData(
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
             }
+        }
+        for (future in futures2) {
+            val playerProfile = future.get()
+            assertEquals(5.0, playerProfile.get(Sharables.HEALTH))
+            assertEquals(ItemStack(Material.STONE_BRICKS, 10), playerProfile.get(Sharables.OFF_HAND))
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime2) / 1000000 + "ms")
 

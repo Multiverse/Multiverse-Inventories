@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Provides methods for interacting with the configuration of Multiverse-Inventories.
@@ -200,6 +201,21 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.alwaysWriteWorldProfile, alwaysWriteWorldProfile);
     }
 
+    public List<String> getPreloadDataOnJoinWorlds() {
+        return this.configHandle.get(configNodes.preloadDataOnJoinWorlds);
+    }
+
+    public Try<Void> setPreloadDataOnJoinWorlds(List<String> preloadDataOnJoinWorlds) {
+        return this.configHandle.set(configNodes.preloadDataOnJoinWorlds, preloadDataOnJoinWorlds);
+    }
+
+    public List<String> getPreloadDataOnJoinGroups() {
+        return this.configHandle.get(configNodes.preloadDataOnJoinGroups);
+    }
+
+    public Try<Void> setPreloadDataOnJoinGroups(List<String> preloadDataOnJoinGroups) {
+        return this.configHandle.set(configNodes.preloadDataOnJoinGroups, preloadDataOnJoinGroups);
+    }
 
     public int getPlayerFileCacheSize() {
         return this.configHandle.get(configNodes.playerFileCacheSize);

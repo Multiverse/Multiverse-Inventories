@@ -28,6 +28,7 @@ import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,8 +46,6 @@ import java.util.logging.Level;
 final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private static final String JSON = ".json";
-
-    private final JSONParser JSON_PARSER = new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE);
 
     private final ProfileFileIO profileFileIO;
 
@@ -367,7 +366,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         }
         JSONObject jsonStats = null;
         try {
-            jsonStats = (JSONObject) JSON_PARSER.parse(stats);
+            jsonStats = (JSONObject) new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE).parse(stats);
         } catch (ParseException | ClassCastException e) {
             Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
@@ -504,8 +503,20 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     public CompletableFuture<GlobalProfile> getGlobalProfile(UUID playerUUID, String playerName) {
         try {
             File globalFile = getGlobalFile(playerUUID.toString());
-            return globalProfileCache.get(playerUUID, (key, executor) ->
-                    profileFileIO.queueCallable(globalFile, () -> getGlobalProfileFromDisk(playerUUID, playerName, globalFile)));
+            return globalProfileCache.get(playerUUID, (key, executor) -> {
+                        Logging.finer("Global profile for player %s not in cached. Loading...", playerName);
+                        // Migrate from player name to uuid profile file
+                        File legacyFile = getGlobalFile(playerName);
+                        if (legacyFile.exists() && !migrateGlobalProfileToUUID(legacyFile, playerUUID)) {
+                            Logging.warning("Could not properly migrate player global data file for " + playerName);
+                        }
+
+                        // Load from existing profile file
+                        if (!globalFile.exists()) {
+                            return CompletableFuture.completedFuture(GlobalProfile.createGlobalProfile(playerUUID, playerName));
+                        }
+                        return profileFileIO.queueCallable(globalFile, () -> getGlobalProfileFromDisk(playerUUID, playerName, globalFile));
+            });
         } catch (Exception e) {
             Logging.severe("Unable to get global profile for player: " + playerName);
             throw new RuntimeException(e);
@@ -522,26 +533,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return getGlobalProfile(playerUUID, playerName).thenApply(Option::of);
     }
 
-    private GlobalProfile getGlobalProfileFromDisk(UUID playerUUID, String playerName, File globalFile) {
-        Logging.finer("Global profile for player %s not in cached. Loading...", playerName);
-        // Migrate from player name to uuid profile file
-        File legacyFile = getGlobalFile(playerName);
-        if (legacyFile.exists() && !migrateGlobalProfileToUUID(legacyFile, playerUUID)) {
-            Logging.warning("Could not properly migrate player global data file for " + playerName);
-        }
-
-        // Load from existing profile file
-        if (!globalFile.exists()) {
-            return GlobalProfile.createGlobalProfile(playerUUID, playerName);
-        }
-        return loadGlobalProfile(globalFile, playerName, playerUUID);
-    }
-
     private boolean migrateGlobalProfileToUUID(File legacyFile, UUID playerUUID) {
         return legacyFile.renameTo(getGlobalFile(playerUUID.toString()));
     }
 
-    private GlobalProfile loadGlobalProfile(File globalFile, String playerName, UUID playerUUID) {
+    private GlobalProfile getGlobalProfileFromDisk(UUID playerUUID, String playerName, File globalFile) {
         FileConfiguration playerData = parseToConfiguration(globalFile);
         ConfigurationSection section = playerData.getConfigurationSection(DataStrings.PLAYER_DATA);
         if (section == null) {

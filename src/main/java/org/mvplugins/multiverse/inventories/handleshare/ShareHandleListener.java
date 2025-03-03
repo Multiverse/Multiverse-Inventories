@@ -3,9 +3,12 @@ package org.mvplugins.multiverse.inventories.handleshare;
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
@@ -39,9 +42,11 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Events related to handling of player profile changes.
@@ -79,6 +84,17 @@ public final class ShareHandleListener implements Listener {
         Logging.finer("Loading global profile for Player{name:'%s', uuid:'%s'}.",
                 event.getName(), event.getUniqueId());
         verifyCorrectPlayerName(event.getUniqueId(), event.getName());
+
+        long startTime = System.nanoTime();
+        List<CompletableFuture<PlayerProfile>> profileFutures = new ArrayList<>();
+        config.getPreloadDataOnJoinWorlds().forEach(worldName -> profileFutures.add(profileDataSource.getPlayerData(
+                ProfileKey.create(ContainerType.WORLD, worldName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
+        config.getPreloadDataOnJoinGroups().forEach(groupName -> profileFutures.add(profileDataSource.getPlayerData(
+                ProfileKey.create(ContainerType.GROUP, groupName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
+        Try.run(() -> CompletableFuture.allOf(profileFutures.toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS))
+                .onSuccess(ignore -> Logging.finer("Preloaded data for Player{name:'%s', uuid:'%s'}. Time taken: %4.4f ms",
+                        event.getName(), event.getUniqueId(), (System.nanoTime() - startTime) / 1000000.0))
+                .onFailure(e -> Logging.warning("Preload data errored out: %s", e.getMessage()));
     }
 
     /**
