@@ -37,6 +37,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         CoreLogging.setDebugLevel(0);
         Logging.setDebugLevel(0)
         assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world")).isSuccess)
+        assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world2")).isSuccess)
     }
 
     @Test
@@ -139,5 +140,22 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         server.setPlayers(50)
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
+    }
+
+    @Test
+    fun `Teleport 50 players consecutively`() {
+        for (i in 0..49) {
+            writeResourceToConfigFile("/playerdata.json", "worlds/world2/Player$i.json")
+        }
+        server.setPlayers(50)
+        val startTime = System.nanoTime()
+        for (player in server.playerList.onlinePlayers) {
+            server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
+        }
+        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
+        val cacheStats = profileDataSource.getCacheStats()
+        for (cacheStat in cacheStats) {
+            Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
+        }
     }
 }
