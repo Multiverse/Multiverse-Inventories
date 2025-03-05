@@ -1,9 +1,6 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
-import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Location;
-import org.bukkit.block.data.type.Bed;
-import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,8 +9,6 @@ import org.bukkit.event.player.PlayerSpawnChangeEvent;
 import org.bukkit.event.player.PlayerSpawnChangeEvent.Cause;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.share.Sharables;
-
-import javax.annotation.Nullable;
 
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findAnchorFromRespawnLocation;
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
@@ -31,6 +26,9 @@ public final class SpawnChangeListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     void onSpawnChange(PlayerSpawnChangeEvent event) {
+        if (Sharables.isIgnoringSpawnListener(event.getPlayer())) {
+            return;
+        }
         Player player = event.getPlayer();
         if (event.getCause() == Cause.BED) {
             updatePlayerSpawn(player, findBedFromRespawnLocation(event.getNewSpawn()));

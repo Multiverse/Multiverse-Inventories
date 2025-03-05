@@ -13,7 +13,6 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
 import org.mvplugins.multiverse.inventories.util.PlayerStats;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
 
@@ -575,15 +576,26 @@ public final class Sharables implements Shares {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
                         Logging.finer("No bed location saved");
+                        ignoreSpawnListener.add(player.getUniqueId());
                         player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
+                        ignoreSpawnListener.remove(player.getUniqueId());
                         return false;
                     }
+                    ignoreSpawnListener.add(player.getUniqueId());
                     player.setBedSpawnLocation(loc, true);
+                    ignoreSpawnListener.remove(player.getUniqueId());
                     Logging.finer("updating bed: " + player.getBedSpawnLocation());
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
+
+    // todo: handle this somewhere better
+    private static List<UUID> ignoreSpawnListener = new ArrayList<>();
+
+    public static boolean isIgnoringSpawnListener(Player player) {
+        return ignoreSpawnListener.contains(player.getUniqueId());
+    }
 
     /**
      * Sharing Last Location.
