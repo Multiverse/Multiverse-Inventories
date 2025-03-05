@@ -1,8 +1,6 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
-import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
@@ -15,9 +13,6 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
@@ -52,27 +47,17 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
      */
     final void handleSharing() {
         long startTime = System.nanoTime();
-        long s1 = System.nanoTime();
         this.prepareProfiles();
-        Logging.finest("Prepared profiles in %4.4f ms", (System.nanoTime() - s1) / 1000000.0);
-        long s2 = System.nanoTime();
         ShareHandlingEvent event = this.createEvent();
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             Logging.fine("Share handling has been cancelled by another plugin!");
             return;
         }
-        Logging.finest("Share handling event took %4.4f ms", (System.nanoTime() - s2) / 1000000.0);
         logAffectedProfilesCount();
-        long s3 = System.nanoTime();
         ProfileDataSnapshot snapshot = getSnapshot();
-        Logging.finest("Got snapshot in %4.4f ms", (System.nanoTime() - s3) / 1000000.0);
-        long s4 = System.nanoTime();
         updatePlayer();
-        Logging.finest("Updated player in %4.4f ms", (System.nanoTime() - s4) / 1000000.0);
-        long s5 = System.nanoTime();
         updateProfiles(snapshot);
-        Logging.finest("Updated profiles in %4.4f ms", (System.nanoTime() - s5) / 1000000.0);
         double timeTaken = (System.nanoTime() - startTime) / 1000000.0;
         logHandlingComplete(timeTaken, event);
     }
