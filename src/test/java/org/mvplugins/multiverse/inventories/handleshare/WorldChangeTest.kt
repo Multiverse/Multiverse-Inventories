@@ -49,14 +49,4 @@ class WorldChangeTest : TestWithMockBukkit() {
 
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
     }
-
-    @Test
-    fun `World change performance with 50 players`() {
-        server.setPlayers(50)
-        val startTime = System.nanoTime()
-        for (player in server.playerList.onlinePlayers) {
-            server.getWorld("world3")?.let { player.teleport(it.spawnLocation) }
-        }
-        Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-    }
 }

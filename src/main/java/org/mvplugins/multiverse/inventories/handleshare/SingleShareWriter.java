@@ -49,25 +49,20 @@ final class SingleShareWriter<T> {
         Logging.finer("Writing single share: " + sharable.getNames()[0]);
         String worldName = this.player.getWorld().getName();
         var profileContainerStoreProvider = this.inventories.getServiceLocator().getService(ProfileContainerStoreProvider.class);
-        writeNewValueToProfile(
-                profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                        .getContainer(worldName)
-                        .getPlayerData(this.player),
-                value,
-                save
-        );
+        profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                .getContainer(worldName)
+                .getPlayerData(this.player)
+                .thenAccept(profile -> writeNewValueToProfile(profile, value, save));
 
         this.inventories.getServiceLocator().getService(WorldGroupManager.class)
                 .getGroupsForWorld(worldName)
                 .forEach(worldGroup -> {
-                    if (worldGroup.getDisabledShares().contains(sharable)) {
+                    if (!worldGroup.getApplicableShares().contains(sharable)) {
                         return;
                     }
-                    writeNewValueToProfile(
-                            worldGroup.getGroupProfileContainer().getPlayerData(this.player),
-                            value,
-                            save
-                    );
+                    worldGroup.getGroupProfileContainer().getPlayerData(this.player).thenAccept(profile -> {
+                        writeNewValueToProfile(profile, value, save);
+                    });
                 });
     }
 

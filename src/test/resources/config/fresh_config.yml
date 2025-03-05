@@ -14,6 +14,9 @@ performance:
   save-playerdata-on-quit: false
   apply-playerdata-on-join: false
   always-write-world-profile: true
+  preload-data-on-join:
+    worlds: []
+    groups: []
   cache:
     player-file-cache-size: 2000
     player-file-cache-expiry: 60

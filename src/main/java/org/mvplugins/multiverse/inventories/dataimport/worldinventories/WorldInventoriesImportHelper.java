@@ -144,7 +144,7 @@ final class WorldInventoriesImportHelper {
     }
 
     private void transferData(OfflinePlayer player, Group wiGroup, ProfileContainer profileContainer) {
-        PlayerProfile playerProfile = profileContainer.getPlayerData(ProfileTypes.SURVIVAL, player);
+        PlayerProfile playerProfile = profileContainer.getPlayerDataNow(ProfileTypes.SURVIVAL, player);
         WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
         WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
         if (wiInventory != null) {

@@ -55,7 +55,7 @@ public final class ProfileKey {
         this.profileType = profileType;
         this.playerUUID = playerUUID;
         this.playerName = playerName;
-        this.hashCode = Objects.hashCode(getContainerType(), getDataName(), getProfileType(), getPlayerName(), getPlayerUUID());
+        this.hashCode = Objects.hashCode(playerUUID, containerType, dataName, profileType);
     }
 
     public ProfileKey forProfileType(@Nullable ProfileType profileType) {

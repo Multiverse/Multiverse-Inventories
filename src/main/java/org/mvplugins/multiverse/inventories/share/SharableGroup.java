@@ -53,12 +53,12 @@ final class SharableGroup implements Shares {
     }
 
     @Override
-    public void setSharing(Sharable sharable, boolean sharing) {
+    public Shares setSharing(Sharable sharable, boolean sharing) {
         throw new IllegalStateException("May not alter SharableGroup!");
     }
 
     @Override
-    public void setSharing(Shares sharables, boolean sharing) {
+    public Shares setSharing(Shares sharables, boolean sharing) {
         throw new IllegalStateException("May not alter SharableGroup!");
     }
 

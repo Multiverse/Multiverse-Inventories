@@ -53,8 +53,12 @@ abstract class TestWithMockBukkit {
     fun writeResourceToConfigFile(resourcePath: String, configPath: String) {
         val configResource = getResourceAsText(resourcePath)
         assertNotNull(configResource)
-        File(Path.of(multiverseInventories.dataFolder.absolutePath, configPath).absolutePathString())
-            .writeText(configResource)
+        val configFile = File(Path.of(multiverseInventories.dataFolder.absolutePath, configPath).absolutePathString())
+        if (!configFile.exists()) {
+            configFile.parentFile.mkdirs()
+            configFile.createNewFile()
+        }
+        configFile.writeText(configResource)
     }
 
     fun assertConfigEquals(expectedPath: String, actualPath: String) {

@@ -9,6 +9,7 @@ import org.mvplugins.multiverse.inventories.profile.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.share.Sharables;
+import org.mvplugins.multiverse.inventories.share.Shares;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -49,13 +50,19 @@ final class GameModeShareHandler extends ShareHandler {
 
     @Override
     protected void prepareProfiles() {
-        Logging.finer("=== " + player.getName() + " changing game mode from: " + fromType
+        Logging.fine("=== " + player.getName() + " changing game mode from: " + fromType
                 + " to: " + toType + " for world: " + world + " ===");
-
-        affectedProfiles.setAlwaysWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player));
 
         if (isPlayerAffectedByChange()) {
             addProfiles();
+        } else if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
+            // Write to world profile to ensure data is saved incase bypass is removed
+            affectedProfiles.addWriteProfile(
+                    worldProfileContainerStore.getContainer(world).getPlayerData(player),
+                    (worldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
+                            ? Sharables.standard()
+                            : Sharables.enabled()
+            );
         }
     }
 
@@ -73,22 +80,28 @@ final class GameModeShareHandler extends ShareHandler {
     }
 
     private void addProfiles() {
-        if (hasWorldGroups()) {
-            worldGroups.forEach(this::addProfilesForWorldGroup);
+        Shares handledShares = Sharables.noneOf();
+        worldGroups.forEach(worldGroup -> addProfilesForWorldGroup(handledShares,worldGroup));
+        Shares unhandledShares = Sharables.enabledOf().setSharing(handledShares, false);
+        if (!unhandledShares.isEmpty()) {
+            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player), unhandledShares);
+        }
+
+        if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
+            affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
+                    inventoriesConfig.getUseOptionalsForUngroupedWorlds() ? Sharables.enabled() : Sharables.standard());
         } else {
-            Logging.finer("No groups for world.");
-            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
-                    inventoriesConfig.getUseOptionalsForUngroupedWorlds() ? Sharables.enabled() : Sharables.standardOf());
+            if (!unhandledShares.isEmpty()) {
+                affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player), unhandledShares);
+            }
         }
     }
 
-    private boolean hasWorldGroups() {
-        return !worldGroups.isEmpty();
-    }
-
-    private void addProfilesForWorldGroup(WorldGroup worldGroup) {
+    private void addProfilesForWorldGroup(Shares handledShares, WorldGroup worldGroup) {
         ProfileContainer container = worldGroup.getGroupProfileContainer();
-        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), Sharables.enabled());
-        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), Sharables.enabled());
+        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), worldGroup.getApplicableShares());
+        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), worldGroup.getApplicableShares());
+        handledShares.addAll(worldGroup.getApplicableShares());
+        handledShares.addAll(worldGroup.getDisabledShares());
     }
 }

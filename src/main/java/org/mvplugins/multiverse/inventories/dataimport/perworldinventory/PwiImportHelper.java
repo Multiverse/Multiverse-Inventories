@@ -180,7 +180,7 @@ class PwiImportHelper {
     }
 
     private void saveMVDataForPlayer(Group group, OfflinePlayer offlinePlayer) throws DataImportException {
-        GlobalProfile globalProfile = profileDataSource.getGlobalProfile(offlinePlayer);
+        GlobalProfile globalProfile = profileDataSource.getGlobalProfileNow(offlinePlayer);
         globalProfile.setLoadOnLogin(pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
         profileDataSource.updateGlobalProfile(globalProfile);
         for (GameMode gameMode : GameMode.values()) {
@@ -205,10 +205,10 @@ class PwiImportHelper {
     private List<PlayerProfile> getMVPlayerData(
             @NotNull OfflinePlayer offlinePlayer, @NotNull Group group, @NotNull GameMode gameMode) {
         List<PlayerProfile> profiles = new ArrayList<>();
-        profiles.add(profileDataSource.getPlayerData(org.mvplugins.multiverse.inventories.profile.ProfileKey
+        profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.ProfileKey
                         .create(ContainerType.GROUP, group.getName(), ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         for (var worldName : group.getWorlds()) {
-            profiles.add(profileDataSource.getPlayerData(org.mvplugins.multiverse.inventories.profile.ProfileKey
+            profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.ProfileKey
                             .create(ContainerType.WORLD, worldName, ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         }
         return profiles;
