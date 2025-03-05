@@ -86,7 +86,7 @@ final class InventoriesConfigNodes {
     final ConfigNode<Shares> activeOptionalShares = node(ConfigNode.builder("share-handling.active-optional-shares", Shares.class)
             .comment("")
             .comment("You must specify optional shares you wish to use here or they will be ignored.")
-            .comment("The only built-in optional shares are \"economy\" and \"last_location\".")
+            .comment("Built-in optional shares are: \"economy\" and \"last_location\".")
             .defaultValue(Sharables.noneOf())
             .hidden()
             .serializer(new NodeSerializer<>() {
@@ -112,7 +112,6 @@ final class InventoriesConfigNodes {
             .build());
 
     final ConfigNode<Boolean> useImprovedRespawnLocationDetection = node(ConfigNode.builder("sharables.use-improved-respawn-location-detection", Boolean.class)
-            .comment("")
             .comment("When enabled, we will use 1.21's PlayerSpawnChangeEvent to better detect bed and anchor respawn locations.")
             .comment("This options is not applicable for older minecraft server versions.")
             .defaultValue(true)
@@ -120,6 +119,7 @@ final class InventoriesConfigNodes {
             .build());
 
     final ConfigNode<Boolean> resetLastLocationOnDeath = node(ConfigNode.builder("sharables.reset-last-location-on-death", Boolean.class)
+            .comment("")
             .comment("When set to true, the last location of the player will be reset when they die.")
             .comment("This is useful if they respawn in a different world and you do not want them to return to their death location.")
             .defaultValue(false)
@@ -158,12 +158,17 @@ final class InventoriesConfigNodes {
 
     final ConfigNode<Boolean> alwaysWriteWorldProfile = node(ConfigNode.builder("performance.always-write-world-profile", Boolean.class)
             .comment("")
+            .comment("By default, even when the group shares all or going to a world within the same group, the world profile will still be written to disk.")
+            .comment("This will ensure that the world profile is always up-to-date, so when removing the world from the group, it will not be missing data.")
+            .comment("However, if you are certain that your world will always be in a group, you can set this to false to slightly improve performance.")
             .defaultValue(true)
             .name("always-write-world-profile")
             .build());
 
     private final ConfigHeaderNode preloadHeader = node(ConfigHeaderNode.builder("performance.preload-data-on-join")
             .comment("")
+            .comment("Pre-loads player data into caches when joining the server.")
+            .comment("This will reduce the load time on first teleport to the world/group, with the cost of increased memory usage and join time.")
             .build());
 
     final ListConfigNode<String> preloadDataOnJoinWorlds = node(ListConfigNode.listBuilder("performance.preload-data-on-join.worlds", String.class)
