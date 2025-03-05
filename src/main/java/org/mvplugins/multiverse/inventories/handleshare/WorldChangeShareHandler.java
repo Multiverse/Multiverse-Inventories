@@ -126,10 +126,12 @@ final class WorldChangeShareHandler extends ShareHandler {
         }
 
         private void addReadProfileForWorldGroup(WorldGroup worldGroup) {
-            affectedProfiles.addReadProfile(
-                    worldGroup.getGroupProfileContainer().getPlayerData(player),
-                    worldGroup.getApplicableShares()
-            );
+            Shares applicableShares = Sharables.fromShares(worldGroup.getApplicableShares());
+            if (!inventoriesConfig.getApplyLastLocationForAllTeleports()) {
+                Logging.finer("Removing lastLocation from applicableShares as it is not applied for all teleports");
+                applicableShares.remove(Sharables.LAST_LOCATION);
+            }
+            affectedProfiles.addReadProfile(worldGroup.getGroupProfileContainer().getPlayerData(player), applicableShares);
         }
 
         private void useToWorldForMissingShares() {
@@ -137,6 +139,10 @@ final class WorldChangeShareHandler extends ShareHandler {
             Shares unhandledShares = (toWorldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
                     ? Sharables.standardOf() : Sharables.enabledOf();
             unhandledShares.removeAll(handledShares);
+            if (!inventoriesConfig.getApplyLastLocationForAllTeleports()) {
+                Logging.finer("Removing lastLocation from unhandledShares as it is not applied for all teleports");
+                unhandledShares.remove(Sharables.LAST_LOCATION);
+            }
             if (unhandledShares.isEmpty()) {
                 return;
             }

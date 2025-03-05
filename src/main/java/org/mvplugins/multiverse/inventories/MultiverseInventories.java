@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.MultiversePlugin;
 import org.mvplugins.multiverse.core.config.MVCoreConfig;
+import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
@@ -14,6 +15,7 @@ import org.mvplugins.multiverse.inventories.commandtools.MVInvCommandContexts;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
+import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
@@ -41,11 +43,13 @@ public class MultiverseInventories extends MultiversePlugin {
     private static final int PROTOCOL = 50;
 
     @Inject
-    private Provider<InventoriesConfig> inventoriesConfig;
-    @Inject
     private Provider<MVCommandManager> commandManager;
     @Inject
     private Provider<MVCoreConfig> mvCoreConfig;
+    @Inject
+    private Provider<DestinationsProvider> destinationsProvider;
+    @Inject
+    private Provider<InventoriesConfig> inventoriesConfig;
     @Inject
     private Provider<ShareHandleListener> shareHandleListener;
     @Inject
@@ -113,6 +117,7 @@ public class MultiverseInventories extends MultiversePlugin {
 
         // Register Commands
         this.registerCommands();
+        this.registerDestinations();
         // Hook plugins that can be imported from
         this.hookImportables();
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
@@ -173,6 +178,10 @@ public class MultiverseInventories extends MultiversePlugin {
                     Logging.severe("Failed to register commands");
                     e.printStackTrace();
                 });
+    }
+
+    private void registerDestinations() {
+        destinationsProvider.get().registerDestination(serviceLocator.getService(LastLocationDestination.class));
     }
 
     private void hookImportables() {

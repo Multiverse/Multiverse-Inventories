@@ -130,7 +130,7 @@ final class InventoriesConfigNodes {
             .comment("")
             .comment("When enabled, the last location of the player will be applied for any teleportation.")
             .comment("This is useful as you want to use the last location for any teleportation, such as the warp system.")
-            .comment("When disabled, you can only use `/mvinv tplastlocation [player] <world>` to teleport to the player's last location.")
+            .comment("When disabled, you can only use `/mv tp ll:worldname` to teleport to the player's last location.")
             .defaultValue(true)
             .name("apply-last-location-for-all-teleports")
             .build());
