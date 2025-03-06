@@ -1,0 +1,8 @@
+groups:
+  group1:
+    worlds:
+      - world
+    shares:
+      - hit_points
+    disabled-shares:
+      - total_xp
