@@ -40,6 +40,11 @@ public final class InventoriesConfig {
          */
         DEFAULT_UNGROUPED_WORLDS("settings.default_ungrouped_worlds", false, "# If set to true, any world not listed in a group will automatically use the settings for the default group!"),
 
+	/**
+	 * Allow worlds not part of Multiverse to be considered ungrouped
+	 */
+        ALLOW_NONMV_WORLDS("settings.allow_nonmv_worlds", false, "# If set to true, any world that isn't imported into MV yet, can be treated as an ungrouped world.  Requires default_ungrouped_worlds to function properly."),
+
         /**
          * Whether or not to save/load player data on log out/in.
          */
@@ -276,6 +281,13 @@ public final class InventoriesConfig {
      */
     public boolean isDefaultingUngroupedWorlds() {
         return this.getBoolean(Path.DEFAULT_UNGROUPED_WORLDS);
+    }
+    
+    /**
+     * @return true if we should handle non-MV worlds also.
+     */
+    public boolean isAllowNonMVWorlds() {
+        return this.getBoolean(Path.ALLOW_NONMV_WORLDS);
     }
 
     /**
