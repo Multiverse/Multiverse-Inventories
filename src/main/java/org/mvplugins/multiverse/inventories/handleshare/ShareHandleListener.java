@@ -281,7 +281,7 @@ public final class ShareHandleListener implements Listener {
             return;
         }
         final Player player = event.getPlayer();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(
+        Bukkit.getScheduler().runTaskLater(
                 inventories,
                 () -> verifyCorrectWorld(
                         player,

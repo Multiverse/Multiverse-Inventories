@@ -236,20 +236,17 @@ public class MultiverseInventories extends MultiversePlugin {
             return;
         }
 
-        this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                // Create initial World Group for first run IF NO GROUPS EXIST
-                if (inventoriesConfig.get().getFirstRun()) {
-                    Logging.info("First run!");
-                    if (worldGroupManager.get().getGroups().isEmpty()) {
-                        worldGroupManager.get().createDefaultGroup();
-                    }
-
-                    inventoriesConfig.get().setFirstRun(false);
+        this.getServer().getScheduler().runTaskLater(this, () -> {
+            // Create initial World Group for first run IF NO GROUPS EXIST
+            if (inventoriesConfig.get().getFirstRun()) {
+                Logging.info("First run!");
+                if (worldGroupManager.get().getGroups().isEmpty()) {
+                    worldGroupManager.get().createDefaultGroup();
                 }
-                worldGroupManager.get().checkForConflicts(null);
+
+                inventoriesConfig.get().setFirstRun(false);
             }
+            worldGroupManager.get().checkForConflicts(null);
         }, 1L);
     }
 

@@ -91,8 +91,8 @@ final class InventoriesDupingPatch {
      */
     public void enable(Plugin plugin) {
         Bukkit.getPluginManager().registerEvents(this.listener, plugin);
-        this.updateTimeoutsTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
-                plugin, new UpdateTimeoutsTask(), 1, 1);
+        this.updateTimeoutsTaskId = Bukkit.getScheduler().runTaskTimer(
+                plugin, new UpdateTimeoutsTask(), 1, 1).getTaskId();
     }
 
     /**
