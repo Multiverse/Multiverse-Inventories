@@ -29,4 +29,12 @@ class ConfigTest : TestWithMockBukkit() {
     fun `Config is fresh`() {
         assertConfigEquals("/config/fresh_config.yml", "config.yml")
     }
+
+    @Test
+    fun `Migrate from old config`() {
+        writeResourceToConfigFile("/config/old_config.yml", "config.yml")
+        assertTrue(config.load().isSuccess)
+        assertTrue(config.save().isSuccess)
+        assertConfigEquals("/config/migrated_config.yml", "config.yml")
+    }
 }
