@@ -120,6 +120,9 @@ public class MultiverseInventories extends MultiversePlugin {
         this.registerDestinations();
         // Hook plugins that can be imported from
         this.hookImportables();
+
+        // Init other extensions
+        this.hookLuckPerms();
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
 
         Logging.config("Version %s (API v%s) Enabled - By %s",
@@ -188,6 +191,15 @@ public class MultiverseInventories extends MultiversePlugin {
         serviceLocator.getAllServices(DataImporter.class).forEach(dataImporter -> {
             dataImportManager.get().register(dataImporter);
         });
+    }
+
+    private void hookLuckPerms() {
+        Try.run(() -> Class.forName("net.luckperms.api.LuckPerms"))
+                .onFailure(e -> Logging.fine("Luckperms is not installed!"))
+                .andThenTry(() -> {
+                    Logging.fine("Found luckperms!");
+                    serviceLocator.getService(WorldGroupContextCalculator.class);
+                });
     }
 
     /**

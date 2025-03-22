@@ -30,6 +30,9 @@ dependencies {
     // TODO update to correct version once we have it published
     externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
 
+    // Luckperms for group context
+    externalPlugin 'net.luckperms:api:5.4'
+
     // Config
     shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
     shadowed 'net.minidev:json-smart:2.5.1'
