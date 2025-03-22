@@ -188,6 +188,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             Object sharesListObj = dataMap.get("disabled-shares");
             if (sharesListObj instanceof List) {
                 profile.getDisabledShares().mergeShares(Sharables.fromList((List) sharesListObj));
+                profile.getDisabledShares().removeAll(Sharables.negativeFromList((List) sharesListObj));
             } else {
                 Logging.warning("Disabled shares formatted incorrectly for group: " + name);
             }

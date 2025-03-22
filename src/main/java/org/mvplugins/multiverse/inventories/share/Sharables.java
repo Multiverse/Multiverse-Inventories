@@ -1,9 +1,8 @@
 package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
-import org.bukkit.attribute.AttributeInstance;
+import com.google.common.collect.Sets;
+import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
@@ -12,20 +11,26 @@ import org.mvplugins.multiverse.inventories.profile.ProfileData;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
-import org.mvplugins.multiverse.inventories.util.PlayerStats;
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
+import org.mvplugins.multiverse.inventories.util.PlayerStats;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
+import org.bukkit.Statistic;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.mvplugins.multiverse.core.economy.MVEconomist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -33,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
 
@@ -688,6 +694,135 @@ public final class Sharables implements Shares {
             .altName("potion").altName("potions").build();
 
     /**
+     * Sharing Advancements.
+     */
+    public static final Sharable<List> ADVANCEMENTS = new Sharable.Builder<>("advancements", List.class,
+            new SharableHandler<>() {
+                @Override
+                public void updateProfile(ProfileData profile, Player player) {
+                    Set<String> completedAdvancements = new HashSet<>();
+                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
+
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+                        Collection<String> awardedCriteria = player.getAdvancementProgress(advancement).getAwardedCriteria();
+                        completedAdvancements.addAll(awardedCriteria);
+                    }
+
+                    profile.set(ADVANCEMENTS, new ArrayList<>(completedAdvancements));
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, ProfileData profile) {
+                    List<String> advancements = profile.get(ADVANCEMENTS);
+                    Set<String> processedCriteria = new HashSet<>();
+                    Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
+
+                    int totalExperience = player.getTotalExperience();
+                    int level = player.getLevel();
+                    float exp = player.getExp();
+
+                    Iterator<Advancement> advancementIterator = Bukkit.advancementIterator();
+                    while (advancementIterator.hasNext()) {
+                        Advancement advancement = advancementIterator.next();
+
+                        for (String criteria : advancement.getCriteria()) {
+                            if (processedCriteria.contains(criteria)) {
+                                continue;
+                            } else if (completedCriteria.contains(criteria)) {
+                                player.getAdvancementProgress(advancement).awardCriteria(criteria);
+                            } else {
+                                player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                            }
+
+                            processedCriteria.add(criteria);
+                        }
+                    }
+
+                    player.setExp(exp);
+                    player.setLevel(level);
+                    player.setTotalExperience(totalExperience);
+
+                    return advancements != null;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").optional().build();
+
+    /**
+     * Sharing Statistics.
+     */
+    public static final Sharable<Map> GAME_STATISTICS = new Sharable.Builder<>("game_statistics", Map.class,
+            new SharableHandler<>() {
+                @Override
+                public void updateProfile(ProfileData profile, Player player) {
+                    Map<String, Integer> playerStats = new HashMap<>();
+                    for (Statistic stat: Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            int val = player.getStatistic(stat);
+                            // no need to save values of 0, that's the default!
+                            if (val != 0) {
+                                playerStats.put(stat.name(), val);
+                            }
+                        }
+                    }
+                    profile.set(GAME_STATISTICS, playerStats);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, ProfileData profile) {
+                    Map<String, Integer> playerStats = profile.get(GAME_STATISTICS);
+                    if (playerStats == null) {
+                        // Set all to 0
+                        for (Statistic stat : Statistic.values()) {
+                            if (stat.getType() == Statistic.Type.UNTYPED) {
+                                player.setStatistic(stat, 0);
+                            }
+                        }
+                        return false;
+                    }
+
+                    for (Statistic stat : Statistic.values()) {
+                        if (stat.getType() == Statistic.Type.UNTYPED) {
+                            player.setStatistic(stat, playerStats.getOrDefault(stat.name(), 0));
+                        }
+                    }
+
+                    return true;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "game_statistics")).altName("game_stats").optional().build();
+
+    /**
+     * Sharing Recipes.
+     */
+    public static final Sharable<List> RECIPES = new Sharable.Builder<>("recipes", List.class,
+            new SharableHandler<>() {
+                @Override
+                public void updateProfile(ProfileData profile, Player player) {
+                   List<String> recipes = player.getDiscoveredRecipes().stream()
+                           .map(NamespacedKey::toString)
+                           .toList();
+                    profile.set(RECIPES, recipes);
+                }
+
+                @Override
+                public boolean updatePlayer(Player player, ProfileData profile) {
+                    List<String> recipes = profile.get(RECIPES);
+                    if (recipes == null) {
+                        player.undiscoverRecipes(player.getDiscoveredRecipes());
+                        return false;
+                    }
+
+                    Set<NamespacedKey> discoveredRecipes = player.getDiscoveredRecipes();
+                    Set<NamespacedKey> toDiscover = recipes.stream().map(NamespacedKey::fromString)
+                            .collect(Collectors.toSet());
+
+                    player.undiscoverRecipes(Sets.difference(discoveredRecipes, toDiscover));
+                    player.discoverRecipes(Sets.difference(toDiscover, discoveredRecipes));
+
+                    return true;
+                }
+            }).defaultSerializer(new ProfileEntry(false, "recipes")).optional().build();
+
+    /**
      * Grouping for inventory sharables.
      */
     public static final Shares ALL_INVENTORY = new SharableGroup("inventory",
@@ -722,7 +857,7 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup STATS = new SharableGroup("stats",
             fromSharables(HEALTH, MAX_HEALTH, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL,
-                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS));
+                    REMAINING_AIR, MAXIMUM_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, GAME_STATISTICS, ADVANCEMENTS));
 
     /**
      * Grouping for ALL default sharables.
@@ -730,7 +865,8 @@ public final class Sharables implements Shares {
      */
     public static final SharableGroup ALL_DEFAULT = new SharableGroup("all", fromSharables(HEALTH, MAX_HEALTH,
             ECONOMY, FOOD_LEVEL, SATURATION, EXHAUSTION, EXPERIENCE, TOTAL_EXPERIENCE, LEVEL, INVENTORY, ARMOR, BED_SPAWN,
-            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND),
+            MAXIMUM_AIR, REMAINING_AIR, FALL_DISTANCE, FIRE_TICKS, POTIONS, LAST_LOCATION, ENDER_CHEST, OFF_HAND,
+            GAME_STATISTICS, ADVANCEMENTS, RECIPES),
             "*", "everything");
 
 
