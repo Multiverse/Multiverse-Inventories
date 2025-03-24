@@ -36,7 +36,7 @@ final class CreateGroupCommand extends InventoriesCommand {
 
     @Subcommand("creategroup")
     @CommandPermission("multiverse.inventories.creategroup")
-    @CommandCompletion("@empty @mvworlds:multiple,scope=both, @shares")
+    @CommandCompletion("@empty @mvworlds:multiple,scope=both @shares")
     @Syntax("<name> [share[,extra]] [world[,extra]]")
     @Description("Creates a new empty World Group with no worlds and no shares.")
     void onCreateGroupCommand(
