@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Sets;
+import org.bukkit.advancement.AdvancementProgress;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.external.vavr.control.Option;
@@ -19,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Statistic;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -701,14 +701,10 @@ public final class Sharables implements Shares {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
                     Set<String> completedAdvancements = new HashSet<>();
-                    Iterator<Advancement> advancementIterator = inventories.getServer().advancementIterator();
-
-                    while (advancementIterator.hasNext()) {
-                        Advancement advancement = advancementIterator.next();
+                    Bukkit.advancementIterator().forEachRemaining(advancement -> {
                         Collection<String> awardedCriteria = player.getAdvancementProgress(advancement).getAwardedCriteria();
                         completedAdvancements.addAll(awardedCriteria);
-                    }
-
+                    });
                     profile.set(ADVANCEMENTS, new ArrayList<>(completedAdvancements));
                 }
 
@@ -718,27 +714,26 @@ public final class Sharables implements Shares {
                     Set<String> processedCriteria = new HashSet<>();
                     Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
 
+                    // Advancements may cause the player to level up, which we don't want to happen
                     int totalExperience = player.getTotalExperience();
                     int level = player.getLevel();
                     float exp = player.getExp();
 
-                    Iterator<Advancement> advancementIterator = Bukkit.advancementIterator();
-                    while (advancementIterator.hasNext()) {
-                        Advancement advancement = advancementIterator.next();
-
+                    Bukkit.advancementIterator().forEachRemaining(advancement -> {
+                        AdvancementProgress advancementProgress = player.getAdvancementProgress(advancement);
                         for (String criteria : advancement.getCriteria()) {
                             if (processedCriteria.contains(criteria)) {
                                 continue;
                             } else if (completedCriteria.contains(criteria)) {
-                                player.getAdvancementProgress(advancement).awardCriteria(criteria);
+                                advancementProgress.awardCriteria(criteria);
                             } else {
-                                player.getAdvancementProgress(advancement).revokeCriteria(criteria);
+                                advancementProgress.revokeCriteria(criteria);
                             }
-
                             processedCriteria.add(criteria);
                         }
-                    }
+                    });
 
+                    // Set back the level from before applying the advancements
                     player.setExp(exp);
                     player.setLevel(level);
                     player.setTotalExperience(totalExperience);
