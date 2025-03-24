@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.MultiversePlugin;
-import org.mvplugins.multiverse.core.config.MVCoreConfig;
+import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
@@ -45,7 +45,7 @@ public class MultiverseInventories extends MultiversePlugin {
     @Inject
     private Provider<MVCommandManager> commandManager;
     @Inject
-    private Provider<MVCoreConfig> mvCoreConfig;
+    private Provider<CoreConfig> coreConfig;
     @Inject
     private Provider<DestinationsProvider> destinationsProvider;
     @Inject
@@ -224,7 +224,7 @@ public class MultiverseInventories extends MultiversePlugin {
     @Override
     public void reloadConfig() {
         try {
-            Logging.setDebugLevel(mvCoreConfig.get().getGlobalDebug());
+            Logging.setDebugLevel(coreConfig.get().getGlobalDebug());
 
             inventoriesConfig.get().load().onFailure(e -> {
                 Logging.severe("Failed to load config file!");

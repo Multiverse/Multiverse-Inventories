@@ -1,11 +1,11 @@
 package org.mvplugins.multiverse.inventories.config;
 
-import org.mvplugins.multiverse.core.configuration.functions.NodeSerializer;
-import org.mvplugins.multiverse.core.configuration.node.ConfigHeaderNode;
-import org.mvplugins.multiverse.core.configuration.node.ConfigNode;
-import org.mvplugins.multiverse.core.configuration.node.ListConfigNode;
-import org.mvplugins.multiverse.core.configuration.node.Node;
-import org.mvplugins.multiverse.core.configuration.node.NodeGroup;
+import org.mvplugins.multiverse.core.confighandle.functions.NodeSerializer;
+import org.mvplugins.multiverse.core.confighandle.node.ConfigHeaderNode;
+import org.mvplugins.multiverse.core.confighandle.node.ConfigNode;
+import org.mvplugins.multiverse.core.confighandle.node.ListConfigNode;
+import org.mvplugins.multiverse.core.confighandle.node.Node;
+import org.mvplugins.multiverse.core.confighandle.node.NodeGroup;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 

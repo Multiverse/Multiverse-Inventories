@@ -2,11 +2,11 @@ package org.mvplugins.multiverse.inventories.config;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.configuration.handle.CommentedConfigurationHandle;
-import org.mvplugins.multiverse.core.configuration.handle.StringPropertyHandle;
-import org.mvplugins.multiverse.core.configuration.migration.ConfigMigrator;
-import org.mvplugins.multiverse.core.configuration.migration.MoveMigratorAction;
-import org.mvplugins.multiverse.core.configuration.migration.VersionMigrator;
+import org.mvplugins.multiverse.core.confighandle.CommentedConfigurationHandle;
+import org.mvplugins.multiverse.core.confighandle.StringPropertyHandle;
+import org.mvplugins.multiverse.core.confighandle.migration.ConfigMigrator;
+import org.mvplugins.multiverse.core.confighandle.migration.MoveMigratorAction;
+import org.mvplugins.multiverse.core.confighandle.migration.VersionMigrator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;

@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandCompletions;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
-import org.mvplugins.multiverse.core.configuration.handle.PropertyModifyAction;
+import org.mvplugins.multiverse.core.confighandle.PropertyModifyAction;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandCompletionContext;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;

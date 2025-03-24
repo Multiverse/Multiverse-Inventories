@@ -7,7 +7,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.mockbukkit.mockbukkit.MockBukkit
 import org.mockbukkit.mockbukkit.inventory.ItemStackMock
 import org.mvplugins.multiverse.core.MultiverseCore
-import org.mvplugins.multiverse.core.config.MVCoreConfig
+import org.mvplugins.multiverse.core.config.CoreConfig
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator
 import org.mvplugins.multiverse.inventories.mock.MVServerMock
 import java.io.File
@@ -35,7 +35,7 @@ abstract class TestWithMockBukkit {
 
         server = MockBukkit.mock(MVServerMock())
         multiverseCore = MockBukkit.load(MultiverseCore::class.java)
-        multiverseCore.serviceLocator.getService(MVCoreConfig::class.java).globalDebug = 3
+        multiverseCore.serviceLocator.getService(CoreConfig::class.java).globalDebug = 3
         multiverseInventories = MockBukkit.load(MultiverseInventories::class.java)
         serviceLocator = multiverseInventories.serviceLocator
         assertNotNull(server.commandMap)
