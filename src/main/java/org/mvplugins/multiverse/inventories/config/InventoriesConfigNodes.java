@@ -135,6 +135,13 @@ final class InventoriesConfigNodes {
             .name("apply-last-location-for-all-teleports")
             .build());
 
+    final ConfigNode<Boolean> useByteSerializationForInventoryData = node(ConfigNode.builder("sharables.use-byte-serialization-for-inventory-data", Boolean.class)
+            .comment("")
+            .comment("When enabled, we will use byte serialization for inventory data.")
+            .defaultValue(false)
+            .name("use-byte-serialization-for-inventory-data")
+            .build());
+
     private final ConfigHeaderNode performanceHeader = node(ConfigHeaderNode.builder("performance")
             .comment("")
             .comment("")

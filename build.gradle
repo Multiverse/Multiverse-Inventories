@@ -26,6 +26,10 @@ configure(apiDependencies) {
 }
 
 dependencies {
+    // Server API
+    // TODO make our custom plugin target paper instead of spigot
+    externalPlugin 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+
     // Core
     // TODO update to correct version once we have it published
     externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
