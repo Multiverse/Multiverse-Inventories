@@ -38,6 +38,11 @@ public final class ProfileTypes {
     public static final ProfileType ADVENTURE = createProfileType("ADVENTURE");
 
     /**
+     * The profile type for the SPECTATOR Game Mode.
+     */
+    public static final ProfileType SPECTATOR = createProfileType("SPECTATOR");
+
+    /**
      * Returns the appropriate ProfileType for the given game mode.
      *
      * @param mode The game mode to get the profile type for.
@@ -48,6 +53,7 @@ public final class ProfileTypes {
             case SURVIVAL -> SURVIVAL;
             case CREATIVE -> CREATIVE;
             case ADVENTURE -> ADVENTURE;
+            case SPECTATOR -> SPECTATOR;
             default -> SURVIVAL;
         };
     }
