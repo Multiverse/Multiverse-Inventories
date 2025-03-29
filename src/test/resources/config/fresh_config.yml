@@ -9,6 +9,7 @@ sharables:
   use-improved-respawn-location-detection: true
   reset-last-location-on-death: false
   apply-last-location-for-all-teleports: true
+  use-byte-serialization-for-inventory-data: false
 
 performance:
   save-playerdata-on-quit: false

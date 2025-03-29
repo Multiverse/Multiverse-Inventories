@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.share;
 
+import org.mvplugins.multiverse.inventories.util.ItemStackConverter;
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -29,11 +30,14 @@ final class InventorySerializer implements SharableSerializer<ItemStack[]> {
         return mapSlots(itemStacks);
     }
 
-    private Map<String, ItemStack> mapSlots(ItemStack[] itemStacks) {
-        Map<String, ItemStack> result = new HashMap<>(itemStacks.length);
+    private Map<String, Object> mapSlots(ItemStack[] itemStacks) {
+        Map<String, Object> result = new HashMap<>(itemStacks.length);
         for (int i = 0; i < itemStacks.length; i++) {
             if (itemStacks[i] != null && itemStacks[i].getType() != Material.AIR) {
-                result.put(Integer.toString(i), itemStacks[i]);
+                Object serialize = ItemStackConverter.serialize(itemStacks[i]);
+                if (serialize != null) {
+                    result.put(Integer.toString(i), serialize);
+                }
             }
         }
         return result;
@@ -46,7 +50,16 @@ final class InventorySerializer implements SharableSerializer<ItemStack[]> {
         }
         for (int i = 0; i < inventory.length; i++) {
             Object value = invMap.get(Integer.toString(i));
-            inventory[i] = value instanceof ItemStack item ? item : new ItemStack(Material.AIR);
+            if (value == null) {
+                inventory[i] = new ItemStack(Material.AIR);
+                continue;
+            }
+            ItemStack item = ItemStackConverter.deserialize(value);
+            if (item == null) {
+                inventory[i] = new ItemStack(Material.AIR);
+                continue;
+            }
+            inventory[i] = item;
         }
         return inventory;
     }

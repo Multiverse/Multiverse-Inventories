@@ -167,6 +167,14 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.applyLastLocationForAllTeleports, applyLastLocationForAllTeleports);
     }
 
+    public boolean getUseByteSerializationForInventoryData() {
+        return this.configHandle.get(configNodes.useByteSerializationForInventoryData);
+    }
+
+    public Try<Void> setUseByteSerializationForInventoryData(boolean useByteSerializationForInventoryData) {
+        return this.configHandle.set(configNodes.useByteSerializationForInventoryData, useByteSerializationForInventoryData);
+    }
+
     /**
      * Tells whether Multiverse-Inventories should save on player logout.
      *

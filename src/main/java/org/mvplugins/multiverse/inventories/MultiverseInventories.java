@@ -25,6 +25,7 @@ import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
+import org.mvplugins.multiverse.inventories.util.ItemStackConverter;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import org.bukkit.Bukkit;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
@@ -96,6 +97,8 @@ public class MultiverseInventories extends MultiversePlugin {
         initializeDependencyInjection();
         Sharables.init(this);
         Perm.register(this);
+        ItemStackConverter.init(this);
+        Logging.fine("ItemStackConverter is using byte serialization: " + ItemStackConverter.hasByteSerializeSupport);
         this.reloadConfig();
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
 
