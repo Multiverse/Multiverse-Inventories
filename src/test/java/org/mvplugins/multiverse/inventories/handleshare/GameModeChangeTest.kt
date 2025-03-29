@@ -38,6 +38,7 @@ class GameModeChangeTest : TestWithMockBukkit() {
         player.inventory.contents = survivalItems
 
         player.gameMode = org.bukkit.GameMode.CREATIVE
+        Thread.sleep(10)
         assertNotEquals(survivalItems[0], player.inventory.getItem(0))
         assertNotEquals(survivalItems[1], player.inventory.getItem(1))
         val creativeItems = arrayOf(
@@ -47,12 +48,14 @@ class GameModeChangeTest : TestWithMockBukkit() {
         player.inventory.contents = creativeItems
 
         player.gameMode = org.bukkit.GameMode.SURVIVAL
+        Thread.sleep(10)
         assertEquals(survivalItems[0], player.inventory.getItem(0))
         assertEquals(survivalItems[1], player.inventory.getItem(1))
         assertNotEquals(creativeItems[0], player.inventory.getItem(0))
         assertNotEquals(creativeItems[1], player.inventory.getItem(1))
 
         player.gameMode = org.bukkit.GameMode.CREATIVE
+        Thread.sleep(10)
         assertEquals(creativeItems[0], player.inventory.getItem(0))
         assertEquals(creativeItems[1], player.inventory.getItem(1))
         assertNotEquals(survivalItems[0], player.inventory.getItem(0))
