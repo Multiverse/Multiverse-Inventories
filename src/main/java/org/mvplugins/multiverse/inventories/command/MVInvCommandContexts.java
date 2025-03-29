@@ -2,7 +2,7 @@ package org.mvplugins.multiverse.inventories.command;
 
 import com.google.common.base.Strings;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandExecutionContext;
 import org.mvplugins.multiverse.external.acf.commands.CommandContexts;
 import org.mvplugins.multiverse.external.acf.commands.InvalidCommandArgument;

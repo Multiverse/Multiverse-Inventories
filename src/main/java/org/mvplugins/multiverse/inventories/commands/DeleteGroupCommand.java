@@ -1,10 +1,10 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
-import org.mvplugins.multiverse.core.commandtools.queue.CommandQueueManager;
-import org.mvplugins.multiverse.core.commandtools.queue.CommandQueuePayload;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
+import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
+import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;

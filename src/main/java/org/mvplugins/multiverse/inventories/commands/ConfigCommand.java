@@ -2,8 +2,8 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.exceptions.MultiverseException;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;

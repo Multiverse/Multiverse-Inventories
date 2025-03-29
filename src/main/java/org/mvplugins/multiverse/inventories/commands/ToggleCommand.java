@@ -1,10 +1,10 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;

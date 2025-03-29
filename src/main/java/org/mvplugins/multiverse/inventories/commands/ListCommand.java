@@ -1,9 +1,9 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;

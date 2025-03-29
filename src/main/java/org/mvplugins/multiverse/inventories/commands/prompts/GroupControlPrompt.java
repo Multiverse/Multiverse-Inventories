@@ -2,7 +2,7 @@ package org.mvplugins.multiverse.inventories.commands.prompts;
 
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.bukkit.conversations.ConversationContext;

@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.command;
 
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandExecutionContext;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandIssuer;
 import org.mvplugins.multiverse.external.acf.commands.BukkitConditionContext;

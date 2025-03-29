@@ -55,7 +55,7 @@ public final class LastLocationDestination implements Destination<LastLocationDe
     @Override
     public @NotNull Collection<DestinationSuggestionPacket> suggestDestinations(@NotNull CommandSender commandSender, @Nullable String destinationParams) {
         return worldManager.getLoadedWorlds().stream()
-                .map(world -> new DestinationSuggestionPacket(world.getName(), world.getName()))
+                .map(world -> new DestinationSuggestionPacket(this, world.getName(), world.getName()))
                 .toList();
     }
 }

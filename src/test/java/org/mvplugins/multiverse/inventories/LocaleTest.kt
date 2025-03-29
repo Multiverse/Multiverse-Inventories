@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories
 
 import org.mockbukkit.mockbukkit.entity.PlayerMock
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager
+import org.mvplugins.multiverse.core.command.MVCommandManager
 import org.mvplugins.multiverse.core.locale.message.Message
 import org.mvplugins.multiverse.inventories.util.MVInvi18n
 import kotlin.test.BeforeTest

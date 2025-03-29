@@ -3,7 +3,7 @@ package org.mvplugins.multiverse.inventories.profile.group;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;

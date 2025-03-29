@@ -1,8 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
-import org.bukkit.command.CommandSender;
 import org.jvnet.hk2.annotations.Contract;
-import org.mvplugins.multiverse.core.commandtools.MVCommandIssuer;
+import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.util.List;

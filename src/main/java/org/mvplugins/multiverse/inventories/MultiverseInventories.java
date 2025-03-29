@@ -28,7 +28,7 @@ import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.ItemStackConverter;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import org.bukkit.Bukkit;
-import org.mvplugins.multiverse.core.commandtools.MVCommandManager;
+import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jakarta.inject.Provider;
@@ -41,7 +41,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
 @Service
 public final class MultiverseInventories extends MultiversePlugin {
 
-    private static final int PROTOCOL = 50;
+    private static final double TARGET_CORE_API_VERSION = 5.0;
 
     @Inject
     private Provider<MVCommandManager> commandManager;
@@ -129,7 +129,7 @@ public final class MultiverseInventories extends MultiversePlugin {
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
 
         Logging.config("Version %s (API v%s) Enabled - By %s",
-                this.getDescription().getVersion(), getTargetCoreProtocolVersion(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
+                this.getDescription().getVersion(), getVersionAsNumber(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
     }
 
     private void initializeDependencyInjection() {
@@ -209,8 +209,8 @@ public final class MultiverseInventories extends MultiversePlugin {
      * {@inheritDoc}
      */
     @Override
-    public int getTargetCoreProtocolVersion() {
-        return PROTOCOL;
+    public double getTargetCoreVersion() {
+        return TARGET_CORE_API_VERSION;
     }
 
     /**
