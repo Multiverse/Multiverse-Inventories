@@ -137,7 +137,15 @@ final class InventoriesConfigNodes {
 
     final ConfigNode<Boolean> useByteSerializationForInventoryData = node(ConfigNode.builder("sharables.use-byte-serialization-for-inventory-data", Boolean.class)
             .comment("")
-            .comment("When enabled, we will use byte serialization for inventory data.")
+            .comment("When enabled, we will use paper's improved byte serialization for inventory data.")
+            .comment("When disabled, we will use the legacy configuration serialization method.")
+            .comment("!!!!!BIG NOTE:")
+            .comment("  This option is only applicable on PAPERMC.")
+            .comment("  Once you enable this option, you cannot change your server software back to SPIGOT.")
+            .comment("------------")
+            .comment("Byte serialization will use minecraft's NBT format. NBT is safer for data migrations as it will use the built in ")
+            .comment("data converter instead of bukkits dangerous serialization system. This will fix various issues with the inventory data")
+            .comment("such as Skulker Box data loss, equip-sound crash, FoodEffect error, and more.")
             .defaultValue(false)
             .name("use-byte-serialization-for-inventory-data")
             .build());
