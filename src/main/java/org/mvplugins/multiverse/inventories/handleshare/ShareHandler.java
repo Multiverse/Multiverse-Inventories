@@ -115,6 +115,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
     }
 
     private void logHandlingComplete(double timeTaken, ShareHandlingEvent event) {
-        Logging.fine("=== %s complete for %s | time taken: %4.4f ms ===", player.getName(), event.getEventName(), timeTaken);
+        Logging.fine("=== %s complete for %s | \u001B[32mtime taken: %4.4f ms\u001B[0m ===",
+                player.getName(), event.getEventName(), timeTaken);
     }
 }
