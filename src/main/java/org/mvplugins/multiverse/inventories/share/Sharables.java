@@ -36,6 +36,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -793,7 +794,9 @@ public final class Sharables implements Shares {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
                    List<String> recipes = player.getDiscoveredRecipes().stream()
-                           .map(NamespacedKey::toString)
+                           // Save space by removing the namespace if its default minecraft
+                           .map(key -> NamespacedKey.MINECRAFT.equals(key.getNamespace())
+                                   ? key.getKey() : key.toString())
                            .toList();
                     profile.set(RECIPES, recipes);
                 }
@@ -808,6 +811,7 @@ public final class Sharables implements Shares {
 
                     Set<NamespacedKey> discoveredRecipes = player.getDiscoveredRecipes();
                     Set<NamespacedKey> toDiscover = recipes.stream().map(NamespacedKey::fromString)
+                            .filter(Objects::nonNull)
                             .collect(Collectors.toSet());
 
                     player.undiscoverRecipes(Sets.difference(discoveredRecipes, toDiscover));
