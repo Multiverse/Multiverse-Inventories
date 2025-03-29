@@ -1,6 +1,8 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.mvplugins.multiverse.external.vavr.CheckedRunnable;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.io.File;
 import java.util.Map;
@@ -28,41 +30,39 @@ final class ProfileFileIO {
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<Void> future = new CompletableFuture<>();
         fileIOExecutorService.submit(() -> {
-            if (toWaitLatch != null && toWaitLatch.getCount() > 0) {
-                try {
-                    Logging.finest("Waiting for lock on " + file);
-                    toWaitLatch.await(10, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            action.run();
-            thisLatch.countDown();
+            waitForLock(file, toWaitLatch);
+            Try<Void> tryResult = Try.runRunnable(action);
             fileLocks.remove(file);
-            future.complete(null);
+            thisLatch.countDown();
+            tryResult.onFailure(future::completeExceptionally).onSuccess(ignore -> future.complete(null));
         });
         return future;
     }
 
-    <T> CompletableFuture<T> queueCallable(File file, Supplier<T> callable) {
+    <T> CompletableFuture<T> queueCallable(File file, Supplier<T> supplier) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<T> future = new CompletableFuture<>();
         fileIOExecutorService.submit(() -> {
-            if (toWaitLatch != null && toWaitLatch.getCount() > 0) {
-                try {
-                    Logging.finest("Waiting for lock on " + file);
-                    toWaitLatch.await(10, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            T result = callable.get();
-            thisLatch.countDown();
+            waitForLock(file, toWaitLatch);
+            Try<T> tryResult = Try.ofSupplier(supplier);
             fileLocks.remove(file);
-            future.complete(result);
+            thisLatch.countDown();
+            tryResult.onFailure(future::completeExceptionally).onSuccess(future::complete);
         });
         return future;
+    }
+
+    private void waitForLock(File file, CountDownLatch toWaitLatch) {
+        if (toWaitLatch != null && toWaitLatch.getCount() > 0) {
+            try {
+                Logging.finest("Waiting for lock on " + file);
+                toWaitLatch.await(10, TimeUnit.SECONDS);
+                Logging.finest("Aquired lock on " + file);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     <T> T waitForData(File file, Supplier<T> callable) {
