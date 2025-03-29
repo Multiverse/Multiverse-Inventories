@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-public class GameModeChangeShareHandlingEvent extends ShareHandlingEvent implements Cancellable {
+public final class GameModeChangeShareHandlingEvent extends ShareHandlingEvent implements Cancellable {
 
     private static final HandlerList HANDLERS = new HandlerList();
 

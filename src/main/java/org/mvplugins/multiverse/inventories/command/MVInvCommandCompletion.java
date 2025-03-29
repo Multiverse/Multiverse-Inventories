@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.commandtools;
+package org.mvplugins.multiverse.inventories.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;

@@ -9,7 +9,7 @@ import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
-public class GroupControlPrompt extends InventoriesPrompt {
+public final class GroupControlPrompt extends InventoriesPrompt {
 
     public GroupControlPrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer) {
         super(plugin, issuer);

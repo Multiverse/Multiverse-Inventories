@@ -109,7 +109,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
                     + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                     + " (" + playerProfile.getProfileType() + ")"
                     + " for player " + playerProfile.getPlayer().getName());
-            playerProfile.updateFromSnapshot(snapshot, persistingProfile.getShares());
+            playerProfile.update(snapshot, persistingProfile.getShares());
             profileDataStore.updatePlayerData(playerProfile);
         });
     }

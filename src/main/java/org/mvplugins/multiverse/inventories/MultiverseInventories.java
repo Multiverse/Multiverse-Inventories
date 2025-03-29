@@ -10,8 +10,8 @@ import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
-import org.mvplugins.multiverse.inventories.commandtools.MVInvCommandCompletion;
-import org.mvplugins.multiverse.inventories.commandtools.MVInvCommandContexts;
+import org.mvplugins.multiverse.inventories.command.MVInvCommandCompletion;
+import org.mvplugins.multiverse.inventories.command.MVInvCommandContexts;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
@@ -39,7 +39,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public class MultiverseInventories extends MultiversePlugin {
+public final class MultiverseInventories extends MultiversePlugin {
 
     private static final int PROTOCOL = 50;
 

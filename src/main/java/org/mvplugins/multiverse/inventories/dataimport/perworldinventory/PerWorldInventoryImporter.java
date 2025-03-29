@@ -14,7 +14,7 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import java.util.Objects;
 
 @Service
-public class PerWorldInventoryImporter extends AbstractDataImporter {
+final class PerWorldInventoryImporter extends AbstractDataImporter {
 
     private final InventoriesConfig inventoriesConfig;
     private final WorldManager worldManager;

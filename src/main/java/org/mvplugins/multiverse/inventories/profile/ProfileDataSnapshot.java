@@ -30,11 +30,11 @@ public class ProfileDataSnapshot implements Cloneable, ProfileData {
         return data;
     }
 
-    public void updateFromSnapshot(ProfileDataSnapshot snapshot) {
+    public void update(ProfileData snapshot) {
         this.data.putAll(snapshot.getData());
     }
 
-    public void updateFromSnapshot(ProfileDataSnapshot snapshot, Shares shares) {
+    public void update(ProfileData snapshot, Shares shares) {
         shares.forEach(sharable -> {
             Object data = snapshot.getData().get(sharable);
             if (data != null) {

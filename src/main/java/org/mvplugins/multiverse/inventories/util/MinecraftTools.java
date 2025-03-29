@@ -16,8 +16,6 @@ public final class MinecraftTools {
 
     private static final int TICKS_PER_SECOND = 20;
 
-    private MinecraftTools() { }
-
     /**
      * Converts an amount of seconds to the appropriate amount of ticks.
      *
@@ -81,5 +79,9 @@ public final class MinecraftTools {
         }
         Logging.warning("Unable to anchor, respawn may not work as expected!");
         return respawnLocation;
+    }
+
+    private MinecraftTools() {
+        throw new IllegalStateException();
     }
 }

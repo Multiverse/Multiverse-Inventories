@@ -12,7 +12,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
-class GroupDeletePrompt extends InventoriesPrompt {
+final class GroupDeletePrompt extends InventoriesPrompt {
 
     public GroupDeletePrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer) {
         super(plugin, issuer);

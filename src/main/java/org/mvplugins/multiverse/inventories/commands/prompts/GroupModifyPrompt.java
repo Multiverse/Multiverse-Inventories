@@ -11,7 +11,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
-class GroupModifyPrompt extends InventoriesPrompt {
+final class GroupModifyPrompt extends InventoriesPrompt {
 
     protected final WorldGroup group;
 

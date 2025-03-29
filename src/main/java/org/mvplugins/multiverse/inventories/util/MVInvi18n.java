@@ -6,6 +6,9 @@ import org.mvplugins.multiverse.core.locale.message.MessageReplacement;
 import org.mvplugins.multiverse.external.acf.locales.MessageKey;
 import org.mvplugins.multiverse.external.acf.locales.MessageKeyProvider;
 
+/**
+ * Locales keys for Multiverse-Inventories
+ */
 public enum MVInvi18n implements MessageKeyProvider {
     TEST_STRING,
 

@@ -55,6 +55,6 @@ public final class ItemStackConverter {
     }
 
     private ItemStackConverter() {
-        // no instantiation
+        throw new IllegalStateException();
     }
 }

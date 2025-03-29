@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
-class GroupWorldsPrompt extends InventoriesPrompt {
+final class GroupWorldsPrompt extends InventoriesPrompt {
 
     protected final WorldGroup group;
     protected final Prompt nextPrompt;

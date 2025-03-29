@@ -3,7 +3,7 @@ package org.mvplugins.multiverse.inventories.util;
 /**
  * A collection of values relating to a Minecraft player.
  */
-public class PlayerStats {
+public final class PlayerStats {
 
     /**
      * Number of slots in Minecraft player inventory.

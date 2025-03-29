@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.commandtools;
+package org.mvplugins.multiverse.inventories.command;
 
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.commandtools.MVCommandManager;

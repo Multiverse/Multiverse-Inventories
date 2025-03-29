@@ -47,7 +47,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-class PwiImportHelper {
+final class PwiImportHelper {
 
     private final PerWorldInventoryAPI pwiAPI;
     private final InventoriesConfig inventoriesConfig;

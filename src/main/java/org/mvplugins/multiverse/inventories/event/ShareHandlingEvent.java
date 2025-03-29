@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Called when a player has changed from one world to another. Cancellable.
  */
-public abstract class ShareHandlingEvent extends Event implements Cancellable {
+public abstract sealed class ShareHandlingEvent extends Event implements Cancellable permits WorldChangeShareHandlingEvent, GameModeChangeShareHandlingEvent {
 
     private boolean cancelled;
 

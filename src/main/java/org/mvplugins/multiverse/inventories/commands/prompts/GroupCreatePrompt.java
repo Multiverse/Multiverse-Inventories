@@ -11,7 +11,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
-class GroupCreatePrompt extends InventoriesPrompt {
+final class GroupCreatePrompt extends InventoriesPrompt {
 
     public GroupCreatePrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer) {
         super(plugin, issuer);
