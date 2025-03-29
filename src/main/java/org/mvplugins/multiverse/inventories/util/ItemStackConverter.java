@@ -10,7 +10,7 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 import java.util.Base64;
 
-public class ItemStackConverter {
+public final class ItemStackConverter {
 
     public final static boolean hasByteSerializeSupport;
 
@@ -52,5 +52,9 @@ public class ItemStackConverter {
         }
         // let ConfigurationSerialization handle it
         return itemStack;
+    }
+
+    private ItemStackConverter() {
+        // no instantiation
     }
 }
