@@ -158,7 +158,7 @@ final class InventoriesConfigNodes {
     final ConfigNode<Boolean> savePlayerdataOnQuit = node(ConfigNode.builder("performance.save-playerdata-on-quit", Boolean.class)
             .comment("This option may be useful if you want an up-to-date offline copy of the playerdata within mvinv.")
             .comment("However, this will result in minor performance overhead on every player quit.")
-            .defaultValue(false)
+            .defaultValue(true)
             .name("save-playerdata-on-quit")
             .build());
 

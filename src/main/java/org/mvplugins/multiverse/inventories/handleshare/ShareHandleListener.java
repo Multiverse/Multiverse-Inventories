@@ -109,14 +109,8 @@ public final class ShareHandleListener implements Listener {
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
         final GlobalProfile globalProfile = profileDataSource.getGlobalProfileNow(player);
-        final String world = globalProfile.getLastWorld();
         if (config.getApplyPlayerdataOnJoin() && globalProfile.shouldLoadOnLogin()) {
-            ShareHandlingUpdater.updatePlayer(inventories, player, new PersistingProfile(
-                    Sharables.allOf(),
-                    profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                            .getContainer(world)
-                            .getPlayerData(player)
-            ));
+            new ReadOnlyShareHandler(inventories, player).handleSharing();
         }
         globalProfile.setLoadOnLogin(false);
         verifyCorrectWorld(player, player.getWorld().getName(), globalProfile);
@@ -153,21 +147,21 @@ public final class ShareHandleListener implements Listener {
     void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
+
         CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(player);
         globalProfile.thenAccept(p -> p.setLastWorld(world));
+
+        // Write last location as its possible for players to join at a different world
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION)
+                .write(player.getLocation().clone(), !config.getSavePlayerdataOnQuit());
+
         if (config.getSavePlayerdataOnQuit()) {
-            ShareHandlingUpdater.updateProfile(inventories, player, new PersistingProfile(
-                    Sharables.allOf(),
-                    profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                            .getContainer(world)
-                            .getPlayerData(player)
-            ));
+            new WriteOnlyShareHandler(inventories, player).handleSharing();
             if (config.getApplyPlayerdataOnJoin()) {
                 globalProfile.thenAccept(p -> p.setLoadOnLogin(true));
             }
         }
         globalProfile.thenAccept(profileDataSource::updateGlobalProfile);
-        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
     }
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {

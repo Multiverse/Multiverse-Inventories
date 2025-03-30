@@ -1,6 +1,9 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,11 @@ import java.util.List;
 public final class ProfileTypes {
 
     private static final List<ProfileType> types = new ArrayList<>();
+    private static InventoriesConfig config;
+
+    public static void init(MultiverseInventories plugin) {
+        config = plugin.getServiceLocator().getService(InventoriesConfig.class);
+    }
 
     private static ProfileType createProfileType(String name) {
         ProfileType type = ProfileType.createProfileType(name);
@@ -41,6 +49,13 @@ public final class ProfileTypes {
      * The profile type for the SPECTATOR Game Mode.
      */
     public static final ProfileType SPECTATOR = createProfileType("SPECTATOR");
+
+    public static ProfileType forPlayer(Player player) {
+        if (config != null && config.getEnableGamemodeShareHandling()) {
+            return forGameMode(player.getGameMode());
+        }
+        return SURVIVAL;
+    }
 
     /**
      * Returns the appropriate ProfileType for the given game mode.

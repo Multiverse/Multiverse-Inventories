@@ -32,10 +32,7 @@ public final class ProfileContainer {
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
-        ProfileType type = config.getEnableGamemodeShareHandling()
-                ? ProfileTypes.forGameMode(player.getGameMode())
-                : ProfileTypes.SURVIVAL;
-        return getPlayerData(type, player);
+        return getPlayerData(ProfileTypes.forPlayer(player), player);
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(ProfileType profileType, OfflinePlayer player) {
@@ -55,10 +52,7 @@ public final class ProfileContainer {
      * @return The profile for the given player.
      */
     public PlayerProfile getPlayerDataNow(Player player) {
-        ProfileType type = config.getEnableGamemodeShareHandling()
-                ? ProfileTypes.forGameMode(player.getGameMode())
-                : ProfileTypes.SURVIVAL;
-        return getPlayerDataNow(type, player);
+        return getPlayerDataNow(ProfileTypes.forPlayer(player), player);
     }
 
     /**

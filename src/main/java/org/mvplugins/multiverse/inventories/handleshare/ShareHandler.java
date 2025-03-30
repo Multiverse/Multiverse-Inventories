@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
  */
-sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShareHandler {
+sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHandler, WorldChangeShareHandler, WriteOnlyShareHandler {
 
     protected final Player player;
     protected final AffectedProfiles affectedProfiles;
@@ -45,7 +45,7 @@ sealed abstract class ShareHandler permits WorldChangeShareHandler, GameModeShar
      * Finalizes the transfer from one world to another.  This handles the switching
      * inventories/stats for a player and persisting the changes.
      */
-    final void handleSharing() {
+    public final void handleSharing() {
         long startTime = System.nanoTime();
         this.prepareProfiles();
         ShareHandlingEvent event = this.createEvent();

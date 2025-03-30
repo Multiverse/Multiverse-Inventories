@@ -17,11 +17,9 @@ import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
-import org.mvplugins.multiverse.inventories.handleshare.ShareHandlingUpdater;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
-import org.mvplugins.multiverse.inventories.handleshare.PersistingProfile;
+import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -39,7 +37,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public final class MultiverseInventories extends MultiversePlugin {
+public class MultiverseInventories extends MultiversePlugin {
 
     private static final double TARGET_CORE_API_VERSION = 5.0;
 
@@ -153,11 +151,7 @@ public final class MultiverseInventories extends MultiversePlugin {
         for (final Player player : getServer().getOnlinePlayers()) {
             final String world = player.getWorld().getName();
             if (inventoriesConfig.get().getSavePlayerdataOnQuit()) {
-                ShareHandlingUpdater.updateProfile(this, player, new PersistingProfile(
-                        Sharables.allOf(),
-                        profileContainerStoreProvider.get().getStore(ContainerType.WORLD)
-                                .getContainer(world)
-                                .getPlayerData(player)));
+                new WriteOnlyShareHandler(this, player).handleSharing();
                 if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
                     profileDataSource.get().modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true));
                 }
