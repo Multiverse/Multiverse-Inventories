@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
@@ -27,18 +28,18 @@ public final class SingleShareWriter<T> {
         return new SingleShareWriter<>(inventories, player, player.getWorld().getName(), ProfileTypes.forPlayer(player), sharable);
     }
 
-    public static <T> SingleShareWriter<T> of(MultiverseInventories inventories, Player player, String worldName, ProfileType profileType, Sharable<T> sharable) {
+    public static <T> SingleShareWriter<T> of(MultiverseInventories inventories, OfflinePlayer player, String worldName, ProfileType profileType, Sharable<T> sharable) {
         return new SingleShareWriter<>(inventories, player, worldName, profileType, sharable);
     }
 
     private final MultiverseInventories inventories;
-    private final Player player;
+    private final OfflinePlayer player;
     private final String worldName;
     private final ProfileType profileType;
     private final Sharable<T> sharable;
     private final ProfileDataSource profileDataSource;
 
-    private SingleShareWriter(MultiverseInventories inventories, Player player, String worldName, ProfileType profileType, Sharable<T> sharable) {
+    private SingleShareWriter(MultiverseInventories inventories, OfflinePlayer player, String worldName, ProfileType profileType, Sharable<T> sharable) {
         this.inventories = inventories;
         this.player = player;
         this.worldName = worldName;

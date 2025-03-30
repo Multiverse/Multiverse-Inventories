@@ -20,6 +20,7 @@ import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -93,6 +94,7 @@ public class MultiverseInventories extends MultiversePlugin {
         super.onEnable();
 
         initializeDependencyInjection();
+        ProfileTypes.init(this);
         Sharables.init(this);
         Perm.register(this);
         ItemStackConverter.init(this);
@@ -149,7 +151,6 @@ public class MultiverseInventories extends MultiversePlugin {
         super.onDisable();
 
         for (final Player player : getServer().getOnlinePlayers()) {
-            final String world = player.getWorld().getName();
             if (inventoriesConfig.get().getSavePlayerdataOnQuit()) {
                 new WriteOnlyShareHandler(this, player).handleSharing();
                 if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
