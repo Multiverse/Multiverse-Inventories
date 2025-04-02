@@ -26,8 +26,8 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileType;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.util.concurrent.CompletableFuture;

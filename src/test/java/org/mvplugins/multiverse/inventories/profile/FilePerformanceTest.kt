@@ -12,7 +12,9 @@ import org.mvplugins.multiverse.core.utils.CoreLogging
 import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
 import org.mvplugins.multiverse.inventories.share.Sharables
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -27,6 +29,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
 
     private lateinit var worldManager: WorldManager
     private lateinit var profileDataSource: ProfileDataSource
+    private lateinit var profileCacheManager: ProfileCacheManager
 
     @BeforeTest
     fun setUp() {
@@ -34,6 +37,8 @@ class FilePerformanceTest : TestWithMockBukkit() {
             throw IllegalStateException("WorldManager is not available as a service") }
         profileDataSource = serviceLocator.getService(ProfileDataSource::class.java).takeIf { it != null } ?: run {
             throw IllegalStateException("ProfileDataSource is not available as a service") }
+        profileCacheManager = serviceLocator.getService(ProfileCacheManager::class.java).takeIf { it != null } ?: run {
+            throw IllegalStateException("ProfileCacheManager is not available as a service") }
         CoreLogging.setDebugLevel(0);
         Logging.setDebugLevel(0)
         assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world")).isSuccess)
@@ -86,7 +91,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             future.get()
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-        profileDataSource.clearAllCache()
+        profileCacheManager.clearAllCache()
 
         val startTime2 = System.nanoTime()
         val futures2 = ArrayList<CompletableFuture<PlayerProfile>>(1000)
@@ -122,7 +127,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime3) / 1000000 + "ms")
 
-        val cacheStats = profileDataSource.getCacheStats()
+        val cacheStats = profileCacheManager.getCacheStats()
         Logging.info(cacheStats.values.toString())
         for (cacheStat in cacheStats) {
             Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
@@ -153,7 +158,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-        val cacheStats = profileDataSource.getCacheStats()
+        val cacheStats = profileCacheManager.getCacheStats()
         for (cacheStat in cacheStats) {
             Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
         }

@@ -2,11 +2,13 @@ package org.mvplugins.multiverse.inventories.profile.container;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileKey;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
-import org.mvplugins.multiverse.inventories.profile.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -23,13 +25,13 @@ public final class ProfileContainer {
     private final String name;
     private final ContainerType type;
     private final ProfileDataSource profileDataSource;
-    private final InventoriesConfig config;
+    private final ProfileCacheManager profileCacheManager;
 
     ProfileContainer(MultiverseInventories inventories, String name, ContainerType type) {
         this.name = name;
         this.type = type;
         this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
-        this.config = inventories.getServiceLocator().getService(InventoriesConfig.class);
+        this.profileCacheManager = inventories.getServiceLocator().getService(ProfileCacheManager.class);
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
@@ -128,7 +130,7 @@ public final class ProfileContainer {
      * Clears all cached data in the container.
      */
     public void clearContainerCache() {
-        profileDataSource.clearProfileCache(key ->
+        profileCacheManager.clearPlayerProfileCache(key ->
                 key.getContainerType().equals(type) && key.getDataName().equals(name));
     }
 }

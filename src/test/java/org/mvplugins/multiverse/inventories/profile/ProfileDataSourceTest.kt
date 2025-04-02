@@ -3,7 +3,9 @@ package org.mvplugins.multiverse.inventories.profile
 import com.dumptruckman.minecraft.util.Logging
 import org.junit.jupiter.api.Test
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
 import kotlin.test.BeforeTest
 
 class ProfileDataSourceTest : TestWithMockBukkit() {

@@ -1,7 +1,8 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.external.vavr.CheckedRunnable;
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.io.File;
@@ -12,17 +13,18 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
-final class ProfileFileIO {
+@Service
+final class AsyncFileIO {
 
     private final ExecutorService fileIOExecutorService = Executors.newWorkStealingPool();
     private final Map<File, CountDownLatch> fileLocks = new ConcurrentHashMap<>();
 
-    ProfileFileIO() {
+    @Inject
+    AsyncFileIO() {
     }
 
     CompletableFuture<Void> queueAction(File file, Runnable action) {

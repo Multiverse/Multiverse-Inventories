@@ -10,9 +10,9 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileKey;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
 import java.util.Collection;
 import java.util.UUID;

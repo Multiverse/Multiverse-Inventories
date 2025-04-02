@@ -1,11 +1,11 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.key;
 
 import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 import org.bukkit.Bukkit;
+import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 
 import java.util.UUID;
 

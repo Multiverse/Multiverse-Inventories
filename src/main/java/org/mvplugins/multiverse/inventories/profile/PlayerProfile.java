@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
 import java.util.UUID;
 

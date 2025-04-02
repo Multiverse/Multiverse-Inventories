@@ -3,9 +3,9 @@ package org.mvplugins.multiverse.inventories.handleshare
 import org.mockbukkit.mockbukkit.entity.PlayerMock
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource
-import org.mvplugins.multiverse.inventories.profile.ProfileKey
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType
 import org.mvplugins.multiverse.inventories.share.Sharables
 import kotlin.test.BeforeTest
 import kotlin.test.Test

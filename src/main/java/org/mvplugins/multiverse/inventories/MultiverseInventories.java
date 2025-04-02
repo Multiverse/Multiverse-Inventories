@@ -19,8 +19,9 @@ import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
+import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -60,6 +61,7 @@ public class MultiverseInventories extends MultiversePlugin {
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
     private Provider<ProfileDataSource> profileDataSource;
+    @Inject Provider<ProfileCacheManager> profileCacheManager;
     @Inject
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
     @Inject
@@ -235,7 +237,7 @@ public class MultiverseInventories extends MultiversePlugin {
             profileContainerStoreProvider.get().clearCache();
 
             if (profileDataSource.get() != null) {
-                profileDataSource.get().clearAllCache();
+                profileCacheManager.get().clearAllCache();
             }
 
             Logging.fine("Reloaded all config and groups!");

@@ -3,7 +3,6 @@ package org.mvplugins.multiverse.inventories.handleshare;
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.bukkit.entity.Player;

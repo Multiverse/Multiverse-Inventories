@@ -27,8 +27,8 @@ import org.mvplugins.multiverse.inventories.dataimport.DataImportException;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -205,10 +205,10 @@ final class PwiImportHelper {
     private List<PlayerProfile> getMVPlayerData(
             @NotNull OfflinePlayer offlinePlayer, @NotNull Group group, @NotNull GameMode gameMode) {
         List<PlayerProfile> profiles = new ArrayList<>();
-        profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.ProfileKey
+        profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.key.ProfileKey
                         .create(ContainerType.GROUP, group.getName(), ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         for (var worldName : group.getWorlds()) {
-            profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.ProfileKey
+            profiles.add(profileDataSource.getPlayerDataNow(org.mvplugins.multiverse.inventories.profile.key.ProfileKey
                             .create(ContainerType.WORLD, worldName, ProfileTypes.forGameMode(gameMode), offlinePlayer.getUniqueId())));
         }
         return profiles;

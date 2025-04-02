@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
@@ -22,18 +23,18 @@ final class MVEventsListener implements Listener {
     private final MultiverseInventories inventories;
     private final InventoriesConfig config;
     private final WorldGroupManager worldGroupManager;
-    private final ProfileDataSource profileDataSource;
+    private final ProfileCacheManager profileCacheManager;
 
     @Inject
     MVEventsListener(
             @NotNull MultiverseInventories inventories,
             @NotNull InventoriesConfig config,
             @NotNull WorldGroupManager worldGroupManager,
-            @NotNull ProfileDataSource profileDataSource) {
+            @NotNull ProfileCacheManager profileCacheManager) {
         this.inventories = inventories;
         this.config = config;
         this.worldGroupManager = worldGroupManager;
-        this.profileDataSource = profileDataSource;
+        this.profileCacheManager = profileCacheManager;
     }
 
     /**
@@ -53,7 +54,7 @@ final class MVEventsListener implements Listener {
 
     private String generateCacheStatsContent() {
         var builder = new StringBuilder();
-        profileDataSource.getCacheStats().forEach((cacheName, stats) -> {
+        profileCacheManager.getCacheStats().forEach((cacheName, stats) -> {
             builder.append("# ").append(cacheName).append("\n")
                     .append("- hits count: ").append(stats.hitCount()).append("\n")
                     .append("- misses count: ").append(stats.missCount()).append("\n")

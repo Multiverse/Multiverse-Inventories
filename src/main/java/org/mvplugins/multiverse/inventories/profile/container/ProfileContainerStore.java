@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.profile.container;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
 import java.util.Map;
 import java.util.WeakHashMap;

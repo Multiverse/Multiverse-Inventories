@@ -1,19 +1,17 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * A source for updating and retrieving player profiles via persistence.
@@ -118,28 +116,6 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param globalProfile The GlobalProfile object to update the file for.
      */
     CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile);
-
-    /**
-     * Clears a single profile in cache.
-     */
-    void clearProfileCache(ProfileKey key);
-
-    /**
-     * Clears all profiles in cache that match the predicate.
-     */
-    void clearProfileCache(Predicate<ProfileKey> predicate);
-
-    /**
-     * Clears all profiles in cache.
-     */
-    void clearAllCache();
-
-    /**
-     * Gets the cache stats for the profile data source.
-     *
-     * @return The cache stats.
-     */
-    Map<String, CacheStats> getCacheStats();
 
     Collection<UUID> getGlobalPlayersList();
 
