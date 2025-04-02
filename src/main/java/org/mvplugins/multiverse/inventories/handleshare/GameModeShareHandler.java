@@ -58,7 +58,7 @@ final class GameModeShareHandler extends ShareHandler {
         } else if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
             // Write to world profile to ensure data is saved incase bypass is removed
             affectedProfiles.addWriteProfile(
-                    worldProfileContainerStore.getContainer(world).getPlayerData(player),
+                    worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player),
                     (worldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
                             ? Sharables.standard()
                             : Sharables.enabled()
@@ -84,15 +84,15 @@ final class GameModeShareHandler extends ShareHandler {
         worldGroups.forEach(worldGroup -> addProfilesForWorldGroup(handledShares,worldGroup));
         Shares unhandledShares = Sharables.enabledOf().setSharing(handledShares, false);
         if (!unhandledShares.isEmpty()) {
-            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player), unhandledShares);
+            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player), unhandledShares);
         }
 
         if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
-            affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player),
+            affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player),
                     inventoriesConfig.getUseOptionalsForUngroupedWorlds() ? Sharables.enabled() : Sharables.standard());
         } else {
             if (!unhandledShares.isEmpty()) {
-                affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player), unhandledShares);
+                affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player), unhandledShares);
             }
         }
     }
