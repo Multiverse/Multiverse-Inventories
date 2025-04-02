@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.inventories.profile.ProfileType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -97,6 +98,10 @@ public final class ProfileContainer {
                 getContainerName(),
                 profileType,
                 player.getUniqueId()));
+    }
+
+    public Collection<String> getPlayers() {
+        return profileDataSource.getContainerPlayersList(getContainerType(), getContainerName());
     }
 
     /**

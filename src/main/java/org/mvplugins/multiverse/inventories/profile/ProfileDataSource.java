@@ -5,8 +5,10 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
+import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -138,5 +140,11 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @return The cache stats.
      */
     Map<String, CacheStats> getCacheStats();
+
+    Collection<UUID> getGlobalPlayersList();
+
+    Collection<String> getContainerPlayersList(ContainerType containerType, String containerName);
+
+    Collection<String> getContainerNames(ContainerType containerType);
 }
 

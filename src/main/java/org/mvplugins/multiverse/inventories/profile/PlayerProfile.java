@@ -1,12 +1,8 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
-import org.bukkit.OfflinePlayer;
-import org.mvplugins.multiverse.inventories.share.Sharables;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 /**
  * Contains all the world/group specific data for a player.
@@ -14,21 +10,23 @@ import java.util.Map;
 public final class PlayerProfile extends ProfileDataSnapshot {
 
     static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
-                                                    ProfileType profileType, OfflinePlayer player) {
-        return new PlayerProfile(containerType, containerName, profileType, player);
+                                             ProfileType profileType, UUID playerUUID, String playerName) {
+        return new PlayerProfile(containerType, containerName, profileType, playerUUID, playerName);
     }
 
-    private final OfflinePlayer player;
     private final ContainerType containerType;
     private final String containerName;
     private final ProfileType profileType;
+    private final UUID playerUUID;
+    private final String playerName;
 
-    private PlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, OfflinePlayer player) {
+    private PlayerProfile(ContainerType containerType, String containerName, ProfileType profileType, UUID playerUUID, String playerName) {
         super();
         this.containerType = containerType;
         this.profileType = profileType;
         this.containerName = containerName;
-        this.player = player;
+        this.playerUUID = playerUUID;
+        this.playerName = playerName;
     }
 
     /**
@@ -46,10 +44,17 @@ public final class PlayerProfile extends ProfileDataSnapshot {
     }
 
     /**
-     * @return the Player associated with this profile.
+     * @return the Player uuid associated with this profile.
      */
-    public OfflinePlayer getPlayer() {
-        return this.player;
+    public UUID getPlayerUUID() {
+        return this.playerUUID;
+    }
+
+    /**
+     * @return the Player name associated with this profile.
+     */
+    public String getPlayerName() {
+        return this.playerName;
     }
 
     /**
@@ -66,7 +71,7 @@ public final class PlayerProfile extends ProfileDataSnapshot {
     @Override
     public String toString() {
         return "PlayerProfile{" +
-                "player=" + player.getName() +
+                "player=" + playerName +
                 ", containerType=" + containerType +
                 ", containerName='" + containerName + '\'' +
                 ", profileType=" + profileType +

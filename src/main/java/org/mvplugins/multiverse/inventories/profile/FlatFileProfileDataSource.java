@@ -29,8 +29,13 @@ import org.mvplugins.multiverse.inventories.util.DataStrings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 @Service
 final class FlatFileProfileDataSource implements ProfileDataSource {
@@ -145,7 +151,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private FileConfiguration parseToConfiguration(File file) {
         JsonConfiguration jsonConfiguration = new JsonConfiguration();
-        jsonConfiguration.options().continueOnSerializationError(true);
+        jsonConfiguration.options().continueOnSerializationError(false);
         Try.run(() -> jsonConfiguration.load(file)).getOrElseThrow(e -> {
             Logging.severe("Could not load file %s : %s", file, e.getMessage());
             e.printStackTrace();
@@ -184,7 +190,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         }
         playerData.createSection(playerProfile.getProfileType().getName(), serializedData);
         Try.run(() -> playerData.save(playerFile)).onFailure(e -> {
-            Logging.severe("Could not save data for player: " + playerProfile.getPlayer().getName()
+            Logging.severe("Could not save data for player: " + playerProfile.getPlayerName()
                     + " for " + playerProfile.getContainerType() + ": " + playerProfile.getContainerName());
             e.printStackTrace();
         });
@@ -244,8 +250,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             return playerProfileCache.get(profileKey, (key, executor) -> {
                 File playerFile = getPlayerFile(key.getContainerType(), key.getDataName(), key.getPlayerName());
                 if (!playerFile.exists()) {
+                    Logging.fine("Not found on disk: %s", playerFile);
                     return CompletableFuture.completedFuture(PlayerProfile.createPlayerProfile(key.getContainerType(), key.getDataName(),
-                            key.getProfileType(), Bukkit.getOfflinePlayer(key.getPlayerUUID())));
+                            key.getProfileType(), key.getPlayerUUID(), key.getPlayerName()));
                 }
                 Logging.finer("%s not cached. loading from disk...", profileKey);
                 return profileFileIO.queueCallable(playerFile, () -> getPlayerDataFromDisk(key, playerFile));
@@ -308,7 +315,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private PlayerProfile deserializePlayerProfile(ProfileKey pKey, Map playerData) {
         PlayerProfile profile = PlayerProfile.createPlayerProfile(pKey.getContainerType(), pKey.getDataName(),
-                pKey.getProfileType(), Bukkit.getOfflinePlayer(pKey.getPlayerUUID()));
+                pKey.getProfileType(), pKey.getPlayerUUID(), pKey.getPlayerName());
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             final Object value = playerData.get(key);
@@ -354,7 +361,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 profile.set(sharable, sharable.getSerializer().deserialize(stats.get(key).toString()));
             } else {
                 Logging.warning("Could not parse stat: '" + key + "' for player '"
-                        + profile.getPlayer().getName() + "' for " + profile.getContainerType() + " '"
+                        + profile.getPlayerName() + "' for " + profile.getContainerType() + " '"
                         + profile.getContainerName() + "'");
             }
         }
@@ -368,11 +375,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         try {
             jsonStats = (JSONObject) new JSONParser(JSONParser.USE_INTEGER_STORAGE | JSONParser.ACCEPT_TAILLING_SPACE).parse(stats);
         } catch (ParseException | ClassCastException e) {
-            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
+            Logging.warning("Could not parse stats for player'" + profile.getPlayerName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "': " + e.getMessage());
         }
         if (jsonStats == null) {
-            Logging.warning("Could not parse stats for player'" + profile.getPlayer().getName() + "' for " +
+            Logging.warning("Could not parse stats for player'" + profile.getPlayerName() + "' for " +
                     profile.getContainerType() + " '" + profile.getContainerName() + "'");
             return;
         }
@@ -504,7 +511,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         try {
             File globalFile = getGlobalFile(playerUUID.toString());
             return globalProfileCache.get(playerUUID, (key, executor) -> {
-                        Logging.finer("Global profile for player %s not in cached. Loading...", playerName);
+                        Logging.finer("Global profile for player %s (%s) not in cached. Loading...", playerUUID, playerName);
                         // Migrate from player name to uuid profile file
                         File legacyFile = getGlobalFile(playerName);
                         if (legacyFile.exists() && !migrateGlobalProfileToUUID(legacyFile, playerUUID)) {
@@ -619,5 +626,46 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         stats.put("globalProfileCache", globalProfileCache.synchronous().stats());
         stats.put("profileCache", playerProfileCache.synchronous().stats());
         return stats;
+    }
+
+    @Override
+    public Collection<UUID> getGlobalPlayersList() {
+        try {
+            return Files.list(playerFolder.toPath())
+                    .filter(Files::isRegularFile)
+                    .map(path -> UUID.fromString(com.google.common.io.Files.getNameWithoutExtension(path.toFile().getName())))
+                    .toList();
+        } catch (IOException e) {
+            Logging.warning("Could not list global players: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Collection<String> getContainerPlayersList(ContainerType containerType, String containerName) {
+        try (Stream<Path> filesList = Files.list(getProfileContainerFolder(containerType, containerName).toPath())) {
+            return filesList.filter(Files::isRegularFile)
+                    .map(path -> com.google.common.io.Files.getNameWithoutExtension(path.toFile().getName()))
+                    .toList();
+        } catch (IOException e) {
+            Logging.warning("Could not list players for " + containerType + " '" + containerName + "': " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Collection<String> getContainerNames(ContainerType containerType) {
+        File folder = switch (containerType) {
+            case GROUP -> this.groupFolder;
+            case WORLD -> this.worldFolder;
+        };
+        try (Stream<Path> folderList = Files.list(folder.toPath())) {
+            return folderList.filter(Files::isDirectory)
+                    .map(path -> path.toFile().getName())
+                    .toList();
+        } catch (IOException e) {
+            Logging.warning("Could not list " + containerType + " folders: " + e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

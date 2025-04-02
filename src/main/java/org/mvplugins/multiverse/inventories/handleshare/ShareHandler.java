@@ -108,7 +108,7 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
             Logging.finer("Persisted: " + persistingProfile.getShares() + " to "
                     + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                     + " (" + playerProfile.getProfileType() + ")"
-                    + " for player " + playerProfile.getPlayer().getName());
+                    + " for player " + playerProfile.getPlayerName());
             playerProfile.update(snapshot, persistingProfile.getShares());
             profileDataStore.updatePlayerData(playerProfile);
         });

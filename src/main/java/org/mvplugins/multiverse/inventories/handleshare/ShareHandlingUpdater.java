@@ -48,7 +48,7 @@ public final class ShareHandlingUpdater {
                     Logging.finer("Persisted: " + profile.getShares() + " to "
                             + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                             + " (" + playerProfile.getProfileType() + ")"
-                            + " for player " + playerProfile.getPlayer().getName());
+                            + " for player " + playerProfile.getPlayerName());
                     inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(playerProfile);
                 })
                 .onFailure(e -> Logging.severe("Error getting playerdata: " + e.getMessage()));
@@ -70,13 +70,13 @@ public final class ShareHandlingUpdater {
                     }
                     if (!loaded.isEmpty()) {
                         Logging.finer("Updated: " + loaded + " for "
-                                + playerProfile.getPlayer().getName() + " for "
+                                + playerProfile.getPlayerName() + " for "
                                 + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                                 + " (" + playerProfile.getProfileType() + ")");
                     }
                     if (!defaulted.isEmpty()) {
                         Logging.finer("Defaulted: " + defaulted + " for "
-                                + playerProfile.getPlayer().getName() + " for "
+                                + playerProfile.getPlayerName() + " for "
                                 + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                                 + " (" + playerProfile.getProfileType() + ")");
                     }
