@@ -85,7 +85,7 @@ public final class SingleShareWriter<T> {
         Logging.finest("Writing %s value: %s for profile %s", sharable, value, profile);
         profile.set(sharable, value);
         if (save) {
-            return profileDataSource.updatePlayerData(profile);
+            return profileDataSource.updatePlayerProfile(profile);
         }
         return CompletableFuture.completedFuture(null);
     }

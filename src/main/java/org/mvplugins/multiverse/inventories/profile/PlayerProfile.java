@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
@@ -10,9 +11,14 @@ import java.util.UUID;
  */
 public final class PlayerProfile extends ProfileDataSnapshot {
 
-    static PlayerProfile createPlayerProfile(ContainerType containerType, String containerName,
-                                             ProfileType profileType, UUID playerUUID, String playerName) {
-        return new PlayerProfile(containerType, containerName, profileType, playerUUID, playerName);
+    static PlayerProfile createPlayerProfile(ProfileKey profileKey) {
+        return new PlayerProfile(
+                profileKey.getContainerType(),
+                profileKey.getDataName(),
+                profileKey.getProfileType(),
+                profileKey.getPlayerUUID(),
+                profileKey.getPlayerName()
+        );
     }
 
     private final ContainerType containerType;
@@ -72,7 +78,8 @@ public final class PlayerProfile extends ProfileDataSnapshot {
     @Override
     public String toString() {
         return "PlayerProfile{" +
-                "player=" + playerName +
+                "playerUUID=" + playerUUID +
+                ", playerName='" + playerName + '\'' +
                 ", containerType=" + containerType +
                 ", containerName='" + containerName + '\'' +
                 ", profileType=" + profileType +

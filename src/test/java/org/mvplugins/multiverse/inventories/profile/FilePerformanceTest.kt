@@ -13,9 +13,11 @@ import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
 import org.mvplugins.multiverse.inventories.share.Sharables
+import org.mvplugins.multiverse.inventories.util.FutureNow
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
@@ -50,7 +52,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         val futures = ArrayList<Future<Void>>(10000)
         for (i in 0..9999) {
-            futures.add(profileDataSource.modifyGlobalProfile(UUID.randomUUID(), { globalProfile ->
+            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID()), { globalProfile ->
                 globalProfile.setLoadOnLogin(true)
             }))
         }
@@ -68,8 +70,8 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                val playerProfile = profileDataSource.getPlayerDataNow(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
+                val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 playerProfile.set(Sharables.HEALTH, 5.0)
                 playerProfile.set(Sharables.OFF_HAND, ItemStack(Material.STONE_BRICKS, 10))
                 playerProfile.set(Sharables.INVENTORY, arrayOf(
@@ -84,7 +86,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
                     PotionEffect(PotionEffectType.POISON, 100, 1),
                     PotionEffect(PotionEffectType.SPEED, 50, 1),
                 ))
-                futures.add(profileDataSource.updatePlayerData(playerProfile))
+                futures.add(profileDataSource.updatePlayerProfile(playerProfile))
             }
         }
         for (future in futures) {
@@ -98,7 +100,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                futures2.add(profileDataSource.getPlayerData(
+                futures2.add(profileDataSource.getPlayerProfile(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
             }
         }
@@ -114,10 +116,10 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                futures3.add(profileDataSource.removePlayerData(
+                futures3.add(profileDataSource.deletePlayerProfile(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
-                val playerProfile = profileDataSource.getPlayerDataNow(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
+                val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 assertNull(playerProfile.get(Sharables.HEALTH))
                 assertNull(playerProfile.get(Sharables.OFF_HAND))
             }
@@ -134,7 +136,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         }
     }
 
-    fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {
+    private fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {
         val itemStack = ItemStack(material, amount)
         modify.accept(itemStack)
         return itemStack

@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
@@ -38,13 +39,13 @@ final class BulkEditCommand extends InventoriesCommand {
         inventoriesConfig.setUseByteSerializationForInventoryData(true);
         inventoriesConfig.save();
 
-        Collection<UUID> globalPlayersList = profileDataSource.getGlobalPlayersList();
-        Collection<String> worldContainerNames = profileDataSource.getContainerNames(ContainerType.WORLD);
-        Collection<String> groupContainerNames = profileDataSource.getContainerNames(ContainerType.GROUP);
+        Collection<UUID> globalPlayersList = profileDataSource.listGlobalProfileUUIDs();
+        Collection<String> worldContainerNames = profileDataSource.listContainerDataNames(ContainerType.WORLD);
+        Collection<String> groupContainerNames = profileDataSource.listContainerDataNames(ContainerType.GROUP);
         Logging.fine(String.join(", ", worldContainerNames));
         CompletableFuture.allOf(globalPlayersList
                 .stream()
-                .map(playerUUID -> profileDataSource.getGlobalProfile(playerUUID, "")
+                .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(playerUUID))
                         .thenApply(profile -> {
                             profile.setLoadOnLogin(true);
                             profileDataSource.updateGlobalProfile(profile);
@@ -53,16 +54,16 @@ final class BulkEditCommand extends InventoriesCommand {
                         .thenCompose(profile -> {
                             return CompletableFuture.allOf(worldContainerNames.stream().flatMap(worldName -> {
                                 return ProfileTypes.getTypes().stream().map(profileType -> {
-                                    return profileDataSource.getPlayerData(
+                                    return profileDataSource.getPlayerProfile(
                                             ProfileKey.create(ContainerType.WORLD, worldName, profileType, profile.getPlayerUUID(), profile.getLastKnownName())
-                                    ).thenCompose(profileDataSource::updatePlayerData);
+                                    ).thenCompose(profileDataSource::updatePlayerProfile);
                                 });
                             }).toArray(CompletableFuture[]::new)).thenCompose(ignore -> {
                                 return CompletableFuture.allOf(groupContainerNames.stream().flatMap(worldName -> {
                                     return ProfileTypes.getTypes().stream().map(profileType -> {
-                                        return profileDataSource.getPlayerData(
+                                        return profileDataSource.getPlayerProfile(
                                                 ProfileKey.create(ContainerType.GROUP, worldName, profileType, profile.getPlayerUUID(), profile.getLastKnownName())
-                                        ).thenCompose(profileDataSource::updatePlayerData);
+                                        ).thenCompose(profileDataSource::updatePlayerProfile);
                                     });
                                 }).toArray(CompletableFuture[]::new));
                             });

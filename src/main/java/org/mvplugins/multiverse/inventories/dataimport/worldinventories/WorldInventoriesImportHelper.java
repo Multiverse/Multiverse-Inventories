@@ -144,7 +144,7 @@ final class WorldInventoriesImportHelper {
     }
 
     private void transferData(OfflinePlayer player, Group wiGroup, ProfileContainer profileContainer) {
-        PlayerProfile playerProfile = profileContainer.getPlayerDataNow(ProfileTypes.SURVIVAL, player);
+        PlayerProfile playerProfile = profileContainer.getPlayerProfileNow(ProfileTypes.SURVIVAL, player);
         WIPlayerInventory wiInventory = this.loadPlayerInventory(player, wiGroup);
         WIPlayerStats wiStats = this.loadPlayerStats(player, wiGroup);
         if (wiInventory != null) {
@@ -159,7 +159,7 @@ final class WorldInventoriesImportHelper {
             playerProfile.set(Sharables.EXHAUSTION, wiStats.getExhaustion());
             playerProfile.set(Sharables.FOOD_LEVEL, wiStats.getFoodLevel());
         }
-        profileDataSource.updatePlayerData(playerProfile);
+        profileDataSource.updatePlayerProfile(playerProfile);
         Logging.finest("Player's data imported successfully for group: " + profileContainer.getContainerName());
     }
 

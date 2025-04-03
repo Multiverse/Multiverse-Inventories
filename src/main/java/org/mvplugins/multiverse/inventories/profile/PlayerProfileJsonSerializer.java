@@ -49,8 +49,7 @@ final class PlayerProfileJsonSerializer {
     }
 
     static PlayerProfile deserialize(ProfileKey pKey, Map playerData) {
-        PlayerProfile profile = PlayerProfile.createPlayerProfile(pKey.getContainerType(), pKey.getDataName(),
-                pKey.getProfileType(), pKey.getPlayerUUID(), pKey.getPlayerName());
+        PlayerProfile profile = PlayerProfile.createPlayerProfile(pKey);
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             final Object value = playerData.get(key);

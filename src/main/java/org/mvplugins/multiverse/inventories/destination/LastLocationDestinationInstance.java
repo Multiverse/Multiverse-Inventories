@@ -47,7 +47,7 @@ public final class LastLocationDestinationInstance extends DestinationInstance<L
             if (!group.containsWorld(playerWorld) && group.getApplicableShares().contains(Sharables.LAST_LOCATION)) {
                 return Option.of(profileContainerStoreProvider.getStore(ContainerType.GROUP)
                         .getContainer(group.getName())
-                        .getPlayerDataNow(player)
+                        .getPlayerProfileNow(player)
                         .get(Sharables.LAST_LOCATION));
             }
         }
@@ -55,7 +55,7 @@ public final class LastLocationDestinationInstance extends DestinationInstance<L
         // Means last location isn't shared by any group, and will be read directly for world profile
         return Option.of(profileContainerStoreProvider.getStore(ContainerType.WORLD)
                 .getContainer(worldName)
-                .getPlayerDataNow(player)
+                .getPlayerProfileNow(player)
                 .get(Sharables.LAST_LOCATION));
     }
 

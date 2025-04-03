@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.util.HashMap;
@@ -16,11 +17,11 @@ public final class GlobalProfile {
     /**
      * Creates a global profile object for the given player with default values.
      *
-     * @param player the player to create the profile object for.
+     * @param key the player to create the profile object for.
      * @return a new GlobalProfile for the given player.
      */
-    static GlobalProfile createGlobalProfile(OfflinePlayer player) {
-        return new GlobalProfile(player.getName(), player.getUniqueId());
+    static GlobalProfile createGlobalProfile(GlobalProfileKey key) {
+        return new GlobalProfile(key.getPlayerName(), key.getPlayerUUID());
     }
 
     /**

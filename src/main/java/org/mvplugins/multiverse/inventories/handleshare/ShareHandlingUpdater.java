@@ -48,7 +48,7 @@ public final class ShareHandlingUpdater {
                             + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                             + " (" + playerProfile.getProfileType() + ")"
                             + " for player " + playerProfile.getPlayerName());
-                    inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerData(playerProfile);
+                    inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerProfile(playerProfile);
                 })
                 .onFailure(e -> Logging.severe("Error getting playerdata: " + e.getMessage()));
     }

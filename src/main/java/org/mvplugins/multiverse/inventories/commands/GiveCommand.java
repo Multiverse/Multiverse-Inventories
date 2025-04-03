@@ -26,6 +26,7 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -155,7 +156,7 @@ final class GiveCommand extends InventoriesCommand {
                 .write(inventory, true)
                 .thenCompose(ignore -> player.isOnline()
                         ? CompletableFuture.completedFuture(null)
-                        : profileDataSource.modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true)))
+                        : profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(player), profile -> profile.setLoadOnLogin(true)))
                 .thenRun(() -> issuer.sendInfo("Gave player %s %s %s in world %s."
                         .formatted(player.getName(), itemStack.getAmount(), itemStack.getI18NDisplayName(), world.getName())));
     }

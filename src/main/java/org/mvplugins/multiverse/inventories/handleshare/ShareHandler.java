@@ -110,7 +110,7 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
                     + " (" + playerProfile.getProfileType() + ")"
                     + " for player " + playerProfile.getPlayerName());
             playerProfile.update(snapshot, persistingProfile.getShares());
-            profileDataStore.updatePlayerData(playerProfile);
+            profileDataStore.updatePlayerProfile(playerProfile);
         });
     }
 

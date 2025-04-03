@@ -7,6 +7,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType
 import org.mvplugins.multiverse.inventories.share.Sharables
+import org.mvplugins.multiverse.inventories.util.FutureNow
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -29,7 +30,7 @@ class ShareHandlingUpdaterTest : TestWithMockBukkit() {
         player.health = 4.4
         player.maxHealth = 15.1
 
-        val playerProfileFuture = profileDataSource.getPlayerData(
+        val playerProfileFuture = profileDataSource.getPlayerProfile(
             ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, player.uniqueId))
         ShareHandlingUpdater.updateProfile(multiverseInventories, player, PersistingProfile(Sharables.enabledOf(), playerProfileFuture))
         val playerProfile = playerProfileFuture.get()
@@ -39,8 +40,8 @@ class ShareHandlingUpdaterTest : TestWithMockBukkit() {
 
     @Test
     fun `Test updating player`() {
-        val playerProfile = profileDataSource.getPlayerDataNow(
-            ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, player.uniqueId))
+        val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
+            ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, player.uniqueId)))
         playerProfile.set(Sharables.HEALTH, 4.4)
         playerProfile.set(Sharables.MAX_HEALTH, 15.1)
 

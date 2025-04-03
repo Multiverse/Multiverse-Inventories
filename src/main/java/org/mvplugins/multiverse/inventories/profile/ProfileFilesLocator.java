@@ -7,6 +7,7 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 
 import java.io.File;
@@ -96,7 +97,7 @@ final class ProfileFilesLocator {
      * @param profileKey The profile target to get the file
      * @return The data file for a player.
      */
-    File getPlayerProfileFile(ProfileKey profileKey) {
+    File getPlayerProfileFile(ProfileFileKey profileKey) {
         return getPlayerProfileFile(profileKey.getContainerType(), profileKey.getDataName(), profileKey.getPlayerName());
     }
 

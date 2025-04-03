@@ -1,16 +1,17 @@
 package org.mvplugins.multiverse.inventories.profile.container;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.util.FutureNow;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
@@ -34,12 +35,16 @@ public final class ProfileContainer {
         this.profileCacheManager = inventories.getServiceLocator().getService(ProfileCacheManager.class);
     }
 
+    public Collection<String> listPlayerProfileNames() {
+        return profileDataSource.listPlayerProfileNames(getContainerType(), getContainerName());
+    }
+
     public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
         return getPlayerData(ProfileTypes.forPlayer(player), player);
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(ProfileType profileType, OfflinePlayer player) {
-        return profileDataSource.getPlayerData(ProfileKey.create(
+        return profileDataSource.getPlayerProfile(ProfileKey.create(
                 getContainerType(),
                 getContainerName(),
                 profileType,
@@ -54,8 +59,8 @@ public final class ProfileContainer {
      * @param player Player to get profile for.
      * @return The profile for the given player.
      */
-    public PlayerProfile getPlayerDataNow(Player player) {
-        return getPlayerDataNow(ProfileTypes.forPlayer(player), player);
+    public PlayerProfile getPlayerProfileNow(Player player) {
+        return getPlayerProfileNow(ProfileTypes.forPlayer(player), player);
     }
 
     /**
@@ -65,12 +70,12 @@ public final class ProfileContainer {
      * @param player Player to get profile for.
      * @return The profile of the given type for the given player.
      */
-    public PlayerProfile getPlayerDataNow(ProfileType profileType, OfflinePlayer player) {
-        return profileDataSource.getPlayerDataNow(ProfileKey.create(
+    public PlayerProfile getPlayerProfileNow(ProfileType profileType, OfflinePlayer player) {
+        return FutureNow.get(profileDataSource.getPlayerProfile(ProfileKey.create(
                 getContainerType(),
                 getContainerName(),
                 profileType,
-                player));
+                player)));
     }
 
     /**
@@ -79,12 +84,8 @@ public final class ProfileContainer {
      * @param player Player to remove data for.
      * @return
      */
-    public CompletableFuture<Void> removeAllPlayerData(OfflinePlayer player) {
-        return profileDataSource.removePlayerData(ProfileKey.create(
-                getContainerType(),
-                getContainerName(),
-                null,
-                player.getUniqueId()));
+    public CompletableFuture<Void> deletePlayerFile(OfflinePlayer player) {
+        return profileDataSource.deletePlayerFile(ProfileFileKey.create(type, name, player));
     }
 
     /**
@@ -94,16 +95,8 @@ public final class ProfileContainer {
      * @param player      Player to remove data for.
      * @return
      */
-    public CompletableFuture<Void> removePlayerData(ProfileType profileType, OfflinePlayer player) {
-        return profileDataSource.removePlayerData(ProfileKey.create(
-                getContainerType(),
-                getContainerName(),
-                profileType,
-                player.getUniqueId()));
-    }
-
-    public Collection<String> getPlayers() {
-        return profileDataSource.getContainerPlayersList(getContainerType(), getContainerName());
+    public CompletableFuture<Void> deletePlayerProfile(ProfileType profileType, OfflinePlayer player) {
+        return profileDataSource.deletePlayerProfile(ProfileKey.create(type, name, profileType, player));
     }
 
     /**

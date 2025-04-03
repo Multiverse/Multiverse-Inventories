@@ -21,6 +21,7 @@ import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
@@ -156,7 +157,8 @@ public class MultiverseInventories extends MultiversePlugin {
             if (inventoriesConfig.get().getSavePlayerdataOnQuit()) {
                 new WriteOnlyShareHandler(this, player).handleSharing();
                 if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
-                    profileDataSource.get().modifyGlobalProfile(player, profile -> profile.setLoadOnLogin(true));
+                    profileDataSource.get().modifyGlobalProfile(
+                            GlobalProfileKey.create(player), profile -> profile.setLoadOnLogin(true));
                 }
             }
         }

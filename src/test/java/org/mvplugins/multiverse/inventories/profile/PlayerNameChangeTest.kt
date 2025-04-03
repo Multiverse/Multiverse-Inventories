@@ -8,6 +8,8 @@ import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey
+import org.mvplugins.multiverse.inventories.util.FutureNow
 import java.nio.file.Path
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -78,6 +80,6 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertFalse(Path.of(multiverseInventories.dataFolder.absolutePath, "groups", "test", "Benji_0224.json").toFile().exists())
 
         // check player profile
-        assertEquals("benthecat10", profileDataSource.getGlobalProfileNow(player)?.lastKnownName)
+        assertEquals("benthecat10", FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)))?.lastKnownName)
     }
 }
