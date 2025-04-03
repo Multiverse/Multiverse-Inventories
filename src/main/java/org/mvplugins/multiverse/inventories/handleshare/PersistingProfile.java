@@ -3,7 +3,6 @@ package org.mvplugins.multiverse.inventories.handleshare;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**

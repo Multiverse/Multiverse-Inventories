@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.key;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

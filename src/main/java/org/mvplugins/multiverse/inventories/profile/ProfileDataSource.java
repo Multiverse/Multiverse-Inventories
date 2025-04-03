@@ -1,59 +1,44 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * A source for updating and retrieving player profiles via persistence.
  */
 @Contract
 public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
+    /**
+     * Retrieves a PlayerProfile from the data source.
+     *
+     * @param profileKey The key of the profile to retrieve.
+     * @return The player as returned from data. If no data was found, a new PlayerProfile will be
+     *         created.
+     */
+    CompletableFuture<PlayerProfile> getPlayerProfile(ProfileKey profileKey);
 
     /**
-     * Updates the persisted data for a player for a specific profile.
-     *
+     * Updates the persisted data for a player for a specific profile to disk.
      *
      * @param playerProfile The profile for the player that is being updated.
      */
-    CompletableFuture<Void> updatePlayerData(PlayerProfile playerProfile);
+    CompletableFuture<Void> updatePlayerProfile(PlayerProfile playerProfile);
 
-    /**
-     * Retrieves a PlayerProfile from the data source.
-     *
-     * @param profileKey The key of the profile to retrieve.
-     * @return The player as returned from data. If no data was found, a new PlayerProfile will be
-     *         created.
-     */
-    PlayerProfile getPlayerDataNow(ProfileKey profileKey);
+    CompletableFuture<Void> deletePlayerProfile(ProfileKey profileKey);
 
-    /**
-     * Retrieves a PlayerProfile from the data source.
-     *
-     * @param profileKey The key of the profile to retrieve.
-     * @return The player as returned from data. If no data was found, a new PlayerProfile will be
-     *         created.
-     */
-    CompletableFuture<PlayerProfile> getPlayerData(ProfileKey profileKey);
-
-    /**
-     * Removes the persisted data for a player for a specific profile.
-     *
-     * @param profileKey The key of the profile to remove.
-     * @return True if successfully removed.
-     */
-    CompletableFuture<Void> removePlayerData(ProfileKey profileKey);
+    CompletableFuture<Void> deletePlayerFile(ProfileFileKey profileKey);
 
     /**
      * Copies all the data belonging to oldName to newName and removes the old data.
@@ -63,88 +48,64 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @param playerUUID the UUID of the player.
      * @throws IOException Thrown if something goes wrong while migrating the files.
      */
-    void migratePlayerData(String oldName, String newName, UUID playerUUID) throws IOException;
+    void migratePlayerProfileName(String oldName, String newName, UUID playerUUID) throws IOException;
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.
      *
-     * @param playerUUID    The UUID of the player.
-     * @return The global profile for the specified player.
+     * @param key The key of the player.
+     * @return The global profile for the specified player asynchronously.
      */
-    @NotNull GlobalProfile getGlobalProfileNow(UUID playerUUID);
-
-    /**
-     * Retrieves the global profile for a player which contains meta-data for the player.
-     *
-     * @param player    The player.
-     * @return The global profile for the specified player.
-     */
-    @NotNull GlobalProfile getGlobalProfileNow(OfflinePlayer player);
-
-    /**
-     * Retrieves the global profile for a player which contains meta-data for the player.
-     * Creates the profile if it doesn't exist.
-     *
-     * @param playerUUID    The UUID of the player.
-     * @param playerName    The name of the player.
-     * @return The global profile for the specified player.
-     */
-    @NotNull GlobalProfile getGlobalProfileNow(UUID playerUUID, String playerName);
+    CompletableFuture<GlobalProfile> getGlobalProfile(GlobalProfileKey key);
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player if it exists.
      *
-     * @param playerUUID The UUID of the player.
-     * @param playerName The name of the player.
-     * @return The global profile for the specified player or empty if it doesn't exist.
+     * @param key The key of the player.
+     * @return The global profile for the specified player or {@link Option#none} if it does not exist asynchronously.
      */
-    @NotNull Option<GlobalProfile> getExistingGlobalProfileNow(UUID playerUUID, String playerName);
-
-    CompletableFuture<GlobalProfile> getGlobalProfile(UUID playerUUID);
-
-    CompletableFuture<GlobalProfile> getGlobalProfile(OfflinePlayer player);
-
-    @NotNull CompletableFuture<GlobalProfile> getGlobalProfile(UUID playerUUID, String playerName);
-
-    @NotNull CompletableFuture<Option<GlobalProfile>> getExistingGlobalProfile(UUID playerUUID, String playerName);
-
-    CompletableFuture<Void> modifyGlobalProfile(UUID playerUUID, Consumer<GlobalProfile> consumer);
-
-    CompletableFuture<Void> modifyGlobalProfile(OfflinePlayer offlinePlayer, Consumer<GlobalProfile> consumer);
+    CompletableFuture<Option<GlobalProfile>> getExistingGlobalProfile(GlobalProfileKey key);
 
     /**
-     * Update the file for a player's global profile.
+     * Modifies the global profile for a player and automatically saves it.
+     *
+     * @param key The key of the player.
+     * @return A CompletableFuture that completes when the global profile has been saved.
+     */
+    CompletableFuture<Void> modifyGlobalProfile(GlobalProfileKey key, Consumer<GlobalProfile> consumer);
+
+    /**
+     * Update the file for a player's global profile to disk.
      *
      * @param globalProfile The GlobalProfile object to update the file for.
      */
     CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile);
 
-    /**
-     * Clears a single profile in cache.
-     */
-    void clearProfileCache(ProfileKey key);
+    CompletableFuture<Void> deleteGlobalProfile(GlobalProfileKey key);
+
+    CompletableFuture<Void> deleteGlobalProfile(GlobalProfileKey key, boolean clearPlayerFiles);
 
     /**
-     * Clears all profiles in cache that match the predicate.
-     */
-    void clearProfileCache(Predicate<ProfileKey> predicate);
-
-    /**
-     * Clears all profiles in cache.
-     */
-    void clearAllCache();
-
-    /**
-     * Gets the cache stats for the profile data source.
+     * Lists the names of all available data containers of the specified type.
      *
-     * @return The cache stats.
+     * @param containerType The type of the container (e.g., WORLD, GROUP) whose data names are to be listed.
+     * @return A collection of strings representing the names of the data containers.
      */
-    Map<String, CacheStats> getCacheStats();
+    List<String> listContainerDataNames(ContainerType containerType);
 
-    Collection<UUID> getGlobalPlayersList();
+    /**
+     * Lists the names of all available player profiles within the given container type and container name.
+     *
+     * @param containerType The type of the container (e.g., WORLD, GROUP) whose player profiles are to be listed.
+     * @param containerName  The name of the container whose player profiles are to be listed.
+     * @return A collection of strings representing the names of all available player profiles.
+     */
+    List<String> listPlayerProfileNames(ContainerType containerType, String containerName);
 
-    Collection<String> getContainerPlayersList(ContainerType containerType, String containerName);
-
-    Collection<String> getContainerNames(ContainerType containerType);
+    /**
+     * Retrieves a collection of UUIDs of all players who have a global profile.
+     *
+     * @return A collection of UUIDs of all players who have a global profile.
+     */
+    List<UUID> listGlobalProfileUUIDs();
 }
-

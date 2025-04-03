@@ -7,9 +7,9 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileType;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharable;
@@ -85,7 +85,7 @@ public final class SingleShareWriter<T> {
         Logging.finest("Writing %s value: %s for profile %s", sharable, value, profile);
         profile.set(sharable, value);
         if (save) {
-            return profileDataSource.updatePlayerData(profile);
+            return profileDataSource.updatePlayerProfile(profile);
         }
         return CompletableFuture.completedFuture(null);
     }

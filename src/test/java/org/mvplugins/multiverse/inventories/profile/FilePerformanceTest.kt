@@ -12,8 +12,12 @@ import org.mvplugins.multiverse.core.utils.CoreLogging
 import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes
 import org.mvplugins.multiverse.inventories.share.Sharables
+import org.mvplugins.multiverse.inventories.util.FutureNow
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
@@ -27,6 +31,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
 
     private lateinit var worldManager: WorldManager
     private lateinit var profileDataSource: ProfileDataSource
+    private lateinit var profileCacheManager: ProfileCacheManager
 
     @BeforeTest
     fun setUp() {
@@ -34,6 +39,8 @@ class FilePerformanceTest : TestWithMockBukkit() {
             throw IllegalStateException("WorldManager is not available as a service") }
         profileDataSource = serviceLocator.getService(ProfileDataSource::class.java).takeIf { it != null } ?: run {
             throw IllegalStateException("ProfileDataSource is not available as a service") }
+        profileCacheManager = serviceLocator.getService(ProfileCacheManager::class.java).takeIf { it != null } ?: run {
+            throw IllegalStateException("ProfileCacheManager is not available as a service") }
         CoreLogging.setDebugLevel(0);
         Logging.setDebugLevel(0)
         assertTrue(worldManager.createWorld(CreateWorldOptions.worldName("world")).isSuccess)
@@ -45,7 +52,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         val futures = ArrayList<Future<Void>>(10000)
         for (i in 0..9999) {
-            futures.add(profileDataSource.modifyGlobalProfile(UUID.randomUUID(), { globalProfile ->
+            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID()), { globalProfile ->
                 globalProfile.setLoadOnLogin(true)
             }))
         }
@@ -63,8 +70,8 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                val playerProfile = profileDataSource.getPlayerDataNow(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
+                val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 playerProfile.set(Sharables.HEALTH, 5.0)
                 playerProfile.set(Sharables.OFF_HAND, ItemStack(Material.STONE_BRICKS, 10))
                 playerProfile.set(Sharables.INVENTORY, arrayOf(
@@ -79,21 +86,21 @@ class FilePerformanceTest : TestWithMockBukkit() {
                     PotionEffect(PotionEffectType.POISON, 100, 1),
                     PotionEffect(PotionEffectType.SPEED, 50, 1),
                 ))
-                futures.add(profileDataSource.updatePlayerData(playerProfile))
+                futures.add(profileDataSource.updatePlayerProfile(playerProfile))
             }
         }
         for (future in futures) {
             future.get()
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-        profileDataSource.clearAllCache()
+        profileCacheManager.clearAllCache()
 
         val startTime2 = System.nanoTime()
         val futures2 = ArrayList<CompletableFuture<PlayerProfile>>(1000)
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                futures2.add(profileDataSource.getPlayerData(
+                futures2.add(profileDataSource.getPlayerProfile(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
             }
         }
@@ -109,10 +116,10 @@ class FilePerformanceTest : TestWithMockBukkit() {
         for (i in 0..999) {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
-                futures3.add(profileDataSource.removePlayerData(
+                futures3.add(profileDataSource.deletePlayerProfile(
                     ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
-                val playerProfile = profileDataSource.getPlayerDataNow(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId))
+                val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
+                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 assertNull(playerProfile.get(Sharables.HEALTH))
                 assertNull(playerProfile.get(Sharables.OFF_HAND))
             }
@@ -122,14 +129,14 @@ class FilePerformanceTest : TestWithMockBukkit() {
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime3) / 1000000 + "ms")
 
-        val cacheStats = profileDataSource.getCacheStats()
+        val cacheStats = profileCacheManager.getCacheStats()
         Logging.info(cacheStats.values.toString())
         for (cacheStat in cacheStats) {
             Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
         }
     }
 
-    fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {
+    private fun createItemStack(material: Material, amount: Int = 1, modify: Consumer<ItemStack>): ItemStack {
         val itemStack = ItemStack(material, amount)
         modify.accept(itemStack)
         return itemStack
@@ -153,7 +160,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             server.getWorld("world2")?.let { player.teleport(it.spawnLocation) }
         }
         Logging.info("Time taken: " + (System.nanoTime() - startTime) / 1000000 + "ms")
-        val cacheStats = profileDataSource.getCacheStats()
+        val cacheStats = profileCacheManager.getCacheStats()
         for (cacheStat in cacheStats) {
             Logging.info(cacheStat.key + ": " + cacheStat.value.averageLoadPenalty() / 1000000 + "ms")
         }

@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.key;
 
 /**
  * Used to differentiate between profiles in the same world or world group, primarily for game modes.

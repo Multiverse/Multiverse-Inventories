@@ -1,7 +1,10 @@
 package org.mvplugins.multiverse.inventories.profile.container;
 
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -14,19 +17,16 @@ public final class ProfileContainerStore {
 
     private final MultiverseInventories inventories;
     private final ContainerType containerType;
+    private final ProfileDataSource profileDataSource;
 
      ProfileContainerStore(MultiverseInventories inventories, ContainerType containerType) {
         this.inventories = inventories;
         this.containerType = containerType;
-    }
+        this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
+     }
 
-    /**
-     * Adds a profile container to the store.
-     *
-     * @param container profile container to add.
-     */
-    public void addContainer(ProfileContainer container) {
-        this.containers.put(container.getContainerName().toLowerCase(), container);
+    public List<String> listContainerDataNames() {
+        return profileDataSource.listContainerDataNames(containerType);
     }
 
     /**
@@ -42,6 +42,15 @@ public final class ProfileContainerStore {
             addContainer(container);
         }
         return container;
+    }
+
+    /**
+     * Adds a profile container to the store.
+     *
+     * @param container profile container to add.
+     */
+    private void addContainer(ProfileContainer container) {
+        this.containers.put(container.getContainerName().toLowerCase(), container);
     }
 }
 

@@ -13,6 +13,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 
 import java.util.Map;
@@ -21,18 +22,18 @@ import java.util.Map;
 @CommandAlias("mvinv")
 final class CacheCommand extends InventoriesCommand {
 
-    private final ProfileDataSource profileDataSource;
+    private final ProfileCacheManager ProfileCacheManager;
 
     @Inject
-    CacheCommand(@NotNull MVCommandManager commandManager, @NotNull ProfileDataSource profileDataSource) {
+    CacheCommand(@NotNull MVCommandManager commandManager, @NotNull ProfileCacheManager ProfileCacheManager) {
         super(commandManager);
-        this.profileDataSource = profileDataSource;
+        this.ProfileCacheManager = ProfileCacheManager;
     }
 
     @Subcommand("cache stats")
     @CommandPermission("multiverse.inventories.cache.stats")
     void onCacheStatsCommand(MVCommandIssuer issuer) {
-        Map<String, CacheStats> stats = this.profileDataSource.getCacheStats();
+        Map<String, CacheStats> stats = this.ProfileCacheManager.getCacheStats();
         for (Map.Entry<String, CacheStats> entry : stats.entrySet()) {
             issuer.sendMessage("Cache: " + entry.getKey());
             issuer.sendMessage("  hits count: " + entry.getValue().hitCount());
@@ -49,7 +50,7 @@ final class CacheCommand extends InventoriesCommand {
     @Subcommand("cache invalidate all")
     @CommandPermission("multiverse.inventories.cache.invalidate")
     void onCacheClearAllCommand(MVCommandIssuer issuer) {
-        this.profileDataSource.clearAllCache();
+        this.ProfileCacheManager.clearAllCache();
     }
 
     @Subcommand("cache invalidate player")
@@ -61,6 +62,7 @@ final class CacheCommand extends InventoriesCommand {
 
             @Flags("resolve=issuerAware")
             Player player) {
-        this.profileDataSource.clearProfileCache(key -> key.getPlayerUUID().equals(player.getUniqueId()));
+        this.ProfileCacheManager.clearPlayerProfileCache(key ->
+                key.getPlayerUUID().equals(player.getUniqueId()));
     }
 }

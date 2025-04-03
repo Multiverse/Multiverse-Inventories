@@ -7,9 +7,10 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.ProfileKey;
-import org.mvplugins.multiverse.inventories.profile.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.container.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
@@ -40,6 +41,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.inventories.util.FutureNow;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -87,9 +89,9 @@ public final class ShareHandleListener implements Listener {
 
         long startTime = System.nanoTime();
         List<CompletableFuture<PlayerProfile>> profileFutures = new ArrayList<>();
-        config.getPreloadDataOnJoinWorlds().forEach(worldName -> profileFutures.add(profileDataSource.getPlayerData(
+        config.getPreloadDataOnJoinWorlds().forEach(worldName -> profileFutures.add(profileDataSource.getPlayerProfile(
                 ProfileKey.create(ContainerType.WORLD, worldName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
-        config.getPreloadDataOnJoinGroups().forEach(groupName -> profileFutures.add(profileDataSource.getPlayerData(
+        config.getPreloadDataOnJoinGroups().forEach(groupName -> profileFutures.add(profileDataSource.getPlayerProfile(
                 ProfileKey.create(ContainerType.GROUP, groupName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
         Try.run(() -> CompletableFuture.allOf(profileFutures.toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS))
                 .onSuccess(ignore -> Logging.finer("Preloaded data for Player{name:'%s', uuid:'%s'}. Time taken: %4.4f ms",
@@ -108,7 +110,7 @@ public final class ShareHandleListener implements Listener {
         // Just in case AsyncPlayerPreLoginEvent was still the old name
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
-        final GlobalProfile globalProfile = profileDataSource.getGlobalProfileNow(player);
+        final GlobalProfile globalProfile = FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)));
         if (config.getApplyPlayerdataOnJoin() && globalProfile.shouldLoadOnLogin()) {
             new ReadOnlyShareHandler(inventories, player).handleSharing();
         }
@@ -118,7 +120,7 @@ public final class ShareHandleListener implements Listener {
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
-        profileDataSource.getExistingGlobalProfileNow(uuid, name).peek(globalProfile -> {
+        FutureNow.get(profileDataSource.getExistingGlobalProfile(GlobalProfileKey.create(uuid, name))).peek(globalProfile -> {
             if (globalProfile.getLastKnownName().equals(name)) {
                 return;
             }
@@ -127,7 +129,7 @@ public final class ShareHandleListener implements Listener {
             Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
                     uuid, globalProfile.getLastKnownName(), name);
             try {
-                profileDataSource.migratePlayerData(globalProfile.getLastKnownName(), name, uuid);
+                profileDataSource.migratePlayerProfileName(globalProfile.getLastKnownName(), name, uuid);
             } catch (IOException e) {
                 Logging.severe("An error occurred while trying to migrate playerdata.");
                 e.printStackTrace();
@@ -148,7 +150,7 @@ public final class ShareHandleListener implements Listener {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
 
-        CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(player);
+        CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(GlobalProfileKey.create(player));
         globalProfile.thenAccept(p -> p.setLastWorld(world));
 
         // Write last location as its possible for players to join at a different world
@@ -215,7 +217,8 @@ public final class ShareHandleListener implements Listener {
         }
 
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
-        profileDataSource.modifyGlobalProfile(player, profile -> profile.setLastWorld(toWorld.getName()));
+        profileDataSource.modifyGlobalProfile(
+                GlobalProfileKey.create(player), profile -> profile.setLastWorld(toWorld.getName()));
     }
 
     /**
@@ -248,10 +251,10 @@ public final class ShareHandleListener implements Listener {
         Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
         ProfileContainer worldProfileContainer = profileContainerStoreProvider.getStore(ContainerType.WORLD).getContainer(deathWorld);
-        PlayerProfile profile = worldProfileContainer.getPlayerDataNow(event.getEntity());
+        PlayerProfile profile = worldProfileContainer.getPlayerProfileNow(event.getEntity());
         resetStatsOnDeath(event, profile);
         for (WorldGroup worldGroup : worldGroupManager.getGroupsForWorld(deathWorld)) {
-            profile = worldGroup.getGroupProfileContainer().getPlayerDataNow(event.getEntity());
+            profile = worldGroup.getGroupProfileContainer().getPlayerProfileNow(event.getEntity());
             resetStatsOnDeath(event, profile);
         }
         Logging.finer("=== Finished handling PlayerDeathEvent for: " + event.getEntity().getName() + "! ===");
@@ -264,7 +267,7 @@ public final class ShareHandleListener implements Listener {
         if (config.getResetLastLocationOnDeath()) {
             profile.set(Sharables.LAST_LOCATION, null);
         }
-        profileDataSource.updatePlayerData(profile);
+        profileDataSource.updatePlayerProfile(profile);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -280,7 +283,7 @@ public final class ShareHandleListener implements Listener {
                 () -> verifyCorrectWorld(
                         player,
                         player.getWorld().getName(),
-                        profileDataSource.getGlobalProfileNow(player)),
+                        FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)))),
                 2L);
     }
 

@@ -1,7 +1,8 @@
 package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.mvplugins.multiverse.external.vavr.CheckedRunnable;
+import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.io.File;
@@ -12,20 +13,37 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
-final class ProfileFileIO {
+@Service
+final class AsyncFileIO {
 
     private final ExecutorService fileIOExecutorService = Executors.newWorkStealingPool();
     private final Map<File, CountDownLatch> fileLocks = new ConcurrentHashMap<>();
 
-    ProfileFileIO() {
+    CompletableFuture<Void> queueAction(Runnable action) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        fileIOExecutorService.submit(() -> {
+            Try.runRunnable(action)
+                    .onFailure(future::completeExceptionally)
+                    .onSuccess(ignore -> future.complete(null));
+        });
+        return future;
     }
 
-    CompletableFuture<Void> queueAction(File file, Runnable action) {
+    <T> CompletableFuture<T> queueCallable(Supplier<T> supplier) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        fileIOExecutorService.submit(() -> {
+            Try.ofSupplier(supplier)
+                    .onFailure(future::completeExceptionally)
+                    .onSuccess(future::complete);
+        });
+        return future;
+    }
+
+    CompletableFuture<Void> queueFileAction(File file, Runnable action) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<Void> future = new CompletableFuture<>();
@@ -39,7 +57,7 @@ final class ProfileFileIO {
         return future;
     }
 
-    <T> CompletableFuture<T> queueCallable(File file, Supplier<T> supplier) {
+    <T> CompletableFuture<T> queueFileCallable(File file, Supplier<T> supplier) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);
         CompletableFuture<T> future = new CompletableFuture<>();
@@ -62,14 +80,6 @@ final class ProfileFileIO {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    <T> T waitForData(File file, Supplier<T> callable) {
-        try {
-            return queueCallable(file, callable).get(10, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new RuntimeException(e);
         }
     }
 
