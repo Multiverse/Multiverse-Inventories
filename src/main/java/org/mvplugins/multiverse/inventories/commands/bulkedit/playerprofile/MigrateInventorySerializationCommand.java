@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @CommandAlias("mvinv")
@@ -58,10 +59,11 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
         inventoriesConfig.save();
 
         long startTime = System.nanoTime();
+        AtomicLong profileCounter = new AtomicLong(0);
         CompletableFuture.allOf(profileDataSource.listGlobalProfileUUIDs()
                         .stream()
                         .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(playerUUID))
-                                .thenCompose(profile -> run(profile))
+                                .thenCompose(profile -> run(profile, profileCounter))
                                 .exceptionally(throwable -> {
                                     issuer.sendMessage("Error updating player " + playerUUID + ": " + throwable.getMessage());
                                     return null;
@@ -69,12 +71,12 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
                         .toArray(CompletableFuture[]::new))
                 .thenRun(() -> {
                     long timeDuration = (System.nanoTime() - startTime) / 1000000;
+                    issuer.sendMessage("Updated " + profileCounter.get() + " player profiles.");
                     issuer.sendMessage("Bulk edit completed in " + timeDuration + " ms.");
-                    issuer.sendMessage("Please restart your server to complete the migration.");
                 });
     }
 
-    private CompletableFuture<Void> run(GlobalProfile profile) {
+    private CompletableFuture<Void> run(GlobalProfile profile, AtomicLong profileCounter) {
         return CompletableFuture.allOf(Arrays.stream(ContainerType.values())
                 .flatMap(containerType -> profileDataSource.listContainerDataNames(containerType).stream()
                         .flatMap(dataName -> ProfileTypes.getTypes().stream()
@@ -84,7 +86,13 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
                                         profileType,
                                         profile.getPlayerUUID(),
                                         profile.getLastKnownName()
-                                )).thenCompose(profileDataSource::updatePlayerProfile))))
+                                )).thenCompose(playerProfile -> {
+                                    if (playerProfile.getData().isEmpty()) {
+                                        return CompletableFuture.completedFuture(null);
+                                    }
+                                    profileCounter.incrementAndGet();
+                                    return profileDataSource.updatePlayerProfile(playerProfile);
+                                }))))
                 .toArray(CompletableFuture[]::new));
     }
 }
