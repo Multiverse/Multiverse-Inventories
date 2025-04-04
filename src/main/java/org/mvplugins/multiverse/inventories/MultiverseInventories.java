@@ -9,6 +9,7 @@ import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
+import org.mvplugins.multiverse.inventories.command.MVInvCommandConditions;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandCompletion;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandContexts;
@@ -72,6 +73,8 @@ public class MultiverseInventories extends MultiversePlugin {
     private Provider<MVInvCommandCompletion> mvInvCommandCompletion;
     @Inject
     private Provider<MVInvCommandContexts> mvInvCommandContexts;
+    @Inject
+    private Provider<MVInvCommandConditions> mvInvCommandConditions;
 
     private PluginServiceLocator serviceLocator;
     private InventoriesDupingPatch dupingPatch;
@@ -177,6 +180,7 @@ public class MultiverseInventories extends MultiversePlugin {
 
                     mvInvCommandCompletion.get();
                     mvInvCommandContexts.get();
+                    mvInvCommandConditions.get();
 
                     serviceLocator.getAllServices(InventoriesCommand.class).forEach(commandManager::registerCommand);
                 })
