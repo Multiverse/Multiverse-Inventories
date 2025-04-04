@@ -62,7 +62,8 @@ public class MultiverseInventories extends MultiversePlugin {
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
     private Provider<ProfileDataSource> profileDataSource;
-    @Inject Provider<ProfileCacheManager> profileCacheManager;
+    @Inject
+    private Provider<ProfileCacheManager> profileCacheManager;
     @Inject
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
     @Inject
