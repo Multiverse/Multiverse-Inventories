@@ -5,7 +5,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.config.handle.CommentedConfigurationHandle;
 import org.mvplugins.multiverse.core.config.handle.StringPropertyHandle;
 import org.mvplugins.multiverse.core.config.migration.ConfigMigrator;
-import org.mvplugins.multiverse.core.config.migration.MoveMigratorAction;
+import org.mvplugins.multiverse.core.config.migration.action.MoveMigratorAction;
 import org.mvplugins.multiverse.core.config.migration.VersionMigrator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
