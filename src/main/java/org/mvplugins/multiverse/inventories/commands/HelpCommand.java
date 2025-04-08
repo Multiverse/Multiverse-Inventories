@@ -8,21 +8,22 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
-import org.mvplugins.multiverse.external.acf.commands.annotation.HelpCommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 
 @Service
 @CommandAlias("mvinv")
-final class UsageCommand extends InventoriesCommand {
+final class HelpCommand extends InventoriesCommand {
+
+    private final MVCommandManager commandManager;
 
     @Inject
-    UsageCommand(@NotNull MVCommandManager commandManager) {
-        super(commandManager);
+    HelpCommand(@NotNull MVCommandManager commandManager) {
+        this.commandManager = commandManager;
     }
 
-    @HelpCommand
+    @org.mvplugins.multiverse.external.acf.commands.annotation.HelpCommand
     @Subcommand("help")
     @CommandPermission("multiverse.inventories.help")
     @CommandCompletion("@commands:mvinv")

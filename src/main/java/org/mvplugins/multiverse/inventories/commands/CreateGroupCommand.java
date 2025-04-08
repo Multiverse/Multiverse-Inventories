@@ -29,8 +29,7 @@ final class CreateGroupCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    CreateGroupCommand(@NotNull MVCommandManager commandManager, @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    CreateGroupCommand(@NotNull WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 

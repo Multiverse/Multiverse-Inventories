@@ -25,8 +25,7 @@ final class RemoveSharesCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    RemoveSharesCommand(@NotNull MVCommandManager commandManager, @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    RemoveSharesCommand(@NotNull WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 

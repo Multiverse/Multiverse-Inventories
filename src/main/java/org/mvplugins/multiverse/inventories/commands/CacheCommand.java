@@ -25,8 +25,7 @@ final class CacheCommand extends InventoriesCommand {
     private final ProfileCacheManager ProfileCacheManager;
 
     @Inject
-    CacheCommand(@NotNull MVCommandManager commandManager, @NotNull ProfileCacheManager ProfileCacheManager) {
-        super(commandManager);
+    CacheCommand(@NotNull ProfileCacheManager ProfileCacheManager) {
         this.ProfileCacheManager = ProfileCacheManager;
     }
 

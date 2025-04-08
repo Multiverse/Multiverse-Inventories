@@ -23,8 +23,7 @@ final class ConfigCommand extends InventoriesCommand {
     private final InventoriesConfig config;
 
     @Inject
-    ConfigCommand(@NotNull MVCommandManager commandManager, @NotNull InventoriesConfig config) {
-        super(commandManager);
+    ConfigCommand(@NotNull InventoriesConfig config) {
         this.config = config;
     }
 

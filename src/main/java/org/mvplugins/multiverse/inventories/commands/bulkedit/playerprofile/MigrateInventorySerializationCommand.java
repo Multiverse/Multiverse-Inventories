@@ -8,6 +8,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
@@ -33,11 +34,9 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
 
     @Inject
     MigrateInventorySerializationCommand(
-            MVCommandManager commandManager,
-            ProfileDataSource profileDataSource,
-            InventoriesConfig inventoriesConfig
+            @NotNull ProfileDataSource profileDataSource,
+            @NotNull InventoriesConfig inventoriesConfig
     ) {
-        super(commandManager);
         this.profileDataSource = profileDataSource;
         this.inventoriesConfig = inventoriesConfig;
     }

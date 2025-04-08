@@ -30,10 +30,9 @@ final class ImportCommand extends InventoriesCommand {
 
     @Inject
     ImportCommand(
-            @NotNull MVCommandManager commandManager,
             @NotNull DataImportManager dataImportManager,
-            @NotNull CommandQueueManager commandQueueManager) {
-        super(commandManager);
+            @NotNull CommandQueueManager commandQueueManager
+    ) {
         this.dataImportManager = dataImportManager;
         this.commandQueueManager = commandQueueManager;
     }

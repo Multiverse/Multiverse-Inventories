@@ -44,12 +44,10 @@ final class GiveCommand extends InventoriesCommand {
 
     @Inject
     GiveCommand(
-            @NotNull MVCommandManager commandManager,
             @NotNull MultiverseInventories inventories,
             @NotNull ProfileDataSource profileDataSource,
             @NotNull InventoriesConfig inventoriesConfig
     ) {
-        super(commandManager);
         this.inventories = inventories;
         this.profileDataSource = profileDataSource;
         this.inventoriesConfig = inventoriesConfig;

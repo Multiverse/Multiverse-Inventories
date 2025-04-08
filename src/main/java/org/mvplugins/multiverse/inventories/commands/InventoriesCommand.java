@@ -10,7 +10,4 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
  */
 @Contract
 public abstract class InventoriesCommand extends MultiverseCommand {
-    protected InventoriesCommand(@NotNull MVCommandManager commandManager) {
-        super(commandManager, "mvinv");
-    }
 }

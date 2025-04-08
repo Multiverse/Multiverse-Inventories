@@ -89,7 +89,12 @@ public final class Sharables implements Shares {
         if (Sharables.worldGroupManager == null) {
             Sharables.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
         }
+
         Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max_health"));
+        if (Sharables.maxHealthAttr == null) {
+            // Old key for older minecraft version (<1.21)
+            Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("generic.max_health"));
+        }
         if (Sharables.maxHealthAttr == null) {
             Logging.warning("Could not find max_health attribute. Health related sharables may not work as expected.");
         }

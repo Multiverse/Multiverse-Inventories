@@ -27,10 +27,10 @@ final class DeleteGroupCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    DeleteGroupCommand(@NotNull MVCommandManager commandManager,
-                              @NotNull CommandQueueManager commandQueueManager,
-                              @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    DeleteGroupCommand(
+            @NotNull CommandQueueManager commandQueueManager,
+            @NotNull WorldGroupManager worldGroupManager
+    ) {
         this.commandQueueManager = commandQueueManager;
         this.worldGroupManager = worldGroupManager;
     }

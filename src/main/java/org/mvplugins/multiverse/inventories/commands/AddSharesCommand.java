@@ -27,8 +27,7 @@ final class AddSharesCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    AddSharesCommand(@NotNull MVCommandManager commandManager, @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    AddSharesCommand(@NotNull WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 

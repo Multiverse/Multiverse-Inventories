@@ -29,8 +29,7 @@ final class AddWorldsCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    AddWorldsCommand(@NotNull MVCommandManager commandManager, @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    AddWorldsCommand(@NotNull WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 

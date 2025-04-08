@@ -19,8 +19,7 @@ final class ReloadCommand extends InventoriesCommand {
     private final MultiverseInventories plugin;
 
     @Inject
-    ReloadCommand(@NotNull MVCommandManager commandManager, @NotNull MultiverseInventories plugin) {
-        super(commandManager);
+    ReloadCommand(@NotNull MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

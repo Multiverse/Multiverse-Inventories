@@ -24,8 +24,7 @@ final class GroupCommand extends InventoriesCommand {
     private final MultiverseInventories plugin;
 
     @Inject
-    GroupCommand(@NotNull MVCommandManager commandManager, @NotNull MultiverseInventories plugin) {
-        super(commandManager);
+    GroupCommand(@NotNull MultiverseInventories plugin) {
         this.plugin = plugin;
     }
 

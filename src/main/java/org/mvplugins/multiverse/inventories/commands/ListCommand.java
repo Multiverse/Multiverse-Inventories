@@ -25,10 +25,7 @@ final class ListCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    ListCommand(
-            @NotNull MVCommandManager commandManager,
-            @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+    ListCommand(@NotNull WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 

@@ -35,10 +35,9 @@ final class InfoCommand extends InventoriesCommand {
 
     @Inject
     InfoCommand(
-            @NotNull MVCommandManager commandManager,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
-            @NotNull WorldGroupManager worldGroupManager) {
-        super(commandManager);
+            @NotNull WorldGroupManager worldGroupManager
+    ) {
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.worldGroupManager = worldGroupManager;
     }

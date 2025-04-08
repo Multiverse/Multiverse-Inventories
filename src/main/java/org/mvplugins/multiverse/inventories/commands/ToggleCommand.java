@@ -26,10 +26,7 @@ final class ToggleCommand extends InventoriesCommand {
     private final InventoriesConfig inventoriesConfig;
 
     @Inject
-    ToggleCommand(
-            @NotNull MVCommandManager commandManager,
-            @NotNull InventoriesConfig inventoriesConfig) {
-        super(commandManager);
+    ToggleCommand(@NotNull InventoriesConfig inventoriesConfig) {
         this.inventoriesConfig = inventoriesConfig;
     }
 
