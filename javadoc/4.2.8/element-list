@@ -1,0 +1,13 @@
+com.onarandombox.multiverseinventories
+com.onarandombox.multiverseinventories.blacklist
+com.onarandombox.multiverseinventories.command
+com.onarandombox.multiverseinventories.command.prompts
+com.onarandombox.multiverseinventories.event
+com.onarandombox.multiverseinventories.locale
+com.onarandombox.multiverseinventories.migration
+com.onarandombox.multiverseinventories.migration.multiinv
+com.onarandombox.multiverseinventories.migration.worldinventories
+com.onarandombox.multiverseinventories.profile
+com.onarandombox.multiverseinventories.profile.container
+com.onarandombox.multiverseinventories.share
+com.onarandombox.multiverseinventories.util
