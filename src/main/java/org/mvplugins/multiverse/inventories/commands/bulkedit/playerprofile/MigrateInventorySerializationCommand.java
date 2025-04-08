@@ -1,9 +1,13 @@
 package org.mvplugins.multiverse.inventories.commands.bulkedit.playerprofile;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.checkerframework.checker.units.qual.N;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
+import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
+import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
@@ -29,14 +33,17 @@ import java.util.concurrent.atomic.AtomicLong;
 @CommandAlias("mvinv")
 final class MigrateInventorySerializationCommand extends InventoriesCommand {
 
+    private final CommandQueueManager commandQueueManager;
     private final ProfileDataSource profileDataSource;
     private final InventoriesConfig inventoriesConfig;
 
     @Inject
     MigrateInventorySerializationCommand(
+            @NotNull CommandQueueManager commandQueueManager,
             @NotNull ProfileDataSource profileDataSource,
             @NotNull InventoriesConfig inventoriesConfig
     ) {
+        this.commandQueueManager = commandQueueManager;
         this.profileDataSource = profileDataSource;
         this.inventoriesConfig = inventoriesConfig;
     }
@@ -44,13 +51,17 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
     @Subcommand("bulkedit migrate inventory-serialization nbt")
     @CommandPermission("multiverse.inventories.bulkedit")
     void onNbtCommand(MVCommandIssuer issuer) {
-        doMigration(issuer, true);
+        commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
+                .prompt(Message.of("Are you sure you want to migrate all player data to NBT?"))
+                .action(() -> doMigration(issuer, true)));
     }
 
     @Subcommand("bulkedit migrate inventory-serialization bukkit")
     @CommandPermission("multiverse.inventories.bulkedit")
     void onBukkitCommand(MVCommandIssuer issuer) {
-        doMigration(issuer, false);
+        commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
+                .prompt(Message.of("Are you sure you want to migrate all player data to old Bukkit serialization?"))
+                .action(() -> doMigration(issuer, false)));
     }
 
     private void doMigration(MVCommandIssuer issuer, boolean useByteSerialization) {
