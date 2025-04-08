@@ -12,7 +12,6 @@ sharables:
   use-byte-serialization-for-inventory-data: false
 
 performance:
-  save-playerdata-on-quit: true
   apply-playerdata-on-join: false
   always-write-world-profile: true
   preload-data-on-join:

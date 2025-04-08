@@ -112,7 +112,7 @@ final class PwiImportHelper {
      */
     private void transferConfigOptions() {
         inventoriesConfig.setEnableGamemodeShareHandling(this.pwiSettings.getProperty(PluginSettings.SEPARATE_GM_INVENTORIES));
-        inventoriesConfig.setSavePlayerdataOnQuit(this.pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
+        inventoriesConfig.setApplyPlayerdataOnJoin(this.pwiSettings.getProperty(PluginSettings.LOAD_DATA_ON_JOIN));
         inventoriesConfig.setDefaultUngroupedWorlds(this.pwiSettings.getProperty(PluginSettings.SHARE_IF_UNCONFIGURED));
         inventoriesConfig.getActiveOptionalShares().setSharing(Sharables.ECONOMY, this.pwiSettings.getProperty(PlayerSettings.USE_ECONOMY));
         inventoriesConfig.save();

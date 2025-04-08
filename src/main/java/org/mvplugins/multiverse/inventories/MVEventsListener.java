@@ -80,7 +80,7 @@ final class MVEventsListener implements Listener {
                 + "[Multiverse-Inventories] First Run: " + config.getFirstRun() + '\n'
                 + "[Multiverse-Inventories] Using Bypass: " + config.getEnableBypassPermissions() + '\n'
                 + "[Multiverse-Inventories] Default Ungrouped Worlds: " + config.getDefaultUngroupedWorlds() + '\n'
-                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + config.getSavePlayerdataOnQuit() + '\n'
+                + "[Multiverse-Inventories] Save and Load on Log In and Out: " + config.getApplyPlayerdataOnJoin() + '\n'
                 + "[Multiverse-Inventories] Using GameMode Profiles: " + config.getEnableGamemodeShareHandling() + '\n'
                 + "[Multiverse-Inventories] === Shares ===" + '\n'
                 + "[Multiverse-Inventories] Optionals for Ungrouped Worlds: " + config.getUseOptionalsForUngroupedWorlds() + '\n'

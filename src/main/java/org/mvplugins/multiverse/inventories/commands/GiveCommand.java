@@ -68,11 +68,6 @@ final class GiveCommand extends InventoriesCommand {
             GameMode gameMode,
             String item
     ) {
-        if (!player.isOnline() && !inventoriesConfig.getSavePlayerdataOnQuit()) {
-            issuer.sendError("You need to enable save-playerdata-on-quit in your config to give an offline player inventory items.");
-            return;
-        }
-
         ItemStack itemStack = parseItemFromString(issuer, item);
         if (itemStack == null) {
             return;

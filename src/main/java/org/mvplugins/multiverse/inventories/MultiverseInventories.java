@@ -18,6 +18,7 @@ import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
 import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
+import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
@@ -158,12 +159,11 @@ public class MultiverseInventories extends MultiversePlugin {
         super.onDisable();
 
         for (final Player player : getServer().getOnlinePlayers()) {
-            if (inventoriesConfig.get().getSavePlayerdataOnQuit()) {
-                new WriteOnlyShareHandler(this, player).handleSharing();
-                if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
-                    profileDataSource.get().modifyGlobalProfile(
-                            GlobalProfileKey.create(player), profile -> profile.setLoadOnLogin(true));
-                }
+            SingleShareWriter.of(this, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
+            new WriteOnlyShareHandler(this, player).handleSharing();
+            if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
+                profileDataSource.get().modifyGlobalProfile(
+                        GlobalProfileKey.create(player), profile -> profile.setLoadOnLogin(true));
             }
         }
 

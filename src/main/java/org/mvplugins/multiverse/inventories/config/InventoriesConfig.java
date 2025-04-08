@@ -41,7 +41,7 @@ public final class InventoriesConfig {
                                 .addAction(MoveMigratorAction.of("settings.first_run", "first-run"))
                                 .addAction(MoveMigratorAction.of("settings.use_bypass", "share-handling.enable-bypass-permissions"))
                                 .addAction(MoveMigratorAction.of("settings.default_ungrouped_worlds", "share-handling.default-ungrouped-worlds"))
-                                .addAction(MoveMigratorAction.of("settings.save_load_on_log_in_out", "performance.save-playerdata-on-quit"))
+                                .addAction(MoveMigratorAction.of("settings.save_load_on_log_in_out", "performance.apply-playerdata-on-join"))
                                 .addAction(MoveMigratorAction.of("settings.use_game_mode_profiles", "share-handling.enable-gamemode-share-handling"))
                                 .addAction(MoveMigratorAction.of("shares.optionals_for_ungrouped_worlds", "share-handling.use-optionals-for-ungrouped-worlds"))
                                 .addAction(MoveMigratorAction.of("shares.use_optionals", "share-handling.active-optional-shares"))
@@ -173,24 +173,6 @@ public final class InventoriesConfig {
 
     public Try<Void> setUseByteSerializationForInventoryData(boolean useByteSerializationForInventoryData) {
         return this.configHandle.set(configNodes.useByteSerializationForInventoryData, useByteSerializationForInventoryData);
-    }
-
-    /**
-     * Tells whether Multiverse-Inventories should save on player logout.
-     *
-     * @return True if should save on player log out.
-     */
-    public boolean getSavePlayerdataOnQuit() {
-        return this.configHandle.get(configNodes.savePlayerdataOnQuit);
-    }
-
-    /**
-     * Sets whether Multiverse-Inventories should save on player logout.
-     *
-     * @param useLoggingSaveLoad true if should save on player log out.
-     */
-    public Try<Void> setSavePlayerdataOnQuit(boolean useLoggingSaveLoad) {
-        return this.configHandle.set(configNodes.savePlayerdataOnQuit, useLoggingSaveLoad);
     }
 
     public boolean getApplyPlayerdataOnJoin() {

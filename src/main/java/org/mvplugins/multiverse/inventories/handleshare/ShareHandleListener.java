@@ -154,14 +154,10 @@ public final class ShareHandleListener implements Listener {
         globalProfile.thenAccept(p -> p.setLastWorld(world));
 
         // Write last location as its possible for players to join at a different world
-        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION)
-                .write(player.getLocation().clone(), !config.getSavePlayerdataOnQuit());
-
-        if (config.getSavePlayerdataOnQuit()) {
-            new WriteOnlyShareHandler(inventories, player).handleSharing();
-            if (config.getApplyPlayerdataOnJoin()) {
-                globalProfile.thenAccept(p -> p.setLoadOnLogin(true));
-            }
+        SingleShareWriter.of(this.inventories, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
+        new WriteOnlyShareHandler(inventories, player).handleSharing();
+        if (config.getApplyPlayerdataOnJoin()) {
+            globalProfile.thenAccept(p -> p.setLoadOnLogin(true));
         }
         globalProfile.thenAccept(profileDataSource::updateGlobalProfile);
     }
