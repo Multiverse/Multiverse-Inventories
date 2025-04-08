@@ -40,30 +40,28 @@ final class GiveCommand extends InventoriesCommand {
 
     private final MultiverseInventories inventories;
     private final ProfileDataSource profileDataSource;
-    private final InventoriesConfig inventoriesConfig;
 
     @Inject
     GiveCommand(
             @NotNull MultiverseInventories inventories,
-            @NotNull ProfileDataSource profileDataSource,
-            @NotNull InventoriesConfig inventoriesConfig
+            @NotNull ProfileDataSource profileDataSource
     ) {
         this.inventories = inventories;
         this.profileDataSource = profileDataSource;
-        this.inventoriesConfig = inventoriesConfig;
     }
 
+    // TODO Support custom gamemode when gamemode profile is enabled
+    // TODO Better offline player parsing
     @CommandAlias("mvinvgive")
     @Subcommand("give")
     @CommandPermission("multiverse.inventories.give")
-    @CommandCompletion("@players @mvworlds @gamemodes @materials @range:64")
+    @CommandCompletion("@players @mvworlds @materials @range:64")
     @Syntax("<world|group>")
     @Description("World and Group Information")
     void onGiveCommand(
             MVCommandIssuer issuer,
             OfflinePlayer player,
             MultiverseWorld world,
-            GameMode gameMode,
             String item
     ) {
         ItemStack itemStack = parseItemFromString(issuer, item);
@@ -82,7 +80,7 @@ final class GiveCommand extends InventoriesCommand {
             return;
         }
 
-        ProfileType profileType = ProfileTypes.forGameMode(gameMode);
+        ProfileType profileType = ProfileTypes.getDefault();
         SingleShareReader.of(inventories, player, world.getName(), profileType, Sharables.INVENTORY)
                 .read()
                 .thenCompose(inventory -> updatePlayerInventory(issuer, player, world, profileType, inventory, itemStack))

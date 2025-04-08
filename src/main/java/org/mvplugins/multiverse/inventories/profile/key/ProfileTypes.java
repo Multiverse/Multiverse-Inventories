@@ -50,11 +50,15 @@ public final class ProfileTypes {
      */
     public static final ProfileType SPECTATOR = createProfileType("SPECTATOR");
 
+    public static ProfileType getDefault() {
+        return SURVIVAL;
+    }
+
     public static ProfileType forPlayer(Player player) {
         if (config != null && config.getEnableGamemodeShareHandling()) {
             return forGameMode(player.getGameMode());
         }
-        return SURVIVAL;
+        return getDefault();
     }
 
     /**
