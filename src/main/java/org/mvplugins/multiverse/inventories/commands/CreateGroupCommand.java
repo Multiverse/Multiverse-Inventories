@@ -24,7 +24,7 @@ import java.util.Arrays;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-@CommandAlias("mvinv")
+
 final class CreateGroupCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 

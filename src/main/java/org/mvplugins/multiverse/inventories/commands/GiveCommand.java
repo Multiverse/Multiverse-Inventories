@@ -35,7 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
-@CommandAlias("mvinv")
+
 final class GiveCommand extends InventoriesCommand {
 
     private final MultiverseInventories inventories;

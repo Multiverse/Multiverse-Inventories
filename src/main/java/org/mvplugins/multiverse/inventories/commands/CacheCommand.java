@@ -19,7 +19,7 @@ import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import java.util.Map;
 
 @Service
-@CommandAlias("mvinv")
+
 final class CacheCommand extends InventoriesCommand {
 
     private final ProfileCacheManager ProfileCacheManager;

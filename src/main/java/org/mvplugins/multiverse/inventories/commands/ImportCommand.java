@@ -22,7 +22,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-@CommandAlias("mvinv")
+
 final class ImportCommand extends InventoriesCommand {
 
     private final DataImportManager dataImportManager;

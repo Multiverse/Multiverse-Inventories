@@ -25,7 +25,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 
 @Service
-@CommandAlias("mvinv")
+
 final class RemoveWorldsCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;

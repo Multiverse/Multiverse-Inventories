@@ -23,7 +23,7 @@ import java.util.List;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-@CommandAlias("mvinv")
+
 final class AddWorldsCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;

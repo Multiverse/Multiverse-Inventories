@@ -21,7 +21,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-@CommandAlias("mvinv")
+
 final class DeleteGroupCommand extends InventoriesCommand {
     private final CommandQueueManager commandQueueManager;
     private final WorldGroupManager worldGroupManager;

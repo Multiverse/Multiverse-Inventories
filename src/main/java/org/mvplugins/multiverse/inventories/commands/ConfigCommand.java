@@ -17,7 +17,7 @@ import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 @Service
-@CommandAlias("mvinv")
+
 final class ConfigCommand extends InventoriesCommand {
 
     private final InventoriesConfig config;
