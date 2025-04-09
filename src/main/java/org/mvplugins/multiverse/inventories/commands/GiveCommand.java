@@ -54,8 +54,8 @@ final class GiveCommand extends InventoriesCommand {
     // TODO Better offline player parsing
     @Subcommand("give")
     @CommandPermission("multiverse.inventories.give")
-    @CommandCompletion("@players @mvworlds @materials @range:64")
-    @Syntax("<world|group>")
+    @CommandCompletion("@players @mvworlds:scope=both @materials @range:64")
+    @Syntax("<player> <world> <item> [amount]")
     @Description("World and Group Information")
     void onGiveCommand(
             MVCommandIssuer issuer,
