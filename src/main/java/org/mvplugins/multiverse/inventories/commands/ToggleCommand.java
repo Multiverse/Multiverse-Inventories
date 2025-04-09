@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.share.Sharable;
@@ -21,7 +22,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 @CommandAlias("mvinv")
-final class ToggleCommand extends InventoriesCommand {
+class ToggleCommand extends InventoriesCommand {
 
     private final InventoriesConfig inventoriesConfig;
 
@@ -30,7 +31,6 @@ final class ToggleCommand extends InventoriesCommand {
         this.inventoriesConfig = inventoriesConfig;
     }
 
-    @CommandAlias("mvinvtoggle")
     @Subcommand("toggle")
     @CommandPermission("multiverse.inventories.addshares")
     @CommandCompletion("@sharables:scope=optional")
@@ -58,5 +58,19 @@ final class ToggleCommand extends InventoriesCommand {
         }
         inventoriesConfig.setActiveOptionalShares(optionalShares);
         inventoriesConfig.save();
+    }
+
+    @Service
+    private final static class LegacyAlias extends ToggleCommand implements LegacyAliasCommand {
+        @Inject
+        LegacyAlias(InventoriesConfig inventoriesConfig) {
+            super(inventoriesConfig);
+        }
+
+        @Override
+        @CommandAlias("mvinvtoggle")
+        void onToggleCommand(MVCommandIssuer issuer, Sharable<?> sharable) {
+            super.onToggleCommand(issuer, sharable);
+        }
     }
 }

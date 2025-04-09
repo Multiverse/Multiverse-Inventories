@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.commands.prompts.GroupControlPrompt;
@@ -19,7 +20,7 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
 @CommandAlias("mvinv")
-final class GroupCommand extends InventoriesCommand {
+class GroupCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;
 
@@ -28,7 +29,6 @@ final class GroupCommand extends InventoriesCommand {
         this.plugin = plugin;
     }
 
-    @CommandAlias("mvinvgroup|mvinvg")
     @Subcommand("group")
     @CommandPermission("multiverse.inventories.group")
     @Description("Manage a world group with prompts!")
@@ -42,5 +42,19 @@ final class GroupCommand extends InventoriesCommand {
                 .withEscapeSequence("##")
                 .withModality(false).buildConversation(conversable);
         conversation.begin();
+    }
+
+    @Service
+    private final static class LegacyAlias extends GroupCommand implements LegacyAliasCommand {
+        @Inject
+        LegacyAlias(MultiverseInventories plugin) {
+            super(plugin);
+        }
+
+        @Override
+        @CommandAlias("mvinvgroup|mvinvg")
+        void onGroupCommand(MVCommandIssuer issuer) {
+            super.onGroupCommand(issuer);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
@@ -15,12 +16,13 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 @CommandAlias("mvinv")
-final class ListCommand extends InventoriesCommand {
+class ListCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;
 
@@ -29,7 +31,6 @@ final class ListCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @CommandAlias("mvinvlist|mvinvl")
     @Subcommand("list")
     @CommandPermission("multiverse.inventories.list")
     @Description("World and Group Information")
@@ -48,5 +49,19 @@ final class ListCommand extends InventoriesCommand {
         }
         issuer.sendInfo(MVInvi18n.LIST_GROUPS);
         issuer.sendInfo(MVInvi18n.LIST_GROUPS_INFO, replace("{groups}").with(groupsString));
+    }
+
+    @Service
+    private final static class LegacyAlias extends ListCommand implements LegacyAliasCommand {
+        @Inject
+        LegacyAlias(WorldGroupManager worldGroupManager) {
+            super(worldGroupManager);
+        }
+
+        @Override
+        @CommandAlias("mvinvlist|mvinvl")
+        void onListCommand(MVCommandIssuer issuer) {
+            super.onListCommand(issuer);
+        }
     }
 }

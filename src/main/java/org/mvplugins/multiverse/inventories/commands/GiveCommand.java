@@ -52,7 +52,6 @@ final class GiveCommand extends InventoriesCommand {
 
     // TODO Support custom gamemode when gamemode profile is enabled
     // TODO Better offline player parsing
-    @CommandAlias("mvinvgive")
     @Subcommand("give")
     @CommandPermission("multiverse.inventories.give")
     @CommandCompletion("@players @mvworlds @materials @range:64")

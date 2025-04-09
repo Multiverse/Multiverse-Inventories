@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -28,7 +29,7 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 @CommandAlias("mvinv")
-final class InfoCommand extends InventoriesCommand {
+class InfoCommand extends InventoriesCommand {
 
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final WorldGroupManager worldGroupManager;
@@ -42,7 +43,6 @@ final class InfoCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @CommandAlias("mvinvinfo|mvinvi")
     @Subcommand("info")
     @CommandPermission("multiverse.inventories.info")
     @CommandCompletion("@mvworlds")
@@ -113,5 +113,19 @@ final class InfoCommand extends InventoriesCommand {
             }
         }
         issuer.sendInfo(MVInvi18n.INFO_WORLD_INFO, replace("{groups}").with(groupsString));
+    }
+
+    @Service
+    private final static class LegacyAlias extends InfoCommand implements LegacyAliasCommand {
+        @Inject
+        LegacyAlias(ProfileContainerStoreProvider profileContainerStoreProvider, WorldGroupManager worldGroupManager) {
+            super(profileContainerStoreProvider, worldGroupManager);
+        }
+
+        @Override
+        @CommandAlias("mvinvinfo|mvinvi")
+        void onInfoCommand(MVCommandIssuer issuer, String name) {
+            super.onInfoCommand(issuer, name);
+        }
     }
 }
