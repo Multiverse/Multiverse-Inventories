@@ -1,4 +1,4 @@
 package org.mvplugins.multiverse.inventories.commands.bulkedit.playerprofile;
 
-public class ResetCommand {
+final class ResetCommand {
 }
