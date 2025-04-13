@@ -148,7 +148,7 @@ public final class Sharables implements Shares {
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_OFF_HAND_ITEM),
-                    new DefaultSerializer<>(ItemStack.class)).altName("shield").build();
+                    new ItemStackSerializer()).altName("shield").build();
 
     /**
      * Sharing Health.
