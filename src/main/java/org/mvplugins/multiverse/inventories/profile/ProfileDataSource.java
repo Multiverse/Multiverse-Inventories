@@ -45,10 +45,9 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      *
      * @param oldName the previous name of the player.
      * @param newName the new name of the player.
-     * @param playerUUID the UUID of the player.
      * @throws IOException Thrown if something goes wrong while migrating the files.
      */
-    void migratePlayerProfileName(String oldName, String newName, UUID playerUUID) throws IOException;
+    void migratePlayerProfileName(String oldName, String newName) throws IOException;
 
     /**
      * Retrieves the global profile for a player which contains meta-data for the player.

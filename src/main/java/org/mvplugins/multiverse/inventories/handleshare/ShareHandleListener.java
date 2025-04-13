@@ -129,7 +129,7 @@ public final class ShareHandleListener implements Listener {
             Logging.info("Player %s changed name from '%s' to '%s'. Attempting to migrate playerdata...",
                     uuid, globalProfile.getLastKnownName(), name);
             try {
-                profileDataSource.migratePlayerProfileName(globalProfile.getLastKnownName(), name, uuid);
+                profileDataSource.migratePlayerProfileName(globalProfile.getLastKnownName(), name);
             } catch (IOException e) {
                 Logging.severe("An error occurred while trying to migrate playerdata.");
                 e.printStackTrace();

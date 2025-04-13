@@ -69,6 +69,10 @@ public final class ProfileCacheManager {
         return Option.of(playerProfileCache.synchronous().getIfPresent(key));
     }
 
+    public void clearPlayerCache(String playerName) {
+        clearPlayerProfileCache(key -> key.getPlayerName().equals(playerName));
+    }
+
     public void clearPlayerCache(UUID playerUUID) {
         clearPlayerProfileCache(key -> key.getPlayerUUID().equals(playerUUID));
         clearGlobalProfileCache(key -> key.equals(playerUUID));

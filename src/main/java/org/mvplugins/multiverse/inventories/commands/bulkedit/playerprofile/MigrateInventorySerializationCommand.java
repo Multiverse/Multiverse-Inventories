@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-@CommandAlias("mvinv")
 final class MigrateInventorySerializationCommand extends InventoriesCommand {
 
     private final CommandQueueManager commandQueueManager;

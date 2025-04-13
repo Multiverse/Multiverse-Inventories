@@ -215,8 +215,8 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      * {@inheritDoc}
      */
     @Override
-    public void migratePlayerProfileName(String oldName, String newName, UUID uuid) {
-        profileCacheManager.clearPlayerCache(uuid);
+    public void migratePlayerProfileName(String oldName, String newName) {
+        profileCacheManager.clearPlayerCache(oldName);
 
         List<File> worldFolders = profileFilesLocator.listProfileContainerFolders(ContainerType.WORLD);
         List<File> groupFolders = profileFilesLocator.listProfileContainerFolders(ContainerType.GROUP);
