@@ -259,7 +259,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             Logging.finer("Global profile for player %s (%s) not in cached. Loading...", uuid, key.getPlayerName());
             migrateGlobalProfileToUUID(uuid, key.getPlayerName());
             if (!globalFile.exists()) {
-                return CompletableFuture.completedFuture(GlobalProfile.createGlobalProfile(key));
+                GlobalProfile globalProfile = new GlobalProfile(key.getPlayerUUID(), globalFile.toPath());
+                globalProfile.setLastKnownName(key.getPlayerName());
+                return CompletableFuture.completedFuture(globalProfile);
             }
             return asyncFileIO.queueFileCallable(globalFile, () -> getGlobalProfileFromDisk(key.getPlayerUUID(), key.getPlayerName(), globalFile));
         });
@@ -288,12 +290,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private GlobalProfile getGlobalProfileFromDisk(UUID playerUUID, String playerName, File globalFile) {
-        FileConfiguration playerData = loadFileToJsonConfiguration(globalFile);
-        ConfigurationSection section = playerData.getConfigurationSection(DataStrings.PLAYER_DATA);
-        if (section == null) {
-            return GlobalProfile.createGlobalProfile(playerUUID, playerName);
-        }
-        return GlobalProfile.deserialize(playerName, playerUUID, section);
+        GlobalProfile globalProfile = new GlobalProfile(playerUUID, globalFile.toPath());
+        globalProfile.setLastKnownName(playerName);
+        return globalProfile;
     }
 
     /**
@@ -315,18 +314,14 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile) {
         File globalFile = profileFilesLocator.getGlobalFile(globalProfile.getPlayerUUID().toString());
-        return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile, globalFile));
+        return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile));
     }
 
-    private void processGlobalProfileWrite(GlobalProfile globalProfile, File globalFile) {
-        FileConfiguration playerData = new JsonConfiguration();
-        playerData.createSection(DataStrings.PLAYER_DATA, globalProfile.serialize(globalProfile));
-        try {
-            playerData.save(globalFile);
-        } catch (IOException e) {
+    private void processGlobalProfileWrite(GlobalProfile globalProfile) {
+        globalProfile.save().onFailure(throwable -> {
             Logging.severe("Could not save global data for player: " + globalProfile);
-            Logging.severe(e.getMessage());
-        }
+            Logging.severe(throwable.getMessage());
+        });
     }
 
     /**

@@ -2,9 +2,16 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.mvplugins.multiverse.core.config.handle.StringPropertyHandle;
+import org.mvplugins.multiverse.core.config.node.ConfigNode;
+import org.mvplugins.multiverse.core.config.node.Node;
+import org.mvplugins.multiverse.core.config.node.NodeGroup;
+import org.mvplugins.multiverse.external.vavr.control.Try;
+import org.mvplugins.multiverse.inventories.config.handle.JsonConfigurationHandle;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.util.DataStrings;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -14,54 +21,29 @@ import java.util.UUID;
  */
 public final class GlobalProfile {
 
-    /**
-     * Creates a global profile object for the given player with default values.
-     *
-     * @param key the player to create the profile object for.
-     * @return a new GlobalProfile for the given player.
-     */
-    static GlobalProfile createGlobalProfile(GlobalProfileKey key) {
-        return new GlobalProfile(key.getPlayerName(), key.getPlayerUUID());
-    }
-
-    /**
-     * Creates a global profile object for the given player with default values.
-     *
-     * @param playerUUID the UUID of the player to create the profile for.
-     * @param playerName the player to create the profile object for.
-     * @return a new GlobalProfile for the given player.
-     */
-    static GlobalProfile createGlobalProfile(UUID playerUUID, String playerName) {
-        return new GlobalProfile(playerName, playerUUID);
-    }
-
     private final UUID uuid;
-    private String lastWorld = null;
-    private String lastKnownName;
-    private boolean loadOnLogin = false;
+    private final Nodes nodes;
+    private final JsonConfigurationHandle handle;
+    private final StringPropertyHandle stringPropertyHandle;
 
-    private GlobalProfile(String name, UUID uuid) {
+    GlobalProfile(UUID uuid, Path configPath) {
         this.uuid = uuid;
-        this.lastKnownName = name;
+        this.nodes = new Nodes();
+        this.handle = JsonConfigurationHandle.builder(configPath, nodes.nodes).build();
+        this.stringPropertyHandle = new StringPropertyHandle(handle);
+        this.handle.load();
     }
 
-    public GlobalProfile(UUID uuid, String lastWorld, String lastKnownName, boolean loadOnLogin) {
-        this.uuid = uuid;
-        this.lastWorld = lastWorld;
-        this.lastKnownName = lastKnownName;
-        this.loadOnLogin = loadOnLogin;
+    Try<Void> load() {
+        return handle.load();
     }
 
-    /**
-     * Returns the name of the player.
-     *
-     * @return The name of the player.
-     * @deprecated Use {@link #getPlayerUUID()} to uniquely identify a player.
-     *             If you need player name, use {@link #getLastKnownName()}.
-     */
-    @Deprecated
-    public String getPlayerName() {
-        return this.lastKnownName;
+    Try<Void> save() {
+        return handle.save();
+    }
+
+    public StringPropertyHandle getStringPropertyHandle() {
+        return stringPropertyHandle;
     }
 
     /**
@@ -79,7 +61,7 @@ public final class GlobalProfile {
      * @return the last name the player was known to have.
      */
     public String getLastKnownName() {
-        return lastKnownName;
+        return handle.get(nodes.lastKnownName);
     }
 
     /**
@@ -89,8 +71,8 @@ public final class GlobalProfile {
      *
      * @param lastKnownName the last known name for the player.
      */
-    public void setLastKnownName(String lastKnownName) {
-        this.lastKnownName = lastKnownName;
+    public Try<Void> setLastKnownName(String lastKnownName) {
+        return handle.set(nodes.lastKnownName, lastKnownName);
     }
 
     /**
@@ -99,7 +81,16 @@ public final class GlobalProfile {
      * @return The last world the player was in or null if not set.
      */
     public String getLastWorld() {
-        return this.lastWorld;
+        return handle.get(nodes.lastWorld);
+    }
+
+    /**
+     * Sets the last world the player was known to be in. This is done automatically on world change.
+     *
+     * @param world The world the player is in.
+     */
+    public Try<Void> setLastWorld(String world) {
+        return handle.set(nodes.lastWorld, world);
     }
 
     /**
@@ -109,7 +100,7 @@ public final class GlobalProfile {
      * @return true if player data should be loaded when they log in.
      */
     public boolean shouldLoadOnLogin() {
-        return loadOnLogin;
+        return handle.get(nodes.loadOnLogin);
     }
 
     /**
@@ -117,59 +108,41 @@ public final class GlobalProfile {
      *
      * @param loadOnLogin true if player data should be loaded when they log in.
      */
-    public void setLoadOnLogin(boolean loadOnLogin) {
-        this.loadOnLogin = loadOnLogin;
-    }
-
-    /**
-     * Sets the last world the player was known to be in. This is done automatically on world change.
-     *
-     * @param world The world the player is in.
-     */
-    public void setLastWorld(String world) {
-        this.lastWorld = world;
+    public Try<Void> setLoadOnLogin(boolean loadOnLogin) {
+        return handle.set(nodes.loadOnLogin, loadOnLogin);
     }
 
     @Override
     public String toString() {
         return "GlobalProfile{" +
                 "uuid=" + uuid +
-                ", lastWorld='" + lastWorld + '\'' +
-                ", lastKnownName='" + lastKnownName + '\'' +
-                ", loadOnLogin=" + loadOnLogin +
+                ", lastWorld='" + getLastWorld() + '\'' +
+                ", lastKnownName='" + getLastKnownName() + '\'' +
+                ", loadOnLogin=" + shouldLoadOnLogin() +
                 '}';
     }
 
-    /**
-     * Converts a global profile to a map that can be serialized into the profile data file.
-     *
-     * @param profile    The global profile data.
-     * @return The serialized profile map.
-     */
-    Map<String, Object> serialize(GlobalProfile profile) {
-        Map<String, Object> result = new HashMap<>(3);
-        if (profile.getLastWorld() != null) {
-            result.put(DataStrings.PLAYER_LAST_WORLD, profile.getLastWorld());
-        }
-        result.put(DataStrings.PLAYER_SHOULD_LOAD, profile.shouldLoadOnLogin());
-        result.put(DataStrings.PLAYER_LAST_KNOWN_NAME, profile.getLastKnownName());
-        return result;
-    }
+    private static final class Nodes {
+        private final NodeGroup nodes = new NodeGroup();
 
-    /**
-     * Converts a configuration section to a global profile.
-     *
-     * @param playerName    The player name.
-     * @param playerUUID    The player UUID.
-     * @param data          The configuration section to convert.
-     * @return The global profile.
-     */
-    static GlobalProfile deserialize(String playerName, UUID playerUUID, ConfigurationSection data) {
-        return new GlobalProfile(
-                playerUUID,
-                data.getString(DataStrings.PLAYER_LAST_WORLD, null),
-                data.getString(DataStrings.PLAYER_LAST_KNOWN_NAME, playerName),
-                data.getBoolean(DataStrings.PLAYER_SHOULD_LOAD, false)
-        );
+        private <N extends Node> N node(N node) {
+            nodes.add(node);
+            return node;
+        }
+
+        private final ConfigNode<String> lastWorld = node(ConfigNode.builder("playerData.lastWorld", String.class)
+                .defaultValue("")
+                .name("last-world")
+                .build());
+
+        private final ConfigNode<String> lastKnownName = node(ConfigNode.builder("playerData.lastKnownName", String.class)
+                .defaultValue("")
+                .name("last-known-name")
+                .build());
+
+        private final ConfigNode<Boolean> loadOnLogin = node(ConfigNode.builder("playerData.loadOnLogin", Boolean.class)
+                .defaultValue(false)
+                .name("load-on-login")
+                .build());
     }
 }

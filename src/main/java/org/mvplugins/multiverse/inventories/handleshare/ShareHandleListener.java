@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import com.dumptruckman.minecraft.util.Logging;
+import com.google.common.base.Strings;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.vavr.control.Try;
@@ -111,7 +112,7 @@ public final class ShareHandleListener implements Listener {
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
         final GlobalProfile globalProfile = FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)));
-        if (config.getApplyPlayerdataOnJoin() && globalProfile.shouldLoadOnLogin()) {
+        if (globalProfile.shouldLoadOnLogin()) {
             new ReadOnlyShareHandler(inventories, player).handleSharing();
         }
         globalProfile.setLoadOnLogin(false);
@@ -163,7 +164,7 @@ public final class ShareHandleListener implements Listener {
     }
 
     private void verifyCorrectWorld(Player player, String world, GlobalProfile globalProfile) {
-        if (globalProfile.getLastWorld() == null) {
+        if (Strings.isNullOrEmpty(globalProfile.getLastWorld())) {
             globalProfile.setLastWorld(world);
         } else {
             if (!world.equals(globalProfile.getLastWorld())) {

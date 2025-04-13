@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.command;
 
 import com.google.common.base.Strings;
+import org.bukkit.Bukkit;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandExecutionContext;
@@ -11,10 +12,14 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @Service
 public final class MVInvCommandContexts {
@@ -26,9 +31,25 @@ public final class MVInvCommandContexts {
         this.worldGroupManager = worldGroupManager;
 
         CommandContexts<BukkitCommandExecutionContext> commandContexts = commandManager.getCommandContexts();
+        commandContexts.registerContext(GlobalProfileKey[].class, this::parseGlobalProfileKeys);
         commandContexts.registerContext(Sharable.class, this::parseSharable);
         commandContexts.registerContext(Shares.class, this::parseShares);
         commandContexts.registerContext(WorldGroup.class, this::parseWorldGroup);
+    }
+
+    private GlobalProfileKey[] parseGlobalProfileKeys(BukkitCommandExecutionContext context) {
+        String profileStrings = context.popFirstArg();
+        if (profileStrings.equals("@all")) {
+            return Arrays.stream(Bukkit.getOfflinePlayers())
+                    .map(GlobalProfileKey::create)
+                    .toArray(GlobalProfileKey[]::new);
+        }
+
+        String[] profileNames = profileStrings.split(",");
+        return Arrays.stream(profileNames)
+                .map(Bukkit::getOfflinePlayer)
+                .map(GlobalProfileKey::create)
+                .toArray(GlobalProfileKey[]::new);
     }
 
     private Sharable<?> parseSharable(BukkitCommandExecutionContext context) {
