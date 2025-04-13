@@ -4,10 +4,10 @@ import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.MultiverseCoreApi;
-import org.mvplugins.multiverse.core.MultiversePlugin;
 import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
+import org.mvplugins.multiverse.core.module.MultiverseModule;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandConditions;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
@@ -42,12 +42,10 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
  * Multiverse-Inventories plugin main class.
  */
 @Service
-public class MultiverseInventories extends MultiversePlugin {
+public class MultiverseInventories extends MultiverseModule {
 
     private static final double TARGET_CORE_API_VERSION = 5.0;
 
-    @Inject
-    private Provider<MVCommandManager> commandManager;
     @Inject
     private Provider<CoreConfig> coreConfig;
     @Inject
@@ -77,7 +75,6 @@ public class MultiverseInventories extends MultiversePlugin {
     @Inject
     private Provider<MVInvCommandConditions> mvInvCommandConditions;
 
-    private PluginServiceLocator serviceLocator;
     private InventoriesDupingPatch dupingPatch;
     private boolean usingSpawnChangeEvent = false;
 
@@ -101,7 +98,7 @@ public class MultiverseInventories extends MultiversePlugin {
     public final void onEnable() {
         super.onEnable();
 
-        initializeDependencyInjection();
+        initializeDependencyInjection(new MultiverseInventoriesPluginBinder(this));
         ProfileTypes.init(this);
         Sharables.init(this);
         Perm.register(this);
@@ -110,25 +107,12 @@ public class MultiverseInventories extends MultiversePlugin {
         this.reloadConfig();
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
 
-        // Register Events
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        pluginManager.registerEvents(shareHandleListener.get(), this);
-        pluginManager.registerEvents(respawnListener.get(), this);
-        pluginManager.registerEvents(mvEventsListener.get(), this);
-        if (inventoriesConfig.get().getUseImprovedRespawnLocationDetection()) {
-            try {
-                Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
-                pluginManager.registerEvents(new SpawnChangeListener(this), this);
-                usingSpawnChangeEvent = true;
-                Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
-            } catch (ClassNotFoundException e) {
-                Logging.fine("PlayerSpawnChangeEvent will not be used!");
-            }
-        }
-
-        // Register Commands
+        // Register Stuff
+        this.registerEvents();
+        this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
+
         // Hook plugins that can be imported from
         this.hookImportables();
 
@@ -138,17 +122,6 @@ public class MultiverseInventories extends MultiversePlugin {
 
         Logging.config("Version %s (API v%s) Enabled - By %s",
                 this.getDescription().getVersion(), getVersionAsNumber(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
-    }
-
-    private void initializeDependencyInjection() {
-        serviceLocator = PluginServiceLocatorFactory.get()
-                .registerPlugin(new MultiverseInventoriesPluginBinder(this), MultiverseCoreApi.get().getServiceLocator())
-                .flatMap(PluginServiceLocator::enable)
-                .getOrElseThrow(exception -> {
-                    Logging.severe("Failed to initialize dependency injection!");
-                    getServer().getPluginManager().disablePlugin(this);
-                    return new RuntimeException(exception);
-                });
     }
 
     /**
@@ -171,23 +144,32 @@ public class MultiverseInventories extends MultiversePlugin {
         Logging.shutdown();
     }
 
+    private void registerEvents() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(shareHandleListener.get(), this);
+        pluginManager.registerEvents(respawnListener.get(), this);
+        pluginManager.registerEvents(mvEventsListener.get(), this);
+        if (inventoriesConfig.get().getUseImprovedRespawnLocationDetection()) {
+            try {
+                Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
+                pluginManager.registerEvents(new SpawnChangeListener(this), this);
+                usingSpawnChangeEvent = true;
+                Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
+            } catch (ClassNotFoundException e) {
+                Logging.fine("PlayerSpawnChangeEvent will not be used!");
+            }
+        }
+    }
+
     private void registerCommands() {
-        Try.of(() -> commandManager.get())
-                .andThenTry(commandManager -> {
-                    commandManager.getLocales().addFileResClassLoader(this);
-                    commandManager.getLocales().addBundleClassLoader(this.getClassLoader());
-                    commandManager.getLocales().addMessageBundles("multiverse-inventories");
-
-                    mvInvCommandCompletion.get();
-                    mvInvCommandContexts.get();
-                    mvInvCommandConditions.get();
-
-                    serviceLocator.getAllServices(InventoriesCommand.class).forEach(commandManager::registerCommand);
-                })
-                .onFailure(e -> {
-                    Logging.severe("Failed to register commands");
-                    e.printStackTrace();
-                });
+        Try.run(() -> {
+            mvInvCommandCompletion.get();
+            mvInvCommandContexts.get();
+            mvInvCommandConditions.get();
+        }).onFailure(e -> {
+            Logging.warning("Failed to register command completers: %s", e.getMessage());
+        });
+        registerCommands(InventoriesCommand.class);
     }
 
     private void registerDestinations() {
@@ -215,14 +197,6 @@ public class MultiverseInventories extends MultiversePlugin {
     @Override
     public double getTargetCoreVersion() {
         return TARGET_CORE_API_VERSION;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PluginServiceLocator getServiceLocator() {
-        return serviceLocator;
     }
 
     /**
@@ -273,4 +247,3 @@ public class MultiverseInventories extends MultiversePlugin {
         return usingSpawnChangeEvent;
     }
 }
-
