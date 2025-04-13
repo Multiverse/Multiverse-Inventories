@@ -13,6 +13,9 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.util.FutureNow;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
@@ -104,14 +107,15 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
             Logging.finest("No shares to write - nothing more to do.");
             return;
         }
-        persistingProfile.getProfile().thenAcceptAsync(playerProfile -> {
-            Logging.finer("Persisted: " + persistingProfile.getShares() + " to "
-                    + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
-                    + " (" + playerProfile.getProfileType() + ")"
-                    + " for player " + playerProfile.getPlayerName());
-            playerProfile.update(snapshot, persistingProfile.getShares());
-            profileDataStore.updatePlayerProfile(playerProfile);
-        });
+        profileDataStore.getPlayerProfile(persistingProfile.getProfileKey())
+                .thenCompose(playerProfile -> {
+                    Logging.finer("Persisted: " + persistingProfile.getShares() + " to "
+                            + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
+                            + " (" + playerProfile.getProfileType() + ")"
+                            + " for player " + playerProfile.getPlayerName());
+                    playerProfile.update(snapshot, persistingProfile.getShares());
+                    return profileDataStore.updatePlayerProfile(playerProfile);
+                });
     }
 
     private void logHandlingComplete(double timeTaken, ShareHandlingEvent event) {

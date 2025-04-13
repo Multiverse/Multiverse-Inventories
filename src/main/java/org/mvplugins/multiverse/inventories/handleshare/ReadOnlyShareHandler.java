@@ -20,12 +20,12 @@ final class ReadOnlyShareHandler extends ShareHandler {
         List<WorldGroup> worldGroups = worldGroupManager.getGroupsForWorld(player.getWorld().getName());
         Shares unhandledShares = Sharables.enabledOf();
         for (WorldGroup worldGroup : worldGroups) {
-            affectedProfiles.addReadProfile(worldGroup.getGroupProfileContainer().getPlayerData(player), worldGroup.getApplicableShares());
+            affectedProfiles.addReadProfile(worldGroup.getGroupProfileContainer().getProfileKey(player), worldGroup.getApplicableShares());
             unhandledShares.removeAll(worldGroup.getApplicableShares());
         }
         if (!unhandledShares.isEmpty()) {
             affectedProfiles.addReadProfile(
-                    worldProfileContainerStore.getContainer(player.getWorld().getName()).getPlayerData(player),
+                    worldProfileContainerStore.getContainer(player.getWorld().getName()).getProfileKey(player),
                     unhandledShares
             );
         }

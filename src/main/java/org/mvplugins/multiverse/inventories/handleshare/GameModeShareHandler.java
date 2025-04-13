@@ -58,7 +58,7 @@ final class GameModeShareHandler extends ShareHandler {
         } else if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
             // Write to world profile to ensure data is saved incase bypass is removed
             affectedProfiles.addWriteProfile(
-                    worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player),
+                    worldProfileContainerStore.getContainer(world).getProfileKey(fromType, player),
                     (worldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
                             ? Sharables.standard()
                             : Sharables.enabled()
@@ -84,23 +84,23 @@ final class GameModeShareHandler extends ShareHandler {
         worldGroups.forEach(worldGroup -> addProfilesForWorldGroup(handledShares,worldGroup));
         Shares unhandledShares = Sharables.enabledOf().setSharing(handledShares, false);
         if (!unhandledShares.isEmpty()) {
-            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getPlayerData(toType, player), unhandledShares);
+            affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getProfileKey(toType, player), unhandledShares);
         }
 
         if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
-            affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player),
+            affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getProfileKey(fromType, player),
                     inventoriesConfig.getUseOptionalsForUngroupedWorlds() ? Sharables.enabled() : Sharables.standard());
         } else {
             if (!unhandledShares.isEmpty()) {
-                affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getPlayerData(fromType, player), unhandledShares);
+                affectedProfiles.addWriteProfile(worldProfileContainerStore.getContainer(world).getProfileKey(fromType, player), unhandledShares);
             }
         }
     }
 
     private void addProfilesForWorldGroup(Shares handledShares, WorldGroup worldGroup) {
         ProfileContainer container = worldGroup.getGroupProfileContainer();
-        affectedProfiles.addWriteProfile(container.getPlayerData(fromType, player), worldGroup.getApplicableShares());
-        affectedProfiles.addReadProfile(container.getPlayerData(toType, player), worldGroup.getApplicableShares());
+        affectedProfiles.addWriteProfile(container.getProfileKey(fromType, player), worldGroup.getApplicableShares());
+        affectedProfiles.addReadProfile(container.getProfileKey(toType, player), worldGroup.getApplicableShares());
         handledShares.addAll(worldGroup.getApplicableShares());
         handledShares.addAll(worldGroup.getDisabledShares());
     }

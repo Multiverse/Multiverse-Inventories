@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.LinkedList;
@@ -16,19 +17,19 @@ public final class AffectedProfiles {
     }
 
     /**
-     * @param profile The player profile that will need data saved to.
+     * @param profileKey The profile key that will need data saved to.
      * @param shares  What from this group needs to be saved.
      */
-    void addWriteProfile(CompletableFuture<PlayerProfile> profile, Shares shares) {
-        writeProfiles.add(new PersistingProfile(shares, profile));
+    void addWriteProfile(ProfileKey profileKey, Shares shares) {
+        writeProfiles.add(new PersistingProfile(shares, profileKey));
     }
 
     /**
-     * @param profile The player profile that will need data loaded from.
+     * @param profileKey The profile key that will need data loaded from.
      * @param shares  What from this group needs to be loaded.
      */
-    void addReadProfile(CompletableFuture<PlayerProfile> profile, Shares shares) {
-        readProfiles.add(new PersistingProfile(shares, profile));
+    void addReadProfile(ProfileKey profileKey, Shares shares) {
+        readProfiles.add(new PersistingProfile(shares, profileKey));
     }
 
     public List<PersistingProfile> getWriteProfiles() {

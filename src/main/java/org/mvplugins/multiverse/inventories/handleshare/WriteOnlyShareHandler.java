@@ -34,7 +34,7 @@ public final class WriteOnlyShareHandler extends ShareHandler {
         Shares unhandledShares = Sharables.enabledOf();
         for (WorldGroup worldGroup : worldGroups) {
             affectedProfiles.addWriteProfile(
-                    worldGroup.getGroupProfileContainer().getPlayerData(profileType, player),
+                    worldGroup.getGroupProfileContainer().getProfileKey(profileType, player),
                     worldGroup.getApplicableShares()
             );
             unhandledShares.removeAll(worldGroup.getApplicableShares());
@@ -44,7 +44,7 @@ public final class WriteOnlyShareHandler extends ShareHandler {
                 : unhandledShares;
         if (!sharesToWrite.isEmpty()) {
             affectedProfiles.addWriteProfile(
-                    worldProfileContainerStore.getContainer(worldName).getPlayerData(profileType, player),
+                    worldProfileContainerStore.getContainer(worldName).getProfileKey(profileType, player),
                     sharesToWrite
             );
         }

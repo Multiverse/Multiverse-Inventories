@@ -39,16 +39,20 @@ public final class ProfileContainer {
         return profileDataSource.listPlayerProfileNames(getContainerType(), getContainerName());
     }
 
+    public ProfileKey getProfileKey(Player player) {
+        return getProfileKey(ProfileTypes.forPlayer(player), player);
+    }
+
+    public ProfileKey getProfileKey(ProfileType profileType, OfflinePlayer player) {
+        return ProfileKey.create(getContainerType(), getContainerName(), profileType, player);
+    }
+
     public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
         return getPlayerData(ProfileTypes.forPlayer(player), player);
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(ProfileType profileType, OfflinePlayer player) {
-        return profileDataSource.getPlayerProfile(ProfileKey.create(
-                getContainerType(),
-                getContainerName(),
-                profileType,
-                player));
+        return profileDataSource.getPlayerProfile(getProfileKey(profileType, player));
     }
 
     /**

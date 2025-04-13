@@ -48,7 +48,7 @@ final class WorldChangeShareHandler extends ShareHandler {
         } else if (inventoriesConfig.getAlwaysWriteWorldProfile()) {
             // Write to world profile to ensure data is saved incase bypass is removed
             affectedProfiles.addWriteProfile(
-                    worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player),
+                    worldProfileContainerStore.getContainer(fromWorld).getProfileKey(player),
                     (fromWorldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
                             ? Sharables.standard()
                             : Sharables.enabled()
@@ -131,7 +131,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                 Logging.finer("Removing lastLocation from applicableShares as it is not applied for all teleports");
                 applicableShares.remove(Sharables.LAST_LOCATION);
             }
-            affectedProfiles.addReadProfile(worldGroup.getGroupProfileContainer().getPlayerData(player), applicableShares);
+            affectedProfiles.addReadProfile(worldGroup.getGroupProfileContainer().getProfileKey(player), applicableShares);
         }
 
         private void useToWorldForMissingShares() {
@@ -148,7 +148,7 @@ final class WorldChangeShareHandler extends ShareHandler {
             }
             Logging.finer("%s are left unhandled, defaulting to toWorld", unhandledShares);
             affectedProfiles.addReadProfile(
-                    worldProfileContainerStore.getContainer(toWorld).getPlayerData(player),
+                    worldProfileContainerStore.getContainer(toWorld).getProfileKey(player),
                     unhandledShares
             );
         }
@@ -165,7 +165,7 @@ final class WorldChangeShareHandler extends ShareHandler {
                     : Sharables.enabledOf().setSharing(handledShares, false);
             if (!sharesToWrite.isEmpty()) {
                 affectedProfiles.addWriteProfile(
-                        worldProfileContainerStore.getContainer(fromWorld).getPlayerData(player),
+                        worldProfileContainerStore.getContainer(fromWorld).getProfileKey(player),
                         sharesToWrite);
             }
         }
@@ -180,7 +180,7 @@ final class WorldChangeShareHandler extends ShareHandler {
 
         void addWriteProfileForGroup(WorldGroup worldGroup) {
             ProfileContainer container = worldGroup.getGroupProfileContainer();
-            affectedProfiles.addWriteProfile(container.getPlayerData(player), worldGroup.getApplicableShares());
+            affectedProfiles.addWriteProfile(container.getProfileKey(player), worldGroup.getApplicableShares());
         }
     }
 }

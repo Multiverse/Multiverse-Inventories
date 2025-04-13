@@ -3,20 +3,23 @@ package org.mvplugins.multiverse.inventories.handleshare;
 import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.inventories.util.FutureNow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 public final class ShareHandlingUpdater {
 
-    public static void updateProfile(final MultiverseInventories inventories,
-                              final Player player,
-                              final PersistingProfile profile) {
-        new ShareHandlingUpdater(inventories, player, profile).updateProfile();
+    public static CompletableFuture<Void> updateProfile(final MultiverseInventories inventories,
+                                                                 final Player player,
+                                                                 final PersistingProfile profile) {
+        return new ShareHandlingUpdater(inventories, player, profile).updateProfile();
     }
 
     public static void updatePlayer(final MultiverseInventories inventories,
@@ -25,22 +28,22 @@ public final class ShareHandlingUpdater {
         new ShareHandlingUpdater(inventories, player, profile).updatePlayer();
     }
 
-    private final MultiverseInventories inventories;
     private final Player player;
     private final PersistingProfile profile;
+    private final ProfileDataSource profileDataSource;
 
     private ShareHandlingUpdater(MultiverseInventories inventories, Player player, PersistingProfile profile) {
-        this.inventories = inventories;
         this.player = player;
         this.profile = profile;
+        this.profileDataSource = inventories.getServiceLocator().getService(ProfileDataSource.class);
     }
 
-    private void updateProfile() {
+    private CompletableFuture<Void> updateProfile() {
         if (profile.getShares().isEmpty()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        Try.of(() -> profile.getProfile().get(10, TimeUnit.SECONDS))
-                .peek(playerProfile -> {
+        return profileDataSource.getPlayerProfile(profile.getProfileKey())
+                .thenCompose(playerProfile -> {
                     for (Sharable<?> sharable : profile.getShares()) {
                         sharable.getHandler().updateProfile(playerProfile, player);
                     }
@@ -48,14 +51,21 @@ public final class ShareHandlingUpdater {
                             + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
                             + " (" + playerProfile.getProfileType() + ")"
                             + " for player " + playerProfile.getPlayerName());
-                    inventories.getServiceLocator().getService(ProfileDataSource.class).updatePlayerProfile(playerProfile);
+                    return profileDataSource.updatePlayerProfile(playerProfile);
                 })
-                .onFailure(e -> Logging.severe("Error getting playerdata: " + e.getMessage()));
+                .exceptionally(throwable -> {
+                    Logging.severe("Could not persist profile for player: %s. %s",
+                            player.getName(), throwable.getMessage());
+                    return null;
+                });
     }
 
     private void updatePlayer() {
+        if (profile.getShares().isEmpty()) {
+            return;
+        }
         player.closeInventory();
-        Try.of(() -> profile.getProfile().get(10, TimeUnit.SECONDS))
+        Try.of(() -> FutureNow.get(profileDataSource.getPlayerProfile(profile.getProfileKey())))
                 .peek(playerProfile -> {
                     List<Sharable<?>> loaded = new ArrayList<>(profile.getShares().size());
                     List<Sharable<?>> defaulted = new ArrayList<>(profile.getShares().size());

@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.concurrent.CompletableFuture;
@@ -11,15 +12,15 @@ import java.util.concurrent.CompletableFuture;
  */
 public final class PersistingProfile {
     private final Shares shares;
-    private final CompletableFuture<PlayerProfile> profile;
+    private final ProfileKey profileKey;
 
     public PersistingProfile(Shares shares, PlayerProfile profile) {
-        this(shares, CompletableFuture.completedFuture(profile));
+        this(shares, ProfileKey.fromPlayerProfile(profile));
     }
 
-    public PersistingProfile(Shares shares, CompletableFuture<PlayerProfile> profile) {
+    public PersistingProfile(Shares shares, ProfileKey profile) {
         this.shares = shares;
-        this.profile = profile;
+        this.profileKey = profile;
     }
 
     /**
@@ -37,8 +38,8 @@ public final class PersistingProfile {
      *
      * @return The player profile for the world/group that will be saved/loaded for.
      */
-    public CompletableFuture<PlayerProfile> getProfile() {
-        return this.profile;
+    public ProfileKey getProfileKey() {
+        return this.profileKey;
     }
 }
 
