@@ -141,6 +141,7 @@ public class MultiverseInventories extends MultiverseModule {
         }
 
         this.dupingPatch.disable();
+        this.shutdownDependencyInjection();
         Logging.shutdown();
     }
 
