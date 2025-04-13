@@ -25,7 +25,6 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 
 @Service
-
 final class RemoveWorldsCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;
@@ -35,7 +34,7 @@ final class RemoveWorldsCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("removeworlds")
+    @Subcommand("remove-worlds")
     @CommandPermission("multiverse.inventories.removeworlds")
     @CommandCompletion("@worldGroups @worldGroupWorlds")
     @Syntax("<group>, <world[,extra]>")

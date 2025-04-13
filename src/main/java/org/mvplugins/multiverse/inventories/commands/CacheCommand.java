@@ -4,8 +4,6 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import org.bukkit.entity.Player;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Flags;
@@ -14,12 +12,10 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 
 import java.util.Map;
 
 @Service
-
 final class CacheCommand extends InventoriesCommand {
 
     private final ProfileCacheManager ProfileCacheManager;

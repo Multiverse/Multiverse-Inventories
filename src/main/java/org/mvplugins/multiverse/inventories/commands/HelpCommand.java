@@ -13,7 +13,6 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 
 @Service
-
 final class HelpCommand extends InventoriesCommand {
 
     private final MVCommandManager commandManager;

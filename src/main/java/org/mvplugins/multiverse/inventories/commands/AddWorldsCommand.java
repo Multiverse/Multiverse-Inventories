@@ -23,7 +23,6 @@ import java.util.List;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 final class AddWorldsCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;
@@ -33,7 +32,7 @@ final class AddWorldsCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("addworlds")
+    @Subcommand("add-worlds")
     @CommandPermission("multiverse.inventories.addworlds")
     @CommandCompletion("@worldGroups @mvworlds:multiple,scope=both")
     @Syntax("<group> <world[,extra]>")

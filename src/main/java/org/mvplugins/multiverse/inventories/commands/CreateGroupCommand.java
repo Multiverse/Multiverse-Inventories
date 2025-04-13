@@ -24,7 +24,6 @@ import java.util.Arrays;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 final class CreateGroupCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
@@ -33,7 +32,7 @@ final class CreateGroupCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("creategroup")
+    @Subcommand("create-group")
     @CommandPermission("multiverse.inventories.creategroup")
     @CommandCompletion("@empty @mvworlds:multiple,scope=both @shares")
     @Syntax("<name> [share[,extra]] [world[,extra]]")

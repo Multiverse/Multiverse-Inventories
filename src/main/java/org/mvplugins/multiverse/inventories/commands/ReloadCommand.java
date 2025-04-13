@@ -14,7 +14,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
-
 class ReloadCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;

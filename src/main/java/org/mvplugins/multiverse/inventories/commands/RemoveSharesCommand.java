@@ -20,7 +20,6 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 final class RemoveSharesCommand extends InventoriesCommand {
     private final WorldGroupManager worldGroupManager;
 
@@ -29,7 +28,7 @@ final class RemoveSharesCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("removeshares")
+    @Subcommand("remove-shares")
     @CommandPermission("multiverse.inventories.removeshares")
     @CommandCompletion("@worldGroups @shares")
     @Syntax("<group> <share[,extra]>")

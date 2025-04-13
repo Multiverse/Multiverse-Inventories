@@ -21,7 +21,6 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 final class DeleteGroupCommand extends InventoriesCommand {
     private final CommandQueueManager commandQueueManager;
     private final WorldGroupManager worldGroupManager;
@@ -35,7 +34,7 @@ final class DeleteGroupCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("deletegroup")
+    @Subcommand("delete-group")
     @CommandPermission("multiverse.inventories.deletegroup")
     @CommandCompletion("@worldGroups")
     @Syntax("<group>")

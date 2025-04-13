@@ -19,7 +19,6 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 final class AddDisabledSharesCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;
@@ -29,7 +28,7 @@ final class AddDisabledSharesCommand extends InventoriesCommand {
         this.worldGroupManager = worldGroupManager;
     }
 
-    @Subcommand("adddisbledshares")
+    @Subcommand("add-disabled-shares")
     @CommandPermission("multiverse.inventories.adddisabledshares")
     @CommandCompletion("@worldGroups @shares")
     @Syntax("<group> <share[,extra]>")

@@ -19,7 +19,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
-
 class GroupCommand extends InventoriesCommand {
 
     private final MultiverseInventories plugin;

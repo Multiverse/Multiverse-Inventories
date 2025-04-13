@@ -21,7 +21,6 @@ import java.util.List;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 class ListCommand extends InventoriesCommand {
 
     private final WorldGroupManager worldGroupManager;

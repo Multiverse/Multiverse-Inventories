@@ -28,7 +28,6 @@ import java.util.Set;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-
 class InfoCommand extends InventoriesCommand {
 
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
