@@ -9,11 +9,13 @@ import org.mvplugins.multiverse.core.command.flag.ParsedCommandFlags;
 import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.locale.message.Message;
+import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 
@@ -21,7 +23,7 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-final class ClearCommand {
+final class ClearCommand extends InventoriesCommand {
 
     private final CommandQueueManager commandQueueManager;
     private final ProfileDataSource profileDataSource;
@@ -40,6 +42,7 @@ final class ClearCommand {
 
     @Subcommand("bulkedit globalprofile clear")
     @CommandPermission("multiverse.inventories.bulkedit")
+    @CommandCompletion("@players @flags:groupName=" + Flags.NAME)
     @Syntax("<players>")
     void onCommand(
             MVCommandIssuer issuer,
@@ -67,9 +70,11 @@ final class ClearCommand {
 
     @Service
     private static final class Flags extends FlagBuilder {
+        private static final String NAME = "mvinvbulkeditglobalprofileclear";
+
         @Inject
-        private Flags(@NotNull String name, @NotNull CommandFlagsManager flagsManager) {
-            super(name, flagsManager);
+        private Flags(@NotNull CommandFlagsManager flagsManager) {
+            super(NAME, flagsManager);
         }
 
         private final CommandFlag clearAllPlayerprofiles = flag(CommandFlag.builder("--clear-all-playerprofiles")
