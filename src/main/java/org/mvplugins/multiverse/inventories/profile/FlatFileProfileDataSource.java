@@ -315,8 +315,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile) {
         File globalFile = profileFilesLocator.getGlobalFile(globalProfile.getPlayerUUID().toString());
+        boolean didPlayerNameChange = playerNamesMapper.setPlayerName(globalProfile.getPlayerUUID(), globalProfile.getLastKnownName());
         return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile))
-                .thenCompose(ignore -> playerNamesMapper.setPlayerName(globalProfile.getPlayerUUID(), globalProfile.getLastKnownName())
+                .thenCompose(ignore -> didPlayerNameChange
                         ? asyncFileIO.queueFileAction(playerNamesMapper.getFile(), playerNamesMapper::savePlayerNames)
                         : CompletableFuture.completedFuture(null));
     }

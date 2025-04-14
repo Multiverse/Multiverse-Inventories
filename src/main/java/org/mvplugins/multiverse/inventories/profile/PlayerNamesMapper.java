@@ -27,7 +27,6 @@ public final class PlayerNamesMapper {
 
     private static final String FILENAME = "playernames.json";
 
-    private final MultiverseInventories inventories;
     private final Provider<ProfileDataSource> profileDataSourceProvider;
     private final Provider<ProfileCacheManager> profileCacheManagerProvider;
 
@@ -43,7 +42,6 @@ public final class PlayerNamesMapper {
             @NotNull Provider<ProfileDataSource> profileDataSourceProvider,
             @NotNull Provider<ProfileCacheManager> profileCacheManagerProvider
     ) {
-        this.inventories = inventories;
         this.profileDataSourceProvider = profileDataSourceProvider;
         this.profileCacheManagerProvider = profileCacheManagerProvider;
 
@@ -92,30 +90,45 @@ public final class PlayerNamesMapper {
                         .thenAccept(globalProfile -> setPlayerName(uuid, globalProfile.getLastKnownName())))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).thenRun(this::savePlayerNames).join();
+        profileCacheManagerProvider.get().clearAllGlobalProfileCaches();
         Logging.info("Generated player names map.");
     }
 
     boolean setPlayerName(UUID uuid, String name) {
-        Logging.finer("Setting player name mapping for %s to %s", uuid, name);
+        if (playerNamesJson == null) {
+            throw new IllegalStateException("Player names mapper has not been loaded yet.");
+        }
         if (Strings.isNullOrEmpty(name)) {
             return false;
         }
         if (getKey(name).filter(g -> g.getPlayerUUID().equals(uuid)).isDefined()) {
             return false;
         }
+
+        Logging.finer("Setting player name mapping for %s to %s", uuid, name);
         GlobalProfileKey globalProfileKey = GlobalProfileKey.create(uuid, name);
-        playerNamesJson.put(uuid.toString(), name);
+
+        // Handle remove of old playername
+        Object oldName = playerNamesJson.put(uuid.toString(), name);
+        playerNamesMap.remove(String.valueOf(oldName));
+
         playerNamesMap.put(name, globalProfileKey);
         playerUUIDMap.put(uuid, globalProfileKey);
         return true;
     }
 
     void savePlayerNames() {
+        if (playerNamesJson == null) {
+            throw new IllegalStateException("Player names mapper has not been loaded yet.");
+        }
+
+        Logging.finer("Saving player names map...");
         try (FileWriter fileWriter = new FileWriter(playerNamesFile)) {
             fileWriter.write(JSONValue.toJSONString(playerNamesJson));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Logging.finer("Saving player names map... Done!");
     }
 
     File getFile() {
