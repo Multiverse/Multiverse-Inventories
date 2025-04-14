@@ -11,22 +11,20 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey
 import org.mvplugins.multiverse.inventories.util.FutureNow
 import java.nio.file.Path
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class PlayerNameChangeTest : TestWithMockBukkit() {
 
     private lateinit var profileDataSource: ProfileDataSource
+    private lateinit var playerNamesMapper: PlayerNamesMapper
     private lateinit var player: PlayerMock
 
     @BeforeTest
     fun setUp() {
         profileDataSource = serviceLocator.getService(ProfileDataSource::class.java).takeIf { it != null } ?: run {
             throw IllegalStateException("ProfileDataSource is not available as a service") }
+        playerNamesMapper = serviceLocator.getService(PlayerNamesMapper::class.java).takeIf { it != null } ?: run {
+            throw IllegalStateException("PlayerNamesMapper is not available as a service") }
 
         val worldManager = serviceLocator.getActiveService(WorldManager::class.java).takeIf { it != null } ?: run {
             throw IllegalStateException("WorldManager is not available as a service") }
@@ -40,6 +38,7 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertTrue(worldGroupManager.load().isSuccess)
 
         player = server.addPlayer("Benji_0224")
+        assertEquals(GlobalProfileKey.create(player.uniqueId, "Benji_0224"), playerNamesMapper.getKey("Benji_0224").orNull)
     }
 
     @Test
@@ -81,5 +80,9 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
 
         // check player profile
         assertEquals("benthecat10", FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)))?.lastKnownName)
+
+        // check name mapper updated
+        assertEquals(GlobalProfileKey.create(player.uniqueId, "benthecat10"), playerNamesMapper.getKey("benthecat10").orNull)
+        assertNull(playerNamesMapper.getKey("Benji_0224").orNull)
     }
 }

@@ -42,14 +42,15 @@ final class ClearCommand extends InventoriesCommand {
 
     @Subcommand("bulkedit globalprofile clear")
     @CommandPermission("multiverse.inventories.bulkedit")
-    @CommandCompletion("@players @flags:groupName=" + Flags.NAME)
-    @Syntax("<players>")
+    @CommandCompletion("@mvinvplayernames @flags:groupName=" + Flags.NAME)
+    @Syntax("<players> [--clear-all-playerprofiles]")
     void onCommand(
             MVCommandIssuer issuer,
 
             @Syntax("<players>")
             GlobalProfileKey[] globalProfileKeys,
 
+            @Syntax("[--clear-all-playerprofiles]")
             String[] flagArray
     ) {
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);

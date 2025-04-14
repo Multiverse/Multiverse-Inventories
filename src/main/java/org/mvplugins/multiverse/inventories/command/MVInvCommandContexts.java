@@ -4,12 +4,14 @@ import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
+import org.mvplugins.multiverse.core.utils.REPatterns;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandExecutionContext;
 import org.mvplugins.multiverse.external.acf.commands.CommandContexts;
 import org.mvplugins.multiverse.external.acf.commands.InvalidCommandArgument;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.vavr.control.Option;
+import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
@@ -25,10 +27,16 @@ import java.util.Objects;
 public final class MVInvCommandContexts {
 
     private final WorldGroupManager worldGroupManager;
+    private final PlayerNamesMapper playerNamesMapper;
 
     @Inject
-    private MVInvCommandContexts(@NotNull MVCommandManager commandManager, @NotNull WorldGroupManager worldGroupManager) {
+    private MVInvCommandContexts(
+            @NotNull MVCommandManager commandManager,
+            @NotNull WorldGroupManager worldGroupManager,
+            @NotNull PlayerNamesMapper playerNamesMapper
+    ) {
         this.worldGroupManager = worldGroupManager;
+        this.playerNamesMapper = playerNamesMapper;
 
         CommandContexts<BukkitCommandExecutionContext> commandContexts = commandManager.getCommandContexts();
         commandContexts.registerContext(GlobalProfileKey[].class, this::parseGlobalProfileKeys);
@@ -40,15 +48,14 @@ public final class MVInvCommandContexts {
     private GlobalProfileKey[] parseGlobalProfileKeys(BukkitCommandExecutionContext context) {
         String profileStrings = context.popFirstArg();
         if (profileStrings.equals("@all")) {
-            return Arrays.stream(Bukkit.getOfflinePlayers())
-                    .map(GlobalProfileKey::create)
-                    .toArray(GlobalProfileKey[]::new);
+            return playerNamesMapper.getKeys().toArray(GlobalProfileKey[]::new);
         }
 
-        String[] profileNames = profileStrings.split(",");
+        String[] profileNames = REPatterns.COMMA.split(profileStrings);
         return Arrays.stream(profileNames)
-                .map(Bukkit::getOfflinePlayer)
-                .map(GlobalProfileKey::create)
+                .map(playerNamesMapper::getKey)
+                .filter(Option::isDefined)
+                .map(Option::get)
                 .toArray(GlobalProfileKey[]::new);
     }
 
