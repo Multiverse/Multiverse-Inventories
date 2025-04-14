@@ -103,7 +103,7 @@ public class MultiverseInventories extends MultiverseModule {
         Sharables.init(this);
         Perm.register(this);
         ItemStackConverter.init(this);
-        Logging.fine("ItemStackConverter is using byte serialization: " + ItemStackConverter.hasByteSerializeSupport);
+        Logging.fine("ItemStackConverter is using byte serialization: " + ItemStackConverter.hasByteSerializeSupport());
         this.reloadConfig();
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
 

@@ -33,11 +33,9 @@ final class InventorySerializer implements SharableSerializer<ItemStack[]> {
     private Map<String, Object> mapSlots(ItemStack[] itemStacks) {
         Map<String, Object> result = new HashMap<>(itemStacks.length);
         for (int i = 0; i < itemStacks.length; i++) {
-            if (itemStacks[i] != null && itemStacks[i].getType() != Material.AIR) {
-                Object serialize = ItemStackConverter.serialize(itemStacks[i]);
-                if (serialize != null) {
-                    result.put(Integer.toString(i), serialize);
-                }
+            Object serialize = ItemStackConverter.serialize(itemStacks[i]);
+            if (serialize != null) {
+                result.put(Integer.toString(i), serialize);
             }
         }
         return result;

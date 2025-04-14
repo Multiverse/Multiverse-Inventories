@@ -12,7 +12,7 @@ import java.util.Base64;
 
 public final class ItemStackConverter {
 
-    public final static boolean hasByteSerializeSupport;
+    private final static boolean hasByteSerializeSupport;
 
     static {
         hasByteSerializeSupport = Try.run(() -> ItemStack.class.getMethod("deserializeBytes", byte[].class))
@@ -25,6 +25,10 @@ public final class ItemStackConverter {
 
     public static void init(MultiverseInventories plugin) {
         config = plugin.getServiceLocator().getService(InventoriesConfig.class);
+    }
+
+    public static boolean isEmptyItemStack(@Nullable ItemStack itemStack) {
+        return itemStack == null || itemStack.getType() == Material.AIR || itemStack.getAmount() == 0;
     }
 
     @Nullable
@@ -42,16 +46,20 @@ public final class ItemStackConverter {
 
     @Nullable
     public static Object serialize(ItemStack itemStack) {
-        if (config != null && config.getUseByteSerializationForInventoryData() && hasByteSerializeSupport) {
-            if (itemStack.getType() == Material.AIR) {
-                return null;
-            }
-            return Try.of(() -> Base64.getEncoder().encodeToString(itemStack.serializeAsBytes()))
-                    .onFailure(e -> Logging.severe("Could not serialize item stack: %s", e.getMessage()))
-                    .getOrNull();
+        if (isEmptyItemStack(itemStack)) {
+            return null;
         }
-        // let ConfigurationSerialization handle it
-        return itemStack;
+        if (config == null || !config.getUseByteSerializationForInventoryData() || !hasByteSerializeSupport) {
+            // let ConfigurationSerialization handle it
+            return itemStack;
+        }
+        return Try.of(() -> Base64.getEncoder().encodeToString(itemStack.serializeAsBytes()))
+                .onFailure(e -> Logging.severe("Could not byte serialize item stack: %s", e.getMessage()))
+                .getOrNull();
+    }
+
+    public static boolean hasByteSerializeSupport() {
+        return hasByteSerializeSupport;
     }
 
     private ItemStackConverter() {
