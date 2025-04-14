@@ -5,18 +5,23 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandCompletions;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.config.handle.PropertyModifyAction;
+import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.external.acf.commands.BukkitCommandCompletionContext;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
+import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,21 +33,26 @@ public final class MVInvCommandCompletion {
     private final InventoriesConfig inventoriesConfig;
     private final WorldGroupManager worldGroupManager;
     private final DataImportManager dataImportManager;
+    private final PlayerNamesMapper playerNamesMapper;
 
     @Inject
     private MVInvCommandCompletion(
             @NotNull InventoriesConfig inventoriesConfig,
             @NotNull WorldGroupManager worldGroupManager,
             @NotNull DataImportManager dataImportManager,
-            @NotNull MVCommandManager mvCommandManager) {
+            @NotNull MVCommandManager mvCommandManager,
+            @NotNull PlayerNamesMapper playerNamesMapper
+    ) {
         this.inventoriesConfig = inventoriesConfig;
         this.worldGroupManager = worldGroupManager;
         this.dataImportManager = dataImportManager;
+        this.playerNamesMapper = playerNamesMapper;
 
         MVCommandCompletions commandCompletions = mvCommandManager.getCommandCompletions();
         commandCompletions.registerAsyncCompletion("dataimporters", this::suggestDataImporters);
         commandCompletions.registerStaticCompletion("mvinvconfigs", inventoriesConfig.getStringPropertyHandle().getAllPropertyNames());
         commandCompletions.registerAsyncCompletion("mvinvconfigvalues", this::suggestConfigValues);
+        commandCompletions.registerAsyncCompletion("mvinvplayernames", this::suggestPlayerNames);
         commandCompletions.registerAsyncCompletion("sharables", this::suggestSharables);
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
         commandCompletions.registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
@@ -58,6 +68,25 @@ public final class MVInvCommandCompletion {
                 .map(propertyName -> inventoriesConfig.getStringPropertyHandle()
                         .getSuggestedPropertyValue(propertyName, context.getInput(), PropertyModifyAction.SET))
                 .getOrElse(Collections.emptyList());
+    }
+
+    private Collection<String> suggestPlayerNames(BukkitCommandCompletionContext context) {
+        if (Objects.equals(context.getInput(), "@all")) {
+            return Collections.emptyList();
+        }
+        List<String> playerNames = getPlayerNames();
+        if (context.getInput().indexOf(',') == -1) {
+            playerNames.add("@all");
+            return playerNames;
+        }
+        return StringFormatter.addonToCommaSeperated(context.getInput(), playerNames);
+    }
+
+    private List<String> getPlayerNames() {
+        return playerNamesMapper.getKeys()
+                .stream()
+                .map(GlobalProfileKey::getPlayerName)
+                .collect(Collectors.toList());
     }
 
     private Collection<String> suggestSharables(BukkitCommandCompletionContext context) {

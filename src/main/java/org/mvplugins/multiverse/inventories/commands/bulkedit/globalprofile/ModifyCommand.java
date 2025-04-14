@@ -6,6 +6,7 @@ import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.config.handle.PropertyModifyAction;
 import org.mvplugins.multiverse.core.locale.message.Message;
+import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
@@ -32,6 +33,7 @@ final class ModifyCommand extends InventoriesCommand {
 
     @Subcommand("bulkedit globalprofile modify")
     @CommandPermission("multiverse.inventories.bulkedit")
+    @CommandCompletion("load-on-login|last-world @empty @mvinvplayernames")
     @Syntax("<property> <value> <players>")
     void onCommand(
             MVCommandIssuer issuer,
