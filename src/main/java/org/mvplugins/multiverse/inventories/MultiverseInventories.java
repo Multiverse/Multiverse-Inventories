@@ -3,10 +3,8 @@ package org.mvplugins.multiverse.inventories;
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
-import org.mvplugins.multiverse.core.inject.PluginServiceLocatorFactory;
 import org.mvplugins.multiverse.core.module.MultiverseModule;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandConditions;
@@ -21,6 +19,7 @@ import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
+import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
@@ -31,8 +30,6 @@ import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.ItemStackConverter;
 import org.mvplugins.multiverse.inventories.util.Perm;
 import org.bukkit.Bukkit;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
@@ -60,6 +57,8 @@ public class MultiverseInventories extends MultiverseModule {
     private Provider<MVEventsListener> mvEventsListener;
     @Inject
     private Provider<WorldGroupManager> worldGroupManager;
+    @Inject
+    private Provider<PlayerNamesMapper> playerNamesMapperProvider;
     @Inject
     private Provider<ProfileDataSource> profileDataSource;
     @Inject
@@ -119,6 +118,7 @@ public class MultiverseInventories extends MultiverseModule {
         // Init other extensions
         this.hookLuckPerms();
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
+        this.playerNamesMapperProvider.get().loadMap();
 
         Logging.config("Version %s (API v%s) Enabled - By %s",
                 this.getDescription().getVersion(), getVersionAsNumber(), StringFormatter.joinAnd(this.getDescription().getAuthors()));

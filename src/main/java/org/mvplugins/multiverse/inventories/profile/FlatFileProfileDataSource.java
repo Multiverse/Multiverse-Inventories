@@ -34,16 +34,19 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     private final AsyncFileIO asyncFileIO;
     private final ProfileFilesLocator profileFilesLocator;
     private final ProfileCacheManager profileCacheManager;
+    private final PlayerNamesMapper playerNamesMapper;
 
     @Inject
     FlatFileProfileDataSource(
             @NotNull AsyncFileIO asyncFileIO,
             @NotNull ProfileFilesLocator profileFilesLocator,
-            @NotNull ProfileCacheManager profileCacheManager
+            @NotNull ProfileCacheManager profileCacheManager,
+            @NotNull PlayerNamesMapper playerNamesMapper
     ) {
         this.asyncFileIO = asyncFileIO;
         this.profileFilesLocator = profileFilesLocator;
         this.profileCacheManager = profileCacheManager;
+        this.playerNamesMapper = playerNamesMapper;
     }
 
     private FileConfiguration loadFileToJsonConfiguration(File file) {
@@ -263,7 +266,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 globalProfile.setLastKnownName(key.getPlayerName());
                 return CompletableFuture.completedFuture(globalProfile);
             }
-            return asyncFileIO.queueFileCallable(globalFile, () -> getGlobalProfileFromDisk(key.getPlayerUUID(), key.getPlayerName(), globalFile));
+            return asyncFileIO.queueFileCallable(globalFile, () -> getGlobalProfileFromDisk(key.getPlayerUUID(), globalFile));
         });
     }
 
@@ -289,10 +292,8 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         }
     }
 
-    private GlobalProfile getGlobalProfileFromDisk(UUID playerUUID, String playerName, File globalFile) {
-        GlobalProfile globalProfile = new GlobalProfile(playerUUID, globalFile.toPath());
-        globalProfile.setLastKnownName(playerName);
-        return globalProfile;
+    private GlobalProfile getGlobalProfileFromDisk(UUID playerUUID, File globalFile) {
+        return new GlobalProfile(playerUUID, globalFile.toPath());
     }
 
     /**
@@ -314,7 +315,10 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile) {
         File globalFile = profileFilesLocator.getGlobalFile(globalProfile.getPlayerUUID().toString());
-        return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile));
+        return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile))
+                .thenCompose(ignore -> playerNamesMapper.setPlayerName(globalProfile.getPlayerUUID(), globalProfile.getLastKnownName())
+                        ? asyncFileIO.queueFileAction(playerNamesMapper.getFile(), playerNamesMapper::savePlayerNames)
+                        : CompletableFuture.completedFuture(null));
     }
 
     private void processGlobalProfileWrite(GlobalProfile globalProfile) {

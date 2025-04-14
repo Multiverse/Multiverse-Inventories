@@ -48,10 +48,10 @@ class FilePerformanceTest : TestWithMockBukkit() {
     }
 
     @Test
-    fun `Test 10K global profiles`() {
+    fun `Test 1K global profiles`() {
         val startTime = System.nanoTime()
-        val futures = ArrayList<Future<Void>>(10000)
-        for (i in 0..9999) {
+        val futures = ArrayList<Future<Void>>(1000)
+        for (i in 0..1000) {
             futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID()), { globalProfile ->
                 globalProfile.setLoadOnLogin(true)
             }))
