@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer;
 import java.util.Objects;
 import java.util.UUID;
 
-public class GlobalProfileKey {
+public final class GlobalProfileKey {
 
     public static GlobalProfileKey create(UUID playerUUID) {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);

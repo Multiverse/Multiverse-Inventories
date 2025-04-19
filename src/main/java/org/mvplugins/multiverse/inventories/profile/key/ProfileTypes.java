@@ -1,12 +1,17 @@
 package org.mvplugins.multiverse.inventories.profile.key;
 
+import com.google.common.collect.Sets;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
+import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Static class for profile type lookup and protected registration.
@@ -24,10 +29,6 @@ public final class ProfileTypes {
         ProfileType type = ProfileType.createProfileType(name);
         types.add(type);
         return type;
-    }
-
-    public static List<ProfileType> getTypes() {
-        return types;
     }
 
     /**
@@ -50,6 +51,17 @@ public final class ProfileTypes {
      */
     public static final ProfileType SPECTATOR = createProfileType("SPECTATOR");
 
+    public static List<ProfileType> getTypes() {
+        return types;
+    }
+
+    public static List<ProfileType> getApplicableTypes() {
+        if (config != null && config.getEnableGamemodeShareHandling()) {
+            return types;
+        }
+        return List.of(getDefault());
+    }
+
     public static ProfileType getDefault() {
         return SURVIVAL;
     }
@@ -59,6 +71,12 @@ public final class ProfileTypes {
             return forGameMode(player.getGameMode());
         }
         return getDefault();
+    }
+
+    public static Option<ProfileType> forName(String name) {
+        return Option.ofOptional(types.stream()
+                .filter(type -> type.getName().equalsIgnoreCase(name))
+                .findFirst());
     }
 
     /**
@@ -77,7 +95,11 @@ public final class ProfileTypes {
         };
     }
 
+    public static boolean isAll(ProfileType[] otherTypes) {
+        return Sets.intersection(Set.of(otherTypes), Set.of(types)).size() == types.size();
+    }
+
     private ProfileTypes() {
-        throw new AssertionError();
+        throw new IllegalStateException();
     }
 }

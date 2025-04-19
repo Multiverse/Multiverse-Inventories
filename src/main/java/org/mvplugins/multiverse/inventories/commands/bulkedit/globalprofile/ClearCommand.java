@@ -61,6 +61,7 @@ final class ClearCommand extends InventoriesCommand {
     }
 
     private void doClear(MVCommandIssuer issuer, GlobalProfileKey[] globalProfileKeys, boolean clearPlayerProfile) {
+        //TODO: Check lastWorld and online
         CompletableFuture[] futures = Arrays.stream(globalProfileKeys)
                 .map(globalProfileKey -> profileDataSource.deleteGlobalProfile(globalProfileKey, clearPlayerProfile))
                 .toArray(CompletableFuture[]::new);

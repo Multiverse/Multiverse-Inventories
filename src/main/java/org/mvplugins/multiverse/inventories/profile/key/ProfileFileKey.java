@@ -9,7 +9,7 @@ import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 
 import java.util.UUID;
 
-public class ProfileFileKey {
+public sealed class ProfileFileKey permits ProfileKey {
 
     public static ProfileFileKey create(
             ContainerType containerType,
