@@ -1,14 +1,10 @@
 package org.mvplugins.multiverse.inventories.commands.bulkedit.playerprofile;
 
-import com.dumptruckman.minecraft.util.Logging;
-import org.checkerframework.checker.units.qual.N;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.locale.message.Message;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -17,15 +13,12 @@ import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -71,7 +64,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
         AtomicLong profileCounter = new AtomicLong(0);
         CompletableFuture.allOf(profileDataSource.listGlobalProfileUUIDs()
                         .stream()
-                        .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(playerUUID, ""))
+                        .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.of(playerUUID, ""))
                                 .thenCompose(profile -> run(profile, profileCounter))
                                 .exceptionally(throwable -> {
                                     issuer.sendMessage("Error updating player " + playerUUID + ": " + throwable.getMessage());
@@ -89,7 +82,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
         return CompletableFuture.allOf(Arrays.stream(ContainerType.values())
                 .flatMap(containerType -> profileDataSource.listContainerDataNames(containerType).stream()
                         .flatMap(dataName -> ProfileTypes.getTypes().stream()
-                                .map(profileType -> profileDataSource.getPlayerProfile(ProfileKey.create(
+                                .map(profileType -> profileDataSource.getPlayerProfile(ProfileKey.of(
                                         containerType,
                                         dataName,
                                         profileType,

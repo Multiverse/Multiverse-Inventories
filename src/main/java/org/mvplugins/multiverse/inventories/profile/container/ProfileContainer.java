@@ -44,7 +44,7 @@ public final class ProfileContainer {
     }
 
     public ProfileKey getProfileKey(ProfileType profileType, OfflinePlayer player) {
-        return ProfileKey.create(getContainerType(), getContainerName(), profileType, player);
+        return ProfileKey.of(getContainerType(), getContainerName(), profileType, player);
     }
 
     public CompletableFuture<PlayerProfile> getPlayerData(Player player) {
@@ -75,7 +75,7 @@ public final class ProfileContainer {
      * @return The profile of the given type for the given player.
      */
     public PlayerProfile getPlayerProfileNow(ProfileType profileType, OfflinePlayer player) {
-        return FutureNow.get(profileDataSource.getPlayerProfile(ProfileKey.create(
+        return FutureNow.get(profileDataSource.getPlayerProfile(ProfileKey.of(
                 getContainerType(),
                 getContainerName(),
                 profileType,
@@ -89,7 +89,7 @@ public final class ProfileContainer {
      * @return
      */
     public CompletableFuture<Void> deletePlayerFile(OfflinePlayer player) {
-        return profileDataSource.deletePlayerFile(ProfileFileKey.create(type, name, player));
+        return profileDataSource.deletePlayerFile(ProfileFileKey.of(type, name, player));
     }
 
     /**
@@ -100,7 +100,7 @@ public final class ProfileContainer {
      * @return
      */
     public CompletableFuture<Void> deletePlayerProfile(ProfileType profileType, OfflinePlayer player) {
-        return profileDataSource.deletePlayerProfile(ProfileKey.create(type, name, profileType, player));
+        return profileDataSource.deletePlayerProfile(ProfileKey.of(type, name, profileType, player));
     }
 
     /**

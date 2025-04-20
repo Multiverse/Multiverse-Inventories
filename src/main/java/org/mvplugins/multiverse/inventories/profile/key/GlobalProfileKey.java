@@ -5,17 +5,29 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
+import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public sealed class GlobalProfileKey permits ProfileFileKey {
 
-    public static GlobalProfileKey create(OfflinePlayer offlinePlayer) {
-        return create(offlinePlayer.getUniqueId(), offlinePlayer.getName());
+    /**
+     * Gets a GlobalProfileKey from a playerUUID. NOTE: Player name may be empty if player has never logged in before.
+     *
+     * @param playerUUID The player's UUID
+     * @return A GlobalProfileKey
+     */
+    public static GlobalProfileKey of(UUID playerUUID) {
+        return PlayerNamesMapper.getInstance().getKey(playerUUID)
+                .getOrElse(() -> new GlobalProfileKey(playerUUID, ""));
     }
 
-    public static GlobalProfileKey create(UUID playerUUID, String playerName) {
+    public static GlobalProfileKey of(OfflinePlayer offlinePlayer) {
+        return of(offlinePlayer.getUniqueId(), offlinePlayer.getName());
+    }
+
+    public static GlobalProfileKey of(UUID playerUUID, String playerName) {
         return new GlobalProfileKey(playerUUID, playerName);
     }
 

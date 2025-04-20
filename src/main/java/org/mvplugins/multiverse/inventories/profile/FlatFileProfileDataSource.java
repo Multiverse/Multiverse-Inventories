@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.bukkit.configuration.json.JsonConfiguration;
 import com.dumptruckman.minecraft.util.Logging;
+import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.exceptions.MultiverseException;
@@ -20,7 +21,6 @@ import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +80,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     @Override
     public CompletableFuture<PlayerProfile> getPlayerProfile(ProfileKey profileKey) {
         try {
+            if (Strings.isNullOrEmpty(profileKey.getPlayerName())) {
+                return CompletableFuture.failedFuture(new IllegalArgumentException("Player name cannot be null or empty. " + profileKey));
+            }
             return profileCacheManager.getOrLoadPlayerProfile(profileKey, (key, executor) -> {
                 File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
                 if (!playerFile.exists()) {
@@ -176,6 +179,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
      */
     @Override
     public CompletableFuture<Void> deletePlayerProfile(ProfileKey profileKey) {
+        if (Strings.isNullOrEmpty(profileKey.getPlayerName())) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("Player name cannot be null or empty. " + profileKey));
+        }
         File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
         profileCacheManager.getCachedPlayerProfile(profileKey).peek(profile -> profile.getData().clear());
         return asyncFileIO.queueFileAction(playerFile, () ->
@@ -184,6 +190,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     @Override
     public CompletableFuture<Void> deletePlayerProfiles(ProfileFileKey profileKey, ProfileType[] profileTypes) {
+        if (Strings.isNullOrEmpty(profileKey.getPlayerName())) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("Player name cannot be null or empty. " + profileKey));
+        }
         if (ProfileTypes.isAll(profileTypes)) {
             Logging.finer("Deleting profile: " + profileKey + " for all profile-types");
             return deletePlayerFile(profileKey);
@@ -338,7 +347,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         boolean didPlayerNameChange = playerNamesMapper.setPlayerName(globalProfile.getPlayerUUID(), globalProfile.getLastKnownName());
         return asyncFileIO.queueFileAction(globalFile, () -> processGlobalProfileWrite(globalProfile))
                 .thenCompose(ignore -> didPlayerNameChange
-                        ? asyncFileIO.queueFileAction(playerNamesMapper.getFile(), playerNamesMapper::savePlayerNames)
+                        ? playerNamesMapper.savePlayerNames()
                         : CompletableFuture.completedFuture(null));
     }
 
@@ -387,7 +396,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return CompletableFuture.allOf(Arrays.stream(ContainerType.values())
                 .flatMap(containerType -> listContainerDataNames(containerType)
                         .stream()
-                        .map(containerName -> deletePlayerFile(ProfileFileKey.create(
+                        .map(containerName -> deletePlayerFile(ProfileFileKey.of(
                                 containerType,
                                 containerName,
                                 playerUUID,

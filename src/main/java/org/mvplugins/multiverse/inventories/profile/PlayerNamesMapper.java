@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,8 +26,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public final class PlayerNamesMapper {
 
+    private static PlayerNamesMapper instance;
+
+    public static PlayerNamesMapper getInstance() {
+        return Objects.requireNonNull(instance);
+    }
+
     private static final String FILENAME = "playernames.json";
 
+    private final AsyncFileIO asyncFileIO;
     private final Provider<ProfileDataSource> profileDataSourceProvider;
     private final Provider<ProfileCacheManager> profileCacheManagerProvider;
 
@@ -37,17 +45,21 @@ public final class PlayerNamesMapper {
     private Map<String, Object> playerNamesJson;
 
     @Inject
-    PlayerNamesMapper(
+    private PlayerNamesMapper(
             @NotNull MultiverseInventories inventories,
+            @NotNull AsyncFileIO asyncFileIO,
             @NotNull Provider<ProfileDataSource> profileDataSourceProvider,
             @NotNull Provider<ProfileCacheManager> profileCacheManagerProvider
     ) {
+        this.asyncFileIO = asyncFileIO;
         this.profileDataSourceProvider = profileDataSourceProvider;
         this.profileCacheManagerProvider = profileCacheManagerProvider;
 
         this.playerNamesFile = new File(inventories.getDataFolder(), FILENAME);
         this.playerNamesMap = new ConcurrentHashMap<>();
         this.playerUUIDMap = new ConcurrentHashMap<>();
+
+        instance = this;
     }
 
     public void loadMap() {
@@ -71,7 +83,7 @@ public final class PlayerNamesMapper {
             playerNamesJson.forEach((String uuid, Object name) -> {
                 UUID playerUUID = UUID.fromString(uuid);
                 String playerName = String.valueOf(name);
-                GlobalProfileKey globalProfileKey = GlobalProfileKey.create(playerUUID, playerName);
+                GlobalProfileKey globalProfileKey = GlobalProfileKey.of(playerUUID, playerName);
                 playerNamesMap.put(playerName, globalProfileKey);
                 playerUUIDMap.put(playerUUID, globalProfileKey);
             });
@@ -86,10 +98,10 @@ public final class PlayerNamesMapper {
 
         ProfileDataSource profileDataSource = profileDataSourceProvider.get();
         CompletableFuture[] futures = profileDataSource.listGlobalProfileUUIDs().stream()
-                .map(uuid -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(uuid, ""))
+                .map(uuid -> profileDataSource.getGlobalProfile(GlobalProfileKey.of(uuid, ""))
                         .thenAccept(globalProfile -> setPlayerName(uuid, globalProfile.getLastKnownName())))
                 .toArray(CompletableFuture[]::new);
-        CompletableFuture.allOf(futures).thenRun(this::savePlayerNames).join();
+        CompletableFuture.allOf(futures).thenCompose(ignore -> savePlayerNames()).join();
         profileCacheManagerProvider.get().clearAllGlobalProfileCaches();
         Logging.info("Generated player names map.");
     }
@@ -106,7 +118,7 @@ public final class PlayerNamesMapper {
         }
 
         Logging.finer("Setting player name mapping for %s to %s", uuid, name);
-        GlobalProfileKey globalProfileKey = GlobalProfileKey.create(uuid, name);
+        GlobalProfileKey globalProfileKey = GlobalProfileKey.of(uuid, name);
 
         // Handle remove of old playername
         Object oldName = playerNamesJson.put(uuid.toString(), name);
@@ -117,22 +129,20 @@ public final class PlayerNamesMapper {
         return true;
     }
 
-    void savePlayerNames() {
+    CompletableFuture<Void> savePlayerNames() {
         if (playerNamesJson == null) {
             throw new IllegalStateException("Player names mapper has not been loaded yet.");
         }
-
-        Logging.finer("Saving player names map...");
-        try (FileWriter fileWriter = new FileWriter(playerNamesFile)) {
-            fileWriter.write(JSONValue.toJSONString(playerNamesJson));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Logging.finer("Saving player names map... Done!");
-    }
-
-    File getFile() {
-        return playerNamesFile;
+        return asyncFileIO.queueFileAction(playerNamesFile, () -> {
+            Logging.finer("Saving player names map...");
+            try (FileWriter fileWriter = new FileWriter(playerNamesFile)) {
+                fileWriter.write(JSONValue.toJSONString(playerNamesJson));
+                Logging.finer("Saving player names map... Done!");
+            } catch (Exception e) {
+                Logging.severe("Could not save player names map.");
+                e.printStackTrace();
+            }
+        });
     }
 
     public Option<GlobalProfileKey> getKey(String playerName) {

@@ -91,9 +91,9 @@ public final class ShareHandleListener implements Listener {
         long startTime = System.nanoTime();
         List<CompletableFuture<PlayerProfile>> profileFutures = new ArrayList<>();
         config.getPreloadDataOnJoinWorlds().forEach(worldName -> profileFutures.add(profileDataSource.getPlayerProfile(
-                ProfileKey.create(ContainerType.WORLD, worldName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
+                ProfileKey.of(ContainerType.WORLD, worldName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
         config.getPreloadDataOnJoinGroups().forEach(groupName -> profileFutures.add(profileDataSource.getPlayerProfile(
-                ProfileKey.create(ContainerType.GROUP, groupName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
+                ProfileKey.of(ContainerType.GROUP, groupName, ProfileTypes.SURVIVAL, event.getUniqueId(), event.getName()))));
         Try.run(() -> CompletableFuture.allOf(profileFutures.toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS))
                 .onSuccess(ignore -> Logging.finer("Preloaded data for Player{name:'%s', uuid:'%s'}. Time taken: %4.4f ms",
                         event.getName(), event.getUniqueId(), (System.nanoTime() - startTime) / 1000000.0))
@@ -111,7 +111,7 @@ public final class ShareHandleListener implements Listener {
         // Just in case AsyncPlayerPreLoginEvent was still the old name
         verifyCorrectPlayerName(player.getUniqueId(), player.getName());
 
-        final GlobalProfile globalProfile = FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)));
+        final GlobalProfile globalProfile = FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.of(player)));
         if (globalProfile.shouldLoadOnLogin()) {
             new ReadOnlyShareHandler(inventories, player).handleSharing();
         }
@@ -121,7 +121,7 @@ public final class ShareHandleListener implements Listener {
     }
 
     private void verifyCorrectPlayerName(UUID uuid, String name) {
-        FutureNow.get(profileDataSource.getExistingGlobalProfile(GlobalProfileKey.create(uuid, name))).peek(globalProfile -> {
+        FutureNow.get(profileDataSource.getExistingGlobalProfile(GlobalProfileKey.of(uuid, name))).peek(globalProfile -> {
             if (globalProfile.getLastKnownName().equals(name)) {
                 return;
             }
@@ -151,7 +151,7 @@ public final class ShareHandleListener implements Listener {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
 
-        CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(GlobalProfileKey.create(player));
+        CompletableFuture<GlobalProfile> globalProfile = profileDataSource.getGlobalProfile(GlobalProfileKey.of(player));
         globalProfile.thenAccept(p -> p.setLastWorld(world));
 
         // Write last location as its possible for players to join at a different world
@@ -215,7 +215,7 @@ public final class ShareHandleListener implements Listener {
 
         new WorldChangeShareHandler(this.inventories, player, fromWorld.getName(), toWorld.getName()).handleSharing();
         profileDataSource.modifyGlobalProfile(
-                GlobalProfileKey.create(player), profile -> profile.setLastWorld(toWorld.getName()));
+                GlobalProfileKey.of(player), profile -> profile.setLastWorld(toWorld.getName()));
     }
 
     /**
@@ -280,7 +280,7 @@ public final class ShareHandleListener implements Listener {
                 () -> verifyCorrectWorld(
                         player,
                         player.getWorld().getName(),
-                        FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)))),
+                        FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.of(player)))),
                 2L);
     }
 

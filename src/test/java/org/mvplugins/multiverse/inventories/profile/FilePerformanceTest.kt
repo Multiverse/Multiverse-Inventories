@@ -52,7 +52,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         val futures = ArrayList<Future<Void>>(1000)
         for (i in 0..1000) {
-            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID(), ""), { globalProfile ->
+            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.of(UUID.randomUUID(), ""), { globalProfile ->
                 globalProfile.setLoadOnLogin(true)
             }))
         }
@@ -71,7 +71,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
+                    ProfileKey.of(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 playerProfile.set(Sharables.HEALTH, 5.0)
                 playerProfile.set(Sharables.OFF_HAND, ItemStack(Material.STONE_BRICKS, 10))
                 playerProfile.set(Sharables.INVENTORY, arrayOf(
@@ -101,7 +101,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 futures2.add(profileDataSource.getPlayerProfile(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
+                    ProfileKey.of(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
             }
         }
         for (future in futures2) {
@@ -117,9 +117,9 @@ class FilePerformanceTest : TestWithMockBukkit() {
             val player = server.getPlayer(i)
             for (gameMode in GameMode.entries) {
                 futures3.add(profileDataSource.deletePlayerProfile(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
+                    ProfileKey.of(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 val playerProfile = FutureNow.get(profileDataSource.getPlayerProfile(
-                    ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
+                    ProfileKey.of(ContainerType.WORLD, "world", ProfileTypes.forGameMode(gameMode), player.uniqueId)))
                 assertNull(playerProfile.get(Sharables.HEALTH))
                 assertNull(playerProfile.get(Sharables.OFF_HAND))
             }

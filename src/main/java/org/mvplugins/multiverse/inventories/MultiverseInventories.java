@@ -139,7 +139,7 @@ public class MultiverseInventories extends MultiverseModule {
             new WriteOnlyShareHandler(this, player).handleSharing();
             if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
                 profileDataSource.get().modifyGlobalProfile(
-                        GlobalProfileKey.create(player), profile -> profile.setLoadOnLogin(true));
+                        GlobalProfileKey.of(player), profile -> profile.setLoadOnLogin(true));
             }
         }
 

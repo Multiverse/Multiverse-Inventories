@@ -22,7 +22,7 @@ class ProfileDataSourceTest : TestWithMockBukkit() {
     fun `getPlayerData called twice`() {
         server.setPlayers(1)
         writeResourceToConfigFile("/playerdata.json", "worlds/world/Player0.json")
-        val key = ProfileKey.create(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, server.getPlayer("Player0"))
+        val key = ProfileKey.of(ContainerType.WORLD, "world", ProfileTypes.SURVIVAL, server.getPlayer("Player0"))
         profileDataSource.getPlayerProfile(key).thenAccept { profile -> Logging.info(profile.toString()) }
         profileDataSource.getPlayerProfile(key).thenAccept { profile -> Logging.info(profile.toString()) }
         profileDataSource.getPlayerProfile(key).thenAccept { profile -> Logging.info(profile.toString()) }

@@ -3,7 +3,6 @@ package org.mvplugins.multiverse.inventories.profile.key;
 import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.bukkit.Bukkit;
 import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 
@@ -11,39 +10,47 @@ import java.util.UUID;
 
 public final class ProfileKey extends ProfileFileKey {
 
-    public static ProfileKey create(
-            ContainerType containerType,
-            String dataName,
-            ProfileType profileType,
-            UUID playerUUID,
-            String playerName) {
-        return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
-    }
-
-    public static ProfileKey create(
-            ContainerType containerType,
-            String dataName,
-            ProfileType profileType,
-            OfflinePlayer offlinePlayer) {
-        return new ProfileKey(containerType, dataName, profileType, offlinePlayer.getUniqueId(), offlinePlayer.getName());
-    }
-
-    public static ProfileKey create(
-            ContainerType containerType,
-            String dataName,
-            ProfileType profileType,
-            UUID playerUUID) {
-        return new ProfileKey(containerType, dataName, profileType, playerUUID, Bukkit.getOfflinePlayer(playerUUID).getName());
-    }
-
     public static ProfileKey fromPlayerProfile(PlayerProfile profile) {
-        return new ProfileKey(
+        return of(
                 profile.getContainerType(),
                 profile.getContainerName(),
                 profile.getProfileType(),
                 profile.getPlayerUUID(),
                 profile.getPlayerName()
         );
+    }
+
+    public static ProfileKey of(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            UUID playerUUID) {
+        return of(containerType, dataName, profileType, GlobalProfileKey.of(playerUUID));
+    }
+
+    public static ProfileKey of(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            GlobalProfileKey globalProfileKey) {
+        return of(containerType, dataName, profileType, globalProfileKey.getPlayerUUID(), globalProfileKey.getPlayerName());
+    }
+
+    public static ProfileKey of(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            OfflinePlayer offlinePlayer) {
+        return of(containerType, dataName, profileType, offlinePlayer.getUniqueId(), offlinePlayer.getName());
+    }
+
+    public static ProfileKey of(
+            ContainerType containerType,
+            String dataName,
+            ProfileType profileType,
+            UUID playerUUID,
+            String playerName) {
+        return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
     }
 
     private final ProfileType profileType;

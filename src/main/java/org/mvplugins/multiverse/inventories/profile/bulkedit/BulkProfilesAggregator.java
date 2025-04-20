@@ -2,7 +2,6 @@ package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import com.google.common.collect.Sets;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
@@ -39,7 +38,7 @@ public final class BulkProfilesAggregator {
 
         for (GlobalProfileKey globalProfileKey : payload.globalProfileKeys()) {
             for (ContainerKey containerKey : containerKeys) {
-                profileFileKeys.add(ProfileFileKey.create(
+                profileFileKeys.add(ProfileFileKey.of(
                         containerKey.getContainerType(),
                         containerKey.getDataName(),
                         globalProfileKey.getPlayerUUID(),
@@ -60,7 +59,7 @@ public final class BulkProfilesAggregator {
         for (GlobalProfileKey globalProfileKey : payload.globalProfileKeys()) {
             for (ContainerKey containerKey : containerKeys) {
                 for (ProfileType profileType : payload.profileTypes()) {
-                    profileKeys.add(ProfileKey.create(
+                    profileKeys.add(ProfileKey.of(
                             containerKey.getContainerType(),
                             containerKey.getDataName(),
                             profileType,

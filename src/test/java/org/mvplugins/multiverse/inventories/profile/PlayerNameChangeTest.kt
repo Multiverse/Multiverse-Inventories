@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories.profile
 
-import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.mockbukkit.mockbukkit.entity.PlayerMock
@@ -38,7 +37,7 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertTrue(worldGroupManager.load().isSuccess)
 
         player = server.addPlayer("Benji_0224")
-        assertEquals(GlobalProfileKey.create(player.uniqueId, "Benji_0224"), playerNamesMapper.getKey("Benji_0224").orNull)
+        assertEquals(GlobalProfileKey.of(player.uniqueId, "Benji_0224"), playerNamesMapper.getKey("Benji_0224").orNull)
     }
 
     @Test
@@ -79,10 +78,10 @@ class PlayerNameChangeTest : TestWithMockBukkit() {
         assertFalse(Path.of(multiverseInventories.dataFolder.absolutePath, "groups", "test", "Benji_0224.json").toFile().exists())
 
         // check player profile
-        assertEquals("benthecat10", FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.create(player)))?.lastKnownName)
+        assertEquals("benthecat10", FutureNow.get(profileDataSource.getGlobalProfile(GlobalProfileKey.of(player)))?.lastKnownName)
 
         // check name mapper updated
-        assertEquals(GlobalProfileKey.create(player.uniqueId, "benthecat10"), playerNamesMapper.getKey("benthecat10").orNull)
+        assertEquals(GlobalProfileKey.of(player.uniqueId, "benthecat10"), playerNamesMapper.getKey("benthecat10").orNull)
         assertNull(playerNamesMapper.getKey("Benji_0224").orNull)
     }
 }

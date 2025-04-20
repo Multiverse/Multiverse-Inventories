@@ -1,7 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile.key;
 
 import com.google.common.base.Objects;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,28 +10,35 @@ import java.util.UUID;
 
 public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
 
-    public static ProfileFileKey create(
-            ContainerType containerType,
-            String dataName,
-            UUID playerUUID,
-            String playerName) {
-        return new ProfileFileKey(containerType, dataName, playerUUID, playerName);
-    }
-
-    public static ProfileFileKey create(
-            ContainerType containerType,
-            String dataName,
-            OfflinePlayer offlinePlayer) {
-        return new ProfileFileKey(containerType, dataName, offlinePlayer.getUniqueId(), offlinePlayer.getName());
-    }
-
     public static ProfileFileKey fromPlayerProfile(PlayerProfile profile) {
-        return new ProfileFileKey(
+        return of(
                 profile.getContainerType(),
                 profile.getContainerName(),
                 profile.getPlayerUUID(),
                 profile.getPlayerName()
         );
+    }
+
+    public static ProfileFileKey of(
+            ContainerType containerType,
+            String dataName,
+            GlobalProfileKey globalProfileKey) {
+        return of(containerType, dataName, globalProfileKey.getPlayerUUID(), globalProfileKey.getPlayerName());
+    }
+
+    public static ProfileFileKey of(
+            ContainerType containerType,
+            String dataName,
+            OfflinePlayer offlinePlayer) {
+        return of(containerType, dataName, offlinePlayer.getUniqueId(), offlinePlayer.getName());
+    }
+
+    public static ProfileFileKey of(
+            ContainerType containerType,
+            String dataName,
+            UUID playerUUID,
+            String playerName) {
+        return new ProfileFileKey(containerType, dataName, playerUUID, playerName);
     }
 
     protected final ContainerType containerType;
@@ -55,7 +61,7 @@ public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
     }
 
     public ProfileKey forProfileType(@Nullable ProfileType profileType) {
-        return ProfileKey.create(containerType, dataName, profileType, playerUUID, playerName);
+        return ProfileKey.of(containerType, dataName, profileType, playerUUID, playerName);
     }
 
     public ProfileFileKey forContainerType(@NotNull ContainerType containerType) {
