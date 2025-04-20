@@ -8,6 +8,7 @@ import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.module.MultiverseModule;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandConditions;
+import org.mvplugins.multiverse.inventories.command.MVInvCommandPermissions;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandCompletion;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandContexts;
@@ -73,6 +74,8 @@ public class MultiverseInventories extends MultiverseModule {
     private Provider<MVInvCommandContexts> mvInvCommandContexts;
     @Inject
     private Provider<MVInvCommandConditions> mvInvCommandConditions;
+    @Inject
+    private Provider<MVInvCommandPermissions> mvInvCommandPermissions;
 
     private InventoriesDupingPatch dupingPatch;
     private boolean usingSpawnChangeEvent = false;
@@ -167,6 +170,7 @@ public class MultiverseInventories extends MultiverseModule {
             mvInvCommandCompletion.get();
             mvInvCommandContexts.get();
             mvInvCommandConditions.get();
+            mvInvCommandPermissions.get();
         }).onFailure(e -> {
             Logging.warning("Failed to register command completers: %s", e.getMessage());
         });

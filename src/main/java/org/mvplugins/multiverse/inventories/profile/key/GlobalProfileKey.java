@@ -2,16 +2,14 @@ package org.mvplugins.multiverse.inventories.profile.key;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class GlobalProfileKey {
-
-    public static GlobalProfileKey create(UUID playerUUID) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerUUID);
-        return create(offlinePlayer);
-    }
+public sealed class GlobalProfileKey permits ProfileFileKey {
 
     public static GlobalProfileKey create(OfflinePlayer offlinePlayer) {
         return create(offlinePlayer.getUniqueId(), offlinePlayer.getName());
@@ -21,10 +19,10 @@ public class GlobalProfileKey {
         return new GlobalProfileKey(playerUUID, playerName);
     }
 
-    private final UUID playerUUID;
-    private final String playerName;
+    protected final UUID playerUUID;
+    protected final String playerName;
 
-    private GlobalProfileKey(UUID playerUUID, String playerName) {
+    protected GlobalProfileKey(UUID playerUUID, String playerName) {
         this.playerUUID = playerUUID;
         this.playerName = playerName;
     }
@@ -35,6 +33,14 @@ public class GlobalProfileKey {
 
     public String getPlayerName() {
         return playerName;
+    }
+
+    public @NotNull OfflinePlayer getOfflinePlayer() {
+        return Bukkit.getOfflinePlayer(playerUUID);
+    }
+
+    public @Nullable Player getOnlinePlayer() {
+        return Bukkit.getPlayer(playerUUID);
     }
 
     @Override

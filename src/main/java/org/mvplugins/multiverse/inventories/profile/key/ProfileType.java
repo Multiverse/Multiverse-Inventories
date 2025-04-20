@@ -23,13 +23,13 @@ public final class ProfileType {
     }
 
     @Override
-    public final boolean equals(Object o) {
-        return o instanceof ProfileType && ((ProfileType) o).getName().equals(this.getName());
+    public boolean equals(Object o) {
+        return o instanceof ProfileType otherType && otherType.getName().equals(this.getName());
     }
 
     @Override
-    public final int hashCode() {
-        return getName().hashCode();
+    public int hashCode() {
+        return name.hashCode();
     }
 
     @Override

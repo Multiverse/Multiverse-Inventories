@@ -52,7 +52,7 @@ class FilePerformanceTest : TestWithMockBukkit() {
         val startTime = System.nanoTime()
         val futures = ArrayList<Future<Void>>(1000)
         for (i in 0..1000) {
-            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID()), { globalProfile ->
+            futures.add(profileDataSource.modifyGlobalProfile(GlobalProfileKey.create(UUID.randomUUID(), ""), { globalProfile ->
                 globalProfile.setLoadOnLogin(true)
             }))
         }

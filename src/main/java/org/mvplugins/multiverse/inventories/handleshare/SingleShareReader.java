@@ -1,18 +1,24 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public final class SingleShareReader<T> {
+
+    public static <T> SingleShareReader<T> of(MultiverseInventories inventories, Player player, Sharable<T> sharable) {
+        return new SingleShareReader<>(inventories, player, player.getWorld().getName(), ProfileTypes.forPlayer(player), sharable);
+    }
 
     public static <T> SingleShareReader<T> of(MultiverseInventories inventories, OfflinePlayer player, String worldName, ProfileType profileType, Sharable<T> sharable) {
         return new SingleShareReader<>(inventories, player, worldName, profileType, sharable);

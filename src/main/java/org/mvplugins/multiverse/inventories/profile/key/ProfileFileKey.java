@@ -9,7 +9,7 @@ import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 
 import java.util.UUID;
 
-public class ProfileFileKey {
+public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
 
     public static ProfileFileKey create(
             ContainerType containerType,
@@ -26,13 +26,6 @@ public class ProfileFileKey {
         return new ProfileFileKey(containerType, dataName, offlinePlayer.getUniqueId(), offlinePlayer.getName());
     }
 
-    public static ProfileFileKey create(
-            ContainerType containerType,
-            String dataName,
-            UUID playerUUID) {
-        return new ProfileFileKey(containerType, dataName, playerUUID, Bukkit.getOfflinePlayer(playerUUID).getName());
-    }
-
     public static ProfileFileKey fromPlayerProfile(PlayerProfile profile) {
         return new ProfileFileKey(
                 profile.getContainerType(),
@@ -44,8 +37,6 @@ public class ProfileFileKey {
 
     protected final ContainerType containerType;
     protected final String dataName;
-    protected final String playerName;
-    protected final UUID playerUUID;
     protected final int hashCode;
 
     private ProfileFileKey(ContainerType containerType, String dataName, UUID playerUUID, String playerName) {
@@ -57,10 +48,9 @@ public class ProfileFileKey {
     }
 
     protected ProfileFileKey(ContainerType containerType, String dataName, UUID playerUUID, String playerName, int hashCode) {
+        super(playerUUID, playerName);
         this.containerType = containerType;
         this.dataName = dataName;
-        this.playerUUID = playerUUID;
-        this.playerName = playerName;
         this.hashCode = hashCode;
     }
 
@@ -78,14 +68,6 @@ public class ProfileFileKey {
 
     public String getDataName() {
         return dataName;
-    }
-
-    public String getPlayerName() {
-        return playerName;
-    }
-
-    public UUID getPlayerUUID() {
-        return playerUUID;
     }
 
     public boolean isSameFile(ProfileFileKey other) {

@@ -86,7 +86,7 @@ public final class PlayerNamesMapper {
 
         ProfileDataSource profileDataSource = profileDataSourceProvider.get();
         CompletableFuture[] futures = profileDataSource.listGlobalProfileUUIDs().stream()
-                .map(uuid -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(uuid))
+                .map(uuid -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(uuid, ""))
                         .thenAccept(globalProfile -> setPlayerName(uuid, globalProfile.getLastKnownName())))
                 .toArray(CompletableFuture[]::new);
         CompletableFuture.allOf(futures).thenRun(this::savePlayerNames).join();

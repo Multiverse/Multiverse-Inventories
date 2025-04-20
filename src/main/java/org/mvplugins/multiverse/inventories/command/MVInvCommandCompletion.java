@@ -15,6 +15,8 @@ import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.util.Arrays;
@@ -53,6 +55,7 @@ public final class MVInvCommandCompletion {
         commandCompletions.registerStaticCompletion("mvinvconfigs", inventoriesConfig.getStringPropertyHandle().getAllPropertyNames());
         commandCompletions.registerAsyncCompletion("mvinvconfigvalues", this::suggestConfigValues);
         commandCompletions.registerAsyncCompletion("mvinvplayernames", this::suggestPlayerNames);
+        commandCompletions.registerAsyncCompletion("mvinvprofiletypes", this::suggestProfileTypes);
         commandCompletions.registerAsyncCompletion("sharables", this::suggestSharables);
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
         commandCompletions.registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
@@ -87,6 +90,29 @@ public final class MVInvCommandCompletion {
                 .stream()
                 .map(GlobalProfileKey::getPlayerName)
                 .collect(Collectors.toList());
+    }
+
+    private Collection<String> suggestProfileTypes(BukkitCommandCompletionContext context) {
+        if (!context.hasConfig("multiple")) {
+            return ProfileTypes.getTypes().stream()
+                    .map(ProfileType::getName)
+                    .map(String::toLowerCase)
+                    .toList();
+        }
+
+        if (Objects.equals(context.getInput(), "@all")) {
+            return Collections.emptyList();
+        }
+        List<String> profileTypes = ProfileTypes.getTypes()
+                .stream()
+                .map(ProfileType::getName)
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+        if (context.getInput().indexOf(',') == -1) {
+            profileTypes.add("@all");
+            return profileTypes;
+        }
+        return StringFormatter.addonToCommaSeperated(context.getInput(), profileTypes);
     }
 
     private Collection<String> suggestSharables(BukkitCommandCompletionContext context) {
