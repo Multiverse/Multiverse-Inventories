@@ -180,7 +180,7 @@ public final class WorldGroup {
      * @return true is the sharable is shared for this group.
      */
     public boolean isSharing(Sharable sharable) {
-        return getShares().isSharing(sharable);
+        return getApplicableShares().isSharing(sharable);
     }
 
     /**

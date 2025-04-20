@@ -11,6 +11,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.bukkit.configuration.ConfigurationSection;
@@ -19,6 +20,7 @@ import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +62,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return jsonConfiguration;
     }
 
-    private FileConfiguration getOrLoadPlayerProfileFile(ProfileKey profileKey, File playerFile) {
+    private FileConfiguration getOrLoadPlayerProfileFile(ProfileFileKey profileKey, File playerFile) {
         ProfileKey fileProfileKey = profileKey.forProfileType(null);
         return Try.of(() ->
                 profileCacheManager.getOrLoadPlayerFile(fileProfileKey, (key) -> playerFile.exists()
@@ -176,13 +178,31 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     public CompletableFuture<Void> deletePlayerProfile(ProfileKey profileKey) {
         File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
         profileCacheManager.getCachedPlayerProfile(profileKey).peek(profile -> profile.getData().clear());
-        return asyncFileIO.queueFileAction(playerFile, () -> deletePlayerProfileFromDisk(profileKey, playerFile));
+        return asyncFileIO.queueFileAction(playerFile, () ->
+                deletePlayerProfileFromDisk(profileKey, playerFile, new ProfileType[]{profileKey.getProfileType()}));
     }
 
-    private void deletePlayerProfileFromDisk(ProfileKey profileKey, File playerFile) {
+    @Override
+    public CompletableFuture<Void> deletePlayerProfiles(ProfileFileKey profileKey, ProfileType[] profileTypes) {
+        if (ProfileTypes.isAll(profileTypes)) {
+            Logging.finer("Deleting profile: " + profileKey + " for all profile-types");
+            return deletePlayerFile(profileKey);
+        }
+        for (var profileType : profileTypes) {
+            profileCacheManager.getCachedPlayerProfile(profileKey.forProfileType(profileType))
+                    .peek(profile -> profile.getData().clear());
+        }
+        File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
+        return asyncFileIO.queueFileAction(playerFile, () ->
+                deletePlayerProfileFromDisk(profileKey, playerFile, profileTypes));
+    }
+
+    private void deletePlayerProfileFromDisk(ProfileFileKey profileKey, File playerFile, ProfileType[] profileTypes) {
         try {
             FileConfiguration playerData = getOrLoadPlayerProfileFile(profileKey, playerFile);
-            playerData.set(profileKey.getProfileType().getName(), null);
+            for (var profileType : profileTypes) {
+                playerData.set(profileType.getName(), null);
+            }
             playerData.save(playerFile);
         } catch (IOException e) {
             Logging.severe("Could not delete data for player: " + profileKey.getPlayerName()
@@ -202,7 +222,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         }
         File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
         if (!playerFile.exists()) {
-            Logging.warning("Attempted to delete file that did not exist for player " + profileKey.getPlayerName()
+            Logging.finer("Attempted to delete file that did not exist for player " + profileKey.getPlayerName()
                     + " in " + profileKey.getContainerType() + " " + profileKey.getDataName());
             return CompletableFuture.completedFuture(null);
         }

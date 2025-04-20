@@ -1,15 +1,14 @@
 package org.mvplugins.multiverse.inventories.profile;
 
-import org.bukkit.OfflinePlayer;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +36,8 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
     CompletableFuture<Void> updatePlayerProfile(PlayerProfile playerProfile);
 
     CompletableFuture<Void> deletePlayerProfile(ProfileKey profileKey);
+
+    CompletableFuture<Void> deletePlayerProfiles(ProfileFileKey profileKey, ProfileType[] profileTypes);
 
     CompletableFuture<Void> deletePlayerFile(ProfileFileKey profileKey);
 

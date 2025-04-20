@@ -10,8 +10,9 @@ import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.List;
 
-final class ReadOnlyShareHandler extends ShareHandler {
-    ReadOnlyShareHandler(MultiverseInventories inventories, Player player) {
+public final class ReadOnlyShareHandler extends ShareHandler {
+
+    public ReadOnlyShareHandler(MultiverseInventories inventories, Player player) {
         super(inventories, player);
     }
 

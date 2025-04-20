@@ -71,7 +71,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
         AtomicLong profileCounter = new AtomicLong(0);
         CompletableFuture.allOf(profileDataSource.listGlobalProfileUUIDs()
                         .stream()
-                        .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(playerUUID))
+                        .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.create(playerUUID, ""))
                                 .thenCompose(profile -> run(profile, profileCounter))
                                 .exceptionally(throwable -> {
                                     issuer.sendMessage("Error updating player " + playerUUID + ": " + throwable.getMessage());

@@ -9,6 +9,7 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,7 @@ import java.util.Set;
  */
 public final class ProfileTypes {
 
-    private static final List<ProfileType> types = new ArrayList<>();
+    private static final Set<ProfileType> types = new HashSet<>();
     private static InventoriesConfig config;
 
     public static void init(MultiverseInventories plugin) {
@@ -51,11 +52,11 @@ public final class ProfileTypes {
      */
     public static final ProfileType SPECTATOR = createProfileType("SPECTATOR");
 
-    public static List<ProfileType> getTypes() {
+    public static Collection<ProfileType> getTypes() {
         return types;
     }
 
-    public static List<ProfileType> getApplicableTypes() {
+    public static Collection<ProfileType> getApplicableTypes() {
         if (config != null && config.getEnableGamemodeShareHandling()) {
             return types;
         }
@@ -96,7 +97,7 @@ public final class ProfileTypes {
     }
 
     public static boolean isAll(ProfileType[] otherTypes) {
-        return Sets.intersection(Set.of(otherTypes), Set.of(types)).size() == types.size();
+        return Set.of(otherTypes).equals(types);
     }
 
     private ProfileTypes() {
