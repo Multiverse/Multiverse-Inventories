@@ -54,10 +54,20 @@ public final class MVInvCommandContexts {
         CommandContexts<BukkitCommandExecutionContext> commandContexts = commandManager.getCommandContexts();
         commandContexts.registerContext(ContainerKey[].class, this::parseContainerKeyArray);
         commandContexts.registerContext(GlobalProfileKey[].class, this::parseGlobalProfileKeyArray);
+        commandContexts.registerIssuerAwareContext(ProfileType.class, this::parseProfileType);
         commandContexts.registerIssuerAwareContext(ProfileType[].class, this::parseProfileTypeArray);
         commandContexts.registerContext(Sharable.class, this::parseSharable);
         commandContexts.registerContext(Shares.class, this::parseShares);
         commandContexts.registerContext(WorldGroup.class, this::parseWorldGroup);
+    }
+
+    private ProfileType parseProfileType(BukkitCommandExecutionContext context) {
+        if (!config.getEnableGamemodeShareHandling()) {
+            return ProfileTypes.getDefault();
+        }
+        String profileType = context.popFirstArg();
+        return ProfileTypes.forName(profileType)
+                .getOrElseThrow(() -> new InvalidCommandArgument("Invalid profile type: " + profileType));
     }
 
     private ContainerKey[] parseContainerKeyArray(BukkitCommandExecutionContext context) {

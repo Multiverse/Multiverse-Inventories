@@ -93,10 +93,17 @@ public final class MVInvCommandCompletion {
     }
 
     private Collection<String> suggestProfileTypes(BukkitCommandCompletionContext context) {
+        if (!context.hasConfig("multiple")) {
+            return ProfileTypes.getTypes().stream()
+                    .map(ProfileType::getName)
+                    .map(String::toLowerCase)
+                    .toList();
+        }
+
         if (Objects.equals(context.getInput(), "@all")) {
             return Collections.emptyList();
         }
-        List<String> profileTypes = ProfileTypes.getApplicableTypes()
+        List<String> profileTypes = ProfileTypes.getTypes()
                 .stream()
                 .map(ProfileType::getName)
                 .map(String::toLowerCase)

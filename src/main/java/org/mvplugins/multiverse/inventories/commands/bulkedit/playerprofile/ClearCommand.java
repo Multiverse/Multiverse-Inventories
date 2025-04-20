@@ -40,7 +40,7 @@ final class ClearCommand extends BulkEditCommand {
 
     @Subcommand("bulkedit playerprofile clear")
     @CommandPermission("multiverse.inventories.bulkedit")
-    @CommandCompletion("@mvinvplayernames @empty @mvinvprofiletypes @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
+    @CommandCompletion("@mvinvplayernames @empty @mvinvprofiletypes:multiple @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
     @Syntax("<players> <groups|worlds> [profile-type] [--include-groups-worlds]")
     void onCommand(
             MVCommandIssuer issuer,

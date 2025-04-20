@@ -42,7 +42,7 @@ final class DeleteCommand extends BulkEditCommand {
 
     @Subcommand("bulkedit playerprofile delete")
     @CommandPermission("multiverse.inventories.bulkedit")
-    @CommandCompletion("@shares @mvinvplayernames @empty @mvinvprofiletypes @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
+    @CommandCompletion("@shares @mvinvplayernames @empty @mvinvprofiletypes:multiple @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
     @Syntax("<sharable> <players> <groups|worlds> [profile-type] [--include-groups-worlds]")
     void onCommand(
             MVCommandIssuer issuer,
