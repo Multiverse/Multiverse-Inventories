@@ -8,7 +8,7 @@ import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.profile.ProfileData;
+import org.mvplugins.multiverse.inventories.profile.data.ProfileData;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.DataStrings;

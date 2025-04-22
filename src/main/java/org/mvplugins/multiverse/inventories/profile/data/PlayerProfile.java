@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.data;
 
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 public final class PlayerProfile extends ProfileDataSnapshot {
 
-    static PlayerProfile createPlayerProfile(ProfileKey profileKey) {
+    public static PlayerProfile newProfile(ProfileKey profileKey) {
         return new PlayerProfile(
                 profileKey.getContainerType(),
                 profileKey.getDataName(),

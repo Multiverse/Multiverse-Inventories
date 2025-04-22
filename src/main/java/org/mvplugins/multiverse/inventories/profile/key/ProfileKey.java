@@ -3,8 +3,7 @@ package org.mvplugins.multiverse.inventories.profile.key;
 import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
-import org.bukkit.Bukkit;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 
 import java.util.UUID;
 

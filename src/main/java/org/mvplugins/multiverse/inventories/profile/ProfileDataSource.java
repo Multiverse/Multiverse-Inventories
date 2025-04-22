@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;

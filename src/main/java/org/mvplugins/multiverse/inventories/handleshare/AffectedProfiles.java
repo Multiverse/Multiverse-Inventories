@@ -1,12 +1,10 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public final class AffectedProfiles {
 

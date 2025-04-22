@@ -15,7 +15,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;

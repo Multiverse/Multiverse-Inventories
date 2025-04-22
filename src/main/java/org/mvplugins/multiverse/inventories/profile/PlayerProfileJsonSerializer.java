@@ -4,6 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.share.ProfileEntry;
 import org.mvplugins.multiverse.inventories.share.Sharable;
@@ -49,7 +50,7 @@ final class PlayerProfileJsonSerializer {
     }
 
     static PlayerProfile deserialize(ProfileKey pKey, Map playerData) {
-        PlayerProfile profile = PlayerProfile.createPlayerProfile(pKey);
+        PlayerProfile profile = PlayerProfile.newProfile(pKey);
         for (Object keyObj : playerData.keySet()) {
             String key = keyObj.toString();
             final Object value = playerData.get(key);

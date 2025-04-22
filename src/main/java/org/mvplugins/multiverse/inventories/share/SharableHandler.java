@@ -1,8 +1,8 @@
 package org.mvplugins.multiverse.inventories.share;
 
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.bukkit.entity.Player;
-import org.mvplugins.multiverse.inventories.profile.ProfileData;
+import org.mvplugins.multiverse.inventories.profile.data.ProfileData;
 
 /**
  * This class is used to handle the transition of data from a player profile to a player and vice versa, typically

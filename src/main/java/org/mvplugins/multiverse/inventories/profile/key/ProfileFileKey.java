@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 
 import java.util.UUID;
 

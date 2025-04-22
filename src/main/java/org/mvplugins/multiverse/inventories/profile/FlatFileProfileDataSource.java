@@ -9,6 +9,7 @@ import org.mvplugins.multiverse.core.exceptions.MultiverseException;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.external.vavr.control.Try;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
@@ -17,7 +18,6 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.mvplugins.multiverse.inventories.util.DataStrings;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +87,7 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 File playerFile = profileFilesLocator.getPlayerProfileFile(profileKey);
                 if (!playerFile.exists()) {
                     Logging.fine("Not found on disk: %s", playerFile);
-                    return CompletableFuture.completedFuture(PlayerProfile.createPlayerProfile(key));
+                    return CompletableFuture.completedFuture(PlayerProfile.newProfile(key));
                 }
                 Logging.finer("%s not cached. loading from disk...", profileKey);
                 return asyncFileIO.queueFileCallable(playerFile, () -> getPlayerProfileFromDisk(key, playerFile));
@@ -101,36 +101,11 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
 
     private PlayerProfile getPlayerProfileFromDisk(ProfileKey key, File playerFile) {
         FileConfiguration playerData = getOrLoadPlayerProfileFile(key, playerFile);
-
-        // Migrate from none profile-type data
-        if (migrateToProfileType(playerData)) {
-            try {
-                playerData.save(playerFile);
-            } catch (IOException e) {
-                Logging.severe("Could not save data for player: " + key.getPlayerName()
-                        + " for " + key.getContainerType().toString() + ": " + key.getDataName() + " after conversion.");
-                e.printStackTrace();
-            }
-        }
-
         ConfigurationSection section = playerData.getConfigurationSection(key.getProfileType().getName());
-        if (section == null) {
-            section = playerData.createSection(key.getProfileType().getName());
+        if (section == null || section.getKeys(false).isEmpty()) {
+            return PlayerProfile.newProfile(key);
         }
         return PlayerProfileJsonSerializer.deserialize(key, convertSection(section));
-    }
-
-    private boolean migrateToProfileType(FileConfiguration config) {
-        ConfigurationSection section = config.getConfigurationSection(DataStrings.PLAYER_DATA);
-        if (section == null) {
-            return false;
-        }
-        config.set(ProfileTypes.SURVIVAL.getName(), section);
-        config.set(ProfileTypes.CREATIVE.getName(), section);
-        config.set(ProfileTypes.ADVENTURE.getName(), section);
-        config.set(DataStrings.PLAYER_DATA, null);
-        Logging.finer("Migrated old player data to new multi-profile format");
-        return true;
     }
 
     private Map<String, Object> convertSection(ConfigurationSection section) {
@@ -188,6 +163,9 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 deletePlayerProfileFromDisk(profileKey, playerFile, new ProfileType[]{profileKey.getProfileType()}));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CompletableFuture<Void> deletePlayerProfiles(ProfileFileKey profileKey, ProfileType[] profileTypes) {
         if (Strings.isNullOrEmpty(profileKey.getPlayerName())) {
@@ -356,14 +334,6 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
             Logging.severe("Could not save global data for player: " + globalProfile);
             Logging.severe(throwable.getMessage());
         });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CompletableFuture<Void> deleteGlobalProfile(GlobalProfileKey key) {
-        return deleteGlobalProfile(key, true);
     }
 
     /**

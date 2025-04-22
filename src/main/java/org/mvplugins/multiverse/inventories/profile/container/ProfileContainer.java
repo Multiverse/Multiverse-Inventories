@@ -7,7 +7,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile;
+package org.mvplugins.multiverse.inventories.profile.data;
 
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
@@ -7,7 +7,7 @@ import org.mvplugins.multiverse.inventories.share.Shares;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProfileDataSnapshot implements Cloneable, ProfileData {
+public sealed class ProfileDataSnapshot implements Cloneable, ProfileData permits PlayerProfile {
 
     private final Map<Sharable, Object> data;
 
@@ -30,10 +30,12 @@ public class ProfileDataSnapshot implements Cloneable, ProfileData {
         return data;
     }
 
+    @Override
     public void update(ProfileData snapshot) {
         this.data.putAll(snapshot.getData());
     }
 
+    @Override
     public void update(ProfileData snapshot, Shares shares) {
         shares.forEach(sharable -> {
             Object data = snapshot.getData().get(sharable);
@@ -41,6 +43,11 @@ public class ProfileDataSnapshot implements Cloneable, ProfileData {
                 this.data.put(sharable, data);
             }
         });
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return data.isEmpty();
     }
 
     @Override

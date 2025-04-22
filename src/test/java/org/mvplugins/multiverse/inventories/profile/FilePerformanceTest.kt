@@ -12,6 +12,7 @@ import org.mvplugins.multiverse.core.utils.CoreLogging
 import org.mvplugins.multiverse.core.world.WorldManager
 import org.mvplugins.multiverse.core.world.options.CreateWorldOptions
 import org.mvplugins.multiverse.inventories.TestWithMockBukkit
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey

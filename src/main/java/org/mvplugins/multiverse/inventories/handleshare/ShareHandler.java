@@ -4,7 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.event.ShareHandlingEvent;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSnapshot;
+import org.mvplugins.multiverse.inventories.profile.data.ProfileDataSnapshot;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStore;
@@ -13,9 +13,6 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.mvplugins.multiverse.inventories.util.FutureNow;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Abstract class for handling sharing of data between worlds and game modes.

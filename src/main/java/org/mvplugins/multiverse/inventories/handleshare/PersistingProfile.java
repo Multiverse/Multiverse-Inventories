@@ -1,10 +1,8 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.share.Shares;
-
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Simple class for groups that are going to be saved/loaded. This is used specifically for when a user's world

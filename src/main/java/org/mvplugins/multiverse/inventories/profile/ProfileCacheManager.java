@@ -11,6 +11,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 
 import java.util.HashMap;

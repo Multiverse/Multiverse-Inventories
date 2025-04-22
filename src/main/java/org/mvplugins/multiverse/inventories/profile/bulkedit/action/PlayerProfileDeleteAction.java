@@ -4,8 +4,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSnapshot;
+import org.mvplugins.multiverse.inventories.profile.data.ProfileData;
+import org.mvplugins.multiverse.inventories.profile.data.ProfileDataSnapshot;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesPayload;
+import org.mvplugins.multiverse.inventories.profile.data.SingleSharableData;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
@@ -69,8 +71,7 @@ public final class PlayerProfileDeleteAction extends PlayerProfileAction {
 
     @Override
     protected void updateOnlinePlayerNow(Player player) {
-        ProfileDataSnapshot profileDataSnapshot = new ProfileDataSnapshot();
-        profileDataSnapshot.set(sharable, FutureNow.get(SingleShareReader.of(inventories, player, sharable).read()));
-        sharable.getHandler().updatePlayer(player, profileDataSnapshot);
+        ProfileData sharableData = new SingleSharableData<>(sharable, FutureNow.get(SingleShareReader.of(inventories, player, sharable).read()));
+        sharable.getHandler().updatePlayer(player, sharableData);
     }
 }

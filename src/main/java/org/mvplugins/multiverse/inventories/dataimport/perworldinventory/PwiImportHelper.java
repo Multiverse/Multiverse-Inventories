@@ -25,7 +25,7 @@ import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportException;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;

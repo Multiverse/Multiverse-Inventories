@@ -8,7 +8,7 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportException;
-import org.mvplugins.multiverse.inventories.profile.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
