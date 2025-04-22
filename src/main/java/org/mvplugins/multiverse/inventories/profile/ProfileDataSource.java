@@ -19,12 +19,12 @@ import java.util.function.Consumer;
  */
 @Contract
 public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
+
     /**
-     * Retrieves a PlayerProfile from the data source.
+     * Retrieves a PlayerProfile from the disk. If no data was found, a new PlayerProfile will be created.
      *
      * @param profileKey The key of the profile to retrieve.
-     * @return The player as returned from data. If no data was found, a new PlayerProfile will be
-     *         created.
+     * @return The player profile data.
      */
     CompletableFuture<PlayerProfile> getPlayerProfile(ProfileKey profileKey);
 
@@ -32,13 +32,41 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Updates the persisted data for a player for a specific profile to disk.
      *
      * @param playerProfile The profile for the player that is being updated.
+     * @return Future that completes when the profile has been updated.
      */
     CompletableFuture<Void> updatePlayerProfile(PlayerProfile playerProfile);
 
+    /**
+     * Clears all data of the specified profile, and deletes profile data from disk.
+     * <br />
+     * This action is irreversible.
+     *
+     * @param profileKey    The key of the profile to delete
+     * @return Future that completes when the profile has been deleted.
+     */
     CompletableFuture<Void> deletePlayerProfile(ProfileKey profileKey);
 
+    /**
+     * Clears all data for multiple {@link ProfileType} of the specified profile, and deletes profile data from disk.
+     * If all profiles are deleted, the profile file itself will be deleted.
+     * <br />
+     * This action is irreversible.
+     *
+     * @param profileKey    The key of the profile to delete
+     * @param profileTypes  The list of profile types to delete
+     * @return Future that completes when the profile has been deleted.
+     */
     CompletableFuture<Void> deletePlayerProfiles(ProfileFileKey profileKey, ProfileType[] profileTypes);
 
+    /**
+     * Deletes the profile file for a player's profile from disk. Essentially same as
+     * {@link #deletePlayerProfiles(ProfileFileKey, ProfileType[])} with all profile types.
+     * <br />
+     * This action is irreversible.
+     *
+     * @param profileKey    The key of the profile to delete
+     * @return Future that completes when the profile has been deleted.
+     */
     CompletableFuture<Void> deletePlayerFile(ProfileFileKey profileKey);
 
     /**
@@ -78,11 +106,17 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * Update the file for a player's global profile to disk.
      *
      * @param globalProfile The GlobalProfile object to update the file for.
+     * @return A CompletableFuture that completes when the global profile has been updated.
      */
     CompletableFuture<Void> updateGlobalProfile(GlobalProfile globalProfile);
 
-    CompletableFuture<Void> deleteGlobalProfile(GlobalProfileKey key);
-
+    /**
+     * Deletes the file for a player's global profile from disk. Optionally clears the player's profile data files as well.
+     *
+     * @param key               The key of the player.
+     * @param clearPlayerFiles  Whether to clear the player's profile data files as well.
+     * @return A CompletableFuture that completes when the global profile has been deleted.
+     */
     CompletableFuture<Void> deleteGlobalProfile(GlobalProfileKey key, boolean clearPlayerFiles);
 
     /**
