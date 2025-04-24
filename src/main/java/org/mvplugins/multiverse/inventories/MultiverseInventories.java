@@ -123,6 +123,9 @@ public class MultiverseInventories extends MultiverseModule {
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
         this.playerNamesMapperProvider.get().loadMap();
 
+        // Init api
+        MultiverseInventoriesApi.init(this.serviceLocator);
+
         Logging.config("Version %s (API v%s) Enabled - By %s",
                 this.getDescription().getVersion(), getVersionAsNumber(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
     }
@@ -143,6 +146,7 @@ public class MultiverseInventories extends MultiverseModule {
             }
         }
 
+        MultiverseInventoriesApi.shutdown();
         this.dupingPatch.disable();
         this.shutdownDependencyInjection();
         Logging.shutdown();

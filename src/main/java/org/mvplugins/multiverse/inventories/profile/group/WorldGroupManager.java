@@ -115,4 +115,3 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
      */
     void recalculateApplicableShares();
 }
-

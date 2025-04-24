@@ -29,7 +29,10 @@ public final class PlayerNamesMapper {
     private static PlayerNamesMapper instance;
 
     public static PlayerNamesMapper getInstance() {
-        return Objects.requireNonNull(instance);
+        if (instance == null) {
+            throw new IllegalStateException("Player names mapper has not been initialized yet.");
+        }
+        return instance;
     }
 
     private static final String FILENAME = "playernames.json";
