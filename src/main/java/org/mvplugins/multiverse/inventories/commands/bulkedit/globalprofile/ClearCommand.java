@@ -16,34 +16,36 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
+import org.mvplugins.multiverse.inventories.commands.bulkedit.BulkEditCommand;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-final class ClearCommand extends InventoriesCommand {
+final class ClearCommand extends BulkEditCommand {
 
     private final CommandQueueManager commandQueueManager;
-    private final ProfileDataSource profileDataSource;
     private final Flags flags;
 
     @Inject
     ClearCommand(
+            @NotNull BulkEditCreator bulkEditCreator,
             @NotNull CommandQueueManager commandQueueManager,
-            @NotNull ProfileDataSource profileDataSource,
             @NotNull Flags flags
     ) {
+        super(bulkEditCreator);
         this.commandQueueManager = commandQueueManager;
-        this.profileDataSource = profileDataSource;
         this.flags = flags;
     }
 
     @Subcommand("bulkedit globalprofile clear")
     @CommandPermission("multiverse.inventories.bulkedit")
     @CommandCompletion("@mvinvplayernames @flags:groupName=" + Flags.NAME)
-    @Syntax("<players> [--clear-all-playerprofiles]")
+    @Syntax("<players> [--clear-all-player-profiles]")
     void onCommand(
             MVCommandIssuer issuer,
 
@@ -55,19 +57,16 @@ final class ClearCommand extends InventoriesCommand {
     ) {
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);
 
+        BulkEditAction<?> bulkEditAction = bulkEditCreator.globalProfileClear(
+                globalProfileKeys,
+                parsedFlags.hasFlag(flags.clearAllPlayerProfiles)
+        );
+
+        outputActionSummary(issuer, bulkEditAction);
+
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clear %d profiles?".formatted(globalProfileKeys.length)))
-                .action(() -> doClear(issuer, globalProfileKeys, parsedFlags.hasFlag(flags.clearAllPlayerprofiles))));
-    }
-
-    private void doClear(MVCommandIssuer issuer, GlobalProfileKey[] globalProfileKeys, boolean clearPlayerProfile) {
-        //TODO: Check lastWorld and online
-        CompletableFuture[] futures = Arrays.stream(globalProfileKeys)
-                .map(globalProfileKey -> profileDataSource.deleteGlobalProfile(globalProfileKey, clearPlayerProfile))
-                .toArray(CompletableFuture[]::new);
-
-        CompletableFuture.allOf(futures)
-                .thenRun(() -> issuer.sendMessage("Successfully cleared %d profiles.".formatted(globalProfileKeys.length)));
+                .prompt(Message.of("Are you sure you want to clear the selected global profiles?"))
+                .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 
     @Service
@@ -79,7 +78,7 @@ final class ClearCommand extends InventoriesCommand {
             super(NAME, flagsManager);
         }
 
-        private final CommandFlag clearAllPlayerprofiles = flag(CommandFlag.builder("--clear-all-playerprofiles")
+        private final CommandFlag clearAllPlayerProfiles = flag(CommandFlag.builder("--clear-all-player-profiles")
                 .addAlias("-a")
                 .build());
     }

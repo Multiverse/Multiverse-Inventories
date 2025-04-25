@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Experimental
-public sealed abstract class BulkEditAction<K extends GlobalProfileKey> permits PlayerFileAction, PlayerProfileAction {
+public sealed abstract class BulkEditAction<K extends GlobalProfileKey> permits GlobalProfileClearAction, PlayerFileAction, PlayerProfileAction {
 
     protected final MultiverseInventories inventories;
     protected final ProfileDataSource profileDataSource;

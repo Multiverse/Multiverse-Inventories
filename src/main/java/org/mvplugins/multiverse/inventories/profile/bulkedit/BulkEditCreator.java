@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 
 @Service
@@ -16,6 +17,10 @@ public final class BulkEditCreator {
     @Inject
     BulkEditCreator(@NotNull MultiverseInventories inventories) {
         this.inventories = inventories;
+    }
+
+    public BulkEditAction<?> globalProfileClear(GlobalProfileKey[] globalProfileKeys, boolean clearPlayerProfiles) {
+        return new GlobalProfileClearAction(inventories, globalProfileKeys, clearPlayerProfiles);
     }
 
     public BulkEditAction<?> playerProfileClear(PlayerProfilesPayload bulkProfilesPayload) {

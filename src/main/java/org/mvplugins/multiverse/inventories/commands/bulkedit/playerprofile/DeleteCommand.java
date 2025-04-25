@@ -63,9 +63,7 @@ final class DeleteCommand extends BulkEditCommand {
                 sharable
         );
 
-        issuer.sendMessage("Summary of affected profiles:");
-        bulkEditAction.getActionSummary().forEach((key, value) ->
-                issuer.sendMessage("  %s: %s".formatted(key, value.size() > 10 ? value.size() : StringFormatter.join(value, ", "))));
+        outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
                 .prompt(Message.of("Are you sure you want to delete %s from the selected profiles?".formatted(sharable.getNames()[0])))
