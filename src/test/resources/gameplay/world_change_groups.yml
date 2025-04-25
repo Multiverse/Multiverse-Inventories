@@ -1,4 +1,9 @@
 groups:
+  default:
+    worlds:
+      - default
+    shares:
+      - all
   group1:
     worlds:
       - world1

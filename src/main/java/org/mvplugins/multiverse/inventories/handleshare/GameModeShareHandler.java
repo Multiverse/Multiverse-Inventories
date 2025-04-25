@@ -82,7 +82,9 @@ final class GameModeShareHandler extends ShareHandler {
     private void addProfiles() {
         Shares handledShares = Sharables.noneOf();
         worldGroups.forEach(worldGroup -> addProfilesForWorldGroup(handledShares,worldGroup));
-        Shares unhandledShares = Sharables.enabledOf().setSharing(handledShares, false);
+        Shares unhandledShares = (worldGroups.isEmpty() && !inventoriesConfig.getUseOptionalsForUngroupedWorlds())
+                ? Sharables.standardOf() : Sharables.enabledOf();
+        unhandledShares.removeAll(handledShares);
         if (!unhandledShares.isEmpty()) {
             affectedProfiles.addReadProfile(worldProfileContainerStore.getContainer(world).getProfileKey(toType, player), unhandledShares);
         }

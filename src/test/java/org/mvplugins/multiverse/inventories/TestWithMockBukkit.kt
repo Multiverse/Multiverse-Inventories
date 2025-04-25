@@ -1,9 +1,11 @@
 package org.mvplugins.multiverse.inventories
 
+import com.dumptruckman.minecraft.util.Logging
 import org.bukkit.Location
 import org.bukkit.configuration.MemorySection
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerialization
+import org.bukkit.inventory.ItemStack
 import org.mockbukkit.mockbukkit.MockBukkit
 import org.mockbukkit.mockbukkit.inventory.ItemStackMock
 import org.mvplugins.multiverse.core.MultiverseCore
@@ -16,6 +18,7 @@ import kotlin.io.path.absolutePathString
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
@@ -46,6 +49,7 @@ abstract class TestWithMockBukkit {
         server.pluginManager.disablePlugin(multiverseInventories)
         server.pluginManager.disablePlugin(multiverseCore)
         MockBukkit.unmock()
+        Logging.warning("Unmocked")
     }
 
     fun getResourceAsText(path: String): String? = object {}.javaClass.getResource(path)?.readText()
@@ -97,5 +101,14 @@ abstract class TestWithMockBukkit {
         assertEquals(expected?.z, actual?.z, "Z values don't match for location comparison ($expected, $actual)")
         assertEquals(expected?.yaw, actual?.yaw, "Yaw values don't match for location comparison ($expected, $actual)")
         assertEquals(expected?.pitch, actual?.pitch, "Pitch values don't match for location comparison ($expected, $actual)")
+    }
+
+    fun assertInventoryEquals(expected: Array<ItemStack?>, actual: Array<ItemStack?>) {
+        for (i in expected.indices) {
+            if (expected[i]?.isEmpty ?: true && expected[i]?.isEmpty ?: true) {
+                continue
+            }
+            assertEquals(expected[i], actual[i])
+        }
     }
 }

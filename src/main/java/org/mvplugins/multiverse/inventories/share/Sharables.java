@@ -74,22 +74,15 @@ public final class Sharables implements Shares {
      * @param inventories the instance of Inventories.
      */
     public static void init(MultiverseInventories inventories) {
-        if (Sharables.inventories == null) {
-            Sharables.inventories = inventories;
-        }
-        if (Sharables.economist == null) {
-            Sharables.economist = inventories.getServiceLocator().getService(MVEconomist.class);
-        }
-        if (Sharables.safetyTeleporter == null) {
-            Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
-        }
-        if (Sharables.inventoriesConfig == null) {
-            Sharables.inventoriesConfig = inventories.getServiceLocator().getService(InventoriesConfig.class);
-        }
-        if (Sharables.worldGroupManager == null) {
-            Sharables.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
-        }
+        Sharables.inventories = inventories;
+        Sharables.economist = inventories.getServiceLocator().getService(MVEconomist.class);
+        Sharables.safetyTeleporter = inventories.getServiceLocator().getService(AsyncSafetyTeleporter.class);
+        Sharables.inventoriesConfig = inventories.getServiceLocator().getService(InventoriesConfig.class);
+        Sharables.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);
+        initMaxHealthAttr();
+    }
 
+    private static void initMaxHealthAttr() {
         Sharables.maxHealthAttr = Registry.ATTRIBUTE.get(NamespacedKey.minecraft("max_health"));
         if (Sharables.maxHealthAttr == null) {
             // Old key for older minecraft version (<1.21)
