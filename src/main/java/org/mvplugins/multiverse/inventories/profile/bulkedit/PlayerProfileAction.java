@@ -1,26 +1,23 @@
-package org.mvplugins.multiverse.inventories.profile.bulkedit.action;
+package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesAggregator;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesPayload;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 
 import java.util.List;
 import java.util.Map;
 
-@ApiStatus.Experimental
-public abstract class PlayerProfileAction extends BulkEditAction<ProfileKey> {
+abstract sealed class PlayerProfileAction extends BulkEditAction<ProfileKey> permits PlayerProfileDeleteAction {
 
-    private final BulkProfilesAggregator profilesAggregator;
-    private final BulkProfilesPayload bulkProfilesPayload;
+    private final PlayerProfilesAggregator profilesAggregator;
+    private final PlayerProfilesPayload bulkProfilesPayload;
 
     protected PlayerProfileAction(
             MultiverseInventories inventories,
-            BulkProfilesPayload bulkProfilesPayload
+            PlayerProfilesPayload bulkProfilesPayload
     ) {
         super(inventories, bulkProfilesPayload.globalProfileKeys());
-        this.profilesAggregator = inventories.getServiceLocator().getService(BulkProfilesAggregator.class);
+        this.profilesAggregator = inventories.getServiceLocator().getService(PlayerProfilesAggregator.class);
         this.bulkProfilesPayload = bulkProfilesPayload;
     }
 

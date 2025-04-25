@@ -12,10 +12,10 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
-import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.commands.bulkedit.BulkEditCommand;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesPayload;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.action.PlayerProfileClearAction;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.PlayerProfilesPayload;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
@@ -23,17 +23,16 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 @Service
 final class ClearCommand extends BulkEditCommand {
 
-    private final MultiverseInventories inventories;
     private final CommandQueueManager commandQueueManager;
     private final IncludeGroupsWorldsFlag flags;
 
     @Inject
     ClearCommand(
-            @NotNull MultiverseInventories inventories,
+            @NotNull BulkEditCreator bulkEditCreator,
             @NotNull CommandQueueManager commandQueueManager,
             @NotNull IncludeGroupsWorldsFlag flags
     ) {
-        this.inventories = inventories;
+        super(bulkEditCreator);
         this.commandQueueManager = commandQueueManager;
         this.flags = flags;
     }
@@ -51,9 +50,8 @@ final class ClearCommand extends BulkEditCommand {
     ) {
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);
 
-        PlayerProfileClearAction bulkEditAction = new PlayerProfileClearAction(
-                inventories,
-                new BulkProfilesPayload(
+        BulkEditAction<?> bulkEditAction = bulkEditCreator.playerProfileClear(
+                new PlayerProfilesPayload(
                         globalProfileKeys,
                         containerKeys,
                         profileTypes,

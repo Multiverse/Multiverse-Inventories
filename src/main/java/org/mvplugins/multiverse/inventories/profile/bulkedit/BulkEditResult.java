@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile.bulkedit.action;
+package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -10,6 +10,8 @@ public final class BulkEditResult {
     private final long startTime = System.nanoTime();
     private final AtomicInteger successCount = new AtomicInteger(0);
     private final AtomicInteger failureCount = new AtomicInteger(0);
+
+    BulkEditResult() { }
 
     void incrementSuccess() {
         successCount.incrementAndGet();

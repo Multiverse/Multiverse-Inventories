@@ -1,12 +1,10 @@
-package org.mvplugins.multiverse.inventories.profile.bulkedit.action;
+package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.profile.data.ProfileData;
-import org.mvplugins.multiverse.inventories.profile.data.ProfileDataSnapshot;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesPayload;
 import org.mvplugins.multiverse.inventories.profile.data.SingleSharableData;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
@@ -19,8 +17,7 @@ import org.mvplugins.multiverse.inventories.util.FutureNow;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@ApiStatus.Experimental
-public final class PlayerProfileDeleteAction extends PlayerProfileAction {
+final class PlayerProfileDeleteAction extends PlayerProfileAction {
 
 
     private final WorldGroupManager worldGroupManager;
@@ -29,7 +26,7 @@ public final class PlayerProfileDeleteAction extends PlayerProfileAction {
     public PlayerProfileDeleteAction(
             MultiverseInventories inventories,
             Sharable sharable,
-            BulkProfilesPayload bulkProfilesPayload
+            PlayerProfilesPayload bulkProfilesPayload
     ) {
         super(inventories, bulkProfilesPayload);
         this.worldGroupManager = inventories.getServiceLocator().getService(WorldGroupManager.class);

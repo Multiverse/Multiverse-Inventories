@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @ApiStatus.Experimental
-public record BulkProfilesPayload(@NotNull GlobalProfileKey[] globalProfileKeys,
-                                  @NotNull ContainerKey[] containerKeys,
-                                  @NotNull ProfileType[] profileTypes,
-                                  boolean includeGroupsWorlds) {
+public record PlayerProfilesPayload(@NotNull GlobalProfileKey[] globalProfileKeys,
+                                    @NotNull ContainerKey[] containerKeys,
+                                    @NotNull ProfileType[] profileTypes,
+                                    boolean includeGroupsWorlds) {
 
     public Map<String, List<String>> getSummary() {
         return Map.of(

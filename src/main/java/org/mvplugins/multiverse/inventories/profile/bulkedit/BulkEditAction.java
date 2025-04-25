@@ -1,4 +1,4 @@
-package org.mvplugins.multiverse.inventories.profile.bulkedit.action;
+package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 @ApiStatus.Experimental
-public abstract class BulkEditAction<K extends GlobalProfileKey> {
+public sealed abstract class BulkEditAction<K extends GlobalProfileKey> permits PlayerFileAction, PlayerProfileAction {
 
     protected final MultiverseInventories inventories;
     protected final ProfileDataSource profileDataSource;

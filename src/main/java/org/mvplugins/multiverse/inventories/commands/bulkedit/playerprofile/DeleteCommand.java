@@ -13,10 +13,10 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
-import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.commands.bulkedit.BulkEditCommand;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkProfilesPayload;
-import org.mvplugins.multiverse.inventories.profile.bulkedit.action.PlayerProfileDeleteAction;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
+import org.mvplugins.multiverse.inventories.profile.bulkedit.PlayerProfilesPayload;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
@@ -25,17 +25,16 @@ import org.mvplugins.multiverse.inventories.share.Sharable;
 @Service
 final class DeleteCommand extends BulkEditCommand {
 
-    private final MultiverseInventories inventories;
     private final CommandQueueManager commandQueueManager;
     private final IncludeGroupsWorldsFlag flags;
 
     @Inject
     DeleteCommand(
-            @NotNull MultiverseInventories inventories,
+            @NotNull BulkEditCreator bulkEditCreator,
             @NotNull CommandQueueManager commandQueueManager,
             @NotNull IncludeGroupsWorldsFlag flags
     ) {
-        this.inventories = inventories;
+        super(bulkEditCreator);
         this.commandQueueManager = commandQueueManager;
         this.flags = flags;
     }
@@ -54,15 +53,14 @@ final class DeleteCommand extends BulkEditCommand {
     ) {
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);
 
-        PlayerProfileDeleteAction bulkEditAction = new PlayerProfileDeleteAction(
-                inventories,
-                sharable,
-                new BulkProfilesPayload(
+        BulkEditAction<?> bulkEditAction = bulkEditCreator.playerProfileDeleteSharable(
+                new PlayerProfilesPayload(
                         globalProfileKeys,
                         containerKeys,
                         profileTypes,
                         parsedFlags.hasFlag(flags.includeGroupsWorlds)
-                )
+                ),
+                sharable
         );
 
         issuer.sendMessage("Summary of affected profiles:");

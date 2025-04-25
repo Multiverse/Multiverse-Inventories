@@ -17,18 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@ApiStatus.Experimental
 @Service
-public final class BulkProfilesAggregator {
+final class PlayerProfilesAggregator {
 
     private final WorldGroupManager worldGroupManager;
 
     @Inject
-    BulkProfilesAggregator(WorldGroupManager worldGroupManager) {
+    PlayerProfilesAggregator(WorldGroupManager worldGroupManager) {
         this.worldGroupManager = worldGroupManager;
     }
 
-    public List<ProfileFileKey> getProfileFileKeys(BulkProfilesPayload payload) {
+    List<ProfileFileKey> getProfileFileKeys(PlayerProfilesPayload payload) {
         var containerKeys = payload.includeGroupsWorlds()
                 ? includeGroupsWorlds(payload.containerKeys())
                 : payload.containerKeys();
@@ -48,7 +47,7 @@ public final class BulkProfilesAggregator {
         return profileFileKeys;
     }
 
-    public List<ProfileKey> getPlayerProfileKeys(BulkProfilesPayload payload) {
+    List<ProfileKey> getPlayerProfileKeys(PlayerProfilesPayload payload) {
         var containerKeys = payload.includeGroupsWorlds()
                 ? includeGroupsWorlds(payload.containerKeys())
                 : payload.containerKeys();
