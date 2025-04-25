@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.mvplugins.multiverse.core.config.handle.StringPropertyHandle;
@@ -31,15 +32,19 @@ public final class GlobalProfile {
         this.nodes = new Nodes();
         this.handle = JsonConfigurationHandle.builder(configPath, nodes.nodes).build();
         this.stringPropertyHandle = new StringPropertyHandle(handle);
-        this.handle.load();
+        load();
     }
 
     Try<Void> load() {
-        return handle.load();
+        return handle.load().onFailure(e -> {
+            Logging.severe("Failed to load global profile for player %s: %s", uuid, e.getMessage());
+        });
     }
 
     Try<Void> save() {
-        return handle.save();
+        return handle.save().onFailure(e -> {
+            Logging.severe("Failed to save global profile for player %s: %s", uuid, e.getMessage());
+        });
     }
 
     public StringPropertyHandle getStringPropertyHandle() {
