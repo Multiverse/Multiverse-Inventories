@@ -3,11 +3,9 @@ package org.mvplugins.multiverse.inventories.commands;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.locale.message.Message;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
@@ -22,13 +20,13 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
-final class ImportCommand extends InventoriesCommand {
+final class MigrateCommand extends InventoriesCommand {
 
     private final DataImportManager dataImportManager;
     private final CommandQueueManager commandQueueManager;
 
     @Inject
-    ImportCommand(
+    MigrateCommand(
             @NotNull DataImportManager dataImportManager,
             @NotNull CommandQueueManager commandQueueManager
     ) {
@@ -36,12 +34,12 @@ final class ImportCommand extends InventoriesCommand {
         this.commandQueueManager = commandQueueManager;
     }
 
-    @Subcommand("import")
+    @Subcommand("migrate")
     @Syntax("<MultiInv|WorldInventories|PerWorldInventory>")
     @CommandPermission("multiverse.inventories.import")
     @CommandCompletion("@dataimporters")
     @Description("Import inventories from MultiInv/WorldInventories/PerWorldInventory plugin.")
-    void onImportCommand(
+    void onMigrateCommand(
             MVCommandIssuer issuer,
 
             @Single
@@ -49,23 +47,23 @@ final class ImportCommand extends InventoriesCommand {
             String pluginName) {
 
         dataImportManager.getImporter(pluginName)
-                .onEmpty(() -> issuer.sendError(MVInvi18n.IMPORT_UNSUPPORTEDPLUGIN, replace("{plugin}").with(pluginName)))
+                .onEmpty(() -> issuer.sendError(MVInvi18n.MIGRATE_UNSUPPORTEDPLUGIN, replace("{plugin}").with(pluginName)))
                 .peek(dataImporter -> {
                     if (!dataImporter.isEnabled()) {
-                        issuer.sendError(MVInvi18n.IMPORT_PLUGINNOTENABLED, replace("{plugin}").with(pluginName));
+                        issuer.sendError(MVInvi18n.MIGRATE_PLUGINNOTENABLED, replace("{plugin}").with(pluginName));
                         return;
                     }
                     commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                            .prompt(Message.of(MVInvi18n.IMPORT_CONFIRMPROMPT, replace("{plugin}").with(pluginName)))
+                            .prompt(Message.of(MVInvi18n.MIGRATE_CONFIRMPROMPT, replace("{plugin}").with(pluginName)))
                             .action(() -> doDataImport(issuer, dataImporter)));
                 });
     }
 
     void doDataImport(MVCommandIssuer issuer, DataImporter dataImporter) {
         if (dataImporter.importData()) {
-            issuer.sendInfo(MVInvi18n.IMPORT_SUCCESS, replace("{plugin}").with(dataImporter.getPluginName()));
+            issuer.sendInfo(MVInvi18n.MIGRATE_SUCCESS, replace("{plugin}").with(dataImporter.getPluginName()));
         } else {
-            issuer.sendError(MVInvi18n.IMPORT_FAILED, replace("{plugin}").with(dataImporter.getPluginName()));
+            issuer.sendError(MVInvi18n.MIGRATE_FAILED, replace("{plugin}").with(dataImporter.getPluginName()));
         }
     }
 }
