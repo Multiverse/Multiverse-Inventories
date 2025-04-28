@@ -1,7 +1,6 @@
 plugins {
     id 'checkstyle'
-    id 'org.mvplugins.multiverse-plugin' version '1.0.2'
-    id 'org.mvplugins.kotlin-test-only' version '1.0.2'
+    id 'org.mvplugins.multiverse-plugin' version '1.1.0'
 }
 
 group = 'org.mvplugins.multiverse.inventories'
