@@ -36,7 +36,7 @@ final class MigrateCommand extends InventoriesCommand {
 
     @Subcommand("migrate")
     @Syntax("<MultiInv|WorldInventories|PerWorldInventory>")
-    @CommandPermission("multiverse.inventories.import")
+    @CommandPermission("multiverse.inventories.migrate")
     @CommandCompletion("@dataimporters")
     @Description("Import inventories from MultiInv/WorldInventories/PerWorldInventory plugin.")
     void onMigrateCommand(
