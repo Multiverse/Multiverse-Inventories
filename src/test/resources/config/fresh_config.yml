@@ -1,0 +1,29 @@
+share-handling:
+  enable-bypass-permissions: false
+  enable-gamemode-share-handling: false
+  default-ungrouped-worlds: false
+  use-optionals-for-ungrouped-worlds: true
+  active-optional-shares: []
+
+sharables:
+  use-improved-respawn-location-detection: true
+  reset-last-location-on-death: false
+  apply-last-location-for-all-teleports: true
+  use-byte-serialization-for-inventory-data: false
+
+performance:
+  apply-playerdata-on-join: false
+  always-write-world-profile: true
+  preload-data-on-join:
+    worlds: []
+    groups: []
+  cache:
+    player-file-cache-size: 2000
+    player-file-cache-expiry: 60
+    player-profile-cache-size: 6000
+    player-profile-cache-expiry: 60
+    global-profile-cache-size: 500
+    global-profile-cache-expiry: 60
+
+first-run: true
+version: 5.0

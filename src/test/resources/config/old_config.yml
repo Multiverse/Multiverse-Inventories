@@ -1,0 +1,35 @@
+# Multiverse-Inventories Settings
+
+settings:
+  # This is the locale you wish to use.
+  locale: en
+
+  # If this is true it will generate world groups for you based on MV worlds.
+  first_run: true
+
+  # If this is set to true, it will enable bypass permissions (Check the wiki for more info.)
+  use_bypass: true
+
+  # If set to true, any world not listed in a group will automatically use the settings for the default group!
+  default_ungrouped_worlds: true
+
+  # The default and suggested setting for this is FALSE.
+  # False means Multiverse-Inventories will not attempt to load or save any player data when they log in and out.
+  # That means that MINECRAFT will handle that exact thing JUST LIKE IT DOES NORMALLY.
+  # Changing this to TRUE will have Multiverse-Inventories save player data when they log out and load it when they log in.
+  # The biggest potential drawback here is that if your server crashes, player stats/inventories may be lost/rolled back!
+  save_load_on_log_in_out: true
+
+  # If this is set to true, players will have different inventories/stats for each game mode.
+  # Please note that old data migrated to the version that has this feature will have their data copied for both game modes.
+  use_game_mode_profiles: true
+shares:
+  # When set to true, optional shares WILL be utilized in cases where a group does not cover their uses for a world.
+  # An example of this in action would be an ungrouped world using last_location.  When this is true, players will return to their last location in that world.
+  # When set to false, optional shares WILL NOt be utilized in these cases, effectively disabling it for ungrouped worlds.
+  optionals_for_ungrouped_worlds: false
+
+  # You must specify optional shares you wish to use here or they will be ignored.
+  # The only built in optional shares are "economy" and "last_location".
+  use_optionals:
+    - last_location

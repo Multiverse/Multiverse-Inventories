@@ -1,0 +1,28 @@
+groups:
+  default:
+    worlds:
+      - default
+    shares:
+      - all
+  group1:
+    worlds:
+      - world1
+      - world2
+    shares:
+      - inventory_contents
+      - hit_points
+    disabled-shares:
+      - total_xp
+  group2:
+    worlds:
+      - world3
+    shares:
+      - inventory_contents
+      - hit_points
+  group3:
+    worlds:
+    - world1
+    - world2
+    - world3
+    shares:
+      - off_hand
