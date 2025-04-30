@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -403,7 +404,16 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     public List<UUID> listGlobalProfileUUIDs() {
         return profileFilesLocator.listGlobalFiles()
                 .stream()
-                .map(file -> UUID.fromString(com.google.common.io.Files.getNameWithoutExtension(file.getName())))
+                .map(file -> {
+                    String fileName = com.google.common.io.Files.getNameWithoutExtension(file.getName());
+                    return Try.of(() -> UUID.fromString(fileName))
+                            .onFailure(throwable -> {
+                                Logging.warning("File name is not a valid UUID: %s", fileName);
+                                Logging.warning(throwable.getMessage());
+                            })
+                            .getOrNull();
+                })
+                .filter(Objects::nonNull)
                 .toList();
     }
 }
