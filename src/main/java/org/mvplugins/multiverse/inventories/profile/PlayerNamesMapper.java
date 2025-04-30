@@ -10,6 +10,7 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.vavr.control.Option;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 
@@ -18,7 +19,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,13 +83,17 @@ public final class PlayerNamesMapper {
                 buildPlayerNamesMap();
                 return;
             }
-            playerNamesJson.forEach((String uuid, Object name) -> {
-                UUID playerUUID = UUID.fromString(uuid);
-                String playerName = String.valueOf(name);
-                GlobalProfileKey globalProfileKey = GlobalProfileKey.of(playerUUID, playerName);
-                playerNamesMap.put(playerName, globalProfileKey);
-                playerUUIDMap.put(playerUUID, globalProfileKey);
-            });
+            playerNamesJson.forEach((String uuidStr, Object name) -> Try.of(() -> UUID.fromString(uuidStr))
+                    .onSuccess(uuid -> {
+                        String playerName = String.valueOf(name);
+                        GlobalProfileKey globalProfileKey = GlobalProfileKey.of(uuid, playerName);
+                        playerNamesMap.put(playerName, globalProfileKey);
+                        playerUUIDMap.put(uuid, globalProfileKey);
+                    })
+                    .onFailure(throwable -> {
+                        Logging.warning("Not a valid UUID: %s", uuidStr);
+                        Logging.warning(throwable.getMessage());
+                    }));
         } catch (Exception e) {
             e.printStackTrace();
         }
