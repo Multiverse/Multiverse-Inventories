@@ -14,6 +14,8 @@ import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Abstract class for handling sharing of data between worlds and game modes.
  */
@@ -45,21 +47,22 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
      * Finalizes the transfer from one world to another.  This handles the switching
      * inventories/stats for a player and persisting the changes.
      */
-    public final void handleSharing() {
+    public CompletableFuture<Void> handleSharing() {
         long startTime = System.nanoTime();
         this.prepareProfiles();
         ShareHandlingEvent event = this.createEvent();
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             Logging.fine("Share handling has been cancelled by another plugin!");
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         logAffectedProfilesCount();
         ProfileDataSnapshot snapshot = getSnapshot();
         updatePlayer();
-        updateProfiles(snapshot);
+        CompletableFuture<Void> future = updateProfiles(snapshot);
         double timeTaken = (System.nanoTime() - startTime) / 1000000.0;
         logHandlingComplete(timeTaken, event);
+        return future;
     }
 
     protected abstract void prepareProfiles();
@@ -89,22 +92,23 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
         }
     }
 
-    private void updateProfiles(ProfileDataSnapshot snapshot) {
+    private CompletableFuture<Void> updateProfiles(ProfileDataSnapshot snapshot) {
         if (affectedProfiles.getWriteProfiles().isEmpty()) {
             Logging.finest("No profiles to write - nothing more to do.");
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        for (PersistingProfile writeProfile : affectedProfiles.getWriteProfiles()) {
-            updatePersistingProfile(writeProfile, snapshot);
-        }
+        return CompletableFuture.allOf(affectedProfiles.getWriteProfiles()
+                .stream()
+                .map(writeProfile -> updatePersistingProfile(writeProfile, snapshot))
+                .toArray(CompletableFuture[]::new));
     }
 
-    private void updatePersistingProfile(PersistingProfile persistingProfile, ProfileDataSnapshot snapshot) {
+    private CompletableFuture<Void> updatePersistingProfile(PersistingProfile persistingProfile, ProfileDataSnapshot snapshot) {
         if (persistingProfile.getShares().isEmpty()) {
             Logging.finest("No shares to write - nothing more to do.");
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        profileDataStore.getPlayerProfile(persistingProfile.getProfileKey())
+        return profileDataStore.getPlayerProfile(persistingProfile.getProfileKey())
                 .thenCompose(playerProfile -> {
                     Logging.finer("Persisted: " + persistingProfile.getShares() + " to "
                             + playerProfile.getContainerType() + ":" + playerProfile.getContainerName()
