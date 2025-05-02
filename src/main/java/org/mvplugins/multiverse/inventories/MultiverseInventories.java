@@ -36,6 +36,10 @@ import org.mvplugins.multiverse.external.jakarta.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 /**
  * Multiverse-Inventories plugin main class.
  */
@@ -137,15 +141,19 @@ public class MultiverseInventories extends MultiverseModule {
     public void onDisable() {
         super.onDisable();
 
+        List<CompletableFuture<?>> futures = new ArrayList<>();
         for (final Player player : getServer().getOnlinePlayers()) {
             SingleShareWriter.of(this, player, Sharables.LAST_LOCATION).write(player.getLocation().clone());
-            new WriteOnlyShareHandler(this, player).handleSharing();
+            futures.add(new WriteOnlyShareHandler(this, player).handleSharing());
             if (inventoriesConfig.get().getApplyPlayerdataOnJoin()) {
-                profileDataSource.get().modifyGlobalProfile(
-                        GlobalProfileKey.of(player), profile -> profile.setLoadOnLogin(true));
+                futures.add(profileDataSource.get()
+                        .modifyGlobalProfile(
+                                GlobalProfileKey.of(player),
+                                profile -> profile.setLoadOnLogin(true)
+                        ));
             }
         }
-
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         MultiverseInventoriesApi.shutdown();
         this.dupingPatch.disable();
         this.shutdownDependencyInjection();
