@@ -1,6 +1,9 @@
 package org.mvplugins.multiverse.inventories;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.ServicePriority;
 import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.MultiverseCoreApi;
 import org.mvplugins.multiverse.core.inject.PluginServiceLocator;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
@@ -19,14 +22,16 @@ public final class MultiverseInventoriesApi {
 
     private static MultiverseInventoriesApi instance;
 
-    static void init(@NotNull PluginServiceLocator serviceLocator) {
+    static void init(@NotNull MultiverseInventories multiverseInventories) {
         if (instance != null) {
             throw new IllegalStateException("MultiverseCoreApi has already been initialized!");
         }
-        instance = new MultiverseInventoriesApi(serviceLocator);
+        instance = new MultiverseInventoriesApi(multiverseInventories.getServiceLocator());
+        Bukkit.getServicesManager().register(MultiverseInventoriesApi.class, instance, multiverseInventories, ServicePriority.Normal);
     }
 
     static void shutdown() {
+        Bukkit.getServicesManager().unregister(instance);
         instance = null;
     }
 
