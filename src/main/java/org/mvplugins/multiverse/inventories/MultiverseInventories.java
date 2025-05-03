@@ -128,7 +128,7 @@ public class MultiverseInventories extends MultiverseModule {
         this.playerNamesMapperProvider.get().loadMap();
 
         // Init api
-        MultiverseInventoriesApi.init(this.serviceLocator);
+        MultiverseInventoriesApi.init(this);
 
         Logging.config("Version %s (API v%s) Enabled - By %s",
                 this.getDescription().getVersion(), getVersionAsNumber(), StringFormatter.joinAnd(this.getDescription().getAuthors()));
