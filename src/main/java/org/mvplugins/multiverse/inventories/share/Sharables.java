@@ -191,6 +191,7 @@ public final class Sharables implements Shares {
     /**
      * Sharing Max Health.
      */
+    //todo: maybe store attribute modifier as well
     public static final Sharable<Double> MAX_HEALTH = new Sharable.Builder<>("max_hit_points", Double.class,
             new SharableHandler<Double>() {
                 @Override
@@ -257,7 +258,7 @@ public final class Sharables implements Shares {
 
     private static double getMaxHealth(Player player) {
         return Option.of(maxHealthAttr).map(player::getAttribute)
-                .map(AttributeInstance::getValue)
+                .map(AttributeInstance::getBaseValue)
                 .getOrElse(PlayerStats.MAX_HEALTH);
     }
 
