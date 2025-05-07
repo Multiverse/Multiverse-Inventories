@@ -232,22 +232,22 @@ public final class Sharables implements Shares {
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     Double value = profile.get(HEALTH);
-                    if (value == null) {
-                        player.setHealth(PlayerStats.HEALTH);
-                        return false;
-                    }
                     try {
+                        if (value == null) {
+                            player.setHealth(PlayerStats.HEALTH);
+                            return false;
+                        }
                         double maxHealth = getMaxHealth(player);
                         // This share may handled before MAX_HEALTH.
                         // Thus this is needed to ensure there is no loss in health stored
                         if (value > maxHealth) {
                             Option.of(maxHealthAttr).map(player::getAttribute)
-                                    .peek(attr -> attr.setBaseValue(maxHealth));
+                                    .peek(attr -> attr.setBaseValue(value));
                         }
                         player.setHealth(value);
                     } catch (IllegalArgumentException e) {
-                        Logging.fine("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(PlayerStats.HEALTH);
+                        Logging.warning("Invalid value '" + value + "': " + e.getMessage());
+                        player.setHealth(getMaxHealth(player));
                         return false;
                     }
                     return true;
