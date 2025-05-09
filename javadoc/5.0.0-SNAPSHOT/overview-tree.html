@@ -63,6 +63,7 @@ loadScripts(document, 'script');</script>
 <li><a href="org/mvplugins/multiverse/inventories/destination/package-tree.html">org.mvplugins.multiverse.inventories.destination</a>, </li>
 <li><a href="org/mvplugins/multiverse/inventories/event/package-tree.html">org.mvplugins.multiverse.inventories.event</a>, </li>
 <li><a href="org/mvplugins/multiverse/inventories/handleshare/package-tree.html">org.mvplugins.multiverse.inventories.handleshare</a>, </li>
+<li><a href="org/mvplugins/multiverse/inventories/listeners/package-tree.html">org.mvplugins.multiverse.inventories.listeners</a>, </li>
 <li><a href="org/mvplugins/multiverse/inventories/profile/package-tree.html">org.mvplugins.multiverse.inventories.profile</a>, </li>
 <li><a href="org/mvplugins/multiverse/inventories/profile/bulkedit/package-tree.html">org.mvplugins.multiverse.inventories.profile.bulkedit</a>, </li>
 <li><a href="org/mvplugins/multiverse/inventories/profile/container/package-tree.html">org.mvplugins.multiverse.inventories.profile.container</a>, </li>
@@ -134,6 +135,7 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">org.mvplugins.multiverse.inventories.util.<a href="org/mvplugins/multiverse/inventories/util/FutureNow.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.util">FutureNow</a></li>
+<li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/GameModeShareHandler.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">GameModeShareHandler</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.profile.<a href="org/mvplugins/multiverse/inventories/profile/GlobalProfile.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.profile">GlobalProfile</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.profile.key.<a href="org/mvplugins/multiverse/inventories/profile/key/GlobalProfileKey.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.profile.key">GlobalProfileKey</a>
 <ul>
@@ -186,12 +188,10 @@ loadScripts(document, 'script');</script>
 <li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/ReadOnlyShareHandler.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">ReadOnlyShareHandler</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.share.<a href="org/mvplugins/multiverse/inventories/share/Sharable.Builder.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.share">Sharable.Builder</a>&lt;T&gt;</li>
 <li class="circle">org.mvplugins.multiverse.inventories.share.<a href="org/mvplugins/multiverse/inventories/share/Sharables.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.share">Sharables</a> (implements org.mvplugins.multiverse.inventories.share.<a href="org/mvplugins/multiverse/inventories/share/Shares.html" title="interface in org.mvplugins.multiverse.inventories.share">Shares</a>)</li>
-<li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/ShareHandleListener.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">ShareHandleListener</a> (implements org.bukkit.event.Listener)</li>
 <li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/ShareHandlingUpdater.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">ShareHandlingUpdater</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.profile.data.<a href="org/mvplugins/multiverse/inventories/profile/data/SingleSharableData.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.profile.data">SingleSharableData</a>&lt;T&gt; (implements org.mvplugins.multiverse.inventories.profile.data.<a href="org/mvplugins/multiverse/inventories/profile/data/ProfileData.html" title="interface in org.mvplugins.multiverse.inventories.profile.data">ProfileData</a>)</li>
 <li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/SingleShareReader.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">SingleShareReader</a>&lt;T&gt;</li>
 <li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/SingleShareWriter.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">SingleShareWriter</a>&lt;T&gt;</li>
-<li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/SpawnChangeListener.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">SpawnChangeListener</a> (implements org.bukkit.event.Listener)</li>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" class="type-name-link external-link" title="class or interface in java.lang">Throwable</a> (implements java.io.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/Serializable.html" title="class or interface in java.io" class="external-link">Serializable</a>)
 <ul>
 <li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Exception.html" class="type-name-link external-link" title="class or interface in java.lang">Exception</a>
@@ -206,6 +206,7 @@ loadScripts(document, 'script');</script>
 </li>
 </ul>
 </li>
+<li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/WorldChangeShareHandler.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">WorldChangeShareHandler</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.profile.group.<a href="org/mvplugins/multiverse/inventories/profile/group/WorldGroup.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.profile.group">WorldGroup</a></li>
 <li class="circle">org.mvplugins.multiverse.inventories.handleshare.<a href="org/mvplugins/multiverse/inventories/handleshare/WriteOnlyShareHandler.html" class="type-name-link" title="class in org.mvplugins.multiverse.inventories.handleshare">WriteOnlyShareHandler</a></li>
 </ul>
@@ -234,6 +235,15 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">org.mvplugins.multiverse.inventories.share.<a href="org/mvplugins/multiverse/inventories/share/Shares.html" class="type-name-link" title="interface in org.mvplugins.multiverse.inventories.share">Shares</a> (also extends java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Cloneable.html" title="class or interface in java.lang" class="external-link">Cloneable</a>, java.util.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;E&gt;, java.util.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;E&gt;)</li>
+</ul>
+</li>
+<li class="circle">org.bukkit.event.Listener
+<ul>
+<li class="circle">org.mvplugins.multiverse.core.dynamiclistener.DynamicListener
+<ul>
+<li class="circle">org.mvplugins.multiverse.inventories.listeners.<a href="org/mvplugins/multiverse/inventories/listeners/MVInvListener.html" class="type-name-link" title="interface in org.mvplugins.multiverse.inventories.listeners">MVInvListener</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="circle">org.mvplugins.multiverse.inventories.profile.data.<a href="org/mvplugins/multiverse/inventories/profile/data/ProfileData.html" class="type-name-link" title="interface in org.mvplugins.multiverse.inventories.profile.data">ProfileData</a></li>

@@ -9,6 +9,7 @@ org.mvplugins.multiverse.inventories.dataimport
 org.mvplugins.multiverse.inventories.destination
 org.mvplugins.multiverse.inventories.event
 org.mvplugins.multiverse.inventories.handleshare
+org.mvplugins.multiverse.inventories.listeners
 org.mvplugins.multiverse.inventories.profile
 org.mvplugins.multiverse.inventories.profile.bulkedit
 org.mvplugins.multiverse.inventories.profile.container
