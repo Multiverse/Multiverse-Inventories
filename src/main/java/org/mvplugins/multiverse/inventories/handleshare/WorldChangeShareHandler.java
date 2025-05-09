@@ -16,14 +16,14 @@ import java.util.List;
 /**
  * WorldChange implementation of ShareHandler.
  */
-final class WorldChangeShareHandler extends ShareHandler {
+public final class WorldChangeShareHandler extends ShareHandler {
 
     private final String fromWorld;
     private final String toWorld;
     private final List<WorldGroup> fromWorldGroups;
     private final List<WorldGroup> toWorldGroups;
 
-    WorldChangeShareHandler(MultiverseInventories inventories, Player player, String fromWorld, String toWorld) {
+    public WorldChangeShareHandler(MultiverseInventories inventories, Player player, String fromWorld, String toWorld) {
         super(inventories, player);
         this.fromWorld = fromWorld;
         this.toWorld = toWorld;

@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * GameMode change implementation of ShareHandler.
  */
-final class GameModeShareHandler extends ShareHandler {
+public final class GameModeShareHandler extends ShareHandler {
 
     private final GameMode fromGameMode;
     private final GameMode toGameMode;
@@ -28,7 +28,7 @@ final class GameModeShareHandler extends ShareHandler {
     private final String world;
     private final List<WorldGroup> worldGroups;
 
-    GameModeShareHandler(MultiverseInventories inventories, Player player,
+    public GameModeShareHandler(MultiverseInventories inventories, Player player,
                          GameMode fromGameMode, GameMode toGameMode) {
         super(inventories, player);
         this.fromGameMode = fromGameMode;

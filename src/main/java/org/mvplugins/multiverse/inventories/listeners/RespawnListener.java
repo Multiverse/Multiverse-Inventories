@@ -1,12 +1,12 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.DefaultEventPriority;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.EventMethod;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -19,7 +19,7 @@ import java.util.List;
  * Specific events for handling player respawns location
  */
 @Service
-final class RespawnListener implements Listener {
+final class RespawnListener implements MVInvListener {
 
     private final WorldGroupManager worldGroupManager;
     private final WorldManager worldManager;
@@ -38,7 +38,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.LOWEST)
     void lowestPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             World world = event.getPlayer().getWorld();
@@ -52,7 +53,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.LOW)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.LOW)
     void lowPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             this.handleRespawn(event, EventPriority.LOW);
@@ -64,7 +66,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.NORMAL)
     void normalPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             this.handleRespawn(event, EventPriority.NORMAL);
@@ -76,7 +79,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.HIGH)
     void highPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             this.handleRespawn(event, EventPriority.HIGH);
@@ -88,7 +92,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.HIGHEST)
     void highestPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             this.handleRespawn(event, EventPriority.HIGHEST);
@@ -100,7 +105,8 @@ final class RespawnListener implements Listener {
      *
      * @param event The player respawn event.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void monitorPriorityRespawn(PlayerRespawnEvent event) {
         if (!event.isBedSpawn()) {
             this.handleRespawn(event, EventPriority.MONITOR);

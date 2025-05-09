@@ -56,7 +56,7 @@ public final class MinecraftTools {
                 }
             }
         }
-        Logging.warning("Unable to anchor, respawn may not work as expected!");
+        Logging.warning("Unable to find bed, respawn may not work as expected!");
         return respawnLocation;
     }
 
@@ -77,7 +77,7 @@ public final class MinecraftTools {
                 }
             }
         }
-        Logging.warning("Unable to anchor, respawn may not work as expected!");
+        Logging.warning("Unable to find anchor, respawn may not work as expected!");
         return respawnLocation;
     }
 

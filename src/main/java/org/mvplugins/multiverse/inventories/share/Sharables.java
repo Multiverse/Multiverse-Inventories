@@ -3,8 +3,10 @@ package org.mvplugins.multiverse.inventories.share;
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Sets;
 import org.bukkit.advancement.AdvancementProgress;
+import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
+import org.mvplugins.multiverse.core.utils.ReflectHelper;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
@@ -555,7 +557,7 @@ public final class Sharables implements Shares {
             new SharableHandler<Location>() {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
-                    if (inventories.isUsingSpawnChangeEvent()) {
+                    if (hasSetSpawnEvent) {
                         // Bed spawn location already updated during PlayerSpawnChangeEvent
                         return;
                     }
@@ -598,7 +600,10 @@ public final class Sharables implements Shares {
 
     // todo: handle this somewhere better
     private static List<UUID> ignoreSpawnListener = new ArrayList<>();
+    private static boolean hasSetSpawnEvent = ReflectHelper.hasClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
+            || ReflectHelper.hasClass("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent");
 
+    @ApiStatus.Internal
     public static boolean isIgnoringSpawnListener(Player player) {
         return ignoreSpawnListener.contains(player.getUniqueId());
     }
