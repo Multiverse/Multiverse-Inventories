@@ -1,12 +1,20 @@
-package org.mvplugins.multiverse.inventories.handleshare;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.base.Strings;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.DefaultEventPriority;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.EventMethod;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.IgnoreIfCancelled;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.handleshare.GameModeShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.ReadOnlyShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
+import org.mvplugins.multiverse.inventories.handleshare.WorldChangeShareHandler;
+import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
@@ -25,9 +33,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -55,7 +61,7 @@ import java.util.concurrent.TimeUnit;
  * Events related to handling of player profile changes.
  */
 @Service
-public final class ShareHandleListener implements Listener {
+final class ShareHandleListener implements MVInvListener {
 
     private final MultiverseInventories inventories;
     private final InventoriesConfig config;
@@ -79,7 +85,8 @@ public final class ShareHandleListener implements Listener {
         this.profileContainerStoreProvider = profileContainerStoreProvider;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void playerPreLogin(AsyncPlayerPreLoginEvent event) {
         if (event.getLoginResult() != Result.ALLOWED) {
             return;
@@ -105,7 +112,7 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The player join event.
      */
-    @EventHandler
+    @EventMethod
     void playerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         // Just in case AsyncPlayerPreLoginEvent was still the old name
@@ -146,7 +153,7 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The player quit event.
      */
-    @EventHandler
+    @EventMethod
     void playerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String world = event.getPlayer().getWorld().getName();
@@ -181,7 +188,8 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The game mode change event.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void playerGameModeChange(PlayerGameModeChangeEvent event) {
         if (event.isCancelled() || !config.getEnableGamemodeShareHandling()) {
             return;
@@ -197,7 +205,8 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The world change event.
      */
-    @EventHandler(priority = EventPriority.LOW)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.LOW)
     void playerChangedWorld(PlayerChangedWorldEvent event) {
         Player player = event.getPlayer();
         World fromWorld = event.getFrom();
@@ -223,7 +232,8 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The player teleport event.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void playerTeleport(PlayerTeleportEvent event) {
         if (event.isCancelled()
                 || event.getFrom().getWorld().equals(event.getTo().getWorld())
@@ -243,7 +253,8 @@ public final class ShareHandleListener implements Listener {
      *
      * @param event The player death event.
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void playerDeath(PlayerDeathEvent event) {
         Logging.finer("=== Handling PlayerDeathEvent for: " + event.getEntity().getName() + " ===");
         String deathWorld = event.getEntity().getWorld().getName();
@@ -267,7 +278,8 @@ public final class ShareHandleListener implements Listener {
         profileDataSource.updatePlayerProfile(profile);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventMethod
+    @DefaultEventPriority(EventPriority.MONITOR)
     void playerRespawn(PlayerRespawnEvent event) {
         Location respawnLoc = event.getRespawnLocation();
         if (respawnLoc == null) {
@@ -284,7 +296,9 @@ public final class ShareHandleListener implements Listener {
                 2L);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventMethod
+    @IgnoreIfCancelled
+    @DefaultEventPriority(EventPriority.HIGH)
     void entityPortal(EntityPortalEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Item) && !(entity instanceof InventoryHolder)) {
@@ -334,7 +348,7 @@ public final class ShareHandleListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventMethod
     void worldUnload(WorldUnloadEvent event) {
         String unloadWorldName = event.getWorld().getName();
 

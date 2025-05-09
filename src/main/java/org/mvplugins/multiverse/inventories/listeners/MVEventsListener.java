@@ -1,24 +1,23 @@
-package org.mvplugins.multiverse.inventories;
+package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
+import org.mvplugins.multiverse.core.dynamiclistener.annotations.EventMethod;
 import org.mvplugins.multiverse.core.event.MVConfigReloadEvent;
 import org.mvplugins.multiverse.core.event.MVDebugModeEvent;
 import org.mvplugins.multiverse.core.event.MVDumpsDebugInfoEvent;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
-import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 
 import java.io.File;
 
 @Service
-final class MVEventsListener implements Listener {
+final class MVEventsListener implements MVInvListener {
 
     private final MultiverseInventories inventories;
     private final InventoriesConfig config;
@@ -42,7 +41,7 @@ final class MVEventsListener implements Listener {
      *
      * @param event The MVVersionEvent that this plugin will listen for.
      */
-    @EventHandler
+    @EventMethod
     void dumpsDebugInfoRequest(MVDumpsDebugInfoEvent event) {
         event.appendDebugInfo(getDebugInfo());
         File configFile = new File(this.inventories.getDataFolder(), "config.yml");
@@ -94,7 +93,7 @@ final class MVEventsListener implements Listener {
         return versionInfo.toString();
     }
 
-    @EventHandler
+    @EventMethod
     void onDebugModeChange(MVDebugModeEvent event) {
         Logging.setDebugLevel(event.getLevel());
     }
@@ -104,7 +103,7 @@ final class MVEventsListener implements Listener {
      *
      * @param event The MVConfigReloadEvent that this plugin will listen for.
      */
-    @EventHandler
+    @EventMethod
     void configReload(MVConfigReloadEvent event) {
         this.inventories.reloadConfig();
         event.addConfig("Multiverse-Inventories - config.yml");

@@ -16,9 +16,8 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
-import org.mvplugins.multiverse.inventories.handleshare.ShareHandleListener;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
-import org.mvplugins.multiverse.inventories.handleshare.SpawnChangeListener;
+import org.mvplugins.multiverse.inventories.listeners.MVInvListener;
 import org.mvplugins.multiverse.inventories.handleshare.WriteOnlyShareHandler;
 import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
@@ -55,12 +54,6 @@ public class MultiverseInventories extends MultiverseModule {
     @Inject
     private Provider<InventoriesConfig> inventoriesConfig;
     @Inject
-    private Provider<ShareHandleListener> shareHandleListener;
-    @Inject
-    private Provider<RespawnListener> respawnListener;
-    @Inject
-    private Provider<MVEventsListener> mvEventsListener;
-    @Inject
     private Provider<WorldGroupManager> worldGroupManager;
     @Inject
     private Provider<PlayerNamesMapper> playerNamesMapperProvider;
@@ -82,7 +75,6 @@ public class MultiverseInventories extends MultiverseModule {
     private Provider<MVInvCommandPermissions> mvInvCommandPermissions;
 
     private InventoriesDupingPatch dupingPatch;
-    private boolean usingSpawnChangeEvent = false;
 
     public MultiverseInventories() {
         super();
@@ -114,7 +106,7 @@ public class MultiverseInventories extends MultiverseModule {
         inventoriesConfig.get().save().onFailure(e -> Logging.severe("Failed to save config file!"));
 
         // Register Stuff
-        this.registerEvents();
+        this.registerDynamicListeners(MVInvListener.class);
         this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
@@ -158,23 +150,6 @@ public class MultiverseInventories extends MultiverseModule {
         this.dupingPatch.disable();
         this.shutdownDependencyInjection();
         Logging.shutdown();
-    }
-
-    private void registerEvents() {
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        pluginManager.registerEvents(shareHandleListener.get(), this);
-        pluginManager.registerEvents(respawnListener.get(), this);
-        pluginManager.registerEvents(mvEventsListener.get(), this);
-        if (inventoriesConfig.get().getUseImprovedRespawnLocationDetection()) {
-            try {
-                Class.forName("org.bukkit.event.player.PlayerSpawnChangeEvent");
-                pluginManager.registerEvents(new SpawnChangeListener(this), this);
-                usingSpawnChangeEvent = true;
-                Logging.fine("Yayy PlayerSpawnChangeEvent will be used!");
-            } catch (ClassNotFoundException e) {
-                Logging.fine("PlayerSpawnChangeEvent will not be used!");
-            }
-        }
     }
 
     private void registerCommands() {
@@ -258,9 +233,5 @@ public class MultiverseInventories extends MultiverseModule {
             }
             worldGroupManager.get().checkForConflicts(null);
         }, 1L);
-    }
-
-    public boolean isUsingSpawnChangeEvent() {
-        return usingSpawnChangeEvent;
     }
 }
