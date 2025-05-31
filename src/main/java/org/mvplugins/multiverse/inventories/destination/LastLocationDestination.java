@@ -1,8 +1,6 @@
 package org.mvplugins.multiverse.inventories.destination;
 
-import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.command.CommandSender;
-import org.checkerframework.checker.units.qual.N;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.destination.Destination;
 import org.mvplugins.multiverse.core.destination.DestinationSuggestionPacket;
@@ -47,7 +45,12 @@ public final class LastLocationDestination implements Destination<LastLocationDe
         if (!worldManager.isLoadedWorld(destinationParams)) {
             return Attempt.failure(InstanceFailureReason.WORLD_NOT_FOUND);
         }
-        return Attempt.success(new LastLocationDestinationInstance(this, worldGroupManager, profileContainerStoreProvider, destinationParams));
+        return Attempt.success(new LastLocationDestinationInstance(
+                this,
+                worldManager,
+                worldGroupManager,
+                profileContainerStoreProvider,
+                destinationParams));
     }
 
     @Override

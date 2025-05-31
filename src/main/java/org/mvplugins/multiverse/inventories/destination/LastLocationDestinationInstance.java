@@ -6,6 +6,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 import org.mvplugins.multiverse.core.destination.DestinationInstance;
+import org.mvplugins.multiverse.core.world.MultiverseWorld;
+import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
@@ -15,16 +17,19 @@ import org.mvplugins.multiverse.inventories.share.Sharables;
 
 public final class LastLocationDestinationInstance extends DestinationInstance<LastLocationDestinationInstance, LastLocationDestination> {
 
+    private final WorldManager worldManager;
     private final WorldGroupManager worldGroupManager;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final String worldName;
 
     LastLocationDestinationInstance(
             @NotNull LastLocationDestination destination,
+            @NotNull WorldManager worldManager,
             @NotNull WorldGroupManager worldGroupManager,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull String worldName) {
         super(destination);
+        this.worldManager = worldManager;
         this.worldGroupManager = worldGroupManager;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.worldName = worldName;
@@ -32,23 +37,24 @@ public final class LastLocationDestinationInstance extends DestinationInstance<L
 
     @Override
     public @NotNull Option<Location> getLocation(@NotNull Entity teleportee) {
-        Logging.warning("LastLocationDestination: teleportee: " + teleportee);
+        Logging.finer("LastLocationDestination: teleportee: " + teleportee);
         if (!(teleportee instanceof Player player)) {
-            return Option.none();
+            return worldManager.getLoadedWorld(worldName).map(MultiverseWorld::getSpawnLocation);
         }
 
         var playerWorld = player.getWorld().getName();
         if (playerWorld.equals(worldName)) {
-            return Option.none();
+            return worldManager.getLoadedWorld(worldName).map(MultiverseWorld::getSpawnLocation);
         }
 
         for (var group : worldGroupManager.getGroupsForWorld(worldName)) {
-            Logging.warning("LastLocationDestination: group: " + group);
+            Logging.finer("LastLocationDestination: group: " + group);
             if (!group.containsWorld(playerWorld) && group.getApplicableShares().contains(Sharables.LAST_LOCATION)) {
                 return Option.of(profileContainerStoreProvider.getStore(ContainerType.GROUP)
                         .getContainer(group.getName())
                         .getPlayerProfileNow(player)
-                        .get(Sharables.LAST_LOCATION));
+                        .get(Sharables.LAST_LOCATION))
+                        .orElse(() -> worldManager.getLoadedWorld(worldName).map(MultiverseWorld::getSpawnLocation));
             }
         }
 
@@ -56,7 +62,8 @@ public final class LastLocationDestinationInstance extends DestinationInstance<L
         return Option.of(profileContainerStoreProvider.getStore(ContainerType.WORLD)
                 .getContainer(worldName)
                 .getPlayerProfileNow(player)
-                .get(Sharables.LAST_LOCATION));
+                .get(Sharables.LAST_LOCATION))
+                .orElse(() -> worldManager.getLoadedWorld(worldName).map(MultiverseWorld::getSpawnLocation));
     }
 
     @Override
