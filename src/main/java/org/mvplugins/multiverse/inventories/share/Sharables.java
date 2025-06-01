@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Sets;
+import org.bukkit.Material;
 import org.bukkit.advancement.AdvancementProgress;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
@@ -18,7 +19,6 @@ import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.mvplugins.multiverse.inventories.util.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Statistic;
@@ -198,19 +198,18 @@ public final class Sharables implements Shares {
             new SharableHandler<Double>() {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
-                    profile.set(MAX_HEALTH, getMaxHealth(player));
+                    // todo: Look into storing max health modifiers as well
+                    profile.set(MAX_HEALTH, getBaseHealth(player));
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     Double value = profile.get(MAX_HEALTH);
                     if (value == null) {
-                        Option.of(maxHealthAttr).map(player::getAttribute)
-                                .peek(attr -> attr.setBaseValue(attr.getDefaultValue()));
+                        setBaseHealth(player, getDefaultMaxHealth(player));
                         return false;
                     }
-                    Option.of(maxHealthAttr).map(player::getAttribute)
-                            .peek(attr -> attr.setBaseValue(value));
+                    setBaseHealth(player, value);
                     return true;
                 }
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_MAX_HEALTH))
@@ -239,28 +238,45 @@ public final class Sharables implements Shares {
                             player.setHealth(PlayerStats.HEALTH);
                             return false;
                         }
-                        double maxHealth = getMaxHealth(player);
-                        // This share may handled before MAX_HEALTH.
-                        // Thus this is needed to ensure there is no loss in health stored
-                        if (value > maxHealth) {
-                            Option.of(maxHealthAttr).map(player::getAttribute)
-                                    .peek(attr -> attr.setBaseValue(value));
+                        if (value < 0) {
+                            player.setHealth(0);
+                            return false;
                         }
-                        player.setHealth(value);
+                        if (value > getMaxHealth(player)) {
+                            // Try set max health attribute
+                            setBaseHealth(player, Objects.requireNonNullElse(profile.get(MAX_HEALTH), getDefaultMaxHealth(player)));
+                        }
+                        double newMaxHealth = getMaxHealth(player);
+                        player.setHealth(value > newMaxHealth ? newMaxHealth : value);
+                        return true;
                     } catch (IllegalArgumentException e) {
                         Logging.warning("Invalid value '" + value + "': " + e.getMessage());
-                        player.setHealth(getMaxHealth(player));
                         return false;
                     }
-                    return true;
                 }
-
             }).stringSerializer(new ProfileEntry(true, DataStrings.PLAYER_HEALTH))
             .altName("health").altName("hp").altName("hitpoints").build();
 
-    private static double getMaxHealth(Player player) {
+    private static double getDefaultMaxHealth(Player player) {
+        return Option.of(maxHealthAttr).map(player::getAttribute)
+                .map(AttributeInstance::getDefaultValue)
+                .getOrElse(PlayerStats.MAX_HEALTH);
+    }
+
+    private static double getBaseHealth(Player player) {
         return Option.of(maxHealthAttr).map(player::getAttribute)
                 .map(AttributeInstance::getBaseValue)
+                .getOrElse(PlayerStats.MAX_HEALTH);
+    }
+
+    private static void setBaseHealth(Player player, double value) {
+        Option.of(maxHealthAttr).map(player::getAttribute)
+                .peek(attr -> attr.setBaseValue(value));
+    }
+
+    private static double getMaxHealth(Player player) {
+        return Option.of(maxHealthAttr).map(player::getAttribute)
+                .map(AttributeInstance::getValue)
                 .getOrElse(PlayerStats.MAX_HEALTH);
     }
 
