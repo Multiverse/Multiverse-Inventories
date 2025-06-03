@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.share;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Sets;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.advancement.AdvancementProgress;
 import org.jetbrains.annotations.ApiStatus;
@@ -739,6 +740,10 @@ public final class Sharables implements Shares {
                     int totalExperience = player.getTotalExperience();
                     int level = player.getLevel();
                     float exp = player.getExp();
+                    boolean announceAdvancements = Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS));
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                    }
 
                     Bukkit.advancementIterator().forEachRemaining(advancement -> {
                         AdvancementProgress advancementProgress = player.getAdvancementProgress(advancement);
@@ -758,6 +763,9 @@ public final class Sharables implements Shares {
                     player.setExp(exp);
                     player.setLevel(level);
                     player.setTotalExperience(totalExperience);
+                    if (announceAdvancements) {
+                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+                    }
 
                     return advancements != null;
                 }
