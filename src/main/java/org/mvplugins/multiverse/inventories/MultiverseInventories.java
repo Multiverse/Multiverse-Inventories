@@ -2,7 +2,6 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.module.MultiverseModule;
@@ -73,6 +72,8 @@ public class MultiverseInventories extends MultiverseModule {
     private Provider<MVInvCommandConditions> mvInvCommandConditions;
     @Inject
     private Provider<MVInvCommandPermissions> mvInvCommandPermissions;
+    @Inject
+    private Provider<BstatsMetricsConfigurator> metricsConfiguratorProvider;
 
     private InventoriesDupingPatch dupingPatch;
 
@@ -110,6 +111,7 @@ public class MultiverseInventories extends MultiverseModule {
         this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
+        this.setupMetrics();
 
         // Hook plugins that can be imported from
         this.hookImportables();
@@ -180,6 +182,17 @@ public class MultiverseInventories extends MultiverseModule {
                 .andThenTry(() -> {
                     Logging.fine("Found luckperms!");
                     serviceLocator.getService(WorldGroupContextCalculator.class);
+                });
+    }
+
+    /**
+     * Setup bstats Metrics.
+     */
+    private void setupMetrics() {
+        Try.of(() -> metricsConfiguratorProvider.get())
+                .onFailure(e -> {
+                    Logging.severe("Failed to setup metrics");
+                    e.printStackTrace();
                 });
     }
 
