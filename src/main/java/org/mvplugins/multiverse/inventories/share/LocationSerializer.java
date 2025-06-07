@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.share;
 
 import org.bukkit.Location;
+import org.mvplugins.multiverse.core.world.location.UnloadedWorldLocation;
 import org.mvplugins.multiverse.inventories.util.LegacyParsers;
 
 import java.util.Map;
@@ -30,6 +31,6 @@ final class LocationSerializer implements SharableSerializer<Location> {
 
     @Override
     public Object serialize(Location location) {
-        return location;
+        return new UnloadedWorldLocation(location);
     }
 }
