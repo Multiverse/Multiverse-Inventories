@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.core.utils.ReflectHelper;
 import org.mvplugins.multiverse.core.world.WorldManager;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportException;
 import org.mvplugins.multiverse.inventories.profile.GlobalProfile;
@@ -128,7 +129,11 @@ final class PwiImportHelper {
         }
         this.playerList = Arrays.stream(playerFolders)
                 .filter(File::isDirectory)
-                .map(file -> UUID.fromString(file.getName()))
+                .map(file -> Try.of(() -> UUID.fromString(file.getName()))
+                        .onFailure(throwable -> Logging.warning("Unable to convert %s to UUID: %s",
+                                file.getName(), throwable.getMessage()))
+                        .getOrNull())
+                .filter(Objects::nonNull)
                 .map(Bukkit::getOfflinePlayer)
                 .toList();
     }
