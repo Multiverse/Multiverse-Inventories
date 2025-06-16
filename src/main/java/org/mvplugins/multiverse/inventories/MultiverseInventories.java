@@ -111,13 +111,14 @@ public class MultiverseInventories extends MultiverseModule {
         this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
-        this.setupMetrics();
 
         // Hook plugins that can be imported from
         this.hookImportables();
 
         // Init other extensions
         this.hookLuckPerms();
+        this.loadPlaceholderApiIntegration();
+        this.setupMetrics();
         this.dupingPatch = InventoriesDupingPatch.enableDupingPatch(this);
         this.playerNamesMapperProvider.get().loadMap();
 
@@ -183,6 +184,22 @@ public class MultiverseInventories extends MultiverseModule {
                     Logging.fine("Found luckperms!");
                     serviceLocator.getService(WorldGroupContextCalculator.class);
                 });
+    }
+
+    /**
+     * Setup placeholder api hook
+     */
+    private void loadPlaceholderApiIntegration() {
+        if (!inventoriesConfig.get().getRegisterPapiHook()) {
+            return;
+        }
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Try.run(() -> serviceLocator.getService(PlaceholderExpansionHook.class))
+                    .onFailure(e -> {
+                        Logging.severe("Failed to load PlaceholderAPI integration.");
+                        e.printStackTrace();
+                    });
+        }
     }
 
     /**

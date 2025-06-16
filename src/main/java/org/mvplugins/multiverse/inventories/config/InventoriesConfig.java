@@ -1,6 +1,7 @@
 package org.mvplugins.multiverse.inventories.config;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.config.handle.CommentedConfigurationHandle;
 import org.mvplugins.multiverse.core.config.handle.StringPropertyHandle;
@@ -253,6 +254,31 @@ public final class InventoriesConfig {
 
     public Try<Void> setGlobalProfileCacheExpiry(int globalProfileCacheExpiry) {
         return this.configHandle.set(configNodes.globalProfileCacheExpiry, globalProfileCacheExpiry);
+    }
+
+    /**
+     * Get the value of registerPapiHook
+     *
+     * @return The value of registerPapiHook
+     *
+     * @since 5.1
+     */
+    @ApiStatus.AvailableSince("5.1")
+    public boolean getRegisterPapiHook() {
+        return this.configHandle.get(configNodes.registerPapiHook);
+    }
+
+    /**
+     * Sets the value of registerPapiHook
+     *
+     * @param registerPapiHook The value of registerPapiHook
+     * @return The result of the operation
+     *
+     * @since 5.1
+     */
+    @ApiStatus.AvailableSince("5.1")
+    public Try<Void> setRegisterPapiHook(boolean registerPapiHook) {
+        return this.configHandle.set(configNodes.registerPapiHook, registerPapiHook);
     }
 
     /**

@@ -13,6 +13,11 @@ repositories {
     }
 
     maven {
+        name = "helpchatRepoReleases"
+        url = uri("https://repo.helpch.at/releases/")
+    }
+
+    maven {
         name = 'benwoo1110'
         url = uri('https://repo.c0ding.party/multiverse-beta')
     }
@@ -44,6 +49,9 @@ dependencies {
 
     // Caching
     shadowed("com.github.ben-manes.caffeine:caffeine:3.2.0")
+
+    // PlaceholderAPI
+    externalPlugin 'me.clip:placeholderapi:2.11.6'
 
     // Luckperms for group context
     compileOnly 'net.luckperms:api:5.4'
