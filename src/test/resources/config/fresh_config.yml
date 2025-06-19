@@ -25,5 +25,8 @@ performance:
     global-profile-cache-size: 500
     global-profile-cache-expiry: 60
 
+misc:
+  register-papi-hook: true
+
 first-run: true
 version: 5.0

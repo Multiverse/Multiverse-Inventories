@@ -224,6 +224,18 @@ final class InventoriesConfigNodes {
             .name("global-profile-cache-expiry")
             .build());
 
+    private final ConfigHeaderNode miscHeader = node(ConfigHeaderNode.builder("misc")
+            .comment("")
+            .comment("")
+            .build());
+
+    final ConfigNode<Boolean> registerPapiHook = node(ConfigNode.builder("misc.register-papi-hook", Boolean.class)
+            .comment("This config option defines whether or not Multiverse should register the PlaceholderAPI hook.")
+            .comment("This only applies if PlaceholderAPI is installed.")
+            .defaultValue(true)
+            .name("register-papi-hook")
+            .build());
+
     final ConfigNode<Boolean> firstRun = node(ConfigNode.builder("first-run", Boolean.class)
             .comment("")
             .comment("")
