@@ -107,8 +107,7 @@ final class PlaceholderExpansionHook extends PlaceholderExpansion {
                 warning("Group not found: " + paramsArray.get(paramsArray.size() - 1));
                 return null;
             }
-        }
-        if (offlinePlayer instanceof Player player) {
+        } else if (offlinePlayer instanceof Player player) {
             group = worldGroupManager.getGroupsForWorld(player.getWorld().getName())
                     .stream()
                     .findFirst()
