@@ -6,6 +6,8 @@ import org.mvplugins.multiverse.core.locale.message.MessageReplacement;
 import org.mvplugins.multiverse.external.acf.locales.MessageKey;
 import org.mvplugins.multiverse.external.acf.locales.MessageKeyProvider;
 
+import java.util.Locale;
+
 /**
  * Locales keys for Multiverse-Inventories
  */
@@ -99,7 +101,7 @@ public enum MVInvi18n implements MessageKeyProvider {
     ;
 
     private final MessageKey key = MessageKey.of("mv-inventories." + this.name().replace('_', '.')
-            .toLowerCase());
+            .toLowerCase(Locale.ENGLISH));
 
     /**
      * {@inheritDoc}
