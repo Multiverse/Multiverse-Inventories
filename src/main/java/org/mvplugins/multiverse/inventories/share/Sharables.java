@@ -4,12 +4,14 @@ import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Sets;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.advancement.AdvancementProgress;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.core.utils.ReflectHelper;
 import org.mvplugins.multiverse.external.vavr.control.Option;
+import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.data.ProfileData;
@@ -600,25 +602,33 @@ public final class Sharables implements Shares {
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
-                        Logging.finer("No bed location saved");
-                        ignoreSpawnListener.add(player.getUniqueId());
-                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
-                        ignoreSpawnListener.remove(player.getUniqueId());
+                        Logging.finer("No respawn location saved");
+                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
                         return false;
                     }
-                    ignoreSpawnListener.add(player.getUniqueId());
-                    player.setBedSpawnLocation(loc, true);
-                    ignoreSpawnListener.remove(player.getUniqueId());
-                    Logging.finer("updating bed: " + player.getBedSpawnLocation());
+                    World loclWorld = Try.of(loc::getWorld).getOrNull();
+                    if (loclWorld == null) {
+                        Logging.warning("Respawn location has invalid world!");
+                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        return false;
+                    }
+                    setSpawnLocation(player, loc);
+                    Logging.finer("updated respawn location: " + player.getBedSpawnLocation());
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     // todo: handle this somewhere better
-    private static List<UUID> ignoreSpawnListener = new ArrayList<>();
-    private static boolean hasSetSpawnEvent = ReflectHelper.hasClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
+    private static final List<UUID> ignoreSpawnListener = new ArrayList<>();
+    private static final boolean hasSetSpawnEvent = ReflectHelper.hasClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
             || ReflectHelper.hasClass("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent");
+
+    private static void setSpawnLocation(Player player, Location loc) {
+        ignoreSpawnListener.add(player.getUniqueId());
+        player.setBedSpawnLocation(loc, true);
+        ignoreSpawnListener.remove(player.getUniqueId());
+    }
 
     @ApiStatus.Internal
     public static boolean isIgnoringSpawnListener(Player player) {
