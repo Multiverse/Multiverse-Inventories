@@ -61,7 +61,7 @@ final class GroupSharesPrompt extends InventoriesPrompt {
                 issuer.sendInfo(MVInvi18n.GROUP_UPDATED);
             }
             issuer.sendInfo(MVInvi18n.INFO_GROUP, replace("{group}").with(group.getName()));
-            issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(group.getWorlds()));
+            issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(group.getConfigWorlds()));
             issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(group.getShares()));
             worldGroupManager.checkForConflicts(issuer);
             return nextPrompt;

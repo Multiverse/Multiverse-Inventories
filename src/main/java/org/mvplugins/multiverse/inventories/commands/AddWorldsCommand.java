@@ -2,13 +2,11 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
-import org.mvplugins.multiverse.core.world.MultiverseWorld;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
+import org.mvplugins.multiverse.core.utils.REPatterns;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
+import org.mvplugins.multiverse.external.acf.commands.annotation.Single;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -44,13 +42,16 @@ final class AddWorldsCommand extends InventoriesCommand {
             @Description("Group you want to add the world to.")
             WorldGroup group,
 
+            @Single
             @Syntax("<world>")
             @Description("World name to add.")
-            MultiverseWorld[] worlds
+            String worlds
     ) {
-        List<String> worldNames = Arrays.stream(worlds).map(MultiverseWorld::getName).toList();
+        List<String> worldNames = Arrays.stream(REPatterns.COMMA.split(worlds))
+                .map(String::toLowerCase)
+                .toList();
         String worldNamesString = String.join(", ", worldNames);
-        if (!group.getWorlds().addAll(worldNames)) {
+        if (!group.getConfigWorlds().addAll(worldNames)) {
             issuer.sendError(MVInvi18n.ADDWORLD_WORLDALREADYEXISTS,
                     replace("{group}").with(group.getName()),
                     replace("{world}").with(worldNamesString));

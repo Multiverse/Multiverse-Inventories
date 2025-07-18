@@ -1,6 +1,9 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.ApiStatus;
+import org.mvplugins.multiverse.core.utils.matcher.MatcherGroup;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
@@ -12,8 +15,9 @@ import org.bukkit.World;
 import org.bukkit.event.EventPriority;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class WorldGroup {
 
@@ -21,13 +25,16 @@ public final class WorldGroup {
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final InventoriesConfig inventoriesConfig;
     private final String name;
-    private final HashSet<String> worlds = new HashSet<>();
+    private final Set<String> configWorlds = new LinkedHashSet<>();
     private final Shares shares = Sharables.noneOf();
     private final Shares disabledShares = Sharables.noneOf();
-
-    private Shares applicableShares = Sharables.noneOf();
     private String spawnWorld = null;
     private EventPriority spawnPriority = EventPriority.NORMAL;
+
+    // calculated values
+    private MatcherGroup matcherGroup = new MatcherGroup();
+    private Set<String> applicableWorlds = new LinkedHashSet<>();
+    private Shares applicableShares = Sharables.noneOf();
 
     WorldGroup(
             final WorldGroupManager worldGroupManager,
@@ -65,7 +72,7 @@ public final class WorldGroup {
      * @param updateConfig True to update this group in the config.
      */
     public void addWorld(String worldName, boolean updateConfig) {
-        this.getWorlds().add(worldName.toLowerCase());
+        this.configWorlds.add(worldName.toLowerCase());
         if (updateConfig) {
             worldGroupManager.updateGroup(this);
         }
@@ -96,7 +103,7 @@ public final class WorldGroup {
      * @param updateConfig True to update this group in the config.
      */
     public void addWorlds(Collection<String> worlds, boolean updateConfig) {
-        worlds.forEach(worldName -> this.addWorld(worldName, false));
+        configWorlds.addAll(worlds.stream().map(String::toLowerCase).toList());
         if (updateConfig) {
             worldGroupManager.updateGroup(this);
         }
@@ -118,7 +125,7 @@ public final class WorldGroup {
      * @param updateConfig True to update this group in the config.
      */
     public void removeWorld(String worldName, boolean updateConfig) {
-        this.getWorlds().remove(worldName.toLowerCase());
+        this.configWorlds.remove(worldName.toLowerCase());
         if (updateConfig) {
             worldGroupManager.updateGroup(this);
         }
@@ -140,7 +147,23 @@ public final class WorldGroup {
      * @return True if any of the worlds were removed.
      */
     public boolean removeWorlds(Collection<String> removeWorlds) {
-        return this.getWorlds().removeAll(removeWorlds);
+        return removeWorlds(removeWorlds, true);
+    }
+
+    /**
+     * Removes multiple worlds from this World Group and optionally updates the group in the Config.
+     *
+     * @param removeWorlds  A collection of world names to remove.
+     * @return True if any of the worlds were removed.
+     */
+    public boolean removeWorlds(Collection<String> removeWorlds, boolean updateConfig) {
+        if (this.configWorlds.removeAll(removeWorlds.stream().map(String::toLowerCase).collect(Collectors.toSet()))) {
+            if (updateConfig) {
+                worldGroupManager.updateGroup(this);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -156,19 +179,77 @@ public final class WorldGroup {
      * @param updateConfig  True to update this group in the config.
      */
     public void removeAllWorlds(boolean updateConfig) {
-        this.worlds.clear();
+        this.configWorlds.clear();
         if (updateConfig) {
             worldGroupManager.updateGroup(this);
         }
     }
 
     /**
-     * Retrieves all of the worlds in this World Group.
+     * @param worldName Name of world to check for.
+     * @return True if specified world is part of this group.
+     */
+    public boolean containsWorld(String worldName) {
+        return this.applicableWorlds.contains(worldName.toLowerCase());
+    }
+
+    /**
+     * Retrieves the set of worlds that were configured in the group config.
+     *
+     * @return The set of worlds that were configured in the group config.
+     *
+     * @since 5.2
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public Set<String> getConfigWorlds() {
+        return this.configWorlds;
+    }
+
+    /**
+     * Retrieves all the worlds applicable in this World Group, after parsing wildcard and regex matches.
+     * Modifying this set will not change the worlds saved in the groups config.
      *
      * @return The worlds of this World Group.
      */
+    public Set<String> getApplicableWorlds() {
+        return this.applicableWorlds;
+    }
+
+    /**
+     * Retrieves all of the worlds in this World Group.
+     * <br />
+     * In 5.2, this method returns the same as {@link #getApplicableWorlds()}.
+     * To get the worlds string in groups config, use {@link #getConfigWorlds()} instead.
+     *
+     * @return The worlds of this World Group.
+     *
+     * @deprecated Use {@link #getApplicableWorlds()} instead.
+     */
+    @Deprecated(forRemoval = true, since = "5.2")
     public Set<String> getWorlds() {
-        return this.worlds;
+        return this.applicableWorlds;
+    }
+
+    /**
+     * Recalculates the applicable worlds for this World Group based on the configured worlds.
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public void recalculateApplicableWorlds() {
+        this.matcherGroup = new MatcherGroup(configWorlds);
+        this.applicableWorlds = Bukkit.getWorlds().stream().map(World::getName)
+                .map(String::toLowerCase)
+                .filter(matcherGroup::matches)
+                .collect(Collectors.toSet());
+    }
+
+    void addApplicableWorld(String worldName) {
+        if (this.matcherGroup.matches(worldName.toLowerCase())) {
+            this.applicableWorlds.add(worldName.toLowerCase());
+        }
+    }
+
+    void removeApplicableWorld(String worldName) {
+        this.applicableWorlds.remove(worldName.toLowerCase());
     }
 
     /**
@@ -208,14 +289,6 @@ public final class WorldGroup {
         disabledOptionalShares.removeAll(this.inventoriesConfig.getActiveOptionalShares());
         this.applicableShares.removeAll(disabledOptionalShares);
         Logging.finest("Applicable shares for " + this.getName() + ": " + this.applicableShares);
-    }
-
-    /**
-     * @param worldName Name of world to check for.
-     * @return True if specified world is part of this group.
-     */
-    public boolean containsWorld(String worldName) {
-        return this.getWorlds().contains(worldName.toLowerCase());
     }
 
     /**
@@ -270,7 +343,7 @@ public final class WorldGroup {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(this.getName()).append(": {Worlds: [");
-        String[] worldsString = this.getWorlds().toArray(new String[0]);
+        String[] worldsString = this.getConfigWorlds().toArray(new String[0]);
         for (int i = 0; i < worldsString.length; i++) {
             if (i != 0) {
                 builder.append(", ");

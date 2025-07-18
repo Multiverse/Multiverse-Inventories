@@ -22,7 +22,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventPriority;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -215,6 +214,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                 Logging.warning("Spawn settings for group formatted incorrectly");
             }
         }
+        profile.recalculateApplicableWorlds();
         profile.recalculateApplicableShares();
         return profile;
     }
@@ -226,7 +226,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private Map<String, Object> serializeWorldGroupProfile(WorldGroup profile) {
         Map<String, Object> results = new LinkedHashMap<>();
-        results.put("worlds", Lists.newArrayList(profile.getWorlds()));
+        results.put("worlds", Lists.newArrayList(profile.getConfigWorlds()));
         List<String> sharesList = profile.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             results.put("shares", sharesList);

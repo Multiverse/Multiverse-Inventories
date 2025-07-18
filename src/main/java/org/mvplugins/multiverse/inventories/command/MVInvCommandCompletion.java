@@ -171,7 +171,7 @@ public final class MVInvCommandCompletion {
     private Collection<String> suggestWorldGroupWorlds(BukkitCommandCompletionContext context) {
 
         var worlds = Try.of(() -> context.getContextValue(WorldGroup.class))
-                .map(WorldGroup::getWorlds)
+                .map(WorldGroup::getConfigWorlds)
                 .getOrElse(Collections.emptySet());
 
         return addonToCommaSeperated(context.getInput(), worlds);
