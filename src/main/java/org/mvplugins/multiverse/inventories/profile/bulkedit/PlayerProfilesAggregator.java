@@ -1,7 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
 import com.google.common.collect.Sets;
-import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
@@ -80,7 +79,7 @@ final class PlayerProfilesAggregator {
             if (group == null) {
                 continue;
             }
-            containerKeyList.addAll(group.getWorlds().stream()
+            containerKeyList.addAll(group.getApplicableWorlds().stream()
                     .map(worldName -> ContainerKey.create(ContainerType.WORLD, worldName))
                     .toList());
         }

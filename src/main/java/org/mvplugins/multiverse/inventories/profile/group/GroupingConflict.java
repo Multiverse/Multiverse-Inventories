@@ -46,8 +46,8 @@ public final class GroupingConflict {
      */
     public List<String> getConflictingWorlds() {
         List<String> worlds = new ArrayList<String>();
-        for (String world : this.getFirstGroup().getWorlds()) {
-            if (this.getSecondGroup().getWorlds().contains(world)) {
+        for (String world : this.getFirstGroup().getApplicableWorlds()) {
+            if (this.getSecondGroup().getApplicableWorlds().contains(world)) {
                 worlds.add(world);
             }
         }

@@ -2,11 +2,11 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
+import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.bukkit.Bukkit;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
@@ -82,7 +82,7 @@ class InfoCommand extends InventoriesCommand {
 
     private void groupInfo(MVCommandIssuer issuer, WorldGroup worldGroup) {
         StringBuilder worldsString = new StringBuilder();
-        Set<String> worlds = worldGroup.getWorlds();
+        Set<String> worlds = worldGroup.getConfigWorlds();
         if (worlds.isEmpty()) {
             worldsString.append("N/A");
         } else {
@@ -93,6 +93,8 @@ class InfoCommand extends InventoriesCommand {
                 worldsString.append(world);
             }
         }
+        //todo: Better messaging formatting here
+        issuer.sendMessage("Applicable Worlds: " + StringFormatter.join(worldGroup.getApplicableWorlds(), ", "));
         issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldsString));
         issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
     }

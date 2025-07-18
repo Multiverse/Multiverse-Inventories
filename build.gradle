@@ -36,7 +36,7 @@ dependencies {
 
     // Core
     // TODO update to correct version once we have it published
-    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.0.0-SNAPSHOT'
+    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.2.0-SNAPSHOT'
 
     // Config
     shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'

@@ -1,8 +1,8 @@
 groups:
   test:
     worlds:
-      - test2
       - test1
+      - test2
     shares:
       - inventory_contents
       - armor_contents
