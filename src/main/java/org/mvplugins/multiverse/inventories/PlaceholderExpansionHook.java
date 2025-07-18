@@ -128,14 +128,14 @@ final class PlaceholderExpansionHook extends PlaceholderExpansion {
     private String getGroupPlaceholderValue(WorldGroup worldGroup, String placeholder) {
         return switch (placeholder) {
             case "name" -> worldGroup.getName();
-            case "worlds" -> StringFormatter.join(worldGroup.getWorlds(), ", ");
+            case "worlds" -> StringFormatter.join(worldGroup.getApplicableWorlds(), ", ");
             case "shares" -> StringFormatter.join(worldGroup.getShares().toStringList(), ", ");
-            case "players" -> StringFormatter.join(worldGroup.getWorlds().stream()
+            case "players" -> StringFormatter.join(worldGroup.getApplicableWorlds().stream()
                     .map(Bukkit::getWorld)
                     .filter(Objects::nonNull)
                     .flatMap(world -> world.getPlayers().stream().map(Player::getName))
                     .toList(), ", ");
-            case "playercount" -> worldGroup.getWorlds().stream()
+            case "playercount" -> worldGroup.getApplicableWorlds().stream()
                     .map(Bukkit::getWorld)
                     .filter(Objects::nonNull)
                     .map(World::getPlayers)

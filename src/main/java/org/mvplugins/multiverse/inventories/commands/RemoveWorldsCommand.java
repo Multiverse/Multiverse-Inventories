@@ -2,10 +2,7 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
-import org.mvplugins.multiverse.core.world.MultiverseWorld;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
+import org.mvplugins.multiverse.core.utils.REPatterns;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
@@ -51,14 +48,13 @@ final class RemoveWorldsCommand extends InventoriesCommand {
             @Description("World name to remove.")
             String worldNames
     ) {
-        List<String> worldNamesArr = Arrays.stream(worldNames.split(",")).toList();
+        List<String> worldNamesArr = Arrays.stream(REPatterns.COMMA.split(worldNames)).toList();
         if (!group.removeWorlds(worldNamesArr)) {
             issuer.sendError(MVInvi18n.REMOVEWORLD_WORLDNOTINGROUP,
                     replace("{group}").with(group.getName()),
                     replace("{world}").with(worldNames));
             return;
         }
-        worldGroupManager.updateGroup(group);
         issuer.sendInfo(MVInvi18n.REMOVEWORLD_WORLDREMOVED,
                 replace("{group}").with(group.getName()),
                 replace("{world}").with(worldNames));

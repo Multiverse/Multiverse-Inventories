@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.external.vavr.control.Try;
@@ -112,6 +113,19 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
 
     /**
      * Recalculates the applicable shares for all groups removing disabled optional shares.
+     * <br />
+     * You should not need to call this method unless there is an edge case of the shares not recalculating automatically.
      */
     void recalculateApplicableShares();
+
+    /**
+     * Recalculates the applicable worlds for all groups. This will be automatically called when a world is added or removed,
+     * and when the group is saved.
+     * <br />
+     * You should not need to call this method unless there is an edge case of the worlds not recalculating automatically.
+     *
+     * @since 5.2
+     */
+    @ApiStatus.AvailableSince("5.2")
+    void recalculateApplicableWorlds();
 }
