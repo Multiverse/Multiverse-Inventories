@@ -4,5 +4,5 @@ import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.dynamiclistener.DynamicListener;
 
 @Contract
-public sealed interface MVInvListener extends DynamicListener permits MVEventsListener, RespawnListener, ShareHandleListener, SpawnChangeListener {
+public sealed interface MVInvListener extends DynamicListener permits InventoryViewListener, MVEventsListener, RespawnListener, ShareHandleListener, SpawnChangeListener {
 }

@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,48 +17,67 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
+import org.mvplugins.multiverse.inventories.listeners.InventoryViewListener;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
+import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.share.Sharables;
+
+import java.util.concurrent.CompletionException;
 
 @Service
-public class InventoryViewCommand extends InventoriesCommand{
+public class InventoryViewCommand extends InventoriesCommand {
 
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final MultiverseInventories inventories;
+
     @Inject
     InventoryViewCommand(
-            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider
+            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull MultiverseInventories inventories
     ) {
         this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.inventories = inventories;
     }
 
     @Subcommand("view")
     @CommandPermission("multiverse.inventories.view")
-    @CommandCompletion("@players @mvworlds")
+    @CommandCompletion("@mvinvplayernames @mvworlds")
     @Syntax("<player> <world>")
     @Description("View a player's inventory in a specific world.")
-
     void onInventoryViewCommand(
             @NotNull MVCommandIssuer issuer,
-        // TODO add capability for offline players
+
             @Syntax("<player>")
-            @Description("Online player")
-            Player target,
+            @Description("Online or offline player")
+            //Player targetPlayer,
+            OfflinePlayer targetPlayer,
 
             @Syntax("<world>")
             @Description("The world the player's inventory is in")
             MultiverseWorld[] worlds
     ) {
+        // Check if the command sender is a player
         if (!(issuer.getIssuer() instanceof Player viewer)) {
-            issuer.sendMessage(ChatColor.RED + "Only players can view inventories.");
+            issuer.sendError(ChatColor.RED + "Only players can view inventories.");
             return;
         }
 
+        // Validate world argument
         if (worlds == null || worlds.length == 0 || worlds[0] == null) {
-            issuer.sendMessage(ChatColor.RED + "You must specify a valid world.");
+            issuer.sendError(ChatColor.RED + "You must specify a valid world.");
             return;
         }
 
+        // Validate targetPlayer player
+        if (targetPlayer == null || targetPlayer.getName() == null) {
+            issuer.sendError(ChatColor.RED + "You must specify a valid player.");
+            return;
+        }
 
         String worldName = worlds[0].getName();
 
@@ -70,32 +90,122 @@ public class InventoryViewCommand extends InventoriesCommand{
             return;
         }
 
-        // Load the target's profile key from the container
-        var profile = container.getPlayerProfileNow(target);
-        if (profile == null) {
-            issuer.sendError("No inventory data found for " + target.getName() + " in world " + worldName);
-            return;
+        // Load the targetPlayer's profile key from the container
+        //var profile = container.getPlayerProfileNow(targetPlayer);
+        PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
+        ProfileType profileTypeToUse = ProfileTypes.SURVIVAL; // Default to SURVIVAL
+
+        if (tempProfile == null) {
+            // If SURVIVAL profile not found, iterate through other known types as a fallback
+            // to find ANY PlayerProfile and use its type.
+            for (ProfileType type : ProfileTypes.getTypes()) {
+                if (type.equals(ProfileTypes.SURVIVAL)) {
+                    continue; // Skip SURVIVAL as we already tried it
+                }
+                tempProfile = container.getPlayerProfileNow(type, targetPlayer);
+                if (tempProfile != null) {
+                    profileTypeToUse = type; // Use the type of the found profile
+                    break;
+                }
+            }
         }
 
-        // Get the contents of the player's inventory from the profile
-        ItemStack[] contents = target.getInventory().getContents();     // This is the main inventory (0–35)
-        ItemStack[] armor = target.getInventory().getArmorContents();   // Armor contents (helmet, chest, etc.)
-        ItemStack offHand = target.getInventory().getItemInOffHand();   // Offhand slot
+        if (tempProfile == null) {
+            issuer.sendError("No inventory data found for " + targetPlayer.getName() + " in world " + worldName);
+            return;
+        }
+/*
+        // Get inventory data
+        var contents = profile.getInventoryContents();
+        var armor = profile.getArmorContents();
+        var offHand = profile.getOffHandItem();
 
-        // Create a new inventory with enough space (you can customize this layout)
-        Inventory inv = Bukkit.createInventory(null, 54, target.getName() + " @ " + worldName);
+        // Create an inventory for viewing
+        Inventory inv = Bukkit.createInventory(null, 54, targetPlayer.getName() + " @ " + worldName);
 
-        // Copy inventory contents into the first 36 slots
-        for (int i = 0; i < contents.length && i < 36; i++) {
+        // Fill in inventory slots (0–35)
+        for (int i = 0; i < Math.min(contents.length, 36); i++) {
             inv.setItem(i, contents[i]);
         }
 
-        // Optionally add armor and offhand to specific GUI slots
-        inv.setItem(36, armor.length > 3 ? armor[3] : null); // Boots
-        inv.setItem(37, armor.length > 2 ? armor[2] : null); // Leggings
-        inv.setItem(38, armor.length > 1 ? armor[1] : null); // Chestplate
-        inv.setItem(39, armor.length > 0 ? armor[0] : null); // Helmet
-        inv.setItem(40, offHand);                            // Offhand (shield)
+// Fill in armor slots (36–39) and offhand (40)
+        if (armor != null && armor.length >= 4) {
+            inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
+            inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
+            inv.setItem(37, armor[2]); // Leggings (from profile) -> Slot 37 (viewing inv)
+            inv.setItem(36, armor[3]); // Boots (from profile) -> Slot 36 (viewing inv)
+        }
+
+        // Fill in offhand slot (40)
+        if (offHand != null) {
+            inv.setItem(40, offHand);
+        }
+
+        inv.setItem(40, offHand); // offhand
+
+        // Open the GUI for the viewer
+        viewer.openInventory(inv);
+    }
+}
+*/
+        ItemStack[] contents = null;
+        ItemStack[] armor = null;
+        ItemStack offHand = null;
+
+        try {
+            // Read main inventory contents
+            contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY)
+                    .read()
+                    .join(); // Use .join() to block until the future completes
+
+            // Read armor contents
+            armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR)
+                    .read()
+                    .join();
+
+            // Read off-hand item
+            offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND)
+                    .read()
+                    .join();
+
+        } catch (CompletionException e) {
+            issuer.sendError(ChatColor.RED + "Error loading inventory data: " + e.getCause().getMessage());
+            e.printStackTrace(); // Log the full stack trace for debugging
+            return;
+        }
+
+        // Create an inventory for viewing. Size 54 (6 rows) is good for main inventory + armor + offhand.
+        // This links the inventory to our listener, making it read-only.
+        Inventory inv = Bukkit.createInventory(new InventoryViewListener.ReadOnlyInventoryHolder(), 54, targetPlayer.getName() + " @ " + worldName);
+
+        // Fill in main inventory slots (0–35)
+        // Ensure we don't go out of bounds if contents is smaller than expected
+        if (contents != null) {
+            for (int i = 0; i < Math.min(contents.length, 36); i++) {
+                inv.setItem(i, contents[i]);
+            }
+        }
+
+        // --- Corrected armor slot mapping ---
+        // Bukkit's PlayerInventory armor slots are (from index 0): boots, leggings, chestplate, helmet.
+        // However, Multiverse-Inventories' Sharables.ARMOR returns [helmet, chestplate, leggings, boots].
+        // We need to map them correctly to the viewing inventory's display slots.
+        // Standard viewing inventory layout for armor is:
+        // Slot 36: Boots
+        // Slot 37: Leggings
+        // Slot 38: Chestplate
+        // Slot 39: Helmet
+        if (armor != null && armor.length >= 4) {
+            inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
+            inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
+            inv.setItem(37, armor[2]); // Leggings (from profile) -> Slot 37 (viewing inv)
+            inv.setItem(36, armor[3]); // Boots (from profile) -> Slot 36 (viewing inv)
+        }
+
+        // Fill in offhand slot (40)
+        if (offHand != null) {
+            inv.setItem(40, offHand);
+        }
 
         // Open the GUI for the viewer
         viewer.openInventory(inv);
