@@ -114,40 +114,7 @@ public class InventoryViewCommand extends InventoriesCommand {
             issuer.sendError("No inventory data found for " + targetPlayer.getName() + " in world " + worldName);
             return;
         }
-/*
-        // Get inventory data
-        var contents = profile.getInventoryContents();
-        var armor = profile.getArmorContents();
-        var offHand = profile.getOffHandItem();
 
-        // Create an inventory for viewing
-        Inventory inv = Bukkit.createInventory(null, 54, targetPlayer.getName() + " @ " + worldName);
-
-        // Fill in inventory slots (0–35)
-        for (int i = 0; i < Math.min(contents.length, 36); i++) {
-            inv.setItem(i, contents[i]);
-        }
-
-// Fill in armor slots (36–39) and offhand (40)
-        if (armor != null && armor.length >= 4) {
-            inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
-            inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
-            inv.setItem(37, armor[2]); // Leggings (from profile) -> Slot 37 (viewing inv)
-            inv.setItem(36, armor[3]); // Boots (from profile) -> Slot 36 (viewing inv)
-        }
-
-        // Fill in offhand slot (40)
-        if (offHand != null) {
-            inv.setItem(40, offHand);
-        }
-
-        inv.setItem(40, offHand); // offhand
-
-        // Open the GUI for the viewer
-        viewer.openInventory(inv);
-    }
-}
-*/
         ItemStack[] contents = null;
         ItemStack[] armor = null;
         ItemStack offHand = null;
@@ -186,15 +153,6 @@ public class InventoryViewCommand extends InventoriesCommand {
             }
         }
 
-        // --- Corrected armor slot mapping ---
-        // Bukkit's PlayerInventory armor slots are (from index 0): boots, leggings, chestplate, helmet.
-        // However, Multiverse-Inventories' Sharables.ARMOR returns [helmet, chestplate, leggings, boots].
-        // We need to map them correctly to the viewing inventory's display slots.
-        // Standard viewing inventory layout for armor is:
-        // Slot 36: Boots
-        // Slot 37: Leggings
-        // Slot 38: Chestplate
-        // Slot 39: Helmet
         if (armor != null && armor.length >= 4) {
             inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
             inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
