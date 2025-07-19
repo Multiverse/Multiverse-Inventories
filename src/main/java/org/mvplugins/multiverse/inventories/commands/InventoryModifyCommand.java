@@ -30,13 +30,13 @@ import org.mvplugins.multiverse.inventories.share.Sharables;
 import java.util.concurrent.CompletionException;
 
 @Service
-public class InventoryViewCommand extends InventoriesCommand {
+public class InventoryModifyCommand extends InventoriesCommand {
 
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final MultiverseInventories inventories;
 
     @Inject
-    InventoryViewCommand(
+    InventoryModifyCommand(
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull MultiverseInventories inventories
     ) {
@@ -44,73 +44,57 @@ public class InventoryViewCommand extends InventoriesCommand {
         this.inventories = inventories;
     }
 
-    @Subcommand("view")
-    @CommandPermission("multiverse.inventories.view")
+    // This method contains the logic for the /mvinv modify command
+    @Subcommand("modify")
+    @CommandPermission("multiverse.inventories.view.modify") // Specific permission for modification
     @CommandCompletion("@mvinvplayernames @mvworlds")
     @Syntax("<player> <world>")
-    @Description("View a player's inventory in a specific world.")
-    void onInventoryViewCommand(
+    @Description("Modify a player's inventory in a specific world.")
+    void onInventoryModifyCommand(
             @NotNull MVCommandIssuer issuer,
-
             @Syntax("<player>")
             @Description("Online or offline player")
-            //Player targetPlayer,
-            OfflinePlayer targetPlayer,
+            OfflinePlayer target,
 
             @Syntax("<world>")
             @Description("The world the player's inventory is in")
             MultiverseWorld[] worlds
     ) {
-        // Check if the command sender is a player
         if (!(issuer.getIssuer() instanceof Player viewer)) {
-            issuer.sendError(ChatColor.RED + "Only players can view inventories.");
+            issuer.sendError(ChatColor.RED + "Only players can modify inventories.");
             return;
         }
-
-        // Validate world argument
         if (worlds == null || worlds.length == 0 || worlds[0] == null) {
             issuer.sendError(ChatColor.RED + "You must specify a valid world.");
             return;
         }
-
-        // Validate targetPlayer player
-        if (targetPlayer == null || targetPlayer.getName() == null) {
+        if (target == null || target.getName() == null) {
             issuer.sendError(ChatColor.RED + "You must specify a valid player.");
             return;
         }
 
         String worldName = worlds[0].getName();
-
-        // Load the container for this world
         ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
                 .getContainer(worldName);
-
         if (container == null) {
-            issuer.sendError("Could not load profile container for world: " + worldName);
+            issuer.sendError(ChatColor.RED + "Could not load profile container for world: " + worldName);
             return;
         }
 
-        // Load the targetPlayer's profile key from the container
-        PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
-        ProfileType profileTypeToUse = ProfileTypes.SURVIVAL; // Default to SURVIVAL
-
+        PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, target);
+        ProfileType profileTypeToUse = ProfileTypes.SURVIVAL;
         if (tempProfile == null) {
-            // If SURVIVAL profile not found, iterate through other known types as a fallback
-            // to find ANY PlayerProfile and use its type.
             for (ProfileType type : ProfileTypes.getTypes()) {
-                if (type.equals(ProfileTypes.SURVIVAL)) {
-                    continue; // Skip SURVIVAL as we already tried it
-                }
-                tempProfile = container.getPlayerProfileNow(type, targetPlayer);
+                if (type.equals(ProfileTypes.SURVIVAL)) continue;
+                tempProfile = container.getPlayerProfileNow(type, target);
                 if (tempProfile != null) {
-                    profileTypeToUse = type; // Use the type of the found profile
+                    profileTypeToUse = type;
                     break;
                 }
             }
         }
-
         if (tempProfile == null) {
-            issuer.sendError("No inventory data found for " + targetPlayer.getName() + " in world " + worldName);
+            issuer.sendError(ChatColor.RED + "No player data found for " + target.getName() + " in world " + worldName + ". Cannot modify inventory.");
             return;
         }
 
@@ -119,52 +103,41 @@ public class InventoryViewCommand extends InventoriesCommand {
         ItemStack offHand = null;
 
         try {
-            // Read main inventory contents
-            contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY)
-                    .read()
-                    .join(); // Use .join() to block until the future completes
-
-            // Read armor contents
-            armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR)
-                    .read()
-                    .join();
-
-            // Read off-hand item
-            offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND)
-                    .read()
-                    .join();
-
+            contents = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.INVENTORY).read().join();
+            armor = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
+            offHand = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
         } catch (CompletionException e) {
             issuer.sendError(ChatColor.RED + "Error loading inventory data: " + e.getCause().getMessage());
-            e.printStackTrace(); // Log the full stack trace for debugging
+            e.printStackTrace();
             return;
         }
 
-        // Create an inventory for viewing. Size 54 (6 rows) is good for main inventory + armor + offhand.
-        // This links the inventory to our listener, making it read-only.
-        Inventory inv = Bukkit.createInventory(new InventoryViewListener.ReadOnlyInventoryHolder(), 54, targetPlayer.getName() + " @ " + worldName);
+        // Create inventory with ModifiableInventoryHolder
+        Inventory inv = Bukkit.createInventory(
+                new InventoryViewListener.ModifiableInventoryHolder(target, worldName, profileTypeToUse, inventories),
+                54,
+                "Modifying " + target.getName() + " @ " + worldName
+        );
 
-        // Fill in main inventory slots (0–35)
-        // Ensure we don't go out of bounds if contents is smaller than expected
+        // Fill inventory
         if (contents != null) {
             for (int i = 0; i < Math.min(contents.length, 36); i++) {
                 inv.setItem(i, contents[i]);
             }
         }
-
         if (armor != null && armor.length >= 4) {
-            inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
-            inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
-            inv.setItem(37, armor[2]); // Leggings (from profile) -> Slot 37 (viewing inv)
-            inv.setItem(36, armor[3]); // Boots (from profile) -> Slot 36 (viewing inv)
+            inv.setItem(39, armor[0]);
+            inv.setItem(38, armor[1]);
+            inv.setItem(37, armor[2]);
+            inv.setItem(36, armor[3]);
         }
-
-        // Fill in offhand slot (40)
         if (offHand != null) {
             inv.setItem(40, offHand);
         }
 
-        // Open the GUI for the viewer
         viewer.openInventory(inv);
+        issuer.sendInfo(ChatColor.GREEN + "Opened editable inventory for " + target.getName() +
+                " in world " + ChatColor.YELLOW + worldName + ChatColor.GREEN + ". Changes will save on close.");
     }
 }
+
