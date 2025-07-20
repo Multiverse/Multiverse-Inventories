@@ -22,6 +22,7 @@ import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ class InfoCommand extends InventoriesCommand {
 
     @Subcommand("info")
     @CommandPermission("multiverse.inventories.info")
-    @CommandCompletion("@mvworlds")
+    @CommandCompletion("@mvworlds|@worldGroups")
     @Syntax("<world|group>")
     @Description("World and Group Information")
     void onInfoCommand(
@@ -81,39 +82,26 @@ class InfoCommand extends InventoriesCommand {
     }
 
     private void groupInfo(MVCommandIssuer issuer, WorldGroup worldGroup) {
-        StringBuilder worldsString = new StringBuilder();
         Set<String> worlds = worldGroup.getConfigWorlds();
-        if (worlds.isEmpty()) {
-            worldsString.append("N/A");
-        } else {
-            for (String world : worlds) {
-                if (!worldsString.toString().isEmpty()) {
-                    worldsString.append(", ");
-                }
-                worldsString.append(world);
-            }
-        }
-        //todo: Better messaging formatting here
-        issuer.sendMessage("Applicable Worlds: " + StringFormatter.join(worldGroup.getApplicableWorlds(), ", "));
-        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldsString));
-        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
+        issuer.sendMessage(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(formatStringList(worlds)));
+        issuer.sendMessage(MVInvi18n.INFO_GROUP_APPLICABLEWORLDS, replace("{worlds}").with(formatStringList(worldGroup.getApplicableWorlds())));
+        issuer.sendMessage(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
+        issuer.sendMessage(MVInvi18n.INFO_GROUP_APPLICABLESHARES, replace("{shares}").with(worldGroup.getApplicableShares()));
     }
 
     private void worldInfo(MVCommandIssuer issuer, ProfileContainer worldProfileContainer) {
-        StringBuilder groupsString = new StringBuilder();
-        List<WorldGroup> worldGroups = worldGroupManager.getGroupsForWorld(worldProfileContainer.getContainerName());
+        List<String> worldGroupNames = worldGroupManager.getGroupsForWorld(worldProfileContainer.getContainerName())
+                .stream()
+                .map(WorldGroup::getName)
+                .toList();
+        issuer.sendInfo(MVInvi18n.INFO_WORLD_INFO, replace("{groups}").with(formatStringList(worldGroupNames)));
+    }
 
-        if (worldGroups.isEmpty()) {
-            groupsString.append("N/A");
-        } else {
-            for (WorldGroup worldGroup : worldGroups) {
-                if (!groupsString.toString().isEmpty()) {
-                    groupsString.append(", ");
-                }
-                groupsString.append(worldGroup.getName());
-            }
+    private String formatStringList(Collection<String> worlds) {
+        if (worlds.isEmpty()) {
+            return "&7N/A";
         }
-        issuer.sendInfo(MVInvi18n.INFO_WORLD_INFO, replace("{groups}").with(groupsString));
+        return StringFormatter.join(worlds, ", ");
     }
 
     @Service
