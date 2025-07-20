@@ -17,34 +17,30 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
+import org.mvplugins.multiverse.inventories.listeners.MVInvListener;
+import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.share.Sharables;
+import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
+import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public final class InventoryViewListener implements MVInvListener {
+final class InventoryViewListener implements MVInvListener {
 
     private final MultiverseInventories inventories;
+    private final InventoryDataProvider inventoryDataProvider;
 
     @Inject
     InventoryViewListener(
-            @NotNull MultiverseInventories inventories) {
+            @NotNull MultiverseInventories inventories,
+            @NotNull InventoryDataProvider inventoryDataProvider
+    ) {
         this.inventories = inventories;
+        this.inventoryDataProvider = inventoryDataProvider;
     }
-
-    // This class acts as a marker. When an inventory is created with this holder,
-    // the event listener can identify it as a read-only inventory.
-    public static class ReadOnlyInventoryHolder implements InventoryHolder {
-        @Override
-        public @NotNull Inventory getInventory() {
-            // This method is required by the interface but isn't strictly used for our marker purpose.
-            // The actual inventory is obtained from the InventoryClickEvent itself.
-            return null;
-        }
-    }
-
     // This listener will cancel any clicks or drags in inventories that have the ReadOnlyInventoryHolder marker.
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
@@ -53,8 +49,7 @@ public final class InventoryViewListener implements MVInvListener {
         if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
             event.setCancelled(true);
         }
-        // This covers cases where a player might click in their own inventory
-        // but the action is intended to move an item into the read-only inventory (e.g., shift-click).
+        // If the clicked inventory is read-only, cancel the event (e.g., shift-click into it)
         else if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
             event.setCancelled(true);
         }
@@ -66,45 +61,6 @@ public final class InventoryViewListener implements MVInvListener {
     public void onInventoryDrag(InventoryDragEvent event) {
         if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
             event.setCancelled(true);
-        }
-    }
-
-    // This holder stores context needed to save the inventory when it's closed.
-    public static class ModifiableInventoryHolder implements InventoryHolder {
-        private final OfflinePlayer targetPlayer;
-        private final String worldName;
-        private final ProfileType profileType;
-        private final MultiverseInventories inventories;
-
-        public ModifiableInventoryHolder(@NotNull OfflinePlayer targetPlayer,
-                                         @NotNull String worldName,
-                                         @NotNull ProfileType profileType,
-                                         @NotNull MultiverseInventories inventories) {
-            this.targetPlayer = targetPlayer;
-            this.worldName = worldName;
-            this.profileType = profileType;
-            this.inventories = inventories;
-        }
-
-        public @NotNull OfflinePlayer getTargetPlayer() {
-            return targetPlayer;
-        }
-
-        public @NotNull String getWorldName() {
-            return worldName;
-        }
-
-        public @NotNull ProfileType getProfileType() {
-            return profileType;
-        }
-
-        public @NotNull MultiverseInventories getInventories() {
-            return inventories;
-        }
-
-        @Override
-        public @NotNull Inventory getInventory() {
-            return null; // The actual inventory is passed via the event
         }
     }
 
@@ -130,46 +86,20 @@ public final class InventoryViewListener implements MVInvListener {
             newArmor[3] = closedInventory.getItem(36); // Boots
             ItemStack newOffHand = closedInventory.getItem(40);
 
-            // Save the updated inventory, armor, and off-hand contents asynchronously
-            CompletableFuture<Void> saveFuture = CompletableFuture.allOf(
-                    SingleShareWriter.of(plugin, targetPlayer, worldName, profileType, Sharables.INVENTORY)
-                            .write(newContents, true) // true to update if player is online
-                            .thenRun(() -> plugin.getLogger().fine("Saved inventory for " + targetPlayer.getName() + " in " + worldName)),
-                    SingleShareWriter.of(plugin, targetPlayer, worldName, profileType, Sharables.ARMOR)
-                            .write(newArmor, true)
-                            .thenRun(() -> plugin.getLogger().fine("Saved armor for " + targetPlayer.getName() + " in " + worldName)),
-                    SingleShareWriter.of(plugin, targetPlayer, worldName, profileType, Sharables.OFF_HAND)
-                            .write(newOffHand, true)
-                            .thenRun(() -> plugin.getLogger().fine("Saved off-hand for " + targetPlayer.getName() + " in " + worldName))
-            );
-
-            saveFuture.thenRun(() -> {
-                plugin.getLogger().info("Inventory for player " + targetPlayer.getName() + " in world " + worldName + " has been modified and saved.");
-            }).exceptionally(throwable -> {
-                plugin.getLogger().severe("Failed to save inventory for " + targetPlayer.getName() + " in world " + worldName + ": " + throwable.getMessage());
+            // Delegate saving to InventoryDataProvider
+            inventoryDataProvider.savePlayerInventoryData(
+                    targetPlayer,
+                    worldName,
+                    profileType,
+                    newContents,
+                    newArmor,
+                    newOffHand
+            ).exceptionally(throwable -> {
+                // Error logging is now handled within InventoryDataProvider, but we can add a general one here too
+                inventories.getLogger().severe("Error during inventory save process for " + targetPlayer.getName() + ": " + throwable.getMessage());
                 throwable.printStackTrace();
                 return null;
             });
-
-            // If the target player is online, update their live inventory
-            if (targetPlayer.isOnline()) {
-                Player onlinePlayer = targetPlayer.getPlayer();
-                if (onlinePlayer != null) {
-                    // Check if the online player is in the world whose inventory was modified
-                    // This is important to avoid overwriting their current inventory if they are in a different world
-                    if (onlinePlayer.getWorld().getName().equalsIgnoreCase(worldName)) {
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            onlinePlayer.getInventory().setContents(newContents);
-                            onlinePlayer.getInventory().setArmorContents(newArmor);
-                            onlinePlayer.getInventory().setItemInOffHand(newOffHand);
-                            onlinePlayer.updateInventory(); // Ensure client sees changes
-                            plugin.getLogger().info("Updated live inventory for online player " + onlinePlayer.getName() + " in world " + worldName);
-                        });
-                    } else {
-                        plugin.getLogger().info("Player " + onlinePlayer.getName() + " is online but in a different world (" + onlinePlayer.getWorld().getName() + "), not updating live inventory.");
-                    }
-                }
             }
         }
     }
-}
