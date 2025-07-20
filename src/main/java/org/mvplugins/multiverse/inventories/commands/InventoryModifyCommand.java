@@ -73,6 +73,10 @@ final class InventoryModifyCommand extends InventoriesCommand {
             issuer.sendError(ChatColor.RED + "You must specify a valid player.");
             return;
         }
+        if (viewer.getUniqueId().equals(targetPlayer.getUniqueId())) {
+            issuer.sendError(ChatColor.RED + "You cannot modify your own inventory using this command. Use your regular inventory.");
+            return;
+        }
 
         String worldName = worlds[0].getName();
         // Asynchronously load data using InventoryDataProvider
@@ -103,31 +107,30 @@ final class InventoryModifyCommand extends InventoriesCommand {
                             }
                         }
                         // Armor slot mapping for display in the GUI and add fillers if empty
-                        // Slot 39: Helmet
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
-                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
-                        } else {
-                            inv.setItem(39, playerInventoryData.armor[0]);
-                        }
-                        // Slot 38: Chestplate
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
-                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
-                        } else {
-                            inv.setItem(38, playerInventoryData.armor[1]);
-                        }
-                        // Slot 37: Leggings
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
-                            inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37)); // Use helper
-                        } else {
-                            inv.setItem(37, playerInventoryData.armor[2]);
-                        }
-                        // Slot 36: Boots
+                        // Slot 36: Helmet
                         if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
                             inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36)); // Use helper
                         } else {
                             inv.setItem(36, playerInventoryData.armor[3]);
                         }
-
+                        // Slot 37: Chestplate
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
+                            inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37)); // Use helper
+                        } else {
+                            inv.setItem(37, playerInventoryData.armor[2]);
+                        }
+                        // Slot 38: Leggings
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
+                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
+                        } else {
+                            inv.setItem(38, playerInventoryData.armor[1]);
+                        }
+                        // Slot 39: Boots
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
+                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
+                        } else {
+                            inv.setItem(39, playerInventoryData.armor[0]);
+                        }
                         // Off-hand slot (40) and add filler if empty
                         if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
                             inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40)); // Use helper
@@ -146,23 +149,6 @@ final class InventoryModifyCommand extends InventoriesCommand {
                     throwable.printStackTrace();
                     return null; // Must return null for CompletableFuture<Void> in exceptionally
                 });
-    }
-    /**
-     * Helper method to create a filler item for GUI slots.
-     * @param material The material of the filler item.
-     * @param name The display name of the item.
-     * @param lore The lore text for the item.
-     * @return The created ItemStack.
-     */
-    private ItemStack createFillerItem(Material material, String name, String lore) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.displayName(Component.text(name, NamedTextColor.GOLD)); // Use Component for name
-            meta.lore(Arrays.asList(Component.text(lore, NamedTextColor.GRAY))); // Use Component for lore
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 }
 

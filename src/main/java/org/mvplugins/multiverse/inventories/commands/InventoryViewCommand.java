@@ -95,29 +95,29 @@ final class InventoryViewCommand extends InventoriesCommand {
                             }
                         }
                         // Armor slot mapping for display in the GUI and add fillers if empty
-                        // Slot 39: Helmet
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
-                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
+                        // Slot 36: Helmet
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
+                            inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36)); // Use helper
                         } else {
-                            inv.setItem(39, playerInventoryData.armor[0]);
+                            inv.setItem(36, playerInventoryData.armor[3]);
                         }
-                        // Slot 38: Chestplate
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
-                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
-                        } else {
-                            inv.setItem(38, playerInventoryData.armor[1]);
-                        }
-                        // Slot 37: Leggings
+                        // Slot 37: Chestplate
                         if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
                             inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37)); // Use helper
                         } else {
                             inv.setItem(37, playerInventoryData.armor[2]);
                         }
-                        // Slot 36: Boots
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
-                            inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36)); // Use helper
+                        // Slot 38: Leggings
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
+                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
                         } else {
-                            inv.setItem(36, playerInventoryData.armor[3]);
+                            inv.setItem(38, playerInventoryData.armor[1]);
+                        }
+                        // Slot 39: Boots
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
+                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
+                        } else {
+                            inv.setItem(39, playerInventoryData.armor[0]);
                         }
 
                         // Off-hand slot (40) and add filler if empty

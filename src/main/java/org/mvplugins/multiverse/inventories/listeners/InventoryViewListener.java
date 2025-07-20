@@ -59,57 +59,61 @@ final class InventoryViewListener implements MVInvListener {
             int clickedSlot = event.getRawSlot();
             ItemStack cursorItem = event.getCursor(); // Item held by the cursor
             ItemStack currentItem = event.getCurrentItem(); // Item in the clicked slot
+            Player player = (Player) event.getWhoClicked(); // The player who clicked
 
             // Define the special slots
             boolean isSpecialSlot = (clickedSlot >= 36 && clickedSlot <= 40); // Armor (36-39) and Off-hand (40)
 
-            // --- Logic to prevent moving filler items AND restore them if slot becomes empty ---
+            // --- Logic for special slots (armor/off-hand) ---
             if (isSpecialSlot) {
-                // Check if the current item in the slot is a filler item (e.g., stained glass pane)
-                // This is a simple check; a more robust check might involve NBT tags if fillers are complex.
-                boolean isFillerInSlot = currentItem != null &&
-                        (currentItem.getType() == Material.GRAY_STAINED_GLASS_PANE ||
-                                currentItem.getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+                boolean currentItemIsFiller = currentItem != null && inventoryGUIHelper.isFillerItem(currentItem);
 
-                // Scenario 1: Player tries to take out a filler item or replace it with an invalid item
-                if (isFillerInSlot && (cursorItem == null || cursorItem.getType() == Material.AIR || !inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot))) {
-                    event.setCancelled(true); // Prevent taking out filler or putting invalid item on top of it
-                    // If they tried to take it out (cursor empty), put it back immediately
-                    if (cursorItem == null || cursorItem.getType() == Material.AIR) {
-                        Bukkit.getScheduler().runTaskLater(inventories, () -> {
-                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot)); // Use helper
-                        }, 1L); // Run one tick later to avoid conflicts with Bukkit's internal inventory updates
-                    }
-                    return;
-                }
-
-                // Scenario 2: Player tries to place an invalid item into a special slot (even if it's empty or has a valid item)
-                if (cursorItem != null && cursorItem.getType() != Material.AIR && !inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) { // Use helper
+                // Scenario 1: Player tries to pick up a filler item (cursor is empty)
+                if (currentItemIsFiller && (cursorItem == null || cursorItem.getType() == Material.AIR)) {
                     event.setCancelled(true);
-                    return;
+                    return; // Prevent pickup, filler stays in place
                 }
 
-                // Scenario 3
-                // If the item in the slot *before* the click was a filler, and a valid item is being placed,
-                // we need to clear the cursor after Bukkit handles the swap.
-                if (isFillerInSlot && cursorItem != null && cursorItem.getType() != Material.AIR && inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
-                    // Schedule a task to run after the event has fully processed
-                    Bukkit.getScheduler().runTaskLater(inventories, () -> {
-                        Player player = (Player) event.getWhoClicked();
-                        // Check if the item on the player's cursor is now the filler item
-                        if (player.getItemOnCursor() != null && inventoryGUIHelper.isFillerItem(player.getItemOnCursor())) {
-                            player.setItemOnCursor(null); // Clear the cursor
-                            player.updateInventory(); // Update client to reflect cursor change
-                        }
-                        // Also ensure the slot has a filler if it became empty (e.g., if the placed item was a stack of 1)
-                        if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
-                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
-                        }
-                    }, 1L);
-                    return; // Run one tick later to ensure Bukkit's updates have settled
+                // Scenario 2: Player tries to place an invalid item into a special slot
+                if (cursorItem != null && cursorItem.getType() != Material.AIR && !inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
+                    event.setCancelled(true);
+                    return; // Prevent invalid placement
                 }
 
-                // Scenario 4: Player is shift-clicking a valid item *from* a special slot.
+                // Scenario 3: Player places a valid item into a special slot that currently holds a filler or a valid item.
+                // Manually handle the swap to ensure fillers don't leave the GUI.
+                if (cursorItem != null && cursorItem.getType() != Material.AIR && inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
+                    event.setCancelled(true); // Take full control of the event
+
+                    // If there was a filler in the slot, it needs to be put back after the new item is placed.
+                    // If there was a valid item, it goes to the cursor.
+                    ItemStack itemToReturnToCursor = currentItem; // This could be the filler or a valid item
+
+                    // Place the new item from cursor into the clicked slot
+                    event.getInventory().setItem(clickedSlot, cursorItem);
+
+                    // Clear the player's cursor
+                    player.setItemOnCursor(null);
+
+                    // If the item that was in the slot (itemToReturnToCursor) was a filler,
+                    // we don't want it to go anywhere. It should effectively be "discarded" from the event.
+                    // If it was a valid item, it should go to the player's cursor.
+                    if (itemToReturnToCursor != null && !inventoryGUIHelper.isFillerItem(itemToReturnToCursor)) {
+                        player.setItemOnCursor(itemToReturnToCursor);
+                    } else if (itemToReturnToCursor != null && inventoryGUIHelper.isFillerItem(itemToReturnToCursor)) {
+                        // If it was a filler, ensure the slot gets a fresh filler if it becomes empty
+                        // (though we just put cursorItem there, this is a safeguard)
+                        Bukkit.getScheduler().runTaskLater(inventories, () -> {
+                            if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
+                                event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
+                            }
+                        }, 1L);
+                    }
+                    player.updateInventory(); // Update client to reflect changes
+                    return; // Event handled
+                }
+
+                // Scenario 4: Player is shift-clicking a valid item from a special slot.
                 // Or picking up a valid item from a special slot.
                 // We need to ensure filler reappears if the slot becomes empty.
                 if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY ||
@@ -184,11 +188,21 @@ final class InventoryViewListener implements MVInvListener {
             ItemStack[] newContents = Arrays.copyOfRange(closedInventory.getContents(), 0, 36);
             ItemStack[] newArmor = new ItemStack[4];
             // Map GUI armor slots back to Multiverse-Inventories' expected order [helmet, chestplate, leggings, boots]
-            newArmor[0] = closedInventory.getItem(39); // Helmet
-            newArmor[1] = closedInventory.getItem(38); // Chestplate
-            newArmor[2] = closedInventory.getItem(37); // Leggings
-            newArmor[3] = closedInventory.getItem(36); // Boots
+            newArmor[3] = closedInventory.getItem(36); // Helmet
+            newArmor[2] = closedInventory.getItem(37); // Chestplate
+            newArmor[1] = closedInventory.getItem(38); // Leggings
+            newArmor[0] = closedInventory.getItem(39); // Boots
             ItemStack newOffHand = closedInventory.getItem(40);
+
+            // Before saving, ensure any filler items are removed from the actual data
+            for (int i = 0; i < newArmor.length; i++) {
+                if (newArmor[i] != null && inventoryGUIHelper.isFillerItem(newArmor[i])) {
+                    newArmor[i] = null; // Replace filler with null for saving
+                }
+            }
+            if (newOffHand != null && inventoryGUIHelper.isFillerItem(newOffHand)) {
+                newOffHand = null; // Replace filler with null for saving
+            }
 
             // Delegate saving to InventoryDataProvider
             inventoryDataProvider.savePlayerInventoryData(

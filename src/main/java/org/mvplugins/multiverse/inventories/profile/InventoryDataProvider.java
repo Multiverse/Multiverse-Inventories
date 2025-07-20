@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
@@ -153,7 +154,7 @@ public final class InventoryDataProvider {
             @NotNull ProfileType profileType,
             @NotNull ItemStack[] newContents,
             @NotNull ItemStack[] newArmor,
-            @NotNull ItemStack newOffHand
+            @Nullable ItemStack newOffHand
     ) {
         // Save the updated inventory, armor, and off-hand contents asynchronously
         CompletableFuture<Void> saveFuture = CompletableFuture.allOf(

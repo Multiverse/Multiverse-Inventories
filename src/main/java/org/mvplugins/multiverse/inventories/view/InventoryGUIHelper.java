@@ -76,13 +76,13 @@ public final class InventoryGUIHelper { // Made public and final
         }
 
         switch (slot) {
-            case 39: // Helmet slot
+            case 36: // Helmet slot
                 return item.getType().name().endsWith("_HELMET");
-            case 38: // Chestplate slot
+            case 37: // Chestplate slot
                 return item.getType().name().endsWith("_CHESTPLATE");
-            case 37: // Leggings slot
+            case 38: // Leggings slot
                 return item.getType().name().endsWith("_LEGGINGS");
-            case 36: // Boots slot
+            case 39: // Boots slot
                 return item.getType().name().endsWith("_BOOTS");
             case 40: // Off-hand slot
                 // Off-hand is very permissive in vanilla. Allow any non-air item.
@@ -101,10 +101,10 @@ public final class InventoryGUIHelper { // Made public and final
      */
     public ItemStack createFillerItemForSlot(int slot) {
         switch (slot) {
-            case 39: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", "Place Helmet Here");
-            case 38: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", "Place Chestplate Here");
-            case 37: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
-            case 36: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
+            case 36: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", "Place Helmet Here");
+            case 37: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", "Place Chestplate Here");
+            case 38: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
+            case 39: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
             case 40: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", "Place Off-Hand Item Here");
             default: return new ItemStack(Material.AIR); // Should not happen for these slots
         }
