@@ -21,6 +21,11 @@ repositories {
         name = 'benwoo1110'
         url = uri('https://repo.c0ding.party/multiverse-beta')
     }
+
+    maven {
+        name = "viaversion"
+        url = uri("https://repo.viaversion.com")
+    }
 }
 
 configure(apiDependencies) {
@@ -46,6 +51,7 @@ dependencies {
     shadowed('com.dumptruckman.minecraft:Logging:1.1.1') {
         exclude group: 'junit', module: 'junit'
     }
+    shadowed 'com.viaversion:nbt:5.1.1'
 
     // Caching
     shadowed("com.github.ben-manes.caffeine:caffeine:3.2.0")
