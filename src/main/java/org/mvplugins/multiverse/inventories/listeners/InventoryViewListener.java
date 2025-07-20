@@ -46,7 +46,7 @@ final class InventoryViewListener implements MVInvListener {
     // This listener will cancel any clicks or drags in inventories that have the ReadOnlyInventoryHolder marker.
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
-    public void onInventoryClick(InventoryClickEvent event) {
+    void onInventoryClick(InventoryClickEvent event) {
         // If it's a read-only inventory, cancel all clicks.
         if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder ||
                 (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof ReadOnlyInventoryHolder)) {
@@ -127,7 +127,7 @@ final class InventoryViewListener implements MVInvListener {
     // Also cancel drag events to prevent items from being dragged into/out of the inventory
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
-    public void onInventoryDrag(InventoryDragEvent event) {
+    void onInventoryDrag(InventoryDragEvent event) {
         // If it is a read-only inventory, cancel all drags
         if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
             event.setCancelled(true);
@@ -177,7 +177,7 @@ final class InventoryViewListener implements MVInvListener {
     // Event handler for InventoryCloseEvent to save changes
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
-    public void onInventoryClose(InventoryCloseEvent event) {
+    void onInventoryClose(InventoryCloseEvent event) {
         // Check if the closed inventory has the custom ModifiableInventoryHolder class
         if (event.getInventory().getHolder() instanceof ModifiableInventoryHolder holder) {
             final OfflinePlayer targetPlayer = holder.getTargetPlayer();
