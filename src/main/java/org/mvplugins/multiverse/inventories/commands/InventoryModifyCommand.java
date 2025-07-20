@@ -1,11 +1,15 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
@@ -18,21 +22,27 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
+
+import java.util.Arrays;
 
 @Service
 final class InventoryModifyCommand extends InventoriesCommand {
 
     private final InventoryDataProvider inventoryDataProvider;
     private final MultiverseInventories inventories;
+    private final InventoryGUIHelper inventoryGUIHelper;
 
     @Inject
     InventoryModifyCommand(
             @NotNull InventoryDataProvider inventoryDataProvider,
-            @NotNull MultiverseInventories inventories
+            @NotNull MultiverseInventories inventories,
+            @NotNull InventoryGUIHelper inventoryGUIHelper
     ) {
         this.inventoryDataProvider = inventoryDataProvider;
         this.inventories = inventories;
+        this.inventoryGUIHelper = inventoryGUIHelper;
     }
 
     // This method contains the logic for the /mvinv modify command
@@ -92,13 +102,36 @@ final class InventoryModifyCommand extends InventoriesCommand {
                                 inv.setItem(i, playerInventoryData.contents[i]);
                             }
                         }
-                        if (playerInventoryData.armor != null && playerInventoryData.armor.length >= 4) {
+                        // Armor slot mapping for display in the GUI and add fillers if empty
+                        // Slot 39: Helmet
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
+                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
+                        } else {
                             inv.setItem(39, playerInventoryData.armor[0]);
+                        }
+                        // Slot 38: Chestplate
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
+                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
+                        } else {
                             inv.setItem(38, playerInventoryData.armor[1]);
+                        }
+                        // Slot 37: Leggings
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
+                            inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37)); // Use helper
+                        } else {
                             inv.setItem(37, playerInventoryData.armor[2]);
+                        }
+                        // Slot 36: Boots
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
+                            inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36)); // Use helper
+                        } else {
                             inv.setItem(36, playerInventoryData.armor[3]);
                         }
-                        if (playerInventoryData.offHand != null) {
+
+                        // Off-hand slot (40) and add filler if empty
+                        if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
+                            inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40)); // Use helper
+                        } else {
                             inv.setItem(40, playerInventoryData.offHand);
                         }
 
@@ -113,6 +146,23 @@ final class InventoryModifyCommand extends InventoriesCommand {
                     throwable.printStackTrace();
                     return null; // Must return null for CompletableFuture<Void> in exceptionally
                 });
+    }
+    /**
+     * Helper method to create a filler item for GUI slots.
+     * @param material The material of the filler item.
+     * @param name The display name of the item.
+     * @param lore The lore text for the item.
+     * @return The created ItemStack.
+     */
+    private ItemStack createFillerItem(Material material, String name, String lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.displayName(Component.text(name, NamedTextColor.GOLD)); // Use Component for name
+            meta.lore(Arrays.asList(Component.text(lore, NamedTextColor.GRAY))); // Use Component for lore
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 }
 

@@ -1,7 +1,11 @@
 package org.mvplugins.multiverse.inventories.listeners;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -15,6 +19,7 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
 import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
 
@@ -25,27 +30,101 @@ final class InventoryViewListener implements MVInvListener {
 
     private final MultiverseInventories inventories;
     private final InventoryDataProvider inventoryDataProvider;
+    private final InventoryGUIHelper inventoryGUIHelper;
 
     @Inject
     InventoryViewListener(
             @NotNull MultiverseInventories inventories,
-            @NotNull InventoryDataProvider inventoryDataProvider
+            @NotNull InventoryDataProvider inventoryDataProvider,
+            @NotNull InventoryGUIHelper inventoryGUIHelper
     ) {
         this.inventories = inventories;
         this.inventoryDataProvider = inventoryDataProvider;
+        this.inventoryGUIHelper = inventoryGUIHelper;
     }
 
     // This listener will cancel any clicks or drags in inventories that have the ReadOnlyInventoryHolder marker.
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
     public void onInventoryClick(InventoryClickEvent event) {
-        // Check if the inventory being clicked has the custom holder
-        if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
+        // If it's a read-only inventory, cancel all clicks.
+        if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder ||
+                (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof ReadOnlyInventoryHolder)) {
             event.setCancelled(true);
+            return;
         }
-        // If the clicked inventory is read-only, cancel the event (e.g., shift-click into it)
-        else if (event.getClickedInventory() != null && event.getClickedInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
-            event.setCancelled(true);
+
+        // If it's a modifiable inventory, apply specific restrictions for armor/off-hand slots.
+        if (event.getInventory().getHolder() instanceof ModifiableInventoryHolder) {
+            int clickedSlot = event.getRawSlot();
+            ItemStack cursorItem = event.getCursor(); // Item held by the cursor
+            ItemStack currentItem = event.getCurrentItem(); // Item in the clicked slot
+
+            // Define the special slots
+            boolean isSpecialSlot = (clickedSlot >= 36 && clickedSlot <= 40); // Armor (36-39) and Off-hand (40)
+
+            // --- Logic to prevent moving filler items AND restore them if slot becomes empty ---
+            if (isSpecialSlot) {
+                // Check if the current item in the slot is a filler item (e.g., stained glass pane)
+                // This is a simple check; a more robust check might involve NBT tags if fillers are complex.
+                boolean isFillerInSlot = currentItem != null &&
+                        (currentItem.getType() == Material.GRAY_STAINED_GLASS_PANE ||
+                                currentItem.getType() == Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+
+                // Scenario 1: Player tries to take out a filler item or replace it with an invalid item
+                if (isFillerInSlot && (cursorItem == null || cursorItem.getType() == Material.AIR || !inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot))) {
+                    event.setCancelled(true); // Prevent taking out filler or putting invalid item on top of it
+                    // If they tried to take it out (cursor empty), put it back immediately
+                    if (cursorItem == null || cursorItem.getType() == Material.AIR) {
+                        Bukkit.getScheduler().runTaskLater(inventories, () -> {
+                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot)); // Use helper
+                        }, 1L); // Run one tick later to avoid conflicts with Bukkit's internal inventory updates
+                    }
+                    return;
+                }
+
+                // Scenario 2: Player tries to place an invalid item into a special slot (even if it's empty or has a valid item)
+                if (cursorItem != null && cursorItem.getType() != Material.AIR && !inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) { // Use helper
+                    event.setCancelled(true);
+                    return;
+                }
+
+                // Scenario 3
+                // If the item in the slot *before* the click was a filler, and a valid item is being placed,
+                // we need to clear the cursor after Bukkit handles the swap.
+                if (isFillerInSlot && cursorItem != null && cursorItem.getType() != Material.AIR && inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
+                    // Schedule a task to run after the event has fully processed
+                    Bukkit.getScheduler().runTaskLater(inventories, () -> {
+                        Player player = (Player) event.getWhoClicked();
+                        // Check if the item on the player's cursor is now the filler item
+                        if (player.getItemOnCursor() != null && inventoryGUIHelper.isFillerItem(player.getItemOnCursor())) {
+                            player.setItemOnCursor(null); // Clear the cursor
+                            player.updateInventory(); // Update client to reflect cursor change
+                        }
+                        // Also ensure the slot has a filler if it became empty (e.g., if the placed item was a stack of 1)
+                        if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
+                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
+                        }
+                    }, 1L);
+                    return; // Run one tick later to ensure Bukkit's updates have settled
+                }
+
+                // Scenario 4: Player is shift-clicking a valid item *from* a special slot.
+                // Or picking up a valid item from a special slot.
+                // We need to ensure filler reappears if the slot becomes empty.
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY ||
+                        event.getAction() == InventoryAction.PICKUP_ALL ||
+                        event.getAction() == InventoryAction.PICKUP_HALF ||
+                        event.getAction() == InventoryAction.PICKUP_ONE ||
+                        event.getAction() == InventoryAction.PICKUP_SOME) {
+                    Bukkit.getScheduler().runTaskLater(inventories, () -> {
+                        // After Bukkit processes the click, if the slot is now empty, put the filler back.
+                        if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
+                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
+                        }
+                    }, 1L);
+                }
+            }
         }
     }
 
@@ -53,8 +132,40 @@ final class InventoryViewListener implements MVInvListener {
     @EventMethod
     @DefaultEventPriority(EventPriority.NORMAL)
     public void onInventoryDrag(InventoryDragEvent event) {
+        // If it is a read-only inventory, cancel all drags
         if (event.getInventory().getHolder() instanceof ReadOnlyInventoryHolder) {
             event.setCancelled(true);
+        }
+
+        // If it's a modifiable inventory, apply specific restrictions for armor/off-hand slots.
+        if (event.getInventory().getHolder() instanceof ModifiableInventoryHolder) {
+            ItemStack draggedItem = event.getCursor(); // The item being dragged (after the drag operation)
+
+            // If nothing is being dragged, or dragging air, no restriction needed.
+            if (draggedItem == null || draggedItem.getType() == Material.AIR) {
+                return;
+            }
+            for (int slot : event.getRawSlots()) {
+                // Define the special slots
+                boolean isSpecialSlot = (slot >= 36 && slot <= 40);
+
+                if (isSpecialSlot) {
+                    // Check if the dragged item is valid for this special slot
+                    if (!inventoryGUIHelper.isValidItemForSlot(draggedItem, slot)) { // Use helper
+                        event.setCancelled(true);
+                        return; // Cancel the entire drag event
+                    }
+                }
+            }
+
+            // After a drag, check if any special slots became empty and replace with filler
+            Bukkit.getScheduler().runTaskLater(inventories, () -> {
+                for (int slot : event.getRawSlots()) {
+                    if ((slot >= 36 && slot <= 40) && (event.getInventory().getItem(slot) == null || event.getInventory().getItem(slot).getType() == Material.AIR)) {
+                        event.getInventory().setItem(slot, inventoryGUIHelper.createFillerItemForSlot(slot)); // Use helper
+                    }
+                }
+            }, 1L); // Run one tick later
         }
     }
 

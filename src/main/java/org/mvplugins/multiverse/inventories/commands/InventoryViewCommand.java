@@ -3,6 +3,7 @@ package org.mvplugins.multiverse.inventories.commands;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -17,6 +18,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
 import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 
@@ -25,14 +27,17 @@ final class InventoryViewCommand extends InventoriesCommand {
 
     private final InventoryDataProvider inventoryDataProvider;
     private final MultiverseInventories inventories;
+    private final InventoryGUIHelper inventoryGUIHelper;
 
     @Inject
     InventoryViewCommand(
             @NotNull InventoryDataProvider inventoryDataProvider,
-            @NotNull MultiverseInventories inventories
+            @NotNull MultiverseInventories inventories,
+            @NotNull InventoryGUIHelper inventoryGUIHelper
     ) {
         this.inventories = inventories;
         this.inventoryDataProvider = inventoryDataProvider;
+        this.inventoryGUIHelper = inventoryGUIHelper;
     }
 
     @Subcommand("view")
@@ -89,14 +94,36 @@ final class InventoryViewCommand extends InventoriesCommand {
                                 inv.setItem(i, playerInventoryData.contents[i]);
                             }
                         }
-                        // Armor slot mapping for display in the GUI
-                        if (playerInventoryData.armor != null && playerInventoryData.armor.length >= 4) {
-                            inv.setItem(39, playerInventoryData.armor[0]); // Helmet
-                            inv.setItem(38, playerInventoryData.armor[1]); // Chestplate
-                            inv.setItem(37, playerInventoryData.armor[2]); // Leggings
-                            inv.setItem(36, playerInventoryData.armor[3]); // Boots
+                        // Armor slot mapping for display in the GUI and add fillers if empty
+                        // Slot 39: Helmet
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
+                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39)); // Use helper
+                        } else {
+                            inv.setItem(39, playerInventoryData.armor[0]);
                         }
-                        if (playerInventoryData.offHand != null) {
+                        // Slot 38: Chestplate
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
+                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38)); // Use helper
+                        } else {
+                            inv.setItem(38, playerInventoryData.armor[1]);
+                        }
+                        // Slot 37: Leggings
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
+                            inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37)); // Use helper
+                        } else {
+                            inv.setItem(37, playerInventoryData.armor[2]);
+                        }
+                        // Slot 36: Boots
+                        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
+                            inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36)); // Use helper
+                        } else {
+                            inv.setItem(36, playerInventoryData.armor[3]);
+                        }
+
+                        // Off-hand slot (40) and add filler if empty
+                        if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
+                            inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40)); // Use helper
+                        } else {
                             inv.setItem(40, playerInventoryData.offHand);
                         }
 
