@@ -1,15 +1,12 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
@@ -24,8 +21,6 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
-
-import java.util.Arrays;
 
 @Service
 final class InventoryModifyCommand extends InventoriesCommand {

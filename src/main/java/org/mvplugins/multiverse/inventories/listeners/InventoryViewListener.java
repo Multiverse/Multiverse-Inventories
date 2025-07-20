@@ -85,30 +85,12 @@ final class InventoryViewListener implements MVInvListener {
                 if (cursorItem != null && cursorItem.getType() != Material.AIR && inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
                     event.setCancelled(true); // Take full control of the event
 
-                    // If there was a filler in the slot, it needs to be put back after the new item is placed.
-                    // If there was a valid item, it goes to the cursor.
-                    ItemStack itemToReturnToCursor = currentItem; // This could be the filler or a valid item
-
                     // Place the new item from cursor into the clicked slot
                     event.getInventory().setItem(clickedSlot, cursorItem);
 
                     // Clear the player's cursor
                     player.setItemOnCursor(null);
 
-                    // If the item that was in the slot (itemToReturnToCursor) was a filler,
-                    // we don't want it to go anywhere. It should effectively be "discarded" from the event.
-                    // If it was a valid item, it should go to the player's cursor.
-                    if (itemToReturnToCursor != null && !inventoryGUIHelper.isFillerItem(itemToReturnToCursor)) {
-                        player.setItemOnCursor(itemToReturnToCursor);
-                    } else if (itemToReturnToCursor != null && inventoryGUIHelper.isFillerItem(itemToReturnToCursor)) {
-                        // If it was a filler, ensure the slot gets a fresh filler if it becomes empty
-                        // (though we just put cursorItem there, this is a safeguard)
-                        Bukkit.getScheduler().runTaskLater(inventories, () -> {
-                            if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
-                                event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
-                            }
-                        }, 1L);
-                    }
                     player.updateInventory(); // Update client to reflect changes
                     return; // Event handled
                 }
