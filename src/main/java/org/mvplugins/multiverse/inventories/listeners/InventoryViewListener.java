@@ -59,10 +59,20 @@ final class InventoryViewListener implements MVInvListener {
             int clickedSlot = event.getRawSlot();
             ItemStack cursorItem = event.getCursor(); // Item held by the cursor
             ItemStack currentItem = event.getCurrentItem(); // Item in the clicked slot
+            Inventory customGUI = event.getInventory(); // The custom inventory
             Player player = (Player) event.getWhoClicked(); // The player who clicked
 
             // Define the special slots
-            boolean isSpecialSlot = (clickedSlot >= 36 && clickedSlot <= 40); // Armor (36-39) and Off-hand (40)
+            boolean isSpecialSlot =  (clickedSlot >= 36 && clickedSlot <= 40); // Armor (36-39) and Off-hand (40)
+
+            // Determine if the slot is one of the padding slots (41-44)
+            boolean isPaddingSlot =  (clickedSlot >= 41 && clickedSlot <= 44);
+
+            if (isPaddingSlot) {
+                // Clicks on padding slots are always cancelled and do nothing else.
+                event.setCancelled(true);
+                return;
+            }
 
             // --- Logic for special slots (armor/off-hand) ---
             if (isSpecialSlot) {
@@ -134,6 +144,15 @@ final class InventoryViewListener implements MVInvListener {
             for (int slot : event.getRawSlots()) {
                 // Define the special slots
                 boolean isSpecialSlot = (slot >= 36 && slot <= 40);
+
+                // Determine if the slot is one of the padding slots (41-44)
+                boolean isPaddingSlot = (slot >= 41 && slot <= 44);
+
+                if (isPaddingSlot) {
+                    // Clicks on padding slots are always cancelled and do nothing else.
+                    event.setCancelled(true);
+                    return;
+                }
 
                 if (isSpecialSlot) {
                     // Check if the dragged item is valid for this special slot

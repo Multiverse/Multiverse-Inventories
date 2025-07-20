@@ -86,7 +86,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                     Bukkit.getScheduler().runTask(inventories, () -> {
                         // Create an inventory for viewing.
                         Component title = Component.text(targetPlayer.getName() + " @ " + worldName);
-                        Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(), 54, title);
+                        Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(), 45, title);
 
                         // Fill in main inventory slots (0–35)
                         if (playerInventoryData.contents != null) {
@@ -125,6 +125,10 @@ final class InventoryViewCommand extends InventoriesCommand {
                             inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40)); // Use helper
                         } else {
                             inv.setItem(40, playerInventoryData.offHand);
+                        }
+                        // Add the remaining slots as non-interactable filler items
+                        for (int i = 41; i <= 44; i++) {
+                            inv.setItem(i, inventoryGUIHelper.createFillerItemForSlot(i));
                         }
 
                         viewer.openInventory(inv);

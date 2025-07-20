@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import org.jvnet.hk2.annotations.Service; // Mark as a service for injection
+import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 
@@ -18,8 +18,8 @@ import java.util.Collections;
  * A helper class for creating and validating items within the custom inventory GUIs.
  * This centralizes logic for filler items and slot-specific item validation.
  */
-@Service // Allows this class to be injected
-public final class InventoryGUIHelper { // Made public and final
+@Service
+public final class InventoryGUIHelper {
 
     private final NamespacedKey IS_FILLER_KEY; // Key to mark filler items
 
@@ -89,6 +89,11 @@ public final class InventoryGUIHelper { // Made public and final
                 // If you want to restrict this further (e.g., only shields/totems),
                 // add more specific Material checks here.
                 return true;
+            case 41: // Padding slot
+            case 42: // Padding slot
+            case 43: // Padding slot
+            case 44: // Padding slot
+                return false; // Cannot place items in padding slots
             default:
                 return true; // For non-special slots (main inventory), any item is generally allowed.
         }
@@ -106,6 +111,10 @@ public final class InventoryGUIHelper { // Made public and final
             case 38: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
             case 39: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
             case 40: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", "Place Off-Hand Item Here");
+            case 41:
+            case 42:
+            case 43:
+            case 44: return createFillerItem(Material.BARRIER, " ", " "); // Padding slots
             default: return new ItemStack(Material.AIR); // Should not happen for these slots
         }
     }

@@ -83,7 +83,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                     Bukkit.getScheduler().runTask(inventories, () -> {
                         // Create inventory with ModifiableInventoryHolder
                         // Pass all necessary context to the holder for saving on close.
-                        Component title = Component.text("Modifiying " + targetPlayer.getName() + " @ " + worldName);
+                        Component title = Component.text("Modify " + targetPlayer.getName() + " @ " + worldName);
                         Inventory inv = Bukkit.createInventory(
                                 new ModifiableInventoryHolder(
                                         targetPlayer,
@@ -91,7 +91,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                                         playerInventoryData.profileTypeUsed, // Use the determined profile type
                                         inventories
                                 ),
-                                54,
+                                45,
                                 title
                         );
 
@@ -131,6 +131,10 @@ final class InventoryModifyCommand extends InventoriesCommand {
                             inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40)); // Use helper
                         } else {
                             inv.setItem(40, playerInventoryData.offHand);
+                        }
+                        // Add the remaining slots as non-interactable filler items
+                        for (int i = 41; i <= 44; i++) {
+                            inv.setItem(i, inventoryGUIHelper.createFillerItemForSlot(i));
                         }
 
                         viewer.openInventory(inv);
