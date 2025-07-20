@@ -84,7 +84,7 @@ public final class InventoryDataProvider {
                         onlineTarget.getInventory().getContents(),
                         onlineTarget.getInventory().getArmorContents(),
                         onlineTarget.getInventory().getItemInOffHand(),
-                        "Displaying LIVE inventory for " + targetPlayer.getName() + worldName + ".",
+                        "Displaying LIVE inventory for " + targetPlayer.getName() + " in world " + worldName + ".",
                         profileType
                 ));
             }
