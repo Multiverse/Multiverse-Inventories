@@ -1,11 +1,11 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
@@ -17,30 +17,21 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
-import org.mvplugins.multiverse.inventories.listeners.InventoryViewListener;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
-import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
-import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
-import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
-import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
-import org.mvplugins.multiverse.inventories.share.Sharables;
-
-import java.util.concurrent.CompletionException;
+import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
 
 @Service
-public class InventoryModifyCommand extends InventoriesCommand {
+final class InventoryModifyCommand extends InventoriesCommand {
 
-    private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final InventoryDataProvider inventoryDataProvider;
     private final MultiverseInventories inventories;
 
     @Inject
     InventoryModifyCommand(
-            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull InventoryDataProvider inventoryDataProvider,
             @NotNull MultiverseInventories inventories
     ) {
-        this.profileContainerStoreProvider = profileContainerStoreProvider;
+        this.inventoryDataProvider = inventoryDataProvider;
         this.inventories = inventories;
     }
 
@@ -54,7 +45,7 @@ public class InventoryModifyCommand extends InventoriesCommand {
             @NotNull MVCommandIssuer issuer,
             @Syntax("<player>")
             @Description("Online or offline player")
-            OfflinePlayer target,
+            OfflinePlayer targetPlayer,
 
             @Syntax("<world>")
             @Description("The world the player's inventory is in")
@@ -68,76 +59,60 @@ public class InventoryModifyCommand extends InventoriesCommand {
             issuer.sendError(ChatColor.RED + "You must specify a valid world.");
             return;
         }
-        if (target == null || target.getName() == null) {
+        if (targetPlayer == null || targetPlayer.getName() == null) {
             issuer.sendError(ChatColor.RED + "You must specify a valid player.");
             return;
         }
 
         String worldName = worlds[0].getName();
-        ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                .getContainer(worldName);
-        if (container == null) {
-            issuer.sendError(ChatColor.RED + "Could not load profile container for world: " + worldName);
-            return;
-        }
+        // Asynchronously load data using InventoryDataProvider
+        issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
 
-        PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, target);
-        ProfileType profileTypeToUse = ProfileTypes.SURVIVAL;
-        if (tempProfile == null) {
-            for (ProfileType type : ProfileTypes.getTypes()) {
-                if (type.equals(ProfileTypes.SURVIVAL)) continue;
-                tempProfile = container.getPlayerProfileNow(type, target);
-                if (tempProfile != null) {
-                    profileTypeToUse = type;
-                    break;
-                }
-            }
-        }
-        if (tempProfile == null) {
-            issuer.sendError(ChatColor.RED + "No player data found for " + target.getName() + " in world " + worldName + ". Cannot modify inventory.");
-            return;
-        }
+        inventoryDataProvider.loadPlayerInventoryData(targetPlayer, worldName)
+                .thenAccept(playerInventoryData -> {
+                    // Ensure GUI operations run on the main thread
+                    Bukkit.getScheduler().runTask(inventories, () -> {
+                        // Create inventory with ModifiableInventoryHolder
+                        // Pass all necessary context to the holder for saving on close.
+                        Component title = Component.text("Modifiying " + targetPlayer.getName() + " @ " + worldName);
+                        Inventory inv = Bukkit.createInventory(
+                                new ModifiableInventoryHolder(
+                                        targetPlayer,
+                                        worldName,
+                                        playerInventoryData.profileTypeUsed, // Use the determined profile type
+                                        inventories
+                                ),
+                                54,
+                                title
+                        );
 
-        ItemStack[] contents = null;
-        ItemStack[] armor = null;
-        ItemStack offHand = null;
+                        // Fill inventory
+                        if (playerInventoryData.contents != null) {
+                            for (int i = 0; i < Math.min(playerInventoryData.contents.length, 36); i++) {
+                                inv.setItem(i, playerInventoryData.contents[i]);
+                            }
+                        }
+                        if (playerInventoryData.armor != null && playerInventoryData.armor.length >= 4) {
+                            inv.setItem(39, playerInventoryData.armor[0]);
+                            inv.setItem(38, playerInventoryData.armor[1]);
+                            inv.setItem(37, playerInventoryData.armor[2]);
+                            inv.setItem(36, playerInventoryData.armor[3]);
+                        }
+                        if (playerInventoryData.offHand != null) {
+                            inv.setItem(40, playerInventoryData.offHand);
+                        }
 
-        try {
-            contents = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.INVENTORY).read().join();
-            armor = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
-            offHand = SingleShareReader.of(inventories, target, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
-        } catch (CompletionException e) {
-            issuer.sendError(ChatColor.RED + "Error loading inventory data: " + e.getCause().getMessage());
-            e.printStackTrace();
-            return;
-        }
-
-        // Create inventory with ModifiableInventoryHolder
-        Inventory inv = Bukkit.createInventory(
-                new InventoryViewListener.ModifiableInventoryHolder(target, worldName, profileTypeToUse, inventories),
-                54,
-                "Modifying " + target.getName() + " @ " + worldName
-        );
-
-        // Fill inventory
-        if (contents != null) {
-            for (int i = 0; i < Math.min(contents.length, 36); i++) {
-                inv.setItem(i, contents[i]);
-            }
-        }
-        if (armor != null && armor.length >= 4) {
-            inv.setItem(39, armor[0]);
-            inv.setItem(38, armor[1]);
-            inv.setItem(37, armor[2]);
-            inv.setItem(36, armor[3]);
-        }
-        if (offHand != null) {
-            inv.setItem(40, offHand);
-        }
-
-        viewer.openInventory(inv);
-        issuer.sendInfo(ChatColor.GREEN + "Opened editable inventory for " + target.getName() +
-                " in world " + ChatColor.YELLOW + worldName + ChatColor.GREEN + ". Changes will save on close.");
+                        viewer.openInventory(inv);
+                        issuer.sendInfo(ChatColor.GREEN + "Opened editable inventory for " + targetPlayer.getName() + " in world " + worldName + ". Changes will save on close.");
+                    }); // End of Bukkit.getScheduler().runTask()
+                })
+                .exceptionally(throwable -> {
+                    // This block runs if an exception occurs during data loading
+                    issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
+                    inventories.getLogger().severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
+                    throwable.printStackTrace();
+                    return null; // Must return null for CompletableFuture<Void> in exceptionally
+                });
     }
 }
 

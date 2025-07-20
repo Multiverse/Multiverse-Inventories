@@ -1,11 +1,12 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
@@ -17,31 +18,22 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
-import org.mvplugins.multiverse.inventories.listeners.InventoryViewListener;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
-import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
-import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
-import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
-import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
-import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
-import org.mvplugins.multiverse.inventories.share.Sharables;
-
-import java.util.concurrent.CompletionException;
+import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
+import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 
 @Service
-public class InventoryViewCommand extends InventoriesCommand {
+final class InventoryViewCommand extends InventoriesCommand {
 
-    private final ProfileContainerStoreProvider profileContainerStoreProvider;
+    private final InventoryDataProvider inventoryDataProvider;
     private final MultiverseInventories inventories;
 
     @Inject
     InventoryViewCommand(
-            @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
+            @NotNull InventoryDataProvider inventoryDataProvider,
             @NotNull MultiverseInventories inventories
     ) {
-        this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.inventories = inventories;
+        this.inventoryDataProvider = inventoryDataProvider;
     }
 
     @Subcommand("view")
@@ -80,141 +72,45 @@ public class InventoryViewCommand extends InventoriesCommand {
         }
 
         String worldName = worlds[0].getName();
-        ItemStack[] contents = null;
-        ItemStack[] armor = null;
-        ItemStack offHand = null;
-        String statusMessage;
 
-        // Check if target player is online
-        if (targetPlayer.isOnline()) {
-            Player onlineTarget = targetPlayer.getPlayer();
-            if (onlineTarget != null) {
-                // If the player is online, retrieve their current live inventory
-                contents = onlineTarget.getInventory().getContents();
-                armor = onlineTarget.getInventory().getArmorContents();
-                offHand = onlineTarget.getInventory().getItemInOffHand();
-                statusMessage = "Displaying LIVE inventory for " + targetPlayer.getName() + ".";
-            } else {
-                // Should not happen if isOnline() is true, but as a fallback
-                statusMessage = "Error: Could not get online player instance. Falling back to stored data.";
+        // Asynchronously load data using InventoryDataProvider
+        issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
 
-                // Fallback to stored data if online player instance somehow isn't available
-                // This block is now correctly placed within the 'else' for onlineTarget != null
-                ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                        .getContainer(worldName);
-                if (container == null) {
-                    issuer.sendError(ChatColor.RED + "Could not load profile container for world: " + worldName);
-                    return; // Exit if container cannot be loaded
-                }
-                PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
-                ProfileType profileTypeToUse = ProfileTypes.SURVIVAL;
-                if (tempProfile == null) {
-                    for (ProfileType type : ProfileTypes.getTypes()) {
-                        if (type.equals(ProfileTypes.SURVIVAL)) continue;
-                        tempProfile = container.getPlayerProfileNow(type, targetPlayer);
-                        if (tempProfile != null) {
-                            profileTypeToUse = type;
-                            break;
+        inventoryDataProvider.loadPlayerInventoryData(targetPlayer, worldName)
+                .thenAccept(playerInventoryData -> {
+                    //  Ensure GUI operations run on the main thread
+                    Bukkit.getScheduler().runTask(inventories, () -> {
+                        // Create an inventory for viewing.
+                        Component title = Component.text(targetPlayer.getName() + " @ " + worldName);
+                        Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(), 54, title);
+
+                        // Fill in main inventory slots (0–35)
+                        if (playerInventoryData.contents != null) {
+                            for (int i = 0; i < Math.min(playerInventoryData.contents.length, 36); i++) {
+                                inv.setItem(i, playerInventoryData.contents[i]);
+                            }
                         }
-                    }
-                }
-                if (tempProfile == null) {
-                    issuer.sendError(ChatColor.RED + "No player data found for " + targetPlayer.getName() + " in world " + worldName + ". Try checking a different world or ensure the player has played in this world.");
-                    return; // Exit if no profile found
-                }
-                try {
-                    contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY).read().join();
-                    armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
-                    offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
-                } catch (CompletionException e) {
-                    issuer.sendError(ChatColor.RED + "Error loading inventory data: " + e.getCause().getMessage());
-                    e.printStackTrace();
-                    return; // Exit on loading error
-                }
-                statusMessage = "Displaying STORED inventory for " + targetPlayer.getName() + " in world " + worldName + ". (Fallback)";
-            }
-        } else { // if the target player is offline, load the offline inventory data
+                        // Armor slot mapping for display in the GUI
+                        if (playerInventoryData.armor != null && playerInventoryData.armor.length >= 4) {
+                            inv.setItem(39, playerInventoryData.armor[0]); // Helmet
+                            inv.setItem(38, playerInventoryData.armor[1]); // Chestplate
+                            inv.setItem(37, playerInventoryData.armor[2]); // Leggings
+                            inv.setItem(36, playerInventoryData.armor[3]); // Boots
+                        }
+                        if (playerInventoryData.offHand != null) {
+                            inv.setItem(40, playerInventoryData.offHand);
+                        }
 
-            // Load the container for this world
-            ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                    .getContainer(worldName);
-            if (container == null) {
-                issuer.sendError(ChatColor.RED + "Could not load profile container for world: " + worldName);
-                return; // Exit if container cannot be loaded
-            }
-
-            // Load the targetPlayer's profile key from the container
-            PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
-            ProfileType profileTypeToUse = ProfileTypes.SURVIVAL; // Default to SURVIVAL
-
-            if (tempProfile == null) {
-                // If SURVIVAL profile not found, iterate through other known types as a fallback
-                // to find ANY PlayerProfile and use its type.
-                for (ProfileType type : ProfileTypes.getTypes()) {
-                    if (type.equals(ProfileTypes.SURVIVAL)) {
-                        continue; // Skip SURVIVAL as we already tried it
-                    }
-                    tempProfile = container.getPlayerProfileNow(type, targetPlayer);
-                    if (tempProfile != null) {
-                        profileTypeToUse = type; // Use the type of the found profile
-                        break;
-                    }
-                }
-            }
-
-            if (tempProfile == null) {
-                issuer.sendError(ChatColor.RED + "No inventory data found for " + targetPlayer.getName() + " in world " + worldName + ". Try checking a different world or ensure the player has played in this world.");
-                return; // Exit if no profile found
-            }
-
-            try {
-                // Read main inventory contents
-                contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY)
-                        .read()
-                        .join(); // Use .join() to block until the future completes
-
-                // Read armor contents
-                armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR)
-                        .read()
-                        .join();
-
-                // Read off-hand item
-                offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND)
-                        .read()
-                        .join();
-
-            } catch (CompletionException e) {
-                issuer.sendError(ChatColor.RED + "Error loading inventory data: " + e.getCause().getMessage());
-                e.printStackTrace(); // Log the full stack trace for debugging
-                return; // Exit on loading error
-            }
-            statusMessage = "Displaying STORED inventory for " + targetPlayer.getName() + " in world " + worldName + ".";
-        }
-
-        // Create an inventory for viewing. Size 54 (6 rows) is good for main inventory + armor + offhand.
-        // This links the inventory to our listener, making it read-only.
-        Inventory inv = Bukkit.createInventory(new InventoryViewListener.ReadOnlyInventoryHolder(), 54, targetPlayer.getName() + " @ " + worldName);
-
-        // Fill in main inventory slots (0–35)
-        // Ensure we don't go out of bounds if contents is smaller than expected
-        if (contents != null) {
-            for (int i = 0; i < Math.min(contents.length, 36); i++) {
-                inv.setItem(i, contents[i]);
-            }
-        }
-
-        if (armor != null && armor.length >= 4) {
-            inv.setItem(39, armor[0]); // Helmet (from profile) -> Slot 39 (viewing inv)
-            inv.setItem(38, armor[1]); // Chestplate (from profile) -> Slot 38 (viewing inv)
-            inv.setItem(37, armor[2]); // Leggings (from profile) -> Slot 37 (viewing inv)
-            inv.setItem(36, armor[3]); // Boots (from profile) -> Slot 36 (viewing inv)
-        }
-        // Fill in offhand slot (40)
-        if (offHand != null) {
-            inv.setItem(40, offHand);
-        }
-        // Open the GUI for the viewer
-        viewer.openInventory(inv);
-        issuer.sendInfo(ChatColor.GREEN + statusMessage);
+                        viewer.openInventory(inv);
+                        issuer.sendInfo(ChatColor.GREEN + playerInventoryData.statusMessage);
+                    }); // End of Bukkit.getScheduler().runTask()
+                })
+                .exceptionally(throwable -> {
+                    // This block runs if an exception occurs during data loading
+                    issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
+                    inventories.getLogger().severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
+                    throwable.printStackTrace();
+                    return null; // Must return null for CompletableFuture<Void> in exceptionally
+                });
     }
 }
