@@ -202,6 +202,14 @@ public final class InventoryGUIHelper {
         return createDisplayItem(Material.COOKED_BEEF, "Food & Saturation", lore);
     }
 
+    private ItemStack createLastLocationDisplayItem(@NotNull String locationString) {
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.WHITE + "Last Location:");
+        // Split the location string if it's too long, or just add it directly
+        // Assuming locationString is already formatted like "world (x.x, y.y, z.z)"
+        lore.add(ChatColor.YELLOW + locationString);
+        return createDisplayItem(Material.COMPASS, "Last Location", lore);
+    }
     /**
      * Helper method to get an item for a slot, returning a filler if the item is null or air.
      * @param item The actual ItemStack from player data. Can be null.
@@ -257,9 +265,7 @@ public final class InventoryGUIHelper {
         inv.setItem(41, createHealthDisplayItem(playerInventoryData.health));
         inv.setItem(42, createFoodDisplayItem(playerInventoryData.foodLevel, playerInventoryData.saturation));
         inv.setItem(43, createLevelDisplayItem(playerInventoryData.level, playerInventoryData.exp));
-
-        // Slot 44 will be a generic filler/padding item
-        inv.setItem(44, createFillerItemForSlot(44, isModifiable));
+        inv.setItem(44, createLastLocationDisplayItem(playerInventoryData.lastLocation));
 
         /*// Fill the remaining slots (41-44) with non-interactable filler items
         for (int i = 41; i <= 44; i++) {

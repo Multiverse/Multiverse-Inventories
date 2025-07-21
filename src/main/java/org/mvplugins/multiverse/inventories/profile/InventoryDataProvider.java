@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -65,6 +66,7 @@ public final class InventoryDataProvider {
         public final float exp;
         public final int foodLevel;
         public final float saturation;
+        public final String lastLocation;
 
         /**
          *
@@ -78,13 +80,14 @@ public final class InventoryDataProvider {
          * @param exp The player's current experience progress towards the next level (0.0-1.0).
          * @param foodLevel The player's current food level (0-20).
          * @param saturation The player's current saturation level.
+         * @param lastLocation The player's last location.
          *
          * @since 5.2
          */
         @ApiStatus.AvailableSince("5.2")
         public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, InventoryStatus status,
                                    ProfileType profileTypeUsed, double health, int level, float exp, int foodLevel,
-                                   float saturation) {
+                                   float saturation, String lastLocation) {
             this.contents = contents;
             this.armor = armor;
             this.offHand = offHand;
@@ -97,8 +100,7 @@ public final class InventoryDataProvider {
             this.exp = exp;
             this.foodLevel = foodLevel;
             this.saturation = saturation;
-
-
+            this.lastLocation = lastLocation;
         }
     }
 
@@ -155,7 +157,12 @@ public final class InventoryDataProvider {
                 onlineTarget.getLevel(),
                 onlineTarget.getExp(),
                 onlineTarget.getFoodLevel(),
-                onlineTarget.getSaturation()
+                onlineTarget.getSaturation(),
+                String.format("%s (%.1f, %.1f, %.1f)",
+                        onlineTarget.getWorld().getName(),
+                        onlineTarget.getLocation().getX(),
+                        onlineTarget.getLocation().getY(),
+                        onlineTarget.getLocation().getZ())
         ));
     }
 
@@ -191,6 +198,27 @@ public final class InventoryDataProvider {
                         .read().join();
                 float storedSaturationLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.SATURATION)
                         .read().join();
+                Location storedLocationObject = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LAST_LOCATION)
+                        .read().join();
+
+                // Note that this is here for debugging purposes
+                // If the player leaves a world or logs off, Sharables.LAST_LOCATION appears to read null
+                // storedLocationObject
+                String storedLastLocation;
+                if (storedLocationObject == null) {
+                    storedLastLocation = "N/A (No Location Data)";
+                } else if (storedLocationObject.getWorld() == null) {
+                    storedLastLocation = String.format("N/A (World Null: %.1f, %.1f, %.1f)",
+                            storedLocationObject.getX(),
+                            storedLocationObject.getY(),
+                            storedLocationObject.getZ());
+                } else {
+                    storedLastLocation = String.format("%s (%.1f, %.1f, %.1f)",
+                            storedLocationObject.getWorld().getName(),
+                            storedLocationObject.getX(),
+                            storedLocationObject.getY(),
+                            storedLocationObject.getZ());
+                }
 
                 return new PlayerInventoryData(
                         contents,
@@ -202,7 +230,8 @@ public final class InventoryDataProvider {
                         storedLevel,
                         storedExp,
                         storedFoodLevel,
-                        storedSaturationLevel
+                        storedSaturationLevel,
+                        storedLastLocation
                 );
             } catch (CompletionException e) {
                 // Unwrap CompletionException to get the actual cause
