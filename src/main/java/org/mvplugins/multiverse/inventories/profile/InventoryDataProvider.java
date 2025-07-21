@@ -68,11 +68,16 @@ public final class InventoryDataProvider {
 
         /**
          *
-         * @param contents
-         * @param armor
-         * @param offHand
-         * @param status
-         * @param profileTypeUsed
+         * @param contents The player's main inventory contents (slots 0-35).
+         * @param armor The player's armor contents (boots, leggings, chestplate, helmet).
+         * @param offHand The player's off-hand item.
+         * @param status The status of the inventory data load (e.g., LIVE, STORED, NO_DATA_FOUND).
+         * @param profileTypeUsed The profile type that was used to retrieve the data (e.g., SURVIVAL).
+         * @param health The player's current health.
+         * @param level The player's current experience level.
+         * @param exp The player's current experience progress towards the next level (0.0-1.0).
+         * @param foodLevel The player's current food level (0-20).
+         * @param saturation The player's current saturation level.
          *
          * @since 5.2
          */
