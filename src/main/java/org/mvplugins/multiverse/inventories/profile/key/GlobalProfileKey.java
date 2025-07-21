@@ -20,7 +20,7 @@ public sealed class GlobalProfileKey permits ProfileFileKey {
      */
     public static GlobalProfileKey of(UUID playerUUID) {
         return PlayerNamesMapper.getInstance().getKey(playerUUID)
-                .getOrElse(() -> new GlobalProfileKey(playerUUID, ""));
+                .getOrElse(() -> new GlobalProfileKey(playerUUID, playerUUID.toString()));
     }
 
     public static GlobalProfileKey of(OfflinePlayer offlinePlayer) {
