@@ -81,8 +81,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                                 new ModifiableInventoryHolder(
                                         targetPlayer,
                                         worldName,
-                                        playerInventoryData.profileTypeUsed, // Use the determined profile type
-                                        inventories
+                                        playerInventoryData.profileTypeUsed // Use the determined profile type
                                 ),
                                 45,
                                 title

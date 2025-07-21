@@ -26,7 +26,6 @@ public final class ModifiableInventoryHolder implements InventoryHolder {
      * @param targetPlayer
      * @param worldName
      * @param profileType
-     * @param inventories
      *
      * @since 5.2
      */
