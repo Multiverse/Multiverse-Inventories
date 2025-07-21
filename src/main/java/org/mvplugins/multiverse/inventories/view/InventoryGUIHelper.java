@@ -15,6 +15,9 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 
+import java.util.List;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -28,10 +31,12 @@ import java.util.Collections;
 public final class InventoryGUIHelper {
 
     private final NamespacedKey IS_FILLER_KEY; // Key to mark filler items
+    private final NamespacedKey IS_DISPLAY_ITEM_KEY; // Key to mark stat display items
 
     @Inject
     InventoryGUIHelper(@NotNull MultiverseInventories inventories) {
         this.IS_FILLER_KEY = new NamespacedKey(inventories, "is_mvinv_filler");
+        this.IS_DISPLAY_ITEM_KEY = new NamespacedKey(inventories, "is_mvinv_display");
     }
 
     /**
@@ -75,6 +80,21 @@ public final class InventoryGUIHelper {
                 persistentDataContainer.getOrDefault(IS_FILLER_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 1;
     }
 
+    /**
+     * Checks if a given ItemStack is a general display item created by this helper.
+     * @param item The ItemStack to check.
+     * @return True if the item is a display item, false otherwise.
+     *
+     * @since 5.2
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public boolean isDisplayItem(@NotNull ItemStack item) {
+        if (!item.hasItemMeta()) {
+            return false;
+        }
+        return item.getItemMeta().getPersistentDataContainer().has(IS_DISPLAY_ITEM_KEY, PersistentDataType.BYTE) &&
+                item.getItemMeta().getPersistentDataContainer().get(IS_DISPLAY_ITEM_KEY, PersistentDataType.BYTE) == (byte) 1;
+    }
     /**
      * Determines if an ItemStack is valid for a given special inventory slot in the custom GUI.
      * This method is used for both armor and off-hand slot validation.
@@ -142,6 +162,45 @@ public final class InventoryGUIHelper {
         };
     }
 
+    /**
+     * Creates a generic display item for GUI slots (non-interactable, for showing stats).
+     * @param material The material of the display item.
+     * @param name The display name of the item.
+     * @param lore The lore text for the item.
+     * @return The created ItemStack.
+     */
+    private ItemStack createDisplayItem(Material material, String name, List<String> lore) {
+        ItemStack item = new ItemStack(material);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ChatColor.AQUA + name);
+            meta.setLore(lore);
+            meta.getPersistentDataContainer().set(IS_DISPLAY_ITEM_KEY, PersistentDataType.BYTE, (byte) 1);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    private ItemStack createHealthDisplayItem(double health) {
+        List<String> lore = new ArrayList<>();
+        DecimalFormat df = new DecimalFormat("0.0");
+        lore.add(ChatColor.WHITE + "Current: " + ChatColor.RED + df.format(health) + ChatColor.WHITE + " / " + ChatColor.RED + "20.0");
+        return createDisplayItem(Material.RED_DYE, "Health", lore);
+    }
+
+    private ItemStack createLevelDisplayItem(int level, float exp) {
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.WHITE + "Level: " + ChatColor.GREEN + level);
+        lore.add(ChatColor.WHITE + "Progress: " + ChatColor.AQUA + String.format("%.1f%%", exp * 100));
+        return createDisplayItem(Material.EXPERIENCE_BOTTLE, "Experience", lore);
+    }
+
+    private ItemStack createFoodDisplayItem(int foodLevel, float saturation) {
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.WHITE + "Food: " + ChatColor.GOLD + foodLevel + ChatColor.WHITE + " / " + ChatColor.GOLD + "20");
+        lore.add(ChatColor.WHITE + "Saturation: " + ChatColor.LIGHT_PURPLE + String.format("%.1f", saturation));
+        return createDisplayItem(Material.COOKED_BEEF, "Food & Saturation", lore);
+    }
 
     /**
      * Helper method to get an item for a slot, returning a filler if the item is null or air.
@@ -194,9 +253,17 @@ public final class InventoryGUIHelper {
         // Off-hand slot (40) and add filler if empty
         inv.setItem(40, getOrFillItem(playerInventoryData.offHand, 40, isModifiable));
 
-        // Fill the remaining slots (41-44) with non-interactable filler items
+        // These slots are always treated as read-only by the listener.
+        inv.setItem(41, createHealthDisplayItem(playerInventoryData.health));
+        inv.setItem(42, createFoodDisplayItem(playerInventoryData.foodLevel, playerInventoryData.saturation));
+        inv.setItem(43, createLevelDisplayItem(playerInventoryData.level, playerInventoryData.exp));
+
+        // Slot 44 will be a generic filler/padding item
+        inv.setItem(44, createFillerItemForSlot(44, isModifiable));
+
+        /*// Fill the remaining slots (41-44) with non-interactable filler items
         for (int i = 41; i <= 44; i++) {
             inv.setItem(i, createFillerItemForSlot(i, isModifiable));
-        }
+         */
     }
 }

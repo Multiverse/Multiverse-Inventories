@@ -59,6 +59,13 @@ public final class InventoryDataProvider {
         public final InventoryStatus status; // To indicate if it's live or stored data
         public final ProfileType profileTypeUsed; // To pass back which profile type was used for stored data
 
+        // Non-inventory data
+        public final double health;
+        public final int level;
+        public final float exp;
+        public final int foodLevel;
+        public final float saturation;
+
         /**
          *
          * @param contents
@@ -70,12 +77,23 @@ public final class InventoryDataProvider {
          * @since 5.2
          */
         @ApiStatus.AvailableSince("5.2")
-        public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, InventoryStatus status, ProfileType profileTypeUsed) {
+        public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, InventoryStatus status,
+                                   ProfileType profileTypeUsed, double health, int level, float exp, int foodLevel,
+                                   float saturation) {
             this.contents = contents;
             this.armor = armor;
             this.offHand = offHand;
             this.status = status;
             this.profileTypeUsed = profileTypeUsed;
+
+            // Non-inventory data
+            this.health = health;
+            this.level = level;
+            this.exp = exp;
+            this.foodLevel = foodLevel;
+            this.saturation = saturation;
+
+
         }
     }
 
@@ -127,7 +145,12 @@ public final class InventoryDataProvider {
                 onlineTarget.getInventory().getArmorContents(),
                 onlineTarget.getInventory().getItemInOffHand(),
                 InventoryStatus.LIVE_INVENTORY,
-                profileType
+                profileType,
+                onlineTarget.getHealth(),
+                onlineTarget.getLevel(),
+                onlineTarget.getExp(),
+                onlineTarget.getFoodLevel(),
+                onlineTarget.getSaturation()
         ));
     }
 
@@ -152,12 +175,29 @@ public final class InventoryDataProvider {
                 ItemStack[] armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
                 ItemStack offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
 
+                // Non-inventory data
+                double storedHealth = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.HEALTH)
+                        .read().join();
+                int storedLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LEVEL)
+                        .read().join();
+                float storedExp = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.EXPERIENCE)
+                        .read().join();
+                int storedFoodLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.FOOD_LEVEL)
+                        .read().join();
+                float storedSaturationLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.SATURATION)
+                        .read().join();
+
                 return new PlayerInventoryData(
                         contents,
                         armor,
                         offHand,
                         InventoryStatus.STORED_INVENTORY,
-                        profileTypeToUse
+                        profileTypeToUse,
+                        storedHealth,
+                        storedLevel,
+                        storedExp,
+                        storedFoodLevel,
+                        storedSaturationLevel
                 );
             } catch (CompletionException e) {
                 // Unwrap CompletionException to get the actual cause
