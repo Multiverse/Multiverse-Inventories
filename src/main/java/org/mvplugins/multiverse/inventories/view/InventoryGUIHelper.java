@@ -181,10 +181,10 @@ public final class InventoryGUIHelper {
         return item;
     }
 
-    private ItemStack createHealthDisplayItem(double health) {
+    private ItemStack createHealthDisplayItem(double health, double maxHealth) {
         List<String> lore = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("0.0");
-        lore.add(ChatColor.WHITE + "Current: " + ChatColor.RED + df.format(health) + ChatColor.WHITE + " / " + ChatColor.RED + "20.0");
+        lore.add(ChatColor.WHITE + "Current: " + ChatColor.RED + df.format(health) + ChatColor.WHITE + " / " + ChatColor.RED + df.format(maxHealth));
         return createDisplayItem(Material.RED_DYE, "Health", lore);
     }
 
@@ -262,7 +262,7 @@ public final class InventoryGUIHelper {
         inv.setItem(40, getOrFillItem(playerInventoryData.offHand, 40, isModifiable));
 
         // These slots are always treated as read-only by the listener.
-        inv.setItem(41, createHealthDisplayItem(playerInventoryData.health));
+        inv.setItem(41, createHealthDisplayItem(playerInventoryData.health, playerInventoryData.maxHealth));
         inv.setItem(42, createFoodDisplayItem(playerInventoryData.foodLevel, playerInventoryData.saturation));
         inv.setItem(43, createLevelDisplayItem(playerInventoryData.level, playerInventoryData.exp));
         inv.setItem(44, createLastLocationDisplayItem(playerInventoryData.lastLocation));

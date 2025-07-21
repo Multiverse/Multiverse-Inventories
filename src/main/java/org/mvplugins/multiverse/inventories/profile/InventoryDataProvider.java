@@ -4,6 +4,7 @@ import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -62,6 +63,7 @@ public final class InventoryDataProvider {
 
         // Non-inventory data
         public final double health;
+        public final double maxHealth;
         public final int level;
         public final float exp;
         public final int foodLevel;
@@ -76,6 +78,7 @@ public final class InventoryDataProvider {
          * @param status The status of the inventory data load (e.g., LIVE, STORED, NO_DATA_FOUND).
          * @param profileTypeUsed The profile type that was used to retrieve the data (e.g., SURVIVAL).
          * @param health The player's current health.
+         * @param maxHealth The player's maximum health.
          * @param level The player's current experience level.
          * @param exp The player's current experience progress towards the next level (0.0-1.0).
          * @param foodLevel The player's current food level (0-20).
@@ -86,7 +89,7 @@ public final class InventoryDataProvider {
          */
         @ApiStatus.AvailableSince("5.2")
         public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, InventoryStatus status,
-                                   ProfileType profileTypeUsed, double health, int level, float exp, int foodLevel,
+                                   ProfileType profileTypeUsed, double health, double maxHealth, int level, float exp, int foodLevel,
                                    float saturation, String lastLocation) {
             this.contents = contents;
             this.armor = armor;
@@ -96,6 +99,7 @@ public final class InventoryDataProvider {
 
             // Non-inventory data
             this.health = health;
+            this.maxHealth = maxHealth;
             this.level = level;
             this.exp = exp;
             this.foodLevel = foodLevel;
@@ -154,6 +158,7 @@ public final class InventoryDataProvider {
                 InventoryStatus.LIVE_INVENTORY,
                 profileType,
                 onlineTarget.getHealth(),
+                onlineTarget.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(),
                 onlineTarget.getLevel(),
                 onlineTarget.getExp(),
                 onlineTarget.getFoodLevel(),
@@ -189,6 +194,8 @@ public final class InventoryDataProvider {
 
                 // Non-inventory data
                 double storedHealth = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.HEALTH)
+                        .read().join();
+                double storedMaxHealth = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.MAX_HEALTH)
                         .read().join();
                 int storedLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LEVEL)
                         .read().join();
@@ -227,6 +234,7 @@ public final class InventoryDataProvider {
                         InventoryStatus.STORED_INVENTORY,
                         profileTypeToUse,
                         storedHealth,
+                        storedMaxHealth,
                         storedLevel,
                         storedExp,
                         storedFoodLevel,
