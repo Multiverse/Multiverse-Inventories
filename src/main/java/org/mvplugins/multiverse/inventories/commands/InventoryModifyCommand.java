@@ -61,10 +61,6 @@ final class InventoryModifyCommand extends InventoriesCommand {
             @Description("The world the player's inventory is in")
             MultiverseWorld world
     ) {
-        if (player.getUniqueId().equals(targetPlayer.getUniqueId())) {
-            issuer.sendError(ChatColor.RED + "You cannot modify your own inventory using this command. Use your regular inventory.");
-            return;
-        }
 
         String worldName = world.getName();
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
@@ -90,9 +86,18 @@ final class InventoryModifyCommand extends InventoriesCommand {
                 .thenAccept(playerInventoryData -> {
                     // Ensure GUI operations run on the main thread
                     Bukkit.getScheduler().runTask(inventories, () -> {
+
+                        // If the player tries to modify their own live inventory, stop
+                        if (player.getUniqueId().equals(targetPlayer.getUniqueId())
+                            && player.getWorld().getName().equalsIgnoreCase(worldName)) {
+                            issuer.sendError(ChatColor.RED + "You cannot modify your own live inventory using this command. Use your regular inventory.");
+                            return; // Stop here if it's a live self-inventory
+                        }
                         createAndOpenGUI(issuer, player, targetPlayer, worldName, playerInventoryData);
                     });
                 })
+
+
                 .exceptionally(throwable -> {
                     // This block runs if an exception occurs during data loading
                     String errorMessage = throwable.getMessage();

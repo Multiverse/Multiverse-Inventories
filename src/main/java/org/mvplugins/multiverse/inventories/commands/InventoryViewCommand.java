@@ -64,6 +64,7 @@ final class InventoryViewCommand extends InventoriesCommand {
 
         // Asynchronously load data using InventoryDataProvider
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
+        handleInventoryLoadAndDisplay(issuer, player, targetPlayer, worldName);
     }
 
         /**
