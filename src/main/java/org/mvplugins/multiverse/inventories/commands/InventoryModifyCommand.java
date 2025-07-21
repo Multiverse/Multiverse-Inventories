@@ -130,7 +130,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                         }
 
                         player.openInventory(inv);
-                        issuer.sendInfo(ChatColor.GREEN + "Opened editable inventory for " + targetPlayer.getName() + " in world " + worldName + ". Changes will save on close.");
+                        issuer.sendInfo(playerInventoryData.status.getFormattedMessage(targetPlayer.getName(), worldName) + ". Changes will save on close.");
                     }); // End of Bukkit.getScheduler().runTask()
                 })
                 .exceptionally(throwable -> {

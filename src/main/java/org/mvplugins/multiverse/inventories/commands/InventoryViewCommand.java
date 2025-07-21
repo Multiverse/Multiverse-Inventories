@@ -117,7 +117,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                         }
 
                         player.openInventory(inv);
-                        issuer.sendInfo(ChatColor.GREEN + playerInventoryData.statusMessage);
+                        issuer.sendInfo(playerInventoryData.status.getFormattedMessage(targetPlayer.getName(),worldName));
                     }); // End of Bukkit.getScheduler().runTask()
                 })
                 .exceptionally(throwable -> {

@@ -55,7 +55,7 @@ public final class InventoryDataProvider {
         public final ItemStack[] contents;
         public final ItemStack[] armor;
         public final ItemStack offHand;
-        public final String statusMessage; // To indicate if it's live or stored data
+        public final InventoryStatus status; // To indicate if it's live or stored data
         public final ProfileType profileTypeUsed; // To pass back which profile type was used for stored data
 
         /**
@@ -63,17 +63,17 @@ public final class InventoryDataProvider {
          * @param contents
          * @param armor
          * @param offHand
-         * @param statusMessage
+         * @param status
          * @param profileTypeUsed
          *
          * @since 5.2
          */
         @ApiStatus.AvailableSince("5.2")
-        public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, String statusMessage, ProfileType profileTypeUsed) {
+        public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, InventoryStatus status, ProfileType profileTypeUsed) {
             this.contents = contents;
             this.armor = armor;
             this.offHand = offHand;
-            this.statusMessage = statusMessage;
+            this.status = status;
             this.profileTypeUsed = profileTypeUsed;
         }
     }
@@ -125,7 +125,7 @@ public final class InventoryDataProvider {
                 onlineTarget.getInventory().getContents(),
                 onlineTarget.getInventory().getArmorContents(),
                 onlineTarget.getInventory().getItemInOffHand(),
-                "Displaying LIVE inventory for " + onlineTarget.getName() + " in world " + worldName + ".",
+                InventoryStatus.LIVE_INVENTORY,
                 profileType
         ));
     }
@@ -143,7 +143,7 @@ public final class InventoryDataProvider {
 
             PlayerProfile tempProfile = loadMVInvPlayerProfile(container, targetPlayer);
             if (tempProfile == null) {
-                throw new IllegalStateException("No player data found for " + targetPlayer.getName() + " in world " + worldName + ". Try checking a different world or ensure the player has played in this world.");
+                throw new IllegalStateException(InventoryStatus.NO_DATA_FOUND.getFormattedMessage(targetPlayer.getName(), worldName));
             }
             ProfileType profileTypeToUse = tempProfile.getProfileType();
             try {
@@ -155,7 +155,7 @@ public final class InventoryDataProvider {
                         contents,
                         armor,
                         offHand,
-                        "Displaying STORED inventory for " + targetPlayer.getName() + " in world " + worldName + ".",
+                        InventoryStatus.STORED_INVENTORY,
                         profileTypeToUse
                 );
             } catch (CompletionException e) {
