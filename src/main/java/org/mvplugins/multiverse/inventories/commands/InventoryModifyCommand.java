@@ -13,6 +13,7 @@ import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
+import org.mvplugins.multiverse.external.acf.commands.annotation.Flags;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -48,32 +49,25 @@ final class InventoryModifyCommand extends InventoriesCommand {
     @Description("Modify a player's inventory in a specific world.")
     void onInventoryModifyCommand(
             @NotNull MVCommandIssuer issuer,
+
+            // to make sure the command is only run by players
+            @Flags("resolve=issuerOnly")
+            @NotNull Player player,
+
             @Syntax("<player>")
             @Description("Online or offline player")
             OfflinePlayer targetPlayer,
 
             @Syntax("<world>")
             @Description("The world the player's inventory is in")
-            MultiverseWorld[] worlds
+            MultiverseWorld world
     ) {
-        if (!(issuer.getIssuer() instanceof Player viewer)) {
-            issuer.sendError(ChatColor.RED + "Only players can modify inventories.");
-            return;
-        }
-        if (worlds == null || worlds.length == 0 || worlds[0] == null) {
-            issuer.sendError(ChatColor.RED + "You must specify a valid world.");
-            return;
-        }
-        if (targetPlayer == null || targetPlayer.getName() == null) {
-            issuer.sendError(ChatColor.RED + "You must specify a valid player.");
-            return;
-        }
-        if (viewer.getUniqueId().equals(targetPlayer.getUniqueId())) {
+        if (player.getUniqueId().equals(targetPlayer.getUniqueId())) {
             issuer.sendError(ChatColor.RED + "You cannot modify your own inventory using this command. Use your regular inventory.");
             return;
         }
 
-        String worldName = worlds[0].getName();
+        String worldName = world.getName();
         // Asynchronously load data using InventoryDataProvider
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
 
@@ -137,7 +131,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                             inv.setItem(i, inventoryGUIHelper.createFillerItemForSlot(i));
                         }
 
-                        viewer.openInventory(inv);
+                        player.openInventory(inv);
                         issuer.sendInfo(ChatColor.GREEN + "Opened editable inventory for " + targetPlayer.getName() + " in world " + worldName + ". Changes will save on close.");
                     }); // End of Bukkit.getScheduler().runTask()
                 })
@@ -150,4 +144,3 @@ final class InventoryModifyCommand extends InventoriesCommand {
                 });
     }
 }
-

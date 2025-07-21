@@ -13,6 +13,7 @@ import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
+import org.mvplugins.multiverse.external.acf.commands.annotation.Flags;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -48,34 +49,19 @@ final class InventoryViewCommand extends InventoriesCommand {
     void onInventoryViewCommand(
             @NotNull MVCommandIssuer issuer,
 
+            // Ensure the command is run by a player
+            @Flags("resolve=issuerOnly")
+            @NotNull Player player,
+
             @Syntax("<player>")
             @Description("Online or offline player")
-            //Player targetPlayer,
             OfflinePlayer targetPlayer,
 
             @Syntax("<world>")
             @Description("The world the player's inventory is in")
-            MultiverseWorld[] worlds
+            MultiverseWorld world
     ) {
-        // Check if the command sender is a player
-        if (!(issuer.getIssuer() instanceof Player viewer)) {
-            issuer.sendError(ChatColor.RED + "Only players can view inventories.");
-            return;
-        }
-
-        // Validate world argument
-        if (worlds == null || worlds.length == 0 || worlds[0] == null) {
-            issuer.sendError(ChatColor.RED + "You must specify a valid world.");
-            return;
-        }
-
-        // Validate targetPlayer player
-        if (targetPlayer == null || targetPlayer.getName() == null) {
-            issuer.sendError(ChatColor.RED + "You must specify a valid player.");
-            return;
-        }
-
-        String worldName = worlds[0].getName();
+        String worldName = world.getName();
 
         // Asynchronously load data using InventoryDataProvider
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
@@ -131,7 +117,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                             inv.setItem(i, inventoryGUIHelper.createFillerItemForSlot(i));
                         }
 
-                        viewer.openInventory(inv);
+                        player.openInventory(inv);
                         issuer.sendInfo(ChatColor.GREEN + playerInventoryData.statusMessage);
                     }); // End of Bukkit.getScheduler().runTask()
                 })
