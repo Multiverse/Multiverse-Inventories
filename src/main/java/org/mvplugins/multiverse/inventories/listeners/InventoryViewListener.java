@@ -60,7 +60,6 @@ final class InventoryViewListener implements MVInvListener {
             int clickedSlot = event.getRawSlot();
             ItemStack cursorItem = event.getCursor(); // Item held by the cursor
             ItemStack currentItem = event.getCurrentItem(); // Item in the clicked slot
-            Inventory customGUI = event.getInventory(); // The custom inventory
             Player player = (Player) event.getWhoClicked(); // The player who clicked
 
             // Define the special slots
@@ -96,11 +95,17 @@ final class InventoryViewListener implements MVInvListener {
                 if (cursorItem != null && cursorItem.getType() != Material.AIR && inventoryGUIHelper.isValidItemForSlot(cursorItem, clickedSlot)) {
                     event.setCancelled(true); // Take full control of the event
 
-                    // Place the new item from cursor into the clicked slot
+                    // Place the new item from the cursor into the clicked slot
                     event.getInventory().setItem(clickedSlot, cursorItem);
 
-                    // Clear the player's cursor
-                    player.setItemOnCursor(null);
+                    // If the player tries to replace an item in the filler slot, check if the item is valid.
+                    if (currentItem != null && currentItem.getType() != Material.AIR && !inventoryGUIHelper.isFillerItem(currentItem)) {
+                        // If the original item was a real, non-filler item, put it on the player's cursor.
+                        player.setItemOnCursor(currentItem);
+                    } else {
+                        // If the original item was null, air, or a filler, clear the player's cursor.
+                        player.setItemOnCursor(null);
+                    }
 
                     player.updateInventory(); // Update client to reflect changes
                     return; // Event handled
