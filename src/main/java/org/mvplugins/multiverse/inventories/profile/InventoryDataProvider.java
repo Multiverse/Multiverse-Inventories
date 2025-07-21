@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
@@ -25,7 +26,10 @@ import java.util.concurrent.CompletionException; // Needed for async error handl
 /**
  * Provides methods for asynchronously loading player inventory data.
  * This class encapsulates the business logic for fetching inventory, armor, and off-hand contents.
+ *
+ * @since 5.2
  */
+@ApiStatus.AvailableSince("5.2")
 @Service
 public final class InventoryDataProvider {
 
@@ -43,7 +47,10 @@ public final class InventoryDataProvider {
 
     /**
      * Represents the loaded inventory data.
+     *
+     * @since 5.2
      */
+    @ApiStatus.AvailableSince("5.2")
     public static class PlayerInventoryData {
         public final ItemStack[] contents;
         public final ItemStack[] armor;
@@ -51,6 +58,17 @@ public final class InventoryDataProvider {
         public final String statusMessage; // To indicate if it's live or stored data
         public final ProfileType profileTypeUsed; // To pass back which profile type was used for stored data
 
+        /**
+         *
+         * @param contents
+         * @param armor
+         * @param offHand
+         * @param statusMessage
+         * @param profileTypeUsed
+         *
+         * @since 5.2
+         */
+        @ApiStatus.AvailableSince("5.2")
         public PlayerInventoryData(ItemStack[] contents, ItemStack[] armor, ItemStack offHand, String statusMessage, ProfileType profileTypeUsed) {
             this.contents = contents;
             this.armor = armor;
@@ -68,7 +86,10 @@ public final class InventoryDataProvider {
      * @param targetPlayer The OfflinePlayer whose inventory data to load.
      * @param worldName The name of the world to load the inventory from (either live or stored).
      * @return A CompletableFuture that will complete with PlayerInventoryData or an exception.
+     *
+     * @since 5.2
      */
+    @ApiStatus.AvailableSince("5.2")
     public CompletableFuture<PlayerInventoryData> loadPlayerInventoryData(
             @NotNull OfflinePlayer targetPlayer,
             @NotNull String worldName
@@ -135,7 +156,6 @@ public final class InventoryDataProvider {
             });
         }
 
-
     /**
      * Asynchronously saves a player's inventory data to their Multiverse-Inventories profile.
      * If the player is online and in the target world, their live inventory is also updated.
@@ -147,7 +167,10 @@ public final class InventoryDataProvider {
      * @param newArmor The new armor contents (helmet, chestplate, leggings, boots).
      * @param newOffHand The new off-hand item.
      * @return A CompletableFuture that completes when saving is done, or an exception occurs.
+     *
+     * @since 5.2
      */
+    @ApiStatus.AvailableSince("5.2")
     public CompletableFuture<Void> savePlayerInventoryData(
             @NotNull OfflinePlayer targetPlayer,
             @NotNull String worldName,
