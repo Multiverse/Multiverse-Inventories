@@ -27,8 +27,8 @@ public final class InventoryGUIHelper {
 
     private final NamespacedKey IS_FILLER_KEY; // Key to mark filler items
 
-    @Inject // Inject MultiverseInventories to create NamespacedKey
-    public InventoryGUIHelper(@NotNull MultiverseInventories inventories) {
+    @Inject
+    InventoryGUIHelper(@NotNull MultiverseInventories inventories) {
         this.IS_FILLER_KEY = new NamespacedKey(inventories, "is_mvinv_filler");
     }
 

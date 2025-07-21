@@ -37,7 +37,7 @@ public final class InventoryDataProvider {
     private final MultiverseInventories inventories;
 
     @Inject
-    public InventoryDataProvider(
+    InventoryDataProvider(
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull MultiverseInventories inventories
     ) {
