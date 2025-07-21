@@ -122,13 +122,19 @@ public final class InventoryGUIHelper {
      * @since 5.2
      */
     @ApiStatus.AvailableSince("5.2")
-    public ItemStack createFillerItemForSlot(int slot) {
+    public ItemStack createFillerItemForSlot(int slot, boolean isModifiable) {
+        String helmetLore = isModifiable ? "Place Helmet Here" : "No Helmet";
+        String chestplateLore = isModifiable ? "Place Chestplate Here" : "No Chestplate";
+        String leggingsLore = isModifiable ? "Place Leggings Here" : "No Leggings";
+        String bootsLore = isModifiable ? "Place Boots Here" : "No Boots";
+        String offHandLore = isModifiable ? "Place Off-Hand Item Here" : "No Off-Hand Item";
+
         return switch (slot) {
-            case 36 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", "Place Helmet Here");
-            case 37 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", "Place Chestplate Here");
-            case 38 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
-            case 39 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
-            case 40 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", "Place Off-Hand Item Here");
+            case 36 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", helmetLore);
+            case 37 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", chestplateLore);
+            case 38 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", leggingsLore);
+            case 39 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", bootsLore);
+            case 40 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", offHandLore);
             case 41, 42, 43, 44 -> createFillerItem(Material.BARRIER, " ", " "); // Padding slots
             default -> new ItemStack(Material.AIR); // Should not happen for these slots
         };

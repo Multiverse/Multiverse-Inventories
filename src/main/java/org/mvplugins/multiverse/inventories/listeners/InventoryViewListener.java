@@ -116,7 +116,7 @@ final class InventoryViewListener implements MVInvListener {
                     Bukkit.getScheduler().runTaskLater(inventories, () -> {
                         // After Bukkit processes the click, if the slot is now empty, put the filler back.
                         if (event.getInventory().getItem(clickedSlot) == null || event.getInventory().getItem(clickedSlot).getType() == Material.AIR) {
-                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot));
+                            event.getInventory().setItem(clickedSlot, inventoryGUIHelper.createFillerItemForSlot(clickedSlot, true));
                         }
                     }, 1L);
                 }
@@ -167,7 +167,7 @@ final class InventoryViewListener implements MVInvListener {
             Bukkit.getScheduler().runTaskLater(inventories, () -> {
                 for (int slot : event.getRawSlots()) {
                     if ((slot >= 36 && slot <= 40) && (event.getInventory().getItem(slot) == null || event.getInventory().getItem(slot).getType() == Material.AIR)) {
-                        event.getInventory().setItem(slot, inventoryGUIHelper.createFillerItemForSlot(slot)); // Use helper
+                        event.getInventory().setItem(slot, inventoryGUIHelper.createFillerItemForSlot(slot, true)); // Use helper
                     }
                 }
             }, 1L); // Run one tick later
