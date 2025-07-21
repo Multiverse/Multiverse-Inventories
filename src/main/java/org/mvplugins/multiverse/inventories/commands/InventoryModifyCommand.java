@@ -87,48 +87,8 @@ final class InventoryModifyCommand extends InventoriesCommand {
                                 title
                         );
 
-                        // Fill inventory
-                        if (playerInventoryData.contents != null) {
-                            for (int i = 0; i < Math.min(playerInventoryData.contents.length, 36); i++) {
-                                inv.setItem(i, playerInventoryData.contents[i]);
-                            }
-                        }
-                        // Armor slot mapping for display in the GUI and add fillers if empty
-                        // Slot 36: Helmet
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
-                            inv.setItem(36, inventoryGUIHelper.createFillerItemForSlot(36, true)); // Use helper
-                        } else {
-                            inv.setItem(36, playerInventoryData.armor[3]);
-                        }
-                        // Slot 37: Chestplate
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
-                            inv.setItem(37, inventoryGUIHelper.createFillerItemForSlot(37, true)); // Use helper
-                        } else {
-                            inv.setItem(37, playerInventoryData.armor[2]);
-                        }
-                        // Slot 38: Leggings
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
-                            inv.setItem(38, inventoryGUIHelper.createFillerItemForSlot(38, true)); // Use helper
-                        } else {
-                            inv.setItem(38, playerInventoryData.armor[1]);
-                        }
-                        // Slot 39: Boots
-                        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
-                            inv.setItem(39, inventoryGUIHelper.createFillerItemForSlot(39, true)); // Use helper
-                        } else {
-                            inv.setItem(39, playerInventoryData.armor[0]);
-                        }
-                        // Off-hand slot (40) and add filler if empty
-                        if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
-                            inv.setItem(40, inventoryGUIHelper.createFillerItemForSlot(40, true)); // Use helper
-                        } else {
-                            inv.setItem(40, playerInventoryData.offHand);
-                        }
-                        // Add the remaining slots as non-interactable filler items
-                        for (int i = 41; i <= 44; i++) {
-                            inv.setItem(i, inventoryGUIHelper.createFillerItemForSlot(i, true));
-                        }
-
+                        // Call the helper method to populate the GUI
+                        inventoryGUIHelper.populateInventoryGUI(inv, playerInventoryData, true);
                         player.openInventory(inv);
                         issuer.sendInfo(playerInventoryData.status.getFormattedMessage(targetPlayer.getName(), worldName) + ". Changes will save on close.");
                     }); // End of Bukkit.getScheduler().runTask()

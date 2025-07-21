@@ -3,6 +3,7 @@ package org.mvplugins.multiverse.inventories.view;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 
 import java.util.Collections;
 
@@ -138,5 +140,65 @@ public final class InventoryGUIHelper {
             case 41, 42, 43, 44 -> createFillerItem(Material.BARRIER, " ", " "); // Padding slots
             default -> new ItemStack(Material.AIR); // Should not happen for these slots
         };
+    }
+
+    /**
+     * Populates the given custom inventory GUI with player inventory data and appropriate filler items.
+     * @param inv The Inventory GUI to populate.
+     * @param playerInventoryData The data containing player's contents, armor, and off-hand.
+     * @param isModifiable True if the inventory is modifiable, false for read-only.
+     *
+     * @since 5.2
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public void populateInventoryGUI(@NotNull Inventory inv,
+                                     @NotNull InventoryDataProvider.PlayerInventoryData playerInventoryData,
+                                     boolean isModifiable) {
+        // Fill main inventory slots (0–35)
+        if (playerInventoryData.contents != null) {
+            for (int i = 0; i < Math.min(playerInventoryData.contents.length, 36); i++) {
+                inv.setItem(i, playerInventoryData.contents[i]);
+            }
+        }
+        // Armor slot mapping for display in the GUI and add fillers if empty
+        // GUI Slots: 36=Helmet, 37=Chestplate, 38=Leggings, 39=Boots
+        // Minecraft Internal: armor[3]=Helmet, armor[2]=Chestplate, armor[1]=Leggings, armor[0]=Boots
+
+        // Slot 36: Helmet
+        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
+            inv.setItem(36, createFillerItemForSlot(36, isModifiable));
+        } else {
+            inv.setItem(36, playerInventoryData.armor[3]);
+        }
+        // Slot 37: Chestplate
+        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
+            inv.setItem(37, createFillerItemForSlot(37, isModifiable));
+        } else {
+            inv.setItem(37, playerInventoryData.armor[2]);
+        }
+        // Slot 38: Leggings
+        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
+            inv.setItem(38, createFillerItemForSlot(38, isModifiable));
+        } else {
+            inv.setItem(38, playerInventoryData.armor[1]);
+        }
+        // Slot 39: Boots
+        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
+            inv.setItem(39, createFillerItemForSlot(39, isModifiable));
+        } else {
+            inv.setItem(39, playerInventoryData.armor[0]);
+        }
+
+        // Off-hand slot (40) and add filler if empty
+        if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
+            inv.setItem(40, createFillerItemForSlot(40, isModifiable));
+        } else {
+            inv.setItem(40, playerInventoryData.offHand);
+        }
+
+        // Fill the remaining slots (41-44) with non-interactable filler items
+        for (int i = 41; i <= 44; i++) {
+            inv.setItem(i, createFillerItemForSlot(i, isModifiable)); // Use createFillerItemForSlot for padding too
+        }
     }
 }
