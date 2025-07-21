@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -77,7 +76,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                     Bukkit.getScheduler().runTask(inventories, () -> {
                         // Create inventory with ModifiableInventoryHolder
                         // Pass all necessary context to the holder for saving on close.
-                        Component title = Component.text("Modify " + targetPlayer.getName() + " @ " + worldName);
+                        String title = "Modify " + targetPlayer.getName() + " @ " + worldName;
                         Inventory inv = Bukkit.createInventory(
                                 new ModifiableInventoryHolder(
                                         targetPlayer,

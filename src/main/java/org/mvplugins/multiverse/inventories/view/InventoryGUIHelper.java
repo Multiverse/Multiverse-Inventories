@@ -1,7 +1,6 @@
 package org.mvplugins.multiverse.inventories.view;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -48,8 +47,8 @@ public final class InventoryGUIHelper {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.displayName(Component.text(name, NamedTextColor.GOLD));
-            meta.lore(Collections.singletonList(Component.text(lore, NamedTextColor.GRAY)));
+            meta.setDisplayName(ChatColor.GOLD + name);
+            meta.setLore(Collections.singletonList(ChatColor.GRAY + lore));
             meta.getPersistentDataContainer().set(IS_FILLER_KEY, PersistentDataType.BYTE, (byte) 1); // store 1 for true
             item.setItemMeta(meta);
         }

@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories.commands;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -71,7 +70,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                     //  Ensure GUI operations run on the main thread
                     Bukkit.getScheduler().runTask(inventories, () -> {
                         // Create an inventory for viewing.
-                        Component title = Component.text(targetPlayer.getName() + " @ " + worldName);
+                        String title = targetPlayer.getName() + " @ " + worldName;
                         Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(), 45, title);
 
                         // Fill in main inventory slots (0–35)
