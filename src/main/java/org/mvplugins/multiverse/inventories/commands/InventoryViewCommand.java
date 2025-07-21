@@ -64,19 +64,27 @@ final class InventoryViewCommand extends InventoriesCommand {
 
         // Asynchronously load data using InventoryDataProvider
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
+    }
 
+        /**
+         * Handles the asynchronous loading of player inventory data and the display of the GUI.
+         *
+         * @param issuer The command issuer.
+         * @param player The player who will view the inventory.
+         * @param targetPlayer The offline player whose inventory data is being loaded.
+         * @param worldName The name of the world for which inventory data is loaded.
+         */
+        private void handleInventoryLoadAndDisplay(
+                @NotNull MVCommandIssuer issuer,
+                @NotNull Player player,
+                @NotNull OfflinePlayer targetPlayer,
+                @NotNull String worldName
+    ) {
         inventoryDataProvider.loadPlayerInventoryData(targetPlayer, worldName)
                 .thenAccept(playerInventoryData -> {
                     //  Ensure GUI operations run on the main thread
                     Bukkit.getScheduler().runTask(inventories, () -> {
-                        // Create an inventory for viewing.
-                        String title = targetPlayer.getName() + " @ " + worldName;
-                        Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(), 45, title);
-
-                        // Call the helper method to populate the GUI
-                        inventoryGUIHelper.populateInventoryGUI(inv, playerInventoryData, false);
-                        player.openInventory(inv);
-                        issuer.sendInfo(playerInventoryData.status.getFormattedMessage(targetPlayer.getName(),worldName));
+                        createAndOpenGUI(issuer, player, targetPlayer, worldName, playerInventoryData);
                     }); // End of Bukkit.getScheduler().runTask()
                 })
                 .exceptionally(throwable -> {
@@ -86,5 +94,34 @@ final class InventoryViewCommand extends InventoriesCommand {
                     throwable.printStackTrace();
                     return null; // Must return null for CompletableFuture<Void> in exceptionally
                 });
+    }
+
+    /**
+     * Creates and opens the custom inventory GUI for viewing.
+     * This method must be called on the main server thread.
+     *
+     * @param issuer The command issuer.
+     * @param player The player who will view/modify the inventory.
+     * @param targetPlayer The offline player whose inventory is being displayed.
+     * @param worldName The name of the world for which inventory data is displayed.
+     * @param playerInventoryData The loaded inventory data.
+     */
+    private void createAndOpenGUI(
+            @NotNull MVCommandIssuer issuer,
+            @NotNull Player player,
+            @NotNull OfflinePlayer targetPlayer,
+            @NotNull String worldName,
+            @NotNull InventoryDataProvider.PlayerInventoryData playerInventoryData
+    ) {
+        String title = targetPlayer.getName() + " @ " + worldName;
+        Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(),
+                45, // 5 rows for 36 main + 4 armor + 1 off-hand + 4 fillers
+                title
+        );
+
+        // Call the helper method to populate the GUI
+        inventoryGUIHelper.populateInventoryGUI(inv, playerInventoryData, false);
+        player.openInventory(inv);
+        issuer.sendInfo(ChatColor.GREEN + playerInventoryData.status.getFormattedMessage(targetPlayer.getName(), worldName) + ". Changes will save on close.");
     }
 }
