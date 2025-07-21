@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -68,8 +69,9 @@ public final class InventoryGUIHelper {
         if (!item.hasItemMeta()) {
             return false;
         }
-        return item.getItemMeta().getPersistentDataContainer().has(IS_FILLER_KEY, PersistentDataType.BYTE) &&
-                item.getItemMeta().getPersistentDataContainer().get(IS_FILLER_KEY, PersistentDataType.BYTE) == (byte) 1;
+        PersistentDataContainer persistentDataContainer = item.getItemMeta().getPersistentDataContainer();
+        return persistentDataContainer.has(IS_FILLER_KEY, PersistentDataType.BYTE) &&
+                persistentDataContainer.getOrDefault(IS_FILLER_KEY, PersistentDataType.BYTE, (byte) 0) == (byte) 1;
     }
 
     /**
@@ -92,28 +94,24 @@ public final class InventoryGUIHelper {
             return true;
         }
 
-        switch (slot) {
-            case 36: // Helmet slot
-                return item.getType().name().endsWith("_HELMET");
-            case 37: // Chestplate slot
-                return item.getType().name().endsWith("_CHESTPLATE");
-            case 38: // Leggings slot
-                return item.getType().name().endsWith("_LEGGINGS");
-            case 39: // Boots slot
-                return item.getType().name().endsWith("_BOOTS");
-            case 40: // Off-hand slot
-                // Off-hand is very permissive in vanilla. Allow any non-air item.
-                // If you want to restrict this further (e.g., only shields/totems),
-                // add more specific Material checks here.
-                return true;
-            case 41: // Padding slot
-            case 42: // Padding slot
-            case 43: // Padding slot
-            case 44: // Padding slot
-                return false; // Cannot place items in padding slots
-            default:
-                return true; // For non-special slots (main inventory), any item is generally allowed.
-        }
+        return switch (slot) {
+            case 36 -> item.getType().name().endsWith("_HELMET");
+            case 37 -> item.getType().name().endsWith("_CHESTPLATE");
+            case 38 -> item.getType().name().endsWith("_LEGGINGS");
+            case 39 -> item.getType().name().endsWith("_BOOTS");
+
+            // Off-hand is very permissive in vanilla. Allow any non-air item.
+            // If you want to restrict this further (e.g., only shields/totems),
+            // add more specific Material checks here.
+            case 40 -> true;
+
+            // Padding slot
+            // Cannot place items in padding slots
+            case 41, 42, 43, 44 -> false;
+
+            // For non-special slots (main inventory), any item is generally allowed.
+            default -> true;
+        };
     }
 
     /**
@@ -126,17 +124,14 @@ public final class InventoryGUIHelper {
      */
     @ApiStatus.AvailableSince("5.2")
     public ItemStack createFillerItemForSlot(int slot) {
-        switch (slot) {
-            case 36: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", "Place Helmet Here");
-            case 37: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", "Place Chestplate Here");
-            case 38: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
-            case 39: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
-            case 40: return createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", "Place Off-Hand Item Here");
-            case 41:
-            case 42:
-            case 43:
-            case 44: return createFillerItem(Material.BARRIER, " ", " "); // Padding slots
-            default: return new ItemStack(Material.AIR); // Should not happen for these slots
-        }
+        return switch (slot) {
+            case 36 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Helmet Slot", "Place Helmet Here");
+            case 37 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Chestplate Slot", "Place Chestplate Here");
+            case 38 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Leggings Slot", "Place Leggings Here");
+            case 39 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Boots Slot", "Place Boots Here");
+            case 40 -> createFillerItem(Material.GRAY_STAINED_GLASS_PANE, "Off-Hand Slot", "Place Off-Hand Item Here");
+            case 41, 42, 43, 44 -> createFillerItem(Material.BARRIER, " ", " "); // Padding slots
+            default -> new ItemStack(Material.AIR); // Should not happen for these slots
+        };
     }
 }

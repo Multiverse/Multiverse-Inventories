@@ -95,66 +95,91 @@ public final class InventoryDataProvider {
             @NotNull String worldName
     ) {
         // If the player is online, prioritize getting their live inventory
-        if (targetPlayer.isOnline()) {
-            Player onlineTarget = targetPlayer.getPlayer();
-            // Ensure onlineTarget is not null and their current world matches the requested worldName
-            if (onlineTarget != null && onlineTarget.getWorld().getName().equalsIgnoreCase(worldName)) {
-                // Get the actual ProfileType for the online player
-                ProfileType profileType = ProfileTypes.forPlayer(onlineTarget);
-                // Return immediately with live data
-                return CompletableFuture.completedFuture(new PlayerInventoryData(
-                        onlineTarget.getInventory().getContents(),
-                        onlineTarget.getInventory().getArmorContents(),
-                        onlineTarget.getInventory().getItemInOffHand(),
-                        "Displaying LIVE inventory for " + targetPlayer.getName() + " in world " + worldName + ".",
-                        profileType
-                ));
+        if (!targetPlayer.isOnline()) {
+            return loadInventoryDataFromProfileStorage(targetPlayer, worldName);
+        }
+
+        Player onlineTarget = targetPlayer.getPlayer();
+        // Ensure onlineTarget is not null and their current world matches the requested worldName
+        if (onlineTarget != null && onlineTarget.getWorld().getName().equalsIgnoreCase(worldName)) {
+            return loadInventoryDataFromPlayer(onlineTarget, worldName);
+        }
+        // If online but in a different world, or getPlayer() returned null, fall through to stored data logic
+        if (onlineTarget != null) {
+            inventories.getLogger().fine("Player " + targetPlayer.getName() + " is online but in world " + onlineTarget.getWorld().getName() + ". Loading stored data for " + worldName + ".");
+        } else {
+            inventories.getLogger().warning("Player " + targetPlayer.getName() + " is online but getPlayer() returned null. Falling back to stored data.");
+        }
+        // If the player is offline or online in a different world, or live data failed, load from Multiverse-Inventories' stored profiles
+        return loadInventoryDataFromProfileStorage(targetPlayer, worldName);
+    }
+
+    private CompletableFuture<PlayerInventoryData> loadInventoryDataFromPlayer(
+            @NotNull Player onlineTarget,
+            @NotNull String worldName
+    ) {
+        // Get the actual ProfileType for the online player
+        ProfileType profileType = ProfileTypes.forPlayer(onlineTarget);
+        // Return immediately with live data
+        return CompletableFuture.completedFuture(new PlayerInventoryData(
+                onlineTarget.getInventory().getContents(),
+                onlineTarget.getInventory().getArmorContents(),
+                onlineTarget.getInventory().getItemInOffHand(),
+                "Displaying LIVE inventory for " + onlineTarget.getName() + " in world " + worldName + ".",
+                profileType
+        ));
+    }
+
+    private CompletableFuture<PlayerInventoryData> loadInventoryDataFromProfileStorage(
+            @NotNull OfflinePlayer targetPlayer,
+            @NotNull String worldName
+    ) {
+        return CompletableFuture.supplyAsync(() -> {
+            ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
+                    .getContainer(worldName);
+            if (container == null) {
+                throw new IllegalStateException("Could not load profile container for world: " + worldName);
             }
-            // If online but in a different world, or getPlayer() returned null, fall through to stored data logic
-            if (onlineTarget != null) {
-                inventories.getLogger().fine("Player " + targetPlayer.getName() + " is online but in world " + onlineTarget.getWorld().getName() + ". Loading stored data for " + worldName + ".");
-            } else {
-                inventories.getLogger().warning("Player " + targetPlayer.getName() + " is online but getPlayer() returned null. Falling back to stored data.");
+
+            PlayerProfile tempProfile = loadMVInvPlayerProfile(container, targetPlayer);
+            if (tempProfile == null) {
+                throw new IllegalStateException("No player data found for " + targetPlayer.getName() + " in world " + worldName + ". Try checking a different world or ensure the player has played in this world.");
+            }
+            ProfileType profileTypeToUse = tempProfile.getProfileType();
+            try {
+                ItemStack[] contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY).read().join();
+                ItemStack[] armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
+                ItemStack offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
+
+                return new PlayerInventoryData(
+                        contents,
+                        armor,
+                        offHand,
+                        "Displaying STORED inventory for " + targetPlayer.getName() + " in world " + worldName + ".",
+                        profileTypeToUse
+                );
+            } catch (CompletionException e) {
+                // Unwrap CompletionException to get the actual cause
+                throw new IllegalStateException("Error loading inventory data: " + e.getCause().getMessage(), e.getCause());
+            }
+        });
+    }
+
+    @Nullable
+    private PlayerProfile loadMVInvPlayerProfile(ProfileContainer container, OfflinePlayer targetPlayer) {
+        PlayerProfile survivalProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
+        if (survivalProfile != null) {
+            return survivalProfile;
+        }
+        for (ProfileType type : ProfileTypes.getTypes()) {
+            if (type.equals(ProfileTypes.SURVIVAL)) continue;
+            PlayerProfile profile = container.getPlayerProfileNow(type, targetPlayer);
+            if (profile != null) {
+                return profile;
             }
         }
-            // If the player is offline or online in a different world, or live data failed, load from Multiverse-Inventories' stored profiles
-            return CompletableFuture.supplyAsync(() -> {
-                ProfileContainer container = profileContainerStoreProvider.getStore(ContainerType.WORLD)
-                        .getContainer(worldName);
-                if (container == null) {
-                    throw new IllegalStateException("Could not load profile container for world: " + worldName);
-                }
-
-                PlayerProfile tempProfile = container.getPlayerProfileNow(ProfileTypes.SURVIVAL, targetPlayer);
-                ProfileType profileTypeToUse = ProfileTypes.SURVIVAL;
-
-                if (tempProfile == null) {
-                    for (ProfileType type : ProfileTypes.getTypes()) {
-                        if (type.equals(ProfileTypes.SURVIVAL)) continue;
-                        tempProfile = container.getPlayerProfileNow(type, targetPlayer);
-                        if (tempProfile != null) {
-                            profileTypeToUse = type;
-                            break;
-                        }
-                    }
-                }
-
-                if (tempProfile == null) {
-                    throw new IllegalStateException("No player data found for " + targetPlayer.getName() + " in world " + worldName + ". Try checking a different world or ensure the player has played in this world.");
-                }
-
-                try {
-                    ItemStack[] contents = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.INVENTORY).read().join();
-                    ItemStack[] armor = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.ARMOR).read().join();
-                    ItemStack offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
-
-                    return new PlayerInventoryData(contents, armor, offHand, "Displaying STORED inventory for " + targetPlayer.getName() + " in world " + worldName + ".", profileTypeToUse);
-                } catch (CompletionException e) {
-                    // Unwrap CompletionException to get the actual cause
-                    throw new IllegalStateException("Error loading inventory data: " + e.getCause().getMessage(), e.getCause());
-                }
-            });
-        }
+        return null;
+    }
 
     /**
      * Asynchronously saves a player's inventory data to their Multiverse-Inventories profile.
@@ -180,7 +205,69 @@ public final class InventoryDataProvider {
             @Nullable ItemStack newOffHand
     ) {
         // Save the updated inventory, armor, and off-hand contents asynchronously
-        CompletableFuture<Void> saveFuture = CompletableFuture.allOf(
+        CompletableFuture<Void> saveFuture = writeInventoryDataToProfile(
+                targetPlayer,
+                worldName,
+                profileType,
+                newContents,
+                newArmor,
+                newOffHand
+        );
+
+        return saveFuture.thenRun(() -> {
+            inventories.getLogger().info("Inventory for player " + targetPlayer.getName() + " in world " + worldName + " has been modified and saved.");
+            updateOnlinePlayerInventoryData(targetPlayer, worldName, newContents, newArmor, newOffHand);
+        }).exceptionally(throwable -> {
+            inventories.getLogger().severe("Failed to save inventory for " + targetPlayer.getName() + " in world " + worldName + ": " + throwable.getMessage());
+            throwable.printStackTrace();
+            return null;
+        });
+    }
+
+    private void updateOnlinePlayerInventoryData(
+            OfflinePlayer targetPlayer,
+            String worldName,
+            @NotNull ItemStack[] newContents,
+            @NotNull ItemStack[] newArmor,
+            ItemStack newOffHand
+    ) {
+        // If the target player is online, update their live inventory
+        if (!targetPlayer.isOnline()) {
+            return;
+        }
+
+        Player onlinePlayer = targetPlayer.getPlayer();
+        if (onlinePlayer == null) {
+            return;
+        }
+
+        // Check if the online player is in the world whose inventory was modified
+        // This is important to avoid overwriting their current inventory if they are in a different world
+        if (!onlinePlayer.getWorld().getName().equalsIgnoreCase(worldName)) {
+            inventories.getLogger().info("Player " + onlinePlayer.getName() + " is online but in a different world (" + onlinePlayer.getWorld().getName() + "), not updating live inventory.");
+            return;
+        }
+
+        // Run Bukkit API calls on the main thread
+        Bukkit.getScheduler().runTask(inventories, () -> {
+            onlinePlayer.getInventory().setContents(newContents);
+            onlinePlayer.getInventory().setArmorContents(newArmor);
+            onlinePlayer.getInventory().setItemInOffHand(newOffHand);
+            onlinePlayer.updateInventory(); // Ensure client sees changes
+            inventories.getLogger().info("Updated live inventory for online player " + onlinePlayer.getName() + " in world " + worldName);
+        });
+    }
+
+    private CompletableFuture<Void> writeInventoryDataToProfile(
+            @NotNull OfflinePlayer targetPlayer,
+            @NotNull String worldName,
+            @NotNull ProfileType profileType,
+            @NotNull ItemStack[] newContents,
+            @NotNull ItemStack[] newArmor,
+            @Nullable ItemStack newOffHand
+    ) {
+        // Save the updated inventory, armor, and off-hand contents asynchronously
+        return CompletableFuture.allOf(
                 SingleShareWriter.of(inventories, targetPlayer, worldName, profileType, Sharables.INVENTORY)
                         .write(newContents, true) // true to update if player is online
                         .thenRun(() -> inventories.getLogger().fine("Saved inventory for " + targetPlayer.getName() + " in " + worldName)),
@@ -191,34 +278,5 @@ public final class InventoryDataProvider {
                         .write(newOffHand, true)
                         .thenRun(() -> inventories.getLogger().fine("Saved off-hand for " + targetPlayer.getName() + " in " + worldName))
         );
-
-        return saveFuture.thenRun(() -> {
-            inventories.getLogger().info("Inventory for player " + targetPlayer.getName() + " in world " + worldName + " has been modified and saved.");
-
-            // If the target player is online, update their live inventory
-            if (targetPlayer.isOnline()) {
-                Player onlinePlayer = targetPlayer.getPlayer();
-                if (onlinePlayer != null) {
-                    // Check if the online player is in the world whose inventory was modified
-                    // This is important to avoid overwriting their current inventory if they are in a different world
-                    if (onlinePlayer.getWorld().getName().equalsIgnoreCase(worldName)) {
-                        // Run Bukkit API calls on the main thread
-                        Bukkit.getScheduler().runTask(inventories, () -> {
-                            onlinePlayer.getInventory().setContents(newContents);
-                            onlinePlayer.getInventory().setArmorContents(newArmor);
-                            onlinePlayer.getInventory().setItemInOffHand(newOffHand);
-                            onlinePlayer.updateInventory(); // Ensure client sees changes
-                            inventories.getLogger().info("Updated live inventory for online player " + onlinePlayer.getName() + " in world " + worldName);
-                        });
-                    } else {
-                        inventories.getLogger().info("Player " + onlinePlayer.getName() + " is online but in a different world (" + onlinePlayer.getWorld().getName() + "), not updating live inventory.");
-                    }
-                }
-            }
-        }).exceptionally(throwable -> {
-            inventories.getLogger().severe("Failed to save inventory for " + targetPlayer.getName() + " in world " + worldName + ": " + throwable.getMessage());
-            throwable.printStackTrace();
-            return null;
-        });
     }
 }
