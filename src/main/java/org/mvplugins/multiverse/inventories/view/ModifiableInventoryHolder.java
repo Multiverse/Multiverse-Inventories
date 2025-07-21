@@ -20,7 +20,6 @@ public final class ModifiableInventoryHolder implements InventoryHolder {
     private final OfflinePlayer targetPlayer;
     private final String worldName;
     private final ProfileType profileType;
-    private final MultiverseInventories inventories;
 
     /**
      *
@@ -34,12 +33,10 @@ public final class ModifiableInventoryHolder implements InventoryHolder {
     @ApiStatus.AvailableSince("5.2")
     public ModifiableInventoryHolder(@NotNull OfflinePlayer targetPlayer,
                                      @NotNull String worldName,
-                                     @NotNull ProfileType profileType,
-                                     @NotNull MultiverseInventories inventories) {
+                                     @NotNull ProfileType profileType) {
         this.targetPlayer = targetPlayer;
         this.worldName = worldName;
         this.profileType = profileType;
-        this.inventories = inventories;
     }
 
     /**
@@ -73,17 +70,6 @@ public final class ModifiableInventoryHolder implements InventoryHolder {
     @ApiStatus.AvailableSince("5.2")
     public @NotNull ProfileType getProfileType() {
         return profileType;
-    }
-
-    /**
-     *
-     * @return
-     *
-     * @since 5.2
-     */
-    @ApiStatus.AvailableSince("5.2")
-    public @NotNull MultiverseInventories getInventories() {
-        return inventories;
     }
 
     /**
