@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -106,9 +107,9 @@ public final class InventoryDataProvider {
         }
         // If online but in a different world, or getPlayer() returned null, fall through to stored data logic
         if (onlineTarget != null) {
-            inventories.getLogger().fine("Player " + targetPlayer.getName() + " is online but in world " + onlineTarget.getWorld().getName() + ". Loading stored data for " + worldName + ".");
+            Logging.fine("Player " + targetPlayer.getName() + " is online but in world " + onlineTarget.getWorld().getName() + ". Loading stored data for " + worldName + ".");
         } else {
-            inventories.getLogger().warning("Player " + targetPlayer.getName() + " is online but getPlayer() returned null. Falling back to stored data.");
+            Logging.warning("Player " + targetPlayer.getName() + " is online but getPlayer() returned null. Falling back to stored data.");
         }
         // If the player is offline or online in a different world, or live data failed, load from Multiverse-Inventories' stored profiles
         return loadInventoryDataFromProfileStorage(targetPlayer, worldName);
@@ -215,10 +216,10 @@ public final class InventoryDataProvider {
         );
 
         return saveFuture.thenRun(() -> {
-            inventories.getLogger().info("Inventory for player " + targetPlayer.getName() + " in world " + worldName + " has been modified and saved.");
+            Logging.info("Inventory for player " + targetPlayer.getName() + " in world " + worldName + " has been modified and saved.");
             updateOnlinePlayerInventoryData(targetPlayer, worldName, newContents, newArmor, newOffHand);
         }).exceptionally(throwable -> {
-            inventories.getLogger().severe("Failed to save inventory for " + targetPlayer.getName() + " in world " + worldName + ": " + throwable.getMessage());
+            Logging.severe("Failed to save inventory for " + targetPlayer.getName() + " in world " + worldName + ": " + throwable.getMessage());
             throwable.printStackTrace();
             return null;
         });
@@ -244,7 +245,7 @@ public final class InventoryDataProvider {
         // Check if the online player is in the world whose inventory was modified
         // This is important to avoid overwriting their current inventory if they are in a different world
         if (!onlinePlayer.getWorld().getName().equalsIgnoreCase(worldName)) {
-            inventories.getLogger().info("Player " + onlinePlayer.getName() + " is online but in a different world (" + onlinePlayer.getWorld().getName() + "), not updating live inventory.");
+            Logging.info("Player " + onlinePlayer.getName() + " is online but in a different world (" + onlinePlayer.getWorld().getName() + "), not updating live inventory.");
             return;
         }
 
@@ -254,7 +255,7 @@ public final class InventoryDataProvider {
             onlinePlayer.getInventory().setArmorContents(newArmor);
             onlinePlayer.getInventory().setItemInOffHand(newOffHand);
             onlinePlayer.updateInventory(); // Ensure client sees changes
-            inventories.getLogger().info("Updated live inventory for online player " + onlinePlayer.getName() + " in world " + worldName);
+            Logging.info("Updated live inventory for online player " + onlinePlayer.getName() + " in world " + worldName);
         });
     }
 
@@ -270,13 +271,13 @@ public final class InventoryDataProvider {
         return CompletableFuture.allOf(
                 SingleShareWriter.of(inventories, targetPlayer, worldName, profileType, Sharables.INVENTORY)
                         .write(newContents, true) // true to update if player is online
-                        .thenRun(() -> inventories.getLogger().fine("Saved inventory for " + targetPlayer.getName() + " in " + worldName)),
+                        .thenRun(() -> Logging.fine("Saved inventory for " + targetPlayer.getName() + " in " + worldName)),
                 SingleShareWriter.of(inventories, targetPlayer, worldName, profileType, Sharables.ARMOR)
                         .write(newArmor, true)
-                        .thenRun(() -> inventories.getLogger().fine("Saved armor for " + targetPlayer.getName() + " in " + worldName)),
+                        .thenRun(() -> Logging.fine("Saved armor for " + targetPlayer.getName() + " in " + worldName)),
                 SingleShareWriter.of(inventories, targetPlayer, worldName, profileType, Sharables.OFF_HAND)
                         .write(newOffHand, true)
-                        .thenRun(() -> inventories.getLogger().fine("Saved off-hand for " + targetPlayer.getName() + " in " + worldName))
+                        .thenRun(() -> Logging.fine("Saved off-hand for " + targetPlayer.getName() + " in " + worldName))
         );
     }
 }

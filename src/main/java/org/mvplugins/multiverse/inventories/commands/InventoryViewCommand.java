@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -82,7 +83,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                 .exceptionally(throwable -> {
                     // This block runs if an exception occurs during data loading
                     issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
-                    inventories.getLogger().severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
+                    Logging.severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
                     throwable.printStackTrace();
                     return null; // Must return null for CompletableFuture<Void> in exceptionally
                 });

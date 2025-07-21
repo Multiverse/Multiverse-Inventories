@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.listeners;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -215,7 +216,7 @@ final class InventoryViewListener implements MVInvListener {
                     newOffHand
             ).exceptionally(throwable -> {
                 // Error logging is now handled within InventoryDataProvider, but we can add a general one here too
-                inventories.getLogger().severe("Error during inventory save process for " + targetPlayer.getName() + ": " + throwable.getMessage());
+                Logging.severe("Error during inventory save process for " + targetPlayer.getName() + ": " + throwable.getMessage());
                 throwable.printStackTrace();
                 return null;
             });
