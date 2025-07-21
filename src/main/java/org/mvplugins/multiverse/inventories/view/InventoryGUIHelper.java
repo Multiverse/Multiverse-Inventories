@@ -142,6 +142,21 @@ public final class InventoryGUIHelper {
         };
     }
 
+
+    /**
+     * Helper method to get an item for a slot, returning a filler if the item is null or air.
+     * @param item The actual ItemStack from player data. Can be null.
+     * @param slot The slot number.
+     * @param isModifiable True if the inventory is modifiable.
+     * @return The actual item or a generated filler item.
+     */
+    private ItemStack getOrFillItem(ItemStack item, int slot, boolean isModifiable) {
+        if (item == null || item.getType() == Material.AIR) {
+            return createFillerItemForSlot(slot, isModifiable);
+        }
+        return item;
+    }
+
     /**
      * Populates the given custom inventory GUI with player inventory data and appropriate filler items.
      * @param inv The Inventory GUI to populate.
@@ -165,40 +180,23 @@ public final class InventoryGUIHelper {
         // Minecraft Internal: armor[3]=Helmet, armor[2]=Chestplate, armor[1]=Leggings, armor[0]=Boots
 
         // Slot 36: Helmet
-        if (playerInventoryData.armor == null || playerInventoryData.armor[3] == null) {
-            inv.setItem(36, createFillerItemForSlot(36, isModifiable));
-        } else {
-            inv.setItem(36, playerInventoryData.armor[3]);
-        }
+        inv.setItem(36, getOrFillItem((playerInventoryData.armor != null ? playerInventoryData.armor[3] : null), 36, isModifiable));
+
         // Slot 37: Chestplate
-        if (playerInventoryData.armor == null || playerInventoryData.armor[2] == null) {
-            inv.setItem(37, createFillerItemForSlot(37, isModifiable));
-        } else {
-            inv.setItem(37, playerInventoryData.armor[2]);
-        }
+        inv.setItem(37, getOrFillItem((playerInventoryData.armor != null ? playerInventoryData.armor[2] : null), 37, isModifiable));
+
         // Slot 38: Leggings
-        if (playerInventoryData.armor == null || playerInventoryData.armor[1] == null) {
-            inv.setItem(38, createFillerItemForSlot(38, isModifiable));
-        } else {
-            inv.setItem(38, playerInventoryData.armor[1]);
-        }
+        inv.setItem(38, getOrFillItem((playerInventoryData.armor != null ? playerInventoryData.armor[1] : null), 38, isModifiable));
+
         // Slot 39: Boots
-        if (playerInventoryData.armor == null || playerInventoryData.armor[0] == null) {
-            inv.setItem(39, createFillerItemForSlot(39, isModifiable));
-        } else {
-            inv.setItem(39, playerInventoryData.armor[0]);
-        }
+        inv.setItem(39, getOrFillItem((playerInventoryData.armor != null ? playerInventoryData.armor[0] : null), 39, isModifiable));
 
         // Off-hand slot (40) and add filler if empty
-        if (playerInventoryData.offHand == null || playerInventoryData.offHand.getType() == Material.AIR) {
-            inv.setItem(40, createFillerItemForSlot(40, isModifiable));
-        } else {
-            inv.setItem(40, playerInventoryData.offHand);
-        }
+        inv.setItem(40, getOrFillItem(playerInventoryData.offHand, 40, isModifiable));
 
         // Fill the remaining slots (41-44) with non-interactable filler items
         for (int i = 41; i <= 44; i++) {
-            inv.setItem(i, createFillerItemForSlot(i, isModifiable)); // Use createFillerItemForSlot for padding too
+            inv.setItem(i, createFillerItemForSlot(i, isModifiable));
         }
     }
 }
