@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
@@ -181,22 +182,33 @@ public final class InventoryGUIHelper {
         return item;
     }
 
-    private ItemStack createHealthDisplayItem(double health, double maxHealth) {
+    private ItemStack createHealthDisplayItem(@Nullable Double health, @Nullable Double maxHealth) {
         List<String> lore = new ArrayList<>();
-        DecimalFormat df = new DecimalFormat("0.0");
-        lore.add(ChatColor.WHITE + "Current: " + ChatColor.RED + df.format(health) + ChatColor.WHITE + " / " + ChatColor.RED + df.format(maxHealth));
+        if (health == null) {
+            lore.add(ChatColor.RED + "N/A (No Data)");
+        } else {
+            DecimalFormat df = new DecimalFormat("0.0");
+            lore.add(ChatColor.WHITE + "Current: " + ChatColor.RED + df.format(health) + ChatColor.WHITE + " / " + ChatColor.RED + df.format(maxHealth));
+        }
         return createDisplayItem(Material.RED_DYE, "Health", lore);
     }
 
-    private ItemStack createLevelDisplayItem(int level, float exp) {
+    private ItemStack createLevelDisplayItem(@Nullable Integer level, @Nullable Float exp) {
         List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.WHITE + "Level: " + ChatColor.GREEN + level);
-        lore.add(ChatColor.WHITE + "Progress: " + ChatColor.AQUA + String.format("%.1f%%", exp * 100));
+        if (level == null) {
+            lore.add(ChatColor.RED + "N/A (No Data)");
+        } else {
+            lore.add(ChatColor.WHITE + "Level: " + ChatColor.GREEN + level);
+            lore.add(ChatColor.WHITE + "Progress: " + ChatColor.AQUA + String.format("%.1f%%", exp * 100));
+        }
         return createDisplayItem(Material.EXPERIENCE_BOTTLE, "Experience", lore);
     }
 
-    private ItemStack createFoodDisplayItem(int foodLevel, float saturation) {
+    private ItemStack createFoodDisplayItem(@Nullable Integer foodLevel, @Nullable Float saturation) {
         List<String> lore = new ArrayList<>();
+        if (foodLevel == null) {
+            lore.add(ChatColor.RED + "N/A (No Data)");
+        }
         lore.add(ChatColor.WHITE + "Food: " + ChatColor.GOLD + foodLevel + ChatColor.WHITE + " / " + ChatColor.GOLD + "20");
         lore.add(ChatColor.WHITE + "Saturation: " + ChatColor.LIGHT_PURPLE + String.format("%.1f", saturation));
         return createDisplayItem(Material.COOKED_BEEF, "Food & Saturation", lore);
