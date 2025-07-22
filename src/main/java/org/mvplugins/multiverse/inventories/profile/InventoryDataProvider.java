@@ -13,6 +13,7 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
+import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
@@ -21,6 +22,7 @@ import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
+import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
 import java.util.concurrent.CompletableFuture;
@@ -38,14 +40,17 @@ public final class InventoryDataProvider {
 
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final MultiverseInventories inventories;
+    private final InventoriesConfig inventoriesConfig;
 
     @Inject
     InventoryDataProvider(
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
-            @NotNull MultiverseInventories inventories
+            @NotNull MultiverseInventories inventories,
+            @NotNull InventoriesConfig inventoriesConfig
     ) {
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.inventories = inventories;
+        this.inventoriesConfig = inventoriesConfig;
     }
 
     /**
@@ -193,38 +198,28 @@ public final class InventoryDataProvider {
                 ItemStack offHand = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.OFF_HAND).read().join();
 
                 // Non-inventory data
-                double storedHealth = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.HEALTH)
-                        .read().join();
-                double storedMaxHealth = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.MAX_HEALTH)
-                        .read().join();
-                int storedLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LEVEL)
-                        .read().join();
-                float storedExp = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.EXPERIENCE)
-                        .read().join();
-                int storedFoodLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.FOOD_LEVEL)
-                        .read().join();
-                float storedSaturationLevel = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.SATURATION)
-                        .read().join();
-                Location storedLocationObject = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LAST_LOCATION)
-                        .read().join();
-
-                // Note that this is here for debugging purposes
-                // If the player leaves a world or logs off, Sharables.LAST_LOCATION appears to read null
-                // storedLocationObject
+                double storedHealth = getSharableValue(Sharables.HEALTH, targetPlayer, worldName, profileTypeToUse, 20.0);
+                double storedMaxHealth = getSharableValue(Sharables.MAX_HEALTH, targetPlayer, worldName, profileTypeToUse, 20.0);
+                int storedLevel = getSharableValue(Sharables.LEVEL, targetPlayer, worldName, profileTypeToUse, 0);
+                float storedExp = getSharableValue(Sharables.EXPERIENCE, targetPlayer, worldName, profileTypeToUse, 0.0f);
+                int storedFoodLevel = getSharableValue(Sharables.FOOD_LEVEL, targetPlayer, worldName, profileTypeToUse, 20);
+                float storedSaturationLevel = getSharableValue(Sharables.SATURATION, targetPlayer, worldName, profileTypeToUse, 5.0f);
                 String storedLastLocation;
-                if (storedLocationObject == null) {
-                    storedLastLocation = "N/A (No Location Data)";
-                } else if (storedLocationObject.getWorld() == null) {
-                    storedLastLocation = String.format("N/A (World Null: %.1f, %.1f, %.1f)",
-                            storedLocationObject.getX(),
-                            storedLocationObject.getY(),
-                            storedLocationObject.getZ());
-                } else {
-                    storedLastLocation = String.format("%s (%.1f, %.1f, %.1f)",
-                            storedLocationObject.getWorld().getName(),
-                            storedLocationObject.getX(),
-                            storedLocationObject.getY(),
-                            storedLocationObject.getZ());
+
+                // Check if LAST_LOCATION is enabled in config
+                if (!inventoriesConfig.getActiveOptionalShares().contains(Sharables.LAST_LOCATION)) {
+                    storedLastLocation = "Disabled in config";
+                } else { // if the location is null or the world is null
+                    Location storedLocationObject = SingleShareReader.of(inventories, targetPlayer, worldName, profileTypeToUse, Sharables.LAST_LOCATION).read().join();
+                    if (storedLocationObject == null || storedLocationObject.getWorld() == null) {
+                        storedLastLocation = "N/A (No Location Data)";
+                    } else { // if the location is valid, print the coordinates and the world
+                        storedLastLocation = String.format("%s (%.1f, %.1f, %.1f)",
+                                storedLocationObject.getWorld().getName(),
+                                storedLocationObject.getX(),
+                                storedLocationObject.getY(),
+                                storedLocationObject.getZ());
+                    }
                 }
 
                 return new PlayerInventoryData(
@@ -262,6 +257,30 @@ public final class InventoryDataProvider {
             }
         }
         return null;
+    }
+
+    /**
+     * Helper method to safely read a sharable value, returning a default if disabled or not found.
+     * @param sharable The Sharable to read.
+     * @param targetPlayer The OfflinePlayer.
+     * @param worldName The world name.
+     * @param profileType The profile type.
+     * @param defaultValue The default value to return if sharable is disabled or data is null.
+     * @param <T> The type of the sharable value.
+     * @return The sharable value or the default value.
+     */
+    private <T> T getSharableValue(@NotNull Sharable<T> sharable,
+                                            @NotNull OfflinePlayer targetPlayer,
+                                            @NotNull String worldName,
+                                            @NotNull ProfileType profileType,
+                                            @NotNull T defaultValue) {
+        try {
+            T value = SingleShareReader.of(inventories, targetPlayer, worldName, profileType, sharable).read().join();
+            return value != null ? value : defaultValue;
+        } catch (CompletionException e) {
+            Logging.warning("Failed to read sharable '" + sharable.getNames()[0] + "' for player " + targetPlayer.getName() + " in world " + worldName + ": " + e.getCause().getMessage());
+            return defaultValue;
+        }
     }
 
     /**
