@@ -67,35 +67,34 @@ final class InventoryViewCommand extends InventoriesCommand {
         handleInventoryLoadAndDisplay(issuer, player, targetPlayer, worldName);
     }
 
-        /**
-         * Handles the asynchronous loading of player inventory data and the display of the GUI.
-         *
-         * @param issuer The command issuer.
-         * @param player The player who will view the inventory.
-         * @param targetPlayer The offline player whose inventory data is being loaded.
-         * @param worldName The name of the world for which inventory data is loaded.
-         */
-        private void handleInventoryLoadAndDisplay(
-                @NotNull MVCommandIssuer issuer,
-                @NotNull Player player,
-                @NotNull OfflinePlayer targetPlayer,
-                @NotNull String worldName
-    ) {
-        inventoryDataProvider.loadPlayerInventoryData(targetPlayer, worldName)
-                .thenAccept(playerInventoryData -> {
-                    //  Ensure GUI operations run on the main thread
-                    Bukkit.getScheduler().runTask(inventories, () -> {
-                        createAndOpenGUI(issuer, player, targetPlayer, worldName, playerInventoryData);
-                    }); // End of Bukkit.getScheduler().runTask()
-                })
-                .exceptionally(throwable -> {
-                    // This block runs if an exception occurs during data loading
-                    issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
-                    Logging.severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
-                    throwable.printStackTrace();
-                    return null; // Must return null for CompletableFuture<Void> in exceptionally
-                });
-    }
+    /**
+     * Handles the asynchronous loading of player inventory data and the display of the GUI.
+     *
+     * @param issuer The command issuer.
+     * @param player The player who will view the inventory.
+     * @param targetPlayer The offline player whose inventory data is being loaded.
+     * @param worldName The name of the world for which inventory data is loaded.
+     */
+    private void handleInventoryLoadAndDisplay(
+            @NotNull MVCommandIssuer issuer,
+            @NotNull Player player,
+            @NotNull OfflinePlayer targetPlayer,
+            @NotNull String worldName) {
+    inventoryDataProvider.loadPlayerInventoryData(targetPlayer, worldName)
+            .thenAccept(playerInventoryData -> {
+                //  Ensure GUI operations run on the main thread
+                Bukkit.getScheduler().runTask(inventories, () -> {
+                    createAndOpenGUI(issuer, player, targetPlayer, worldName, playerInventoryData);
+                }); // End of Bukkit.getScheduler().runTask()
+            })
+            .exceptionally(throwable -> {
+                // This block runs if an exception occurs during data loading
+                issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
+                Logging.severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
+                throwable.printStackTrace();
+                return null; // Must return null for CompletableFuture<Void> in exceptionally
+            });
+}
 
     /**
      * Creates and opens the custom inventory GUI for viewing.

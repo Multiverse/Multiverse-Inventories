@@ -23,8 +23,8 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
-import java.util.concurrent.CompletableFuture; // Needed for async operations
-import java.util.concurrent.CompletionException; // Needed for async error handling
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 /**
  * Provides methods for asynchronously loading player inventory data.
@@ -58,8 +58,8 @@ public final class InventoryDataProvider {
         public final ItemStack[] contents;
         public final ItemStack[] armor;
         public final ItemStack offHand;
-        public final InventoryStatus status; // To indicate if it's live or stored data
-        public final ProfileType profileTypeUsed; // To pass back which profile type was used for stored data
+        public final InventoryStatus status;
+        public final ProfileType profileTypeUsed;
 
         // Non-inventory data
         public final double health;
