@@ -18,7 +18,7 @@ import org.mvplugins.multiverse.core.dynamiclistener.annotations.EventMethod;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;

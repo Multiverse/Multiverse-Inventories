@@ -19,8 +19,9 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
+import org.mvplugins.multiverse.inventories.view.PlayerInventoryData;
 import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
-import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.InventoryDataProvider;
 
 @Service
 final class InventoryViewCommand extends InventoriesCommand {
@@ -111,7 +112,7 @@ final class InventoryViewCommand extends InventoriesCommand {
             @NotNull Player player,
             @NotNull OfflinePlayer targetPlayer,
             @NotNull String worldName,
-            @NotNull InventoryDataProvider.PlayerInventoryData playerInventoryData
+            @NotNull PlayerInventoryData playerInventoryData
     ) {
         String title = targetPlayer.getName() + " @ " + worldName;
         Inventory inv = Bukkit.createInventory(new ReadOnlyInventoryHolder(),

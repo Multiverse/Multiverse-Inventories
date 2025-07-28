@@ -18,9 +18,10 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
+import org.mvplugins.multiverse.inventories.view.PlayerInventoryData;
 
 @Service
 final class InventoryModifyCommand extends InventoriesCommand {
@@ -126,7 +127,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
             @NotNull Player player,
             @NotNull OfflinePlayer targetPlayer,
             @NotNull String worldName,
-            @NotNull InventoryDataProvider.PlayerInventoryData playerInventoryData
+            @NotNull PlayerInventoryData playerInventoryData
     ) {
         String title = "Modify " + targetPlayer.getName() + " @ " + worldName;
         Inventory inv = Bukkit.createInventory(

@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
-import org.mvplugins.multiverse.inventories.profile.InventoryDataProvider;
 
 import java.util.List;
 import java.text.DecimalFormat;
@@ -27,6 +26,7 @@ import java.util.Collections;
  *
  * @since 5.2
  */
+@ApiStatus.Experimental
 @ApiStatus.AvailableSince("5.2")
 @Service
 public final class InventoryGUIHelper {
@@ -246,7 +246,7 @@ public final class InventoryGUIHelper {
      */
     @ApiStatus.AvailableSince("5.2")
     public void populateInventoryGUI(@NotNull Inventory inv,
-                                     @NotNull InventoryDataProvider.PlayerInventoryData playerInventoryData,
+                                     @NotNull PlayerInventoryData playerInventoryData,
                                      boolean isModifiable) {
         // Fill main inventory slots (0–35)
         if (playerInventoryData.contents != null) {
