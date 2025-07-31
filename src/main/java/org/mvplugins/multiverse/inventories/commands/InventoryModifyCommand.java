@@ -62,11 +62,9 @@ final class InventoryModifyCommand extends InventoriesCommand {
             @Description("The world the player's inventory is in")
             MultiverseWorld world
     ) {
-
         String worldName = world.getName();
         issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
         handleInventoryLoadAndDisplay(issuer, player, targetPlayer, worldName);
-
     }
 
     /**

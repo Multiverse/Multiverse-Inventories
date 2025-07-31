@@ -95,7 +95,7 @@ final class InventoryViewCommand extends InventoriesCommand {
                 throwable.printStackTrace();
                 return null; // Must return null for CompletableFuture<Void> in exceptionally
             });
-}
+    }
 
     /**
      * Creates and opens the custom inventory GUI for viewing.
