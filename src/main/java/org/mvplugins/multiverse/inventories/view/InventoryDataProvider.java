@@ -5,7 +5,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -105,7 +104,7 @@ public final class InventoryDataProvider {
                 InventoryStatus.LIVE_INVENTORY,
                 profileType,
                 onlineTarget.getHealth(),
-                onlineTarget.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(),
+                onlineTarget.getMaxHealth(), //todo: Use attributes instead of this deprecated method
                 onlineTarget.getLevel(),
                 onlineTarget.getExp(),
                 onlineTarget.getFoodLevel(),
