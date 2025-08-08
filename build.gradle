@@ -46,7 +46,9 @@ dependencies {
     shadowed('com.dumptruckman.minecraft:Logging:1.1.1') {
         exclude group: 'junit', module: 'junit'
     }
-    shadowed 'com.viaversion:nbt:5.1.1'
+    shadowed('com.viaversion:nbt:5.1.1') {
+        exclude group: 'it.unimi.dsi', module: 'fastutil'
+    }
 
     // Caching
     shadowed("com.github.ben-manes.caffeine:caffeine:3.2.2")
