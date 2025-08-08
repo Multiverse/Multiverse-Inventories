@@ -44,7 +44,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class MultiverseInventories extends MultiverseModule {
 
-    private static final double TARGET_CORE_API_VERSION = 5.0;
+    private static final double TARGET_CORE_API_VERSION = 5.2;
 
     @Inject
     private Provider<CoreConfig> coreConfig;
