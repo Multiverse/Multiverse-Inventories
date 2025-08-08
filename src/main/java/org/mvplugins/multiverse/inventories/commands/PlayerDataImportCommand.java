@@ -1,7 +1,7 @@
 package org.mvplugins.multiverse.inventories.commands;
 
 import com.google.common.io.Files;
-import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
@@ -41,18 +41,24 @@ final class PlayerDataImportCommand extends InventoriesCommand {
     @Subcommand("playerdata import")
     @Syntax("<world>")
     @CommandPermission("multiverse.inventories.importplayerdata")
-    @CommandCompletion("")
+    @CommandCompletion("@worldwithplayerdata")
     @Description("Import player data from the world's playerdata folder.")
-    void onCommand(MVCommandIssuer issuer, String world) {
-        Path worldPath = Bukkit.getWorldContainer().toPath().resolve(world);
+    void onCommand(MVCommandIssuer issuer, World world) {
+        Path worldPath = world.getWorldFolder().toPath();
         File playerDataPath = worldPath.resolve("playerdata").toFile();
         if (!playerDataPath.isDirectory()) {
-            issuer.sendMessage("World's playerdata folder does not exist: " + world);
+            issuer.sendMessage("World's playerdata folder does not exist: " + world.getName());
             return;
         }
 
         List<CompletableFuture<Void>> playerDataFutures = new ArrayList<>();
-        for (File playerDataFile : playerDataPath.listFiles()) {
+        File[] files = playerDataPath.listFiles();
+        if (files == null) {
+            issuer.sendMessage("No player data files found in the world's playerdata folder: " + world.getName());
+            return;
+        }
+
+        for (File playerDataFile : files) {
             if (!Files.getFileExtension(playerDataFile.getName()).equals("dat")) {
                 continue;
             }
@@ -62,13 +68,13 @@ final class PlayerDataImportCommand extends InventoriesCommand {
                     .getGlobalProfile(GlobalProfileKey.of(playerUUID))
                     .thenCompose(profileDataSource::updateGlobalProfile)
                     .thenCompose(ignore -> profileDataSource.getPlayerProfile(
-                            ProfileKey.of(ContainerType.WORLD, world, ProfileTypes.getDefault(), playerUUID)))
+                            ProfileKey.of(ContainerType.WORLD, world.getName(), ProfileTypes.getDefault(), playerUUID)))
                     .thenCompose(playerProfile -> {
                         playerProfile.update(profileData.get());
                         return profileDataSource.updatePlayerProfile(playerProfile);
                     }));
         }
         CompletableFuture.allOf(playerDataFutures.toArray(new CompletableFuture[0]))
-                        .thenRun(() -> issuer.sendMessage("Successfully imported all player data from " + world + "."));
+                        .thenRun(() -> issuer.sendMessage("Successfully imported all player data from " + world.getName() + "."));
     }
 }
