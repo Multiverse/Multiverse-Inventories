@@ -1,5 +1,7 @@
 package org.mvplugins.multiverse.inventories.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandCompletions;
@@ -19,6 +21,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,6 +63,7 @@ public final class MVInvCommandCompletion {
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
         commandCompletions.registerAsyncCompletion("worldGroups", this::suggestWorldGroups);
         commandCompletions.registerAsyncCompletion("worldGroupWorlds", this::suggestWorldGroupWorlds);
+        commandCompletions.registerAsyncCompletion("worldwithplayerdata", this::suggestWorldWithPlayerData);
     }
 
     private Collection<String> suggestDataImporters(BukkitCommandCompletionContext context) {
@@ -175,5 +179,12 @@ public final class MVInvCommandCompletion {
                 .getOrElse(Collections.emptySet());
 
         return addonToCommaSeperated(context.getInput(), worlds);
+    }
+
+    private Collection<String> suggestWorldWithPlayerData(BukkitCommandCompletionContext context) {
+        return Bukkit.getWorlds().stream()
+                .filter(world -> new File(world.getWorldFolder(), "playerdata").isDirectory())
+                .map(WorldInfo::getName)
+                .toList();
     }
 }
