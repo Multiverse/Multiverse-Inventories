@@ -1,6 +1,6 @@
 plugins {
     id 'checkstyle'
-    id 'org.mvplugins.multiverse-plugin' version '1.1.0'
+    id 'org.mvplugins.multiverse-plugin' version '1.2.1'
 }
 
 group = 'org.mvplugins.multiverse.inventories'
@@ -24,23 +24,18 @@ repositories {
 }
 
 configure(apiDependencies) {
-    serverApiVersion = '1.21.3-R0.1-SNAPSHOT'
+    serverApiVersion = '1.21.8-R0.1-SNAPSHOT'
     mockBukkitServerApiVersion = '1.21'
     mockBukkitVersion = '4.31.1'
 }
 
 dependencies {
-    // Server API
-    // TODO make our custom plugin target paper instead of spigot
-    externalPlugin 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
-
     // Core
-    // TODO update to correct version once we have it published
-    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.2.0-SNAPSHOT'
+    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.2.0'
 
     // Config
     shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
-    shadowed 'net.minidev:json-smart:2.5.1'
+    shadowed 'net.minidev:json-smart:2.6.0'
 
     // Utils
     shadowed('com.dumptruckman.minecraft:Logging:1.1.1') {
@@ -48,7 +43,7 @@ dependencies {
     }
 
     // Caching
-    shadowed("com.github.ben-manes.caffeine:caffeine:3.2.0")
+    shadowed("com.github.ben-manes.caffeine:caffeine:3.2.2")
 
     // PlaceholderAPI
     externalPlugin 'me.clip:placeholderapi:2.11.6'
@@ -69,11 +64,11 @@ dependencies {
     }
 
     // hk2 for annotation processing only
-    compileOnly('org.glassfish.hk2:hk2-api:3.0.3') {
+    compileOnly('org.glassfish.hk2:hk2-api:3.1.1') {
         exclude group: '*', module: '*'
     }
-    annotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
-    testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.0.3'
+    annotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.1.1'
+    testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.1.1'
 }
 
 shadowJar {
