@@ -261,7 +261,8 @@ public class MultiverseInventories extends MultiverseModule {
 
                 inventoriesConfig.get().setFirstRun(false);
             }
-            worldGroupManager.get().checkForConflicts(null);
+            worldGroupManager.get().checkForConflicts()
+                    .sendConflictIssue(commandManagerProvider.get().getConsoleCommandIssuer());
         }, 1L);
     }
 }

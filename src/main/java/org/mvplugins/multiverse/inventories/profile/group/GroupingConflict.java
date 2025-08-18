@@ -14,6 +14,11 @@ public final class GroupingConflict {
     private final WorldGroup groupTwo;
     private final Shares conflictingShares;
 
+    /**
+     * @deprecated This shouldn't have been public. Please never be instantiated directly.
+     *             Instead, you should get the result from {@link WorldGroupManager#checkForConflicts()}.
+     */
+    @Deprecated
     public GroupingConflict(WorldGroup groupOne, WorldGroup groupTwo, Shares conflictingShares) {
         this.groupOne = groupOne;
         this.groupTwo = groupTwo;
@@ -58,14 +63,6 @@ public final class GroupingConflict {
      * @return The worlds the two groups share as a single string.
      */
     public String getWorldsString() {
-        StringBuilder builder = new StringBuilder();
-        for (String world : this.getConflictingWorlds()) {
-            if (!builder.toString().isEmpty()) {
-                builder.append(", ");
-            }
-            builder.append(world);
-        }
-        return builder.toString();
+        return String.join(", ", this.getConflictingWorlds());
     }
 }
-

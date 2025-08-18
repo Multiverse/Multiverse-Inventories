@@ -98,17 +98,35 @@ public sealed interface WorldGroupManager permits AbstractWorldGroupManager {
     WorldGroup getDefaultGroup();
 
     /**
+     * Checks for conflicts between groups and returns a result object containing the conflicts.
+     *
+     * @return A result object containing the conflicts found (if any).
+     *
+     * @since 5.2
+     */
+    @ApiStatus.AvailableSince("5.2")
+    GroupingConflictResult checkForConflicts();
+
+    /**
      * Checks all the world groups to see if there are any potential issues.
      *
      * @return A list of all the potential conflicts.
+     *
+     * @deprecated Use {@link #checkForConflicts()} instead.
      */
+    @Deprecated(since = "5.2", forRemoval = true)
+    @ApiStatus.ScheduledForRemoval(inVersion = "6.0")
     List<GroupingConflict> checkGroups();
 
     /**
      * Runs a check for conflicts between groups and displays them to issuer or console.
      *
      * @param issuer The issuer to relay information to. If null, info only displayed in console.
+     *
+     * @deprecated Use {@link #checkForConflicts()} instead.
      */
+    @Deprecated(since = "5.2", forRemoval = true)
+    @ApiStatus.ScheduledForRemoval(inVersion = "6.0")
     void checkForConflicts(MVCommandIssuer issuer);
 
     /**

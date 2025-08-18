@@ -62,5 +62,6 @@ final class CreateGroupCommand extends InventoriesCommand {
         issuer.sendInfo(MVInvi18n.GROUP_CREATIONCOMPLETE, replace("{group}").with(groupName));
         issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldGroup.getConfigWorlds()));
         issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 }
