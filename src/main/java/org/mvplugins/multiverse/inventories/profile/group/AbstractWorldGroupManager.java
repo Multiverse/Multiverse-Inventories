@@ -13,6 +13,8 @@ import org.mvplugins.multiverse.core.event.world.MVWorldUnloadedEvent;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.vavr.Tuple;
+import org.mvplugins.multiverse.external.vavr.Tuple2;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -24,9 +26,11 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
@@ -185,41 +189,57 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      * {@inheritDoc}
      */
     @Override
-    public List<GroupingConflict> checkGroups() {
+    public GroupingConflictResult checkForConflicts() {
         List<GroupingConflict> conflicts = new ArrayList<>();
-        Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<>();
+        Set<Tuple2<WorldGroup, WorldGroup>> checkedPairs = new HashSet<>();
         for (WorldGroup checkingGroup : getGroupNames().values()) {
             for (String worldName : checkingGroup.getApplicableWorlds()) {
                 for (WorldGroup worldGroup : getGroupsForWorld(worldName)) {
-                    if (checkingGroup.equals(worldGroup)) {
-                        continue;
-                    }
-                    if (previousConflicts.containsKey(checkingGroup)) {
-                        if (previousConflicts.get(checkingGroup).equals(worldGroup)) {
-                            continue;
-                        }
-                    }
-                    if (previousConflicts.containsKey(worldGroup)) {
-                        if (previousConflicts.get(worldGroup).equals(checkingGroup)) {
-                            continue;
-                        }
-                    }
-                    previousConflicts.put(checkingGroup, worldGroup);
-                    Shares conflictingShares = worldGroup.getShares()
-                            .compare(checkingGroup.getShares());
-                    if (!conflictingShares.isEmpty()) {
-                        if (checkingGroup.getApplicableWorlds().containsAll(worldGroup.getApplicableWorlds())
-                                || worldGroup.getApplicableWorlds().containsAll(checkingGroup.getApplicableWorlds())) {
-                            continue;
-                        }
-                        conflicts.add(new GroupingConflict(checkingGroup, worldGroup,
-                                Sharables.fromShares(conflictingShares)));
-                    }
+                    checkConflict(checkingGroup, worldGroup, checkedPairs, conflicts);
                 }
             }
         }
+        return new GroupingConflictResult(conflicts);
+    }
 
-        return conflicts;
+    private void checkConflict(WorldGroup checkingGroup,
+                               WorldGroup worldGroup,
+                               Set<Tuple2<WorldGroup, WorldGroup>> checkedPairs,
+                               List<GroupingConflict> conflicts) {
+        if (checkingGroup.equals(worldGroup)) {
+            // Don't check against itself.
+            return;
+        }
+        if (checkedPairs.contains(new Tuple2<>(checkingGroup, worldGroup))) {
+            // Already checked this pair.
+            return;
+        }
+        if (checkedPairs.contains(new Tuple2<>(worldGroup, checkingGroup))) {
+            // Already checked this pair in the opposite order.
+            return;
+        }
+        Logging.finer("Checking conflict between %s and %s", checkingGroup.getName(), worldGroup.getName());
+        checkedPairs.add(new Tuple2<>(checkingGroup, worldGroup));
+        Shares conflictingShares = worldGroup.getApplicableShares().compare(checkingGroup.getApplicableShares());
+        if (conflictingShares.isEmpty()) {
+            // No overlapping shares.
+            return;
+        }
+        if (checkingGroup.getApplicableWorlds().containsAll(worldGroup.getApplicableWorlds())
+                || worldGroup.getApplicableWorlds().containsAll(checkingGroup.getApplicableWorlds())) {
+            // If one group contains all the worlds of the other, we don't consider it a conflict.
+            return;
+        }
+        Logging.finer("Conflict found for %s and %s", checkingGroup.getName(), worldGroup.getName());
+        conflicts.add(new GroupingConflict(checkingGroup, worldGroup, Sharables.fromShares(conflictingShares)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GroupingConflict> checkGroups() {
+        return checkForConflicts().getConflicts();
     }
 
     /**
@@ -230,18 +250,10 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         if (issuer == null) {
             issuer = commandManager.getCommandIssuer(Bukkit.getConsoleSender());
         }
-
         issuer.sendInfo(MVInvi18n.CONFLICT_CHECKING);
-        List<GroupingConflict> conflicts = checkGroups();
-        for (GroupingConflict conflict : conflicts) {
-            issuer.sendInfo(MVInvi18n.CONFLICT_RESULTS,
-                    replace("{group1}").with(conflict.getFirstGroup().getName()),
-                    replace("{group2}").with(conflict.getSecondGroup().getName()),
-                    replace("{shares}").with(conflict.getConflictingShares().toString()),
-                    replace("{worlds}").with(conflict.getWorldsString()));
-        }
-        if (!conflicts.isEmpty()) {
-            issuer.sendInfo(MVInvi18n.CONFLICT_FOUND);
+        GroupingConflictResult groupingConflictResult = checkForConflicts();
+        if (groupingConflictResult.hasConflict()) {
+            groupingConflictResult.sendConflictIssue(issuer);
         } else {
             issuer.sendInfo(MVInvi18n.CONFLICT_NOTFOUND);
         }

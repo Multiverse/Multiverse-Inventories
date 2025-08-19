@@ -58,5 +58,6 @@ final class RemoveWorldsCommand extends InventoriesCommand {
         issuer.sendInfo(MVInvi18n.REMOVEWORLD_WORLDREMOVED,
                 replace("{group}").with(group.getName()),
                 replace("{world}").with(worldNames));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 }

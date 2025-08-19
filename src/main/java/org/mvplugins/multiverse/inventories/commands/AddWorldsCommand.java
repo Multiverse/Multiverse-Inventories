@@ -86,6 +86,7 @@ final class AddWorldsCommand extends InventoriesCommand {
         issuer.sendInfo(MVInvi18n.ADDWORLD_WORLDADDED,
                 replace("{group}").with(group.getName()),
                 replace("{world}").with(worldNamesString));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 
     @Service
