@@ -157,7 +157,6 @@ final class InventoriesConfigNodes {
 
     final ConfigNode<Boolean> applyPlayerdataOnJoin = node(ConfigNode.builder("performance.apply-playerdata-on-join", Boolean.class)
             .comment("")
-            .comment("This will only work if save-playerdata-on-quit is set to true.")
             .comment("Minecraft will already load the most up-to-date player data and this option will generally be redundant.")
             .comment("The only possible edge case uses is if you have a need to always modify the mvinv playerdata while the player is offline.")
             .defaultValue(false)
