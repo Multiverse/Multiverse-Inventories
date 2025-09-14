@@ -95,7 +95,9 @@ public final class PlayerNamesMapper {
                         Logging.warning(throwable.getMessage());
                     }));
         } catch (Exception e) {
+            Logging.warning("Could not load player names map. Rebuilding instead...");
             e.printStackTrace();
+            buildPlayerNamesMap();
         }
     }
 
