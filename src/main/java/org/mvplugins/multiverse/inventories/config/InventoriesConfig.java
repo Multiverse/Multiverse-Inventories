@@ -281,6 +281,36 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.registerPapiHook, registerPapiHook);
     }
 
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxInventoryItemsSize() {
+        return this.configHandle.get(configNodes.maxInventoryItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxInventoryItemsSize(int maxInventoryItemsSize) {
+        return this.configHandle.set(configNodes.maxInventoryItemsSize, maxInventoryItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxEnderChestItemsSize() {
+        return this.configHandle.get(configNodes.maxEnderChestItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxEnderChestItemsSize(int maxEnderChestItemsSize) {
+        return this.configHandle.set(configNodes.maxEnderChestItemsSize, maxEnderChestItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxArmorItemsSize() {
+        return this.configHandle.get(configNodes.maxArmorItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxArmorItemsSize(int maxArmorItemsSize) {
+        return this.configHandle.set(configNodes.maxArmorItemsSize, maxArmorItemsSize);
+    }
+
     /**
      * Tells whether this is the first time the plugin has run as set by a config flag.
      *
