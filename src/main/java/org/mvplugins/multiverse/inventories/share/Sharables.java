@@ -129,18 +129,18 @@ public final class Sharables implements Shares {
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
-                    profile.set(INVENTORY, player.getInventory().getContents());
+                    profile.set(INVENTORY, player.getInventory().getStorageContents());
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     ItemStack[] value = profile.get(INVENTORY);
                     if (value == null) {
-                        player.getInventory().setContents(MinecraftTools.fillWithAir(
+                        player.getInventory().setStorageContents(MinecraftTools.fillWithAir(
                                 new ItemStack[PlayerStats.INVENTORY_SIZE]));
                         return false;
                     }
-                    player.getInventory().setContents(value);
+                    player.getInventory().setStorageContents(value);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
