@@ -152,6 +152,14 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.useImprovedRespawnLocationDetection, useImprovedRespawnLocationDetection);
     }
 
+    public boolean getValidateBedAnchorRespawnLocation() {
+        return this.configHandle.get(configNodes.validateBedAnchorRespawnLocation);
+    }
+
+    public Try<Void> setValidateBedAnchorRespawnLocation(boolean validateBedAnchorRespawnLocation) {
+        return this.configHandle.set(configNodes.validateBedAnchorRespawnLocation, validateBedAnchorRespawnLocation);
+    }
+
     public boolean getResetLastLocationOnDeath() {
         return this.configHandle.get(configNodes.resetLastLocationOnDeath);
     }
