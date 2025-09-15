@@ -9,6 +9,7 @@ import org.bukkit.block.data.type.Bed;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.external.vavr.control.Try;
@@ -18,9 +19,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO: This should extend UnloadedWorldLocation, but that class is currently a final class!!!
+/**
+ * Location information with respawn type. See also {@link RespawnLocationType}.
+ * <br />
+ * TODO: This should extend UnloadedWorldLocation, but that class is currently a final class!!!
+ */
 @SerializableAs("RespawnLocation")
-public final class RespawnLocation extends Location {
+@ApiStatus.AvailableSince("5.2")
+public class RespawnLocation extends Location {
 
     private @Nullable String worldName;
     private @NotNull RespawnLocationType respawnType = RespawnLocationType.UNKNOWN;
@@ -66,7 +72,7 @@ public final class RespawnLocation extends Location {
         this.worldName = worldName;
     }
 
-    public String getWorldName() {
+    public @Nullable String getWorldName() {
         return worldName;
     }
 
@@ -160,8 +166,9 @@ public final class RespawnLocation extends Location {
         if (Float.floatToIntBits(this.getYaw()) != Float.floatToIntBits(other.getYaw())) {
             return false;
         }
-        if (this.respawnType != RespawnLocationType.UNKNOWN && other instanceof RespawnLocation otherRespawnLocation) {
-            return this.respawnType == otherRespawnLocation.respawnType;
+        if (other instanceof RespawnLocation otherRespawnLocation
+                && this.respawnType != otherRespawnLocation.respawnType) {
+            return false;
         }
         return true;
     }
@@ -169,10 +176,10 @@ public final class RespawnLocation extends Location {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 19 * hash + worldName.hashCode();
-        hash = 19 * hash + (int) (Double.doubleToLongBits(this.getX()) ^ (Double.doubleToLongBits(this.getX()) >>> 32));
-        hash = 19 * hash + (int) (Double.doubleToLongBits(this.getY()) ^ (Double.doubleToLongBits(this.getY()) >>> 32));
-        hash = 19 * hash + (int) (Double.doubleToLongBits(this.getZ()) ^ (Double.doubleToLongBits(this.getZ()) >>> 32));
+        hash = 19 * hash + String.valueOf(worldName).hashCode();
+        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getX()));
+        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getY()));
+        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getZ()));
         hash = 19 * hash + Float.floatToIntBits(this.getPitch());
         hash = 19 * hash + Float.floatToIntBits(this.getYaw());
         hash = 19 * hash + this.respawnType.hashCode();
@@ -188,9 +195,20 @@ public final class RespawnLocation extends Location {
                 ",z=" + getZ() +
                 ",pitch=" + getPitch() +
                 ",yaw=" + getYaw() +
+                ",respawnType=" + this.respawnType +
                 '}';
     }
 
+    /**
+     * Checks if the respawn location is valid based on the respawn type.
+     * <br />
+     * For {@link RespawnLocationType#BED}, checks if the block at the location is a bed block.
+     * <br />
+     * For {@link RespawnLocationType#ANCHOR}, checks if the block at the location is a respawn anchor block.
+     * <br />
+     * @return true if the respawn location is valid, false otherwise.
+     */
+    @ApiStatus.AvailableSince("5.2")
     public boolean isValidRespawnLocation() {
         World world = getWorld();
         if (world == null) {
@@ -209,15 +227,47 @@ public final class RespawnLocation extends Location {
         }
     }
 
-    @NotNull
-    public RespawnLocationType getRespawnType() {
+    /**
+     * Gets the respawn location type.
+     *
+     * @return the respawn location type
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public @NotNull RespawnLocationType getRespawnType() {
         return respawnType;
     }
 
+    /**
+     * Sets the respawn location type.
+     *
+     * @param respawnType the respawn location type
+     */
+    @ApiStatus.AvailableSince("5.2")
+    public  void setRespawnType(@NotNull RespawnLocationType respawnType) {
+        this.respawnType = respawnType;
+    }
+
+    /**
+     * The type of respawn location.
+     */
+    @ApiStatus.AvailableSince("5.2")
     public enum RespawnLocationType {
-        WORLD_SPAWN,
+        /**
+         * The respawn location is a bed, and the location should have a bed block.
+         */
+        @ApiStatus.AvailableSince("5.2")
         BED,
+
+        /**
+         * The respawn location is a respawn anchor, and the location should have a respawn anchor block.
+         */
+        @ApiStatus.AvailableSince("5.2")
         ANCHOR,
+
+        /**
+         * All other possible respawn types, such as custom /spawnpoint or specific location set by other plugins.
+         */
+        @ApiStatus.AvailableSince("5.2")
         UNKNOWN
     }
 }
