@@ -27,6 +27,10 @@ performance:
 
 misc:
   register-papi-hook: true
+  max-items-size:
+    inventory: 36
+    ender-chest: 27
+    armor: 4
 
 first-run: true
 version: 5.0

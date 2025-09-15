@@ -6,6 +6,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
@@ -111,16 +112,21 @@ public final class Sharables implements Shares {
         @Override
         public boolean updatePlayer(Player player, ProfileData profile) {
             ItemStack[] value = profile.get(ENDER_CHEST);
+            Inventory enderChest = player.getEnderChest();
             if (value == null) {
-                player.getEnderChest().setContents(MinecraftTools.fillWithAir(
-                        new ItemStack[PlayerStats.ENDER_CHEST_SIZE]));
+                enderChest.setContents(MinecraftTools.fillWithAir(
+                        new ItemStack[enderChest.getSize()]));
                 return false;
             }
-            player.getEnderChest().setContents(value);
+            if (value.length != enderChest.getSize()) {
+                Logging.fine("Mismatch ender chest size found in profile for player " + player.getName()
+                        + ". Expected " + enderChest.getSize() + " but got " + value.length + ".");
+            }
+            enderChest.setContents(value);
             return true;
         }
     }).serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
-            new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
+            new InventorySerializer.EnderChestSerializer()).altName("ender").build();
 
     /**
      * Sharing Inventory.
@@ -144,7 +150,7 @@ public final class Sharables implements Shares {
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
-                    new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
+                    new InventorySerializer.MainInventorySerializer()).build();
 
     /**
      * Sharing Armor.
@@ -168,7 +174,7 @@ public final class Sharables implements Shares {
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
-                    new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
+                    new InventorySerializer.ArmorSerializer()).altName("armor").build();
 
     /**
      * Sharing Offhand.

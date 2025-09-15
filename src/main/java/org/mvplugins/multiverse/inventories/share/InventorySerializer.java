@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.share;
 
+import org.mvplugins.multiverse.inventories.MultiverseInventoriesApi;
 import org.mvplugins.multiverse.inventories.util.ItemStackConverter;
 import org.mvplugins.multiverse.inventories.util.MinecraftTools;
 import org.bukkit.Material;
@@ -12,13 +13,7 @@ import java.util.Map;
  * A simple {@link SharableSerializer} usable with ItemStack[] which converts the ItemStack[] to the string format
  * that is used by default in Multiverse-Inventories.
  */
-final class InventorySerializer implements SharableSerializer<ItemStack[]> {
-
-    private final int inventorySize;
-
-    public InventorySerializer(final int inventorySize) {
-        this.inventorySize = inventorySize;
-    }
+abstract class InventorySerializer implements SharableSerializer<ItemStack[]> {
 
     @Override
     public ItemStack[] deserialize(Object obj) {
@@ -42,7 +37,7 @@ final class InventorySerializer implements SharableSerializer<ItemStack[]> {
     }
 
     private ItemStack[] unmapSlots(Object obj) {
-        ItemStack[] inventory = new ItemStack[inventorySize];
+        ItemStack[] inventory = new ItemStack[getInventorySize()];
         if (!(obj instanceof Map invMap)) {
             return MinecraftTools.fillWithAir(inventory);
         }
@@ -60,5 +55,28 @@ final class InventorySerializer implements SharableSerializer<ItemStack[]> {
             inventory[i] = item;
         }
         return inventory;
+    }
+
+    protected abstract int getInventorySize();
+
+    static final class MainInventorySerializer extends InventorySerializer {
+        @Override
+        protected int getInventorySize() {
+            return MultiverseInventoriesApi.get().getInventoriesConfig().getMaxInventoryItemsSize();
+        }
+    }
+
+    static final class EnderChestSerializer extends InventorySerializer {
+        @Override
+        protected int getInventorySize() {
+            return MultiverseInventoriesApi.get().getInventoriesConfig().getMaxEnderChestItemsSize();
+        }
+    }
+
+    static final class ArmorSerializer extends InventorySerializer {
+        @Override
+        protected int getInventorySize() {
+            return MultiverseInventoriesApi.get().getInventoriesConfig().getMaxArmorItemsSize();
+        }
     }
 }
