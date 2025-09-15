@@ -54,6 +54,7 @@ final class SpawnChangeListener implements MVInvListener {
         };
     }
 
+    @SuppressWarnings("removal")
     @EventClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
     @SkipIfEventExist("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent")
     @DefaultEventPriority(EventPriority.MONITOR)

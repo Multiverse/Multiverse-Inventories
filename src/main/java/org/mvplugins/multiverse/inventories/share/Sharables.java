@@ -652,7 +652,7 @@ public final class Sharables implements Shares {
                     if (loc == null || loc.getWorld() == null || loc.equals(player.getLocation())) {
                         return false;
                     }
-                    safetyTeleporter.to(loc).checkSafety(false).teleport(player);
+                    safetyTeleporter.to(loc).checkSafety(false).teleportSingle(player);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
