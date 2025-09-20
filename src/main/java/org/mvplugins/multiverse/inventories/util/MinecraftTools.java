@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nullable;
 
@@ -39,6 +40,7 @@ public final class MinecraftTools {
         return items;
     }
 
+    @Contract("null -> null; !null -> !null")
     public static @Nullable Location findBedFromRespawnLocation(@Nullable Location respawnLocation) {
         if (respawnLocation == null) {
             return null;
@@ -60,6 +62,7 @@ public final class MinecraftTools {
         return respawnLocation;
     }
 
+    @Contract("null -> null; !null -> !null")
     public static @Nullable Location findAnchorFromRespawnLocation(@Nullable Location respawnLocation) {
         if (respawnLocation == null) {
             return null;

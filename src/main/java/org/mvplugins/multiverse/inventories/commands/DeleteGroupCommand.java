@@ -49,6 +49,7 @@ final class DeleteGroupCommand extends InventoriesCommand {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
                 .prompt(Message.of(MVInvi18n.DELETEGROUP_CONFIRMPROMPT, replace("{group}").with(group.getName())))
                 .action(() -> doDeleteGroup(issuer, group)));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 
     private void doDeleteGroup(MVCommandIssuer issuer, WorldGroup group) {

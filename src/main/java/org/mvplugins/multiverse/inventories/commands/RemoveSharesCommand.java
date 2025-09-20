@@ -52,5 +52,6 @@ final class RemoveSharesCommand extends InventoriesCommand {
                 replace("{group}").with(group.getName()),
                 replace("{shares}").with(group.getShares().toStringList()),
                 replace("{negativeshares}").with(negativeshares.toStringList()));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 }

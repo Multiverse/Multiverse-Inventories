@@ -41,7 +41,8 @@ public final class LastLocationDestination implements Destination<LastLocationDe
     }
 
     @Override
-    public @NotNull Attempt<LastLocationDestinationInstance, LastLocationDestination.InstanceFailureReason> getDestinationInstance(@NotNull String destinationParams) {
+    public @NotNull Attempt<LastLocationDestinationInstance, LastLocationDestination.InstanceFailureReason> getDestinationInstance(
+            @NotNull CommandSender sender, @NotNull String destinationParams) {
         if (!worldManager.isLoadedWorld(destinationParams)) {
             return Attempt.failure(InstanceFailureReason.WORLD_NOT_FOUND);
         }

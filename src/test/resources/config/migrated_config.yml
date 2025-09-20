@@ -8,6 +8,7 @@ share-handling:
 
 sharables:
   use-improved-respawn-location-detection: true
+  validate-bed-anchor-respawn-location: true
   reset-last-location-on-death: false
   apply-last-location-for-all-teleports: true
   use-byte-serialization-for-inventory-data: false
@@ -28,6 +29,10 @@ performance:
 
 misc:
   register-papi-hook: true
+  max-items-size:
+    inventory: 36
+    ender-chest: 27
+    armor: 4
 
 first-run: true
 version: 5.0

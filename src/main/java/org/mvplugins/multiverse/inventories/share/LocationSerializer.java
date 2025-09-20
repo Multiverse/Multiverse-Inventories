@@ -3,17 +3,15 @@ package org.mvplugins.multiverse.inventories.share;
 import org.bukkit.Location;
 import org.mvplugins.multiverse.core.world.location.UnloadedWorldLocation;
 import org.mvplugins.multiverse.inventories.util.LegacyParsers;
+import org.mvplugins.multiverse.inventories.util.RespawnLocation;
 
 import java.util.Map;
 
 /**
  * A simple {@link SharableSerializer} usable with {@link Location} which converts the {@link Location} to the string
  * format that is used by default in Multiverse-Inventories.
- * @deprecated Locations no longer need a special serializer because they are
- * {@link org.bukkit.configuration.serialization.ConfigurationSerializable}. This remains to convert legacy data.
  */
-@Deprecated
-final class LocationSerializer implements SharableSerializer<Location> {
+abstract class LocationSerializer implements SharableSerializer<Location> {
 
     @Override
     public Location deserialize(Object obj) {
@@ -30,7 +28,25 @@ final class LocationSerializer implements SharableSerializer<Location> {
     }
 
     @Override
-    public Object serialize(Location location) {
-        return new UnloadedWorldLocation(location);
+    abstract public Location serialize(Location loc);
+
+    static final class UnloadedWorldLocationSerializer extends LocationSerializer {
+        @Override
+        public Location serialize(Location loc) {
+            if (loc != null && !(loc instanceof UnloadedWorldLocation)) {
+                return new UnloadedWorldLocation(loc);
+            }
+            return loc;
+        }
+    }
+
+    static final class RespawnLocationSerializer extends LocationSerializer {
+        @Override
+        public Location serialize(Location loc) {
+            if (loc != null && !(loc instanceof RespawnLocation)) {
+                return new RespawnLocation(loc, RespawnLocation.RespawnLocationType.UNKNOWN);
+            }
+            return loc;
+        }
     }
 }
