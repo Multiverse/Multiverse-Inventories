@@ -31,6 +31,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.mvplugins.multiverse.inventories.util.RespawnLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -618,11 +619,19 @@ public final class Sharables implements Shares {
                         setSpawnLocation(player, player.getWorld().getSpawnLocation());
                         return false;
                     }
+                    if (inventoriesConfig.getValidateBedAnchorRespawnLocation()
+                            && loc instanceof RespawnLocation respawnLocation
+                            && !respawnLocation.isValidRespawnLocation()) {
+                        Logging.finer("Respawn location validation failed for respawn type: " + respawnLocation.getRespawnType());
+                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        return false;
+                    }
                     setSpawnLocation(player, loc);
                     Logging.finer("updated respawn location: " + player.getBedSpawnLocation());
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION),
+                    new LocationSerializer.RespawnLocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     // todo: handle this somewhere better
@@ -661,7 +670,8 @@ public final class Sharables implements Shares {
                     safetyTeleporter.to(loc).checkSafety(false).teleportSingle(player);
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION),
+                    new LocationSerializer.UnloadedWorldLocationSerializer())
             .altName("loc").altName("location").altName("pos").altName("position").optional().build();
 
     /**

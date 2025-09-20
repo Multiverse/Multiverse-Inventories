@@ -119,6 +119,16 @@ final class InventoriesConfigNodes {
             .name("use-improved-respawn-location-detection")
             .build());
 
+    final ConfigNode<Boolean> validateBedAnchorRespawnLocation = node(ConfigNode.builder("sharables.validate-bed-anchor-respawn-location", Boolean.class)
+            .comment("")
+            .comment("When enabled, we will validate the bed/anchor respawn location on group/world change.")
+            .comment("The validation checks if the bed/anchor block still exists at the saved location and is usable.")
+            .comment("When the validation fails, the respawn location will be cleared and default world spawn will be used instead.")
+            .comment("Disable this if you don't want validation, or you want another plugin to handle respawn logic.")
+            .defaultValue(true)
+            .name("validate-bed-anchor-respawn-location")
+            .build());
+
     final ConfigNode<Boolean> resetLastLocationOnDeath = node(ConfigNode.builder("sharables.reset-last-location-on-death", Boolean.class)
             .comment("")
             .comment("When set to true, the last location of the player will be reset when they die.")

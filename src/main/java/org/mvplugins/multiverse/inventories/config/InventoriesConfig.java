@@ -152,6 +152,16 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.useImprovedRespawnLocationDetection, useImprovedRespawnLocationDetection);
     }
 
+    @ApiStatus.AvailableSince("5.2")
+    public boolean getValidateBedAnchorRespawnLocation() {
+        return this.configHandle.get(configNodes.validateBedAnchorRespawnLocation);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setValidateBedAnchorRespawnLocation(boolean validateBedAnchorRespawnLocation) {
+        return this.configHandle.set(configNodes.validateBedAnchorRespawnLocation, validateBedAnchorRespawnLocation);
+    }
+
     public boolean getResetLastLocationOnDeath() {
         return this.configHandle.get(configNodes.resetLastLocationOnDeath);
     }
