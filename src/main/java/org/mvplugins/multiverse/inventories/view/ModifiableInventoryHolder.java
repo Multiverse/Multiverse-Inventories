@@ -15,6 +15,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
  *
  * @since 5.2
  */
+@ApiStatus.Experimental
 @ApiStatus.AvailableSince("5.2")
 public final class ModifiableInventoryHolder implements InventoryHolder {
     private final OfflinePlayer targetPlayer;
