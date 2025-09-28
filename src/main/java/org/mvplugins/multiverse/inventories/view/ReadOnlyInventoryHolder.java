@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 5.2
  */
+@ApiStatus.Experimental
 @ApiStatus.AvailableSince("5.2")
 public final class ReadOnlyInventoryHolder implements InventoryHolder {
     /**
