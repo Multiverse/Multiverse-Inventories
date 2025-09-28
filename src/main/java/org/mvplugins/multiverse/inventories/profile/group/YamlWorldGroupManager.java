@@ -2,8 +2,10 @@ package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
 import com.google.common.collect.Lists;
+import org.apache.logging.log4j.util.Strings;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
+import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.commentedconfiguration.CommentedConfiguration;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
@@ -14,15 +16,13 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.util.DeserializationException;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventPriority;
+import org.mvplugins.multiverse.inventories.util.GroupWorldNameValidator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +39,8 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             "# No support will be given for those who manually edit these groups."
     };
 
+    private final GroupWorldNameValidator groupWorldNameValidator;
+
     private CommentedConfiguration groupsConfig;
 
     @Inject
@@ -47,8 +49,10 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
             @NotNull MVCommandManager commandManager,
             @NotNull InventoriesConfig inventoriesConfig,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
-            @NotNull WorldManager worldManager) {
+            @NotNull WorldManager worldManager,
+            @NotNull GroupWorldNameValidator groupWorldNameValidator) {
         super(plugin, commandManager, inventoriesConfig, profileContainerStoreProvider, worldManager);
+        this.groupWorldNameValidator = groupWorldNameValidator;
     }
 
     @Override
@@ -152,25 +156,23 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                 Logging.fine("No worlds for group: " + name);
             } else {
                 if (!(worldListObj instanceof List)) {
-                    Logging.fine("World list formatted incorrectly for world group: " + name);
+                    Logging.warning("World list formatted incorrectly for world group: " + name);
                 } else {
-                    final StringBuilder builder = new StringBuilder();
+                    final List<String> invalidWorlds = new ArrayList<>();
                     for (Object worldNameObj : (List) worldListObj) {
                         if (worldNameObj == null) {
-                            Logging.fine("Error with a world listed in group: " + name);
+                            Logging.warning("Error with a world listed in group: " + name);
                             continue;
                         }
-                        profile.addWorld(worldNameObj.toString(), false);
-                        World world = Bukkit.getWorld(worldNameObj.toString());
-                        if (world == null) {
-                            if (!builder.isEmpty()) {
-                                builder.append(", ");
-                            }
-                            builder.append(worldNameObj);
+                        String worldName = worldNameObj.toString();
+                        profile.addWorld(worldName, false);
+                        if (!groupWorldNameValidator.validateWorldName(worldName)) {
+                            invalidWorlds.add(worldName);
                         }
                     }
-                    if (!builder.isEmpty()) {
-                        Logging.config("The following worlds for group '%s' are not loaded: %s", name, builder.toString());
+                    if (!invalidWorlds.isEmpty()) {
+                        Logging.warning("The following worlds for group '%s' does not exist: %s",
+                                name, StringFormatter.join(invalidWorlds, ", "));
                     }
                 }
             }
@@ -215,6 +217,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
                 Logging.warning("Spawn settings for group formatted incorrectly");
             }
         }
+        profile.recalculateApplicableWorlds();
         profile.recalculateApplicableShares();
         return profile;
     }
@@ -226,7 +229,7 @@ final class YamlWorldGroupManager extends AbstractWorldGroupManager {
 
     private Map<String, Object> serializeWorldGroupProfile(WorldGroup profile) {
         Map<String, Object> results = new LinkedHashMap<>();
-        results.put("worlds", Lists.newArrayList(profile.getWorlds()));
+        results.put("worlds", Lists.newArrayList(profile.getConfigWorlds()));
         List<String> sharesList = profile.getShares().toStringList();
         if (!sharesList.isEmpty()) {
             results.put("shares", sharesList);

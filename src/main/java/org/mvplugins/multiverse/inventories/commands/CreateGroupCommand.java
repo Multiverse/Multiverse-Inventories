@@ -2,9 +2,7 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.core.world.MultiverseWorld;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
+import org.mvplugins.multiverse.core.utils.REPatterns;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Conditions;
@@ -19,7 +17,7 @@ import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
@@ -47,7 +45,7 @@ final class CreateGroupCommand extends InventoriesCommand {
 
             @Optional
             @Syntax("[world[,extra]]")
-            MultiverseWorld[] worlds,
+            String worlds,
 
             @Optional
             @Syntax("[share,[extra]]")
@@ -55,14 +53,15 @@ final class CreateGroupCommand extends InventoriesCommand {
     ) {
         WorldGroup worldGroup = worldGroupManager.newEmptyGroup(groupName);
         if (worlds != null) {
-            worldGroup.getWorlds().addAll(Arrays.stream(worlds).map(MultiverseWorld::getName).toList());
+            worldGroup.addWorlds(List.of(REPatterns.COMMA.split(worlds)), false);
         }
         if (shares != null) {
             worldGroup.getShares().mergeShares(shares);
         }
         worldGroupManager.updateGroup(worldGroup);
         issuer.sendInfo(MVInvi18n.GROUP_CREATIONCOMPLETE, replace("{group}").with(groupName));
-        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldGroup.getWorlds()));
+        issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(worldGroup.getConfigWorlds()));
         issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(worldGroup.getShares()));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 }

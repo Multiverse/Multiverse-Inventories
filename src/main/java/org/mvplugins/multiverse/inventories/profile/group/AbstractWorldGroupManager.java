@@ -1,12 +1,20 @@
 package org.mvplugins.multiverse.inventories.profile.group;
 
 import com.dumptruckman.minecraft.util.Logging;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
+import org.mvplugins.multiverse.core.event.world.MVWorldLoadedEvent;
+import org.mvplugins.multiverse.core.event.world.MVWorldUnloadedEvent;
 import org.mvplugins.multiverse.core.world.LoadedMultiverseWorld;
 import org.mvplugins.multiverse.core.world.WorldManager;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.vavr.Tuple;
+import org.mvplugins.multiverse.external.vavr.Tuple2;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
@@ -18,9 +26,11 @@ import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
@@ -38,7 +48,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     protected final ProfileContainerStoreProvider profileContainerStoreProvider;
     protected final WorldManager worldManager;
 
-    public AbstractWorldGroupManager(
+    AbstractWorldGroupManager(
             @NotNull MultiverseInventories plugin,
             @NotNull MVCommandManager commandManager,
             @NotNull InventoriesConfig config,
@@ -49,6 +59,8 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         this.inventoriesConfig = config;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.worldManager = worldManager;
+
+        Bukkit.getPluginManager().registerEvents(new WorldChangeListener(), plugin);
     }
 
     /**
@@ -94,7 +106,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     @Override
     public boolean hasConfiguredGroup(String worldName) {
         return groupNamesMap.values().stream()
-                .anyMatch(worldGroup -> worldGroup.getWorlds().contains(worldName));
+                .anyMatch(worldGroup -> worldGroup.containsWorld(worldName));
     }
 
     /**
@@ -109,6 +121,7 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     @Override
     public void updateGroup(final WorldGroup worldGroup) {
         getGroupNames().put(worldGroup.getName().toLowerCase(), worldGroup);
+        worldGroup.recalculateApplicableWorlds();
         worldGroup.recalculateApplicableShares();
     }
 
@@ -154,9 +167,8 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
             worldGroup.addWorld(defaultEnd);
         }
         updateGroup(worldGroup);
-        worldGroup.recalculateApplicableShares();
         Logging.info("Created a default group for you containing all of your default worlds: "
-                + String.join(", ", worldGroup.getWorlds()));
+                + String.join(", ", worldGroup.getConfigWorlds()));
     }
 
     /**
@@ -177,41 +189,52 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
      * {@inheritDoc}
      */
     @Override
-    public List<GroupingConflict> checkGroups() {
+    public GroupingConflictResult checkForConflicts() {
         List<GroupingConflict> conflicts = new ArrayList<>();
-        Map<WorldGroup, WorldGroup> previousConflicts = new HashMap<>();
+        Set<Tuple2<WorldGroup, WorldGroup>> checkedPairs = new HashSet<>();
         for (WorldGroup checkingGroup : getGroupNames().values()) {
-            for (String worldName : checkingGroup.getWorlds()) {
+            for (String worldName : checkingGroup.getApplicableWorlds()) {
                 for (WorldGroup worldGroup : getGroupsForWorld(worldName)) {
-                    if (checkingGroup.equals(worldGroup)) {
-                        continue;
-                    }
-                    if (previousConflicts.containsKey(checkingGroup)) {
-                        if (previousConflicts.get(checkingGroup).equals(worldGroup)) {
-                            continue;
-                        }
-                    }
-                    if (previousConflicts.containsKey(worldGroup)) {
-                        if (previousConflicts.get(worldGroup).equals(checkingGroup)) {
-                            continue;
-                        }
-                    }
-                    previousConflicts.put(checkingGroup, worldGroup);
-                    Shares conflictingShares = worldGroup.getShares()
-                            .compare(checkingGroup.getShares());
-                    if (!conflictingShares.isEmpty()) {
-                        if (checkingGroup.getWorlds().containsAll(worldGroup.getWorlds())
-                                || worldGroup.getWorlds().containsAll(checkingGroup.getWorlds())) {
-                            continue;
-                        }
-                        conflicts.add(new GroupingConflict(checkingGroup, worldGroup,
-                                Sharables.fromShares(conflictingShares)));
-                    }
+                    checkConflict(checkingGroup, worldGroup, checkedPairs, conflicts);
                 }
             }
         }
+        return new GroupingConflictResult(conflicts);
+    }
 
-        return conflicts;
+    private void checkConflict(WorldGroup checkingGroup,
+                               WorldGroup worldGroup,
+                               Set<Tuple2<WorldGroup, WorldGroup>> checkedPairs,
+                               List<GroupingConflict> conflicts) {
+        if (checkingGroup.equals(worldGroup)) {
+            // Don't check against itself.
+            return;
+        }
+        if (checkedPairs.contains(new Tuple2<>(checkingGroup, worldGroup))) {
+            // Already checked this pair.
+            return;
+        }
+        if (checkedPairs.contains(new Tuple2<>(worldGroup, checkingGroup))) {
+            // Already checked this pair in the opposite order.
+            return;
+        }
+        Logging.finer("Checking conflict between %s and %s", checkingGroup.getName(), worldGroup.getName());
+        checkedPairs.add(new Tuple2<>(checkingGroup, worldGroup));
+        Shares conflictingShares = worldGroup.getApplicableShares().compare(checkingGroup.getApplicableShares());
+        if (conflictingShares.isEmpty()) {
+            // No overlapping shares.
+            return;
+        }
+        Logging.finer("Conflict found for %s and %s", checkingGroup.getName(), worldGroup.getName());
+        conflicts.add(new GroupingConflict(checkingGroup, worldGroup, Sharables.fromShares(conflictingShares)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<GroupingConflict> checkGroups() {
+        return checkForConflicts().getConflicts();
     }
 
     /**
@@ -222,18 +245,10 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
         if (issuer == null) {
             issuer = commandManager.getCommandIssuer(Bukkit.getConsoleSender());
         }
-
         issuer.sendInfo(MVInvi18n.CONFLICT_CHECKING);
-        List<GroupingConflict> conflicts = checkGroups();
-        for (GroupingConflict conflict : conflicts) {
-            issuer.sendInfo(MVInvi18n.CONFLICT_RESULTS,
-                    replace("{group1}").with(conflict.getFirstGroup().getName()),
-                    replace("{group2}").with(conflict.getSecondGroup().getName()),
-                    replace("{shares}").with(conflict.getConflictingShares().toString()),
-                    replace("{worlds}").with(conflict.getWorldsString()));
-        }
-        if (!conflicts.isEmpty()) {
-            issuer.sendInfo(MVInvi18n.CONFLICT_FOUND);
+        GroupingConflictResult groupingConflictResult = checkForConflicts();
+        if (groupingConflictResult.hasConflict()) {
+            groupingConflictResult.sendConflictIssue(issuer);
         } else {
             issuer.sendInfo(MVInvi18n.CONFLICT_NOTFOUND);
         }
@@ -242,5 +257,32 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
     @Override
     public void recalculateApplicableShares() {
         getGroupNames().values().forEach(WorldGroup::recalculateApplicableShares);
+    }
+
+    @Override
+    public void recalculateApplicableWorlds() {
+        groupNamesMap.values().forEach(WorldGroup::recalculateApplicableWorlds);
+    }
+
+    private class WorldChangeListener implements Listener {
+        @EventHandler
+        void onMVWorldLoad(MVWorldLoadedEvent event) {
+            groupNamesMap.values().forEach(group -> group.addApplicableWorld(event.getWorld().getName()));
+        }
+
+        @EventHandler
+        void onMVWorldUnload(MVWorldUnloadedEvent event) {
+            groupNamesMap.values().forEach(group -> group.removeApplicableWorld(event.getWorld().getName()));
+        }
+
+        @EventHandler
+        void onWorldLoad(WorldLoadEvent event) {
+            groupNamesMap.values().forEach(group -> group.addApplicableWorld(event.getWorld().getName()));
+        }
+
+        @EventHandler
+        void onWorldUnload(WorldUnloadEvent event) {
+            groupNamesMap.values().forEach(group -> group.removeApplicableWorld(event.getWorld().getName()));
+        }
     }
 }

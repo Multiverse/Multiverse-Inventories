@@ -152,6 +152,16 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.useImprovedRespawnLocationDetection, useImprovedRespawnLocationDetection);
     }
 
+    @ApiStatus.AvailableSince("5.2")
+    public boolean getValidateBedAnchorRespawnLocation() {
+        return this.configHandle.get(configNodes.validateBedAnchorRespawnLocation);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setValidateBedAnchorRespawnLocation(boolean validateBedAnchorRespawnLocation) {
+        return this.configHandle.set(configNodes.validateBedAnchorRespawnLocation, validateBedAnchorRespawnLocation);
+    }
+
     public boolean getResetLastLocationOnDeath() {
         return this.configHandle.get(configNodes.resetLastLocationOnDeath);
     }
@@ -279,6 +289,36 @@ public final class InventoriesConfig {
     @ApiStatus.AvailableSince("5.1")
     public Try<Void> setRegisterPapiHook(boolean registerPapiHook) {
         return this.configHandle.set(configNodes.registerPapiHook, registerPapiHook);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxInventoryItemsSize() {
+        return this.configHandle.get(configNodes.maxInventoryItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxInventoryItemsSize(int maxInventoryItemsSize) {
+        return this.configHandle.set(configNodes.maxInventoryItemsSize, maxInventoryItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxEnderChestItemsSize() {
+        return this.configHandle.get(configNodes.maxEnderChestItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxEnderChestItemsSize(int maxEnderChestItemsSize) {
+        return this.configHandle.set(configNodes.maxEnderChestItemsSize, maxEnderChestItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public int getMaxArmorItemsSize() {
+        return this.configHandle.get(configNodes.maxArmorItemsSize);
+    }
+
+    @ApiStatus.AvailableSince("5.2")
+    public Try<Void> setMaxArmorItemsSize(int maxArmorItemsSize) {
+        return this.configHandle.set(configNodes.maxArmorItemsSize, maxArmorItemsSize);
     }
 
     /**

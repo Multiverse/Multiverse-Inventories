@@ -8,6 +8,7 @@ import org.mvplugins.multiverse.core.config.node.NodeGroup;
 import org.mvplugins.multiverse.core.config.node.serializer.NodeSerializer;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
+import org.mvplugins.multiverse.inventories.util.PlayerStats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,6 +119,16 @@ final class InventoriesConfigNodes {
             .name("use-improved-respawn-location-detection")
             .build());
 
+    final ConfigNode<Boolean> validateBedAnchorRespawnLocation = node(ConfigNode.builder("sharables.validate-bed-anchor-respawn-location", Boolean.class)
+            .comment("")
+            .comment("When enabled, we will validate the bed/anchor respawn location on group/world change.")
+            .comment("The validation checks if the bed/anchor block still exists at the saved location and is usable.")
+            .comment("When the validation fails, the respawn location will be cleared and default world spawn will be used instead.")
+            .comment("Disable this if you don't want validation, or you want another plugin to handle respawn logic.")
+            .defaultValue(true)
+            .name("validate-bed-anchor-respawn-location")
+            .build());
+
     final ConfigNode<Boolean> resetLastLocationOnDeath = node(ConfigNode.builder("sharables.reset-last-location-on-death", Boolean.class)
             .comment("")
             .comment("When set to true, the last location of the player will be reset when they die.")
@@ -156,7 +167,6 @@ final class InventoriesConfigNodes {
             .build());
 
     final ConfigNode<Boolean> applyPlayerdataOnJoin = node(ConfigNode.builder("performance.apply-playerdata-on-join", Boolean.class)
-            .comment("")
             .comment("Minecraft will already load the most up-to-date player data and this option will generally be redundant.")
             .comment("The only possible edge case uses is if you have a need to always modify the mvinv playerdata while the player is offline.")
             .defaultValue(false)
@@ -233,6 +243,33 @@ final class InventoriesConfigNodes {
             .comment("This only applies if PlaceholderAPI is installed.")
             .defaultValue(true)
             .name("register-papi-hook")
+            .build());
+
+    private final ConfigHeaderNode maxItemsSizeHeader = node(ConfigHeaderNode.builder("misc.max-items-size")
+            .comment("")
+            .comment("These are the maximum sizes for each inventory type. You should not change these values unless")
+            .comment("you have a plugin or feature that changes the size of these inventories.")
+            .comment("-------")
+            .comment("Changing these values without a plugin or feature that increases the size of these inventories")
+            .comment("may result in errors and loss of items when switching worlds/groups. This config option is merely")
+            .comment("to resolve compatibility issues with other plugins/features that alter inventory sizes.")
+            .comment("-------")
+            .comment("One notable example is if you used purpur's config option to increase ender chest size.")
+            .build());
+
+    final ConfigNode<Integer> maxInventoryItemsSize = node(ConfigNode.builder("misc.max-items-size.inventory", Integer.class)
+            .defaultValue(PlayerStats.INVENTORY_SIZE)
+            .name("max-player-inventory-size")
+            .build());
+
+    final ConfigNode<Integer> maxEnderChestItemsSize = node(ConfigNode.builder("misc.max-items-size.ender-chest", Integer.class)
+            .defaultValue(PlayerStats.ENDER_CHEST_SIZE)
+            .name("max-ender-chest-size")
+            .build());
+
+    final ConfigNode<Integer> maxArmorItemsSize = node(ConfigNode.builder("misc.max-items-size.armor", Integer.class)
+            .defaultValue(PlayerStats.ARMOR_SIZE)
+            .name("max-inventory-title-length")
             .build());
 
     final ConfigNode<Boolean> firstRun = node(ConfigNode.builder("first-run", Boolean.class)

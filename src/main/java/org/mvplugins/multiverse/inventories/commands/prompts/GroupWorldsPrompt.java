@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
+import org.mvplugins.multiverse.inventories.util.GroupWorldNameValidator;
 import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.HashSet;
@@ -23,6 +24,7 @@ final class GroupWorldsPrompt extends InventoriesPrompt {
     protected final Prompt nextPrompt;
     protected final boolean isCreating;
     protected final Set<String> worlds;
+    private final GroupWorldNameValidator groupWorldNameValidator;
 
     public GroupWorldsPrompt(final MultiverseInventories plugin, final MVCommandIssuer issuer,
                              final WorldGroup group, final Prompt nextPrompt,
@@ -31,7 +33,8 @@ final class GroupWorldsPrompt extends InventoriesPrompt {
         this.group = group;
         this.nextPrompt = nextPrompt;
         this.isCreating = creatingGroup;
-        this.worlds = new HashSet<String>(group.getWorlds());
+        this.worlds = new HashSet<>(group.getConfigWorlds());
+        this.groupWorldNameValidator = plugin.getServiceLocator().getService(GroupWorldNameValidator.class);
     }
 
     @NotNull
@@ -64,34 +67,31 @@ final class GroupWorldsPrompt extends InventoriesPrompt {
                 worldGroupManager.updateGroup(group);
                 issuer.sendInfo(MVInvi18n.GROUP_UPDATED);
                 issuer.sendInfo(MVInvi18n.INFO_GROUP, replace("{group}").with(group.getName()));
-                issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(group.getWorlds()));
+                issuer.sendInfo(MVInvi18n.INFO_GROUP_INFO, replace("{worlds}").with(group.getConfigWorlds()));
                 issuer.sendInfo(MVInvi18n.INFO_GROUP_INFOSHARES, replace("{shares}").with(group.getShares()));
             }
             return nextPrompt;
         }
 
-        boolean negative = false;
-        World world = Bukkit.getWorld(input);
-        if (world == null && input.startsWith("-") && input.length() > 1) {
-            negative = true;
-            world = Bukkit.getWorld(input.substring(1));
-        }
-
-        if (world == null) {
+        boolean negative = input.startsWith("-");
+        String worldName = negative ? input.substring(1) : input;
+        if (!groupWorldNameValidator.validateWorldName(worldName)) {
             issuer.sendError(MVInvi18n.ERROR_NOWORLD, replace("{world}").with(input));
             return this;
         }
+
         if (negative) {
-            if (!worlds.contains(world.getName())) {
+            if (!worlds.contains(worldName)) {
                 issuer.sendError(MVInvi18n.REMOVEWORLD_WORLDNOTINGROUP,
                         replace("{world}").with(input),
                         replace("{group}").with(group.getName()));
                 return this;
             }
-            worlds.remove(world.getName());
+            worlds.remove(worldName);
             return this;
         }
-        worlds.add(world.getName());
+
+        worlds.add(worldName);
         return this;
     }
 }

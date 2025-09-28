@@ -49,5 +49,6 @@ final class RemoveDisabledSharesCommand extends InventoriesCommand {
         issuer.sendInfo(MVInvi18n.DISABLEDSHARES_NOWSHARING,
                 replace("{group}").with(group.getName()),
                 replace("{shares}").with(group.getDisabledShares().toStringList()));
+        worldGroupManager.checkForConflicts().sendConflictIssue(issuer);
     }
 }

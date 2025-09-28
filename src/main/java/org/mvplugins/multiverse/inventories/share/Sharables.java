@@ -6,6 +6,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
@@ -30,6 +31,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.mvplugins.multiverse.inventories.util.RespawnLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,16 +113,21 @@ public final class Sharables implements Shares {
         @Override
         public boolean updatePlayer(Player player, ProfileData profile) {
             ItemStack[] value = profile.get(ENDER_CHEST);
+            Inventory enderChest = player.getEnderChest();
             if (value == null) {
-                player.getEnderChest().setContents(MinecraftTools.fillWithAir(
-                        new ItemStack[PlayerStats.ENDER_CHEST_SIZE]));
+                enderChest.setContents(MinecraftTools.fillWithAir(
+                        new ItemStack[enderChest.getSize()]));
                 return false;
             }
-            player.getEnderChest().setContents(value);
+            if (value.length != enderChest.getSize()) {
+                Logging.fine("Mismatch ender chest size found in profile for player " + player.getName()
+                        + ". Expected " + enderChest.getSize() + " but got " + value.length + ".");
+            }
+            enderChest.setContents(value);
             return true;
         }
     }).serializer(new ProfileEntry(false, DataStrings.ENDER_CHEST_CONTENTS),
-            new InventorySerializer(PlayerStats.ENDER_CHEST_SIZE)).altName("ender").build();
+            new InventorySerializer.EnderChestSerializer()).altName("ender").build();
 
     /**
      * Sharing Inventory.
@@ -129,22 +136,22 @@ public final class Sharables implements Shares {
             ItemStack[].class, new SharableHandler<ItemStack[]>() {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
-                    profile.set(INVENTORY, player.getInventory().getContents());
+                    profile.set(INVENTORY, player.getInventory().getStorageContents());
                 }
 
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     ItemStack[] value = profile.get(INVENTORY);
                     if (value == null) {
-                        player.getInventory().setContents(MinecraftTools.fillWithAir(
+                        player.getInventory().setStorageContents(MinecraftTools.fillWithAir(
                                 new ItemStack[PlayerStats.INVENTORY_SIZE]));
                         return false;
                     }
-                    player.getInventory().setContents(value);
+                    player.getInventory().setStorageContents(value);
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_INVENTORY_CONTENTS),
-                    new InventorySerializer(PlayerStats.INVENTORY_SIZE)).build();
+                    new InventorySerializer.MainInventorySerializer()).build();
 
     /**
      * Sharing Armor.
@@ -168,7 +175,7 @@ public final class Sharables implements Shares {
                     return true;
                 }
             }).serializer(new ProfileEntry(false, DataStrings.PLAYER_ARMOR_CONTENTS),
-                    new InventorySerializer(PlayerStats.ARMOR_SIZE)).altName("armor").build();
+                    new InventorySerializer.ArmorSerializer()).altName("armor").build();
 
     /**
      * Sharing Offhand.
@@ -612,11 +619,19 @@ public final class Sharables implements Shares {
                         setSpawnLocation(player, player.getWorld().getSpawnLocation());
                         return false;
                     }
+                    if (inventoriesConfig.getValidateBedAnchorRespawnLocation()
+                            && loc instanceof RespawnLocation respawnLocation
+                            && !respawnLocation.isValidRespawnLocation()) {
+                        Logging.finer("Respawn location validation failed for respawn type: " + respawnLocation.getRespawnType());
+                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        return false;
+                    }
                     setSpawnLocation(player, loc);
                     Logging.finer("updated respawn location: " + player.getBedSpawnLocation());
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION), new LocationSerializer())
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_BED_SPAWN_LOCATION),
+                    new LocationSerializer.RespawnLocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
     // todo: handle this somewhere better
@@ -652,10 +667,11 @@ public final class Sharables implements Shares {
                     if (loc == null || loc.getWorld() == null || loc.equals(player.getLocation())) {
                         return false;
                     }
-                    safetyTeleporter.to(loc).checkSafety(false).teleport(player);
+                    safetyTeleporter.to(loc).checkSafety(false).teleportSingle(player);
                     return true;
                 }
-            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION), new LocationSerializer())
+            }).serializer(new ProfileEntry(false, DataStrings.PLAYER_LAST_LOCATION),
+                    new LocationSerializer.UnloadedWorldLocationSerializer())
             .altName("loc").altName("location").altName("pos").altName("position").optional().build();
 
     /**

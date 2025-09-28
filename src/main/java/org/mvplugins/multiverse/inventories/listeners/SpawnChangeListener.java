@@ -14,6 +14,7 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.share.Sharables;
+import org.mvplugins.multiverse.inventories.util.RespawnLocation;
 
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findAnchorFromRespawnLocation;
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
@@ -41,19 +42,31 @@ final class SpawnChangeListener implements MVInvListener {
                     return;
                 }
                 Player player = event.getPlayer();
+                Location newSpawnLoc = event.getLocation();
+                if (newSpawnLoc == null) {
+                    updatePlayerSpawn(player, null);
+                    return;
+                }
                 if (event.getCause() == PlayerSetSpawnEvent.Cause.BED) {
-                    updatePlayerSpawn(player, findBedFromRespawnLocation(event.getLocation()));
+                    updatePlayerSpawn(player, new RespawnLocation(
+                            findBedFromRespawnLocation(newSpawnLoc),
+                            RespawnLocation.RespawnLocationType.BED
+                    ));
                     return;
                 }
                 if (event.getCause() == PlayerSetSpawnEvent.Cause.RESPAWN_ANCHOR) {
-                    updatePlayerSpawn(player, findAnchorFromRespawnLocation(event.getLocation()));
+                    updatePlayerSpawn(player, new RespawnLocation(
+                            findAnchorFromRespawnLocation(newSpawnLoc),
+                            RespawnLocation.RespawnLocationType.ANCHOR
+                    ));
                     return;
                 }
-                updatePlayerSpawn(player, event.getLocation());
+                updatePlayerSpawn(player, new RespawnLocation(newSpawnLoc, RespawnLocation.RespawnLocationType.UNKNOWN));
             }
         };
     }
 
+    @SuppressWarnings("removal")
     @EventClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
     @SkipIfEventExist("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent")
     @DefaultEventPriority(EventPriority.MONITOR)
@@ -65,12 +78,19 @@ final class SpawnChangeListener implements MVInvListener {
                     return;
                 }
                 Player player = event.getPlayer();
+                Location newSpawnLoc = event.getNewSpawn();
                 if (event.getCause() == PlayerSpawnChangeEvent.Cause.BED) {
-                    updatePlayerSpawn(player, findBedFromRespawnLocation(event.getNewSpawn()));
+                    updatePlayerSpawn(player, new RespawnLocation(
+                            findBedFromRespawnLocation(newSpawnLoc),
+                            RespawnLocation.RespawnLocationType.BED
+                    ));
                     return;
                 }
                 if (event.getCause() == PlayerSpawnChangeEvent.Cause.RESPAWN_ANCHOR) {
-                    updatePlayerSpawn(player, findAnchorFromRespawnLocation(event.getNewSpawn()));
+                    updatePlayerSpawn(player, new RespawnLocation(
+                            findAnchorFromRespawnLocation(newSpawnLoc),
+                            RespawnLocation.RespawnLocationType.ANCHOR
+                    ));
                     return;
                 }
                 updatePlayerSpawn(player, event.getNewSpawn());
