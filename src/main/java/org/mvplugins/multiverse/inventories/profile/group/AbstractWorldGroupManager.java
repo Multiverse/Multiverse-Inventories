@@ -225,11 +225,6 @@ abstract sealed class AbstractWorldGroupManager implements WorldGroupManager per
             // No overlapping shares.
             return;
         }
-        if (checkingGroup.getApplicableWorlds().containsAll(worldGroup.getApplicableWorlds())
-                || worldGroup.getApplicableWorlds().containsAll(checkingGroup.getApplicableWorlds())) {
-            // If one group contains all the worlds of the other, we don't consider it a conflict.
-            return;
-        }
         Logging.finer("Conflict found for %s and %s", checkingGroup.getName(), worldGroup.getName());
         conflicts.add(new GroupingConflict(checkingGroup, worldGroup, Sharables.fromShares(conflictingShares)));
     }
