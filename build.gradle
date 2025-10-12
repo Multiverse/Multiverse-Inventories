@@ -1,6 +1,6 @@
 plugins {
     id 'checkstyle'
-    id 'org.mvplugins.multiverse-plugin' version '1.2.1'
+    id 'org.mvplugins.multiverse-plugin' version '1.2.2'
 }
 
 group = 'org.mvplugins.multiverse.inventories'
@@ -31,7 +31,7 @@ repositories {
 configure(apiDependencies) {
     serverApiVersion = '1.21.8-R0.1-SNAPSHOT'
     mockBukkitServerApiVersion = '1.21'
-    mockBukkitVersion = '4.31.1'
+    mockBukkitVersion = '4.84.0'
 }
 
 dependencies {
