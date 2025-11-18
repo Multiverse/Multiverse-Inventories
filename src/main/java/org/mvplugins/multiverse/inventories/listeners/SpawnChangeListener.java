@@ -39,6 +39,7 @@ final class SpawnChangeListener implements MVInvListener {
             @Override
             public void onEvent(PlayerSetSpawnEvent event) {
                 if (Sharables.isIgnoringSpawnListener(event.getPlayer())) {
+                    event.setNotifyPlayer(false);
                     return;
                 }
                 Player player = event.getPlayer();
