@@ -83,7 +83,10 @@ public final class PlayerDataExtractor {
             profileData.set(Sharables.TOTAL_EXPERIENCE, playerData.getInt("XpTotal"));
 
             return profileData;
-        }).onFailure(Throwable::printStackTrace);
+        }).onFailure(ex -> {
+            Logging.warning("Failed to extract player data from %s: %s", path, ex.getMessage());
+            ex.printStackTrace();
+        });
     }
 
     private ItemStack[] extractItems(@Nullable ListTag<CompoundTag> inventoryList, int dataVersion, int inventorySize) throws IOException {
