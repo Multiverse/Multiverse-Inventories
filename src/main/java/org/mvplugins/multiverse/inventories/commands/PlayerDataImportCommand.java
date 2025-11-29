@@ -63,16 +63,16 @@ final class PlayerDataImportCommand extends InventoriesCommand {
                 continue;
             }
             UUID playerUUID = UUID.fromString(Files.getNameWithoutExtension(playerDataFile.getName()));
-            Try<ProfileData> profileData = playerDataExtractor.extract(playerDataFile.toPath());
-            playerDataFutures.add(profileDataSource
-                    .getGlobalProfile(GlobalProfileKey.of(playerUUID))
-                    .thenCompose(profileDataSource::updateGlobalProfile)
-                    .thenCompose(ignore -> profileDataSource.getPlayerProfile(
-                            ProfileKey.of(ContainerType.WORLD, world.getName(), ProfileTypes.getDefault(), playerUUID)))
-                    .thenCompose(playerProfile -> {
-                        playerProfile.update(profileData.get());
-                        return profileDataSource.updatePlayerProfile(playerProfile);
-                    }));
+            playerDataExtractor.extract(playerDataFile.toPath())
+                    .onSuccess(profileData -> playerDataFutures.add(profileDataSource
+                            .getGlobalProfile(GlobalProfileKey.of(playerUUID))
+                            .thenCompose(profileDataSource::updateGlobalProfile)
+                            .thenCompose(ignore -> profileDataSource.getPlayerProfile(
+                                    ProfileKey.of(ContainerType.WORLD, world.getName(), ProfileTypes.getDefault(), playerUUID)))
+                            .thenCompose(playerProfile -> {
+                                playerProfile.update(profileData);
+                                return profileDataSource.updatePlayerProfile(playerProfile);
+                            })));
         }
         CompletableFuture.allOf(playerDataFutures.toArray(new CompletableFuture[0]))
                         .thenRun(() -> issuer.sendMessage("Successfully imported all player data from " + world.getName() + "."));
