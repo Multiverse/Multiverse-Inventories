@@ -63,8 +63,6 @@ public class MultiverseInventories extends MultiverseModule {
     @Inject
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
     @Inject
-    private Provider<DataImportManager> dataImportManager;
-    @Inject
     private Provider<MVInvCommandCompletion> mvInvCommandCompletion;
     @Inject
     private Provider<MVInvCommandContexts> mvInvCommandContexts;
@@ -111,9 +109,6 @@ public class MultiverseInventories extends MultiverseModule {
         this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
-
-        // Hook plugins that can be imported from
-        this.hookImportables();
 
         // Init other extensions
         this.hookLuckPerms();
@@ -169,12 +164,6 @@ public class MultiverseInventories extends MultiverseModule {
 
     private void registerDestinations() {
         destinationsProvider.get().registerDestination(serviceLocator.getService(LastLocationDestination.class));
-    }
-
-    private void hookImportables() {
-        serviceLocator.getAllServices(DataImporter.class).forEach(dataImporter -> {
-            dataImportManager.get().register(dataImporter);
-        });
     }
 
     private void hookLuckPerms() {
