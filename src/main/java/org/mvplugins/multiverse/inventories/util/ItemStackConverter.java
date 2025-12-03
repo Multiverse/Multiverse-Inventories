@@ -31,17 +31,6 @@ public final class ItemStackConverter {
         return itemStack == null || itemStack.getType() == Material.AIR || itemStack.getAmount() == 0;
     }
 
-//    /**
-//     * Format: `material[custom properties] amount`
-//     * Example: iron_sword[attribute_modifiers=[{type:"generic.attack_damage",id:"op_damage",amount:10000,operation:"add_value",slot:"mainhand"}]] 1
-//     *
-//     * @return
-//     */
-//    @Nullable
-//    public static ItemStack fromString(String item) {
-//
-//    }
-
     @Nullable
     public static ItemStack deserialize(Object obj) {
         if (obj instanceof ItemStack itemStack) {
