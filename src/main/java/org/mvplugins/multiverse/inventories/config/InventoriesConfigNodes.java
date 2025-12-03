@@ -113,15 +113,7 @@ final class InventoriesConfigNodes {
             .comment("")
             .build());
 
-    final ConfigNode<Boolean> useImprovedRespawnLocationDetection = node(ConfigNode.builder("sharables.use-improved-respawn-location-detection", Boolean.class)
-            .comment("When enabled, we will use 1.21's PlayerSpawnChangeEvent to better detect bed and anchor respawn locations.")
-            .comment("This options is not applicable for older minecraft server versions.")
-            .defaultValue(true)
-            .name("use-improved-respawn-location-detection")
-            .build());
-
     final ConfigNode<Boolean> validateBedAnchorRespawnLocation = node(ConfigNode.builder("sharables.validate-bed-anchor-respawn-location", Boolean.class)
-            .comment("")
             .comment("When enabled, we will validate the bed/anchor respawn location on group/world change.")
             .comment("The validation checks if the bed/anchor block still exists at the saved location and is usable.")
             .comment("When the validation fails, the respawn location will be cleared and default world spawn will be used instead.")
