@@ -36,7 +36,7 @@ configure(apiDependencies) {
 
 dependencies {
     // Core
-    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.2.0'
+    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.3.0'
 
     // Config
     shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
