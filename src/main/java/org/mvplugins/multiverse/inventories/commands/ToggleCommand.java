@@ -4,6 +4,7 @@ import org.mvplugins.multiverse.core.command.LegacyAliasCommand;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.share.Sharable;
+import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
@@ -54,6 +55,13 @@ class ToggleCommand extends InventoriesCommand {
         } else {
             optionalShares.add(sharable);
             issuer.sendInfo(MVInvi18n.TOGGLE_NOWUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
+
+            // special tip to our wiki page, hopefully this reduces the number of people asking the
+            // same old questions about last location config options on discord.
+            if (sharable == Sharables.LAST_LOCATION) {
+                issuer.sendInfo("For more information on configuring last location, please see: " +
+                        "https://mvplugins.org/inventories/how-to/configure-last-location/");
+            }
         }
         inventoriesConfig.setActiveOptionalShares(optionalShares);
         inventoriesConfig.save();
