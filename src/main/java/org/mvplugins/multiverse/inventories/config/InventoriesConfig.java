@@ -144,12 +144,14 @@ public final class InventoriesConfig {
         return this.configHandle.set(configNodes.activeOptionalShares, shares);
     }
 
+    @Deprecated(since = "5.3", forRemoval = true)
     public boolean getUseImprovedRespawnLocationDetection() {
-        return this.configHandle.get(configNodes.useImprovedRespawnLocationDetection);
+        return true;
     }
 
+    @Deprecated(since = "5.3", forRemoval = true)
     public Try<Void> setUseImprovedRespawnLocationDetection(boolean useImprovedRespawnLocationDetection) {
-        return this.configHandle.set(configNodes.useImprovedRespawnLocationDetection, useImprovedRespawnLocationDetection);
+        return Try.failure(new IllegalStateException("this config option has been removed"));
     }
 
     @ApiStatus.AvailableSince("5.2")
