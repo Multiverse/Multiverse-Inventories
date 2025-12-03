@@ -6,7 +6,6 @@ share-handling:
   active-optional-shares: []
 
 sharables:
-  use-improved-respawn-location-detection: true
   validate-bed-anchor-respawn-location: true
   reset-last-location-on-death: false
   apply-last-location-for-all-teleports: true
