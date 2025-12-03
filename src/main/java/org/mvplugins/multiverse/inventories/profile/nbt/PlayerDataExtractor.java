@@ -19,6 +19,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * @deprecated This feature has been moved to Multiverse-InventoriesImporter plugin. This class's code logic is outdated
+ *             and does not work on some Minecraft versions, hence should not be used.
+ */
+@Deprecated(since = "5.3", forRemoval = true)
 @ApiStatus.AvailableSince("5.2")
 @Service
 public final class PlayerDataExtractor {
