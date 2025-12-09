@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.commands;
 
+import com.dumptruckman.minecraft.util.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
@@ -45,6 +46,13 @@ final class MigrateCommand extends InventoriesCommand {
             @Single
             @Syntax("<MultiInv|WorldInventories|PerWorldInventory>")
             String pluginName) {
+
+        if (dataImportManager.getEnabledImporterNames().isEmpty()) {
+            issuer.sendError("Please install Multiverse-InventoriesImporter plugin to use this command.");
+            issuer.sendInfo("Download Link: https://modrinth.com/project/multiverse-inventoriesimporter/");
+            issuer.sendInfo("Learn More: https://mvplugins.org/inventories/how-to/import-playerdata/");
+            return;
+        }
 
         dataImportManager.getImporter(pluginName)
                 .onEmpty(() -> issuer.sendError(MVInvi18n.MIGRATE_UNSUPPORTEDPLUGIN, replace("{plugin}").with(pluginName)))

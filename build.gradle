@@ -8,11 +8,6 @@ description = 'Multiverse-Inventories'
 
 repositories {
     maven {
-        name = 'codemc'
-        url = uri('https://repo.codemc.org/repository/maven-releases')
-    }
-
-    maven {
         name = "helpchatRepoReleases"
         url = uri("https://repo.helpch.at/releases/")
     }
@@ -36,7 +31,7 @@ configure(apiDependencies) {
 
 dependencies {
     // Core
-    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.2.0'
+    externalPlugin 'org.mvplugins.multiverse.core:multiverse-core:5.3.0'
 
     // Config
     shadowed 'com.dumptruckman.minecraft:JsonConfiguration:1.2-SNAPSHOT'
@@ -59,24 +54,10 @@ dependencies {
     // Luckperms for group context
     compileOnly 'net.luckperms:api:5.4'
 
-    // Other plugins for import
-    compileOnly('uk.co:MultiInv:3.0.6') {
-        exclude group: '*', module: '*'
-    }
-    compileOnly('me.drayshak:WorldInventories:1.0.2') {
-        exclude group: '*', module: '*'
-    }
-    // perworldinventory is weird and has snakeyaml included in the jar, so we can only use compileOnly for build to work properly
-    compileOnly('me.ebonjaeger:perworldinventory-kt:2.3.2') {
-        exclude group: '*', module: '*'
-    }
-
     // hk2 for annotation processing only
     compileOnly('org.glassfish.hk2:hk2-api:3.1.1') {
         exclude group: '*', module: '*'
     }
-    annotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.1.1'
-    testAnnotationProcessor 'org.glassfish.hk2:hk2-metadata-generator:3.1.1'
 }
 
 shadowJar {

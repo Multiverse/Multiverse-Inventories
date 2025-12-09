@@ -44,7 +44,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class MultiverseInventories extends MultiverseModule {
 
-    private static final double TARGET_CORE_API_VERSION = 5.2;
+    private static final double TARGET_CORE_API_VERSION = 5.3;
 
     @Inject
     private Provider<CoreConfig> coreConfig;
@@ -62,8 +62,6 @@ public class MultiverseInventories extends MultiverseModule {
     private Provider<ProfileCacheManager> profileCacheManager;
     @Inject
     private Provider<ProfileContainerStoreProvider> profileContainerStoreProvider;
-    @Inject
-    private Provider<DataImportManager> dataImportManager;
     @Inject
     private Provider<MVInvCommandCompletion> mvInvCommandCompletion;
     @Inject
@@ -111,9 +109,6 @@ public class MultiverseInventories extends MultiverseModule {
         this.setUpLocales();
         this.registerCommands();
         this.registerDestinations();
-
-        // Hook plugins that can be imported from
-        this.hookImportables();
 
         // Init other extensions
         this.hookLuckPerms();
@@ -169,12 +164,6 @@ public class MultiverseInventories extends MultiverseModule {
 
     private void registerDestinations() {
         destinationsProvider.get().registerDestination(serviceLocator.getService(LastLocationDestination.class));
-    }
-
-    private void hookImportables() {
-        serviceLocator.getAllServices(DataImporter.class).forEach(dataImporter -> {
-            dataImportManager.get().register(dataImporter);
-        });
     }
 
     private void hookLuckPerms() {

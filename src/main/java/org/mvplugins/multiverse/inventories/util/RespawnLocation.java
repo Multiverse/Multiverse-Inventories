@@ -1,6 +1,5 @@
 package org.mvplugins.multiverse.inventories.util;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Utility;
@@ -12,46 +11,38 @@ import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mvplugins.multiverse.core.world.location.UnloadedWorldLocation;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Location information with respawn type. See also {@link RespawnLocationType}.
- * <br />
- * TODO: This should extend UnloadedWorldLocation, but that class is currently a final class!!!
  */
 @SerializableAs("RespawnLocation")
 @ApiStatus.AvailableSince("5.2")
-public class RespawnLocation extends Location {
+public class RespawnLocation extends UnloadedWorldLocation {
 
-    private @Nullable String worldName;
-    private @NotNull RespawnLocationType respawnType = RespawnLocationType.UNKNOWN;
+    private @NotNull RespawnLocationType respawnType;
 
     public RespawnLocation(@Nullable String worldName, double x, double y, double z, @NotNull RespawnLocationType respawnType) {
-        super(null, x, y, z);
-        setWorldName(worldName);
+        super(worldName, x, y, z);
         this.respawnType = respawnType;
     }
 
     public RespawnLocation(@Nullable String worldName, double x, double y, double z, float yaw, float pitch, @NotNull RespawnLocationType respawnType) {
-        super(null, x, y, z, yaw, pitch);
-        setWorldName(worldName);
+        super(worldName, x, y, z, yaw, pitch);
         this.respawnType = respawnType;
     }
 
     public RespawnLocation(@Nullable World world, double x, double y, double z, @NotNull RespawnLocationType respawnType) {
-        super(null, x, y, z);
-        setWorldName(world == null ? null : world.getName());
+        super(world, x, y, z);
         this.respawnType = respawnType;
     }
 
     public RespawnLocation(@Nullable World world, double x, double y, double z, float yaw, float pitch, @NotNull RespawnLocationType respawnType) {
-        super(null, x, y, z, yaw, pitch);
-        setWorldName(world == null ? null : world.getName());
+        super(world, x, y, z, yaw, pitch);
         this.respawnType = respawnType;
     }
 
@@ -59,55 +50,12 @@ public class RespawnLocation extends Location {
         this(location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), respawnType);
     }
 
-    /**
-     * Makes a bukkit {@link Location} copy from this SpawnLocation.
-     *
-     * @return The bukkit location
-     */
-    public Location toBukkitLocation() {
-        return new Location(getWorld(), getX(), getY(), getZ(), getYaw(), getPitch());
-    }
-
-    public void setWorldName(@Nullable String worldName) {
-        this.worldName = worldName;
-    }
-
-    public @Nullable String getWorldName() {
-        return worldName;
-    }
-
-    @Override
-    public void setWorld(@Nullable World world) {
-        this.worldName = (world == null) ? null : world.getName();
-    }
-
-    @Override
-    public @Nullable World getWorld() {
-        if (worldName == null) {
-            return null;
-        }
-        return Bukkit.getWorld(worldName);
-    }
-
     @Override
     @Utility
     @NotNull
     public Map<String, Object> serialize() {
-        Map<String, Object> data = new HashMap<>();
-
-        if (this.worldName != null) {
-            data.put("world", this.worldName);
-        }
-
-        data.put("x", getX());
-        data.put("y", getY());
-        data.put("z", getZ());
-
-        data.put("yaw", getYaw());
-        data.put("pitch", getPitch());
-
+        Map<String, Object> data = super.serialize();
         data.put("respawnType", this.respawnType.name());
-
         return data;
     }
 
@@ -138,58 +86,25 @@ public class RespawnLocation extends Location {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
         if (!(obj instanceof Location other)) {
             return false;
         }
-        String otherWorldName = Try.of(() -> other instanceof RespawnLocation RespawnLocation
-                        ? RespawnLocation.worldName
-                        : other.getWorld().getName())
-                .getOrNull();
-        if (!Objects.equals(this.worldName, otherWorldName)) {
+        if (!super.equals(obj)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.getX()) != Double.doubleToLongBits(other.getX())) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.getY()) != Double.doubleToLongBits(other.getY())) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.getZ()) != Double.doubleToLongBits(other.getZ())) {
-            return false;
-        }
-        if (Float.floatToIntBits(this.getPitch()) != Float.floatToIntBits(other.getPitch())) {
-            return false;
-        }
-        if (Float.floatToIntBits(this.getYaw()) != Float.floatToIntBits(other.getYaw())) {
-            return false;
-        }
-        if (other instanceof RespawnLocation otherRespawnLocation
-                && this.respawnType != otherRespawnLocation.respawnType) {
-            return false;
-        }
-        return true;
+        return !(other instanceof RespawnLocation otherRespawnLocation)
+                || this.respawnType == otherRespawnLocation.respawnType;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 19 * hash + String.valueOf(worldName).hashCode();
-        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getX()));
-        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getY()));
-        hash = 19 * hash + Long.hashCode(Double.doubleToLongBits(this.getZ()));
-        hash = 19 * hash + Float.floatToIntBits(this.getPitch());
-        hash = 19 * hash + Float.floatToIntBits(this.getYaw());
-        hash = 19 * hash + this.respawnType.hashCode();
-        return hash;
+        return 19 * super.hashCode() + this.respawnType.hashCode();
     }
 
     @Override
     public String toString() {
         return "RespawnLocation{" +
-                "world=" + worldName +
+                "world=" + getWorldName() +
                 ",x=" + getX() +
                 ",y=" + getY() +
                 ",z=" + getZ() +
