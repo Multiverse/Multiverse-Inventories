@@ -610,23 +610,23 @@ public final class Sharables implements Shares {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
                         Logging.finer("No respawn location saved");
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
                     World loclWorld = Try.of(loc::getWorld).getOrNull();
                     if (loclWorld == null) {
                         Logging.warning("Respawn location has invalid world!");
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
                     if (inventoriesConfig.getValidateBedAnchorRespawnLocation()
                             && loc instanceof RespawnLocation respawnLocation
                             && !respawnLocation.isValidRespawnLocation()) {
                         Logging.finer("Respawn location validation failed for respawn type: " + respawnLocation.getRespawnType());
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
-                    setSpawnLocation(player, loc);
+                    player.setBedSpawnLocation(loc, true);
                     Logging.finer("updated respawn location: " + player.getBedSpawnLocation());
                     return true;
                 }
@@ -634,21 +634,8 @@ public final class Sharables implements Shares {
                     new LocationSerializer.RespawnLocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
-    // todo: handle this somewhere better
-    private static final List<UUID> ignoreSpawnListener = new ArrayList<>();
     private static final boolean hasSetSpawnEvent = ReflectHelper.hasClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
             || ReflectHelper.hasClass("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent");
-
-    private static void setSpawnLocation(Player player, Location loc) {
-        ignoreSpawnListener.add(player.getUniqueId());
-        player.setBedSpawnLocation(loc, true);
-        ignoreSpawnListener.remove(player.getUniqueId());
-    }
-
-    @ApiStatus.Internal
-    public static boolean isIgnoringSpawnListener(Player player) {
-        return ignoreSpawnListener.contains(player.getUniqueId());
-    }
 
     /**
      * Sharing Last Location.
