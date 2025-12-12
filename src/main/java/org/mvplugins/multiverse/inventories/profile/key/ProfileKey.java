@@ -66,6 +66,12 @@ public final class ProfileKey extends ProfileFileKey {
     }
 
     @Override
+    public ProfileKey forContainer(@NotNull ContainerKey containerKey) {
+        return new ProfileKey(containerKey.getContainerType(), containerKey.getDataName(),
+                profileType, playerUUID, playerName);
+    }
+
+    @Override
     public ProfileKey forContainerType(@NotNull ContainerType containerType) {
         return new ProfileKey(containerType, dataName, profileType, playerUUID, playerName);
     }

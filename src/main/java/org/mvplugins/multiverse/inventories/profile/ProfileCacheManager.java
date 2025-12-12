@@ -12,7 +12,10 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +30,7 @@ import java.util.function.Predicate;
 @Service
 public final class ProfileCacheManager {
 
-    private final Cache<ProfileKey, FileConfiguration> playerFileCache;
+    private final Cache<ProfileFileKey, FileConfiguration> playerFileCache;
     private final AsyncCache<ProfileKey, PlayerProfile> playerProfileCache;
     private final AsyncCache<UUID, GlobalProfile> globalProfileCache;
 
@@ -54,8 +57,8 @@ public final class ProfileCacheManager {
                 .buildAsync();
     }
 
-    FileConfiguration getOrLoadPlayerFile(ProfileKey key, Function<ProfileKey, FileConfiguration> mappingFunction) {
-        return playerFileCache.get(key, mappingFunction);
+    FileConfiguration getOrLoadPlayerFile(ProfileFileKey key, Function<ProfileFileKey, FileConfiguration> mappingFunction) {
+        return playerFileCache.get(ProfileFileKey.copyOf(key), mappingFunction);
     }
 
     CompletableFuture<PlayerProfile> getOrLoadPlayerProfile(ProfileKey key, BiFunction<ProfileKey, ? super Executor, ? extends CompletableFuture<PlayerProfile>> mappingFunction) {
@@ -70,6 +73,24 @@ public final class ProfileCacheManager {
         return Option.of(playerProfileCache.synchronous().getIfPresent(key));
     }
 
+    void clearCacheForProfile(ProfileKey profileKey) {
+        playerFileCache.invalidate(profileKey);
+        playerProfileCache.synchronous().invalidate(profileKey);
+    }
+
+    void clearCacheForFile(ProfileFileKey profileKey) {
+        ProfileFileKey profileFileKeyCopy = ProfileFileKey.copyOf(profileKey);
+        playerFileCache.invalidate(profileFileKeyCopy);
+        for (ProfileType profileType : ProfileTypes.getTypes()) {
+            playerProfileCache.synchronous().invalidate(profileFileKeyCopy.forProfileType(profileType));
+        }
+    }
+
+    void clearProfileFileCache(Predicate<ProfileFileKey> predicate) {
+        playerFileCache.invalidateAll(Sets.filter(playerFileCache.asMap().keySet(), predicate::test));
+        playerProfileCache.synchronous().invalidateAll(Sets.filter(playerProfileCache.asMap().keySet(), predicate::test));
+    }
+
     public void clearPlayerCache(String playerName) {
         clearPlayerProfileCache(key -> key.getPlayerName().equals(playerName));
     }
@@ -80,7 +101,7 @@ public final class ProfileCacheManager {
     }
 
     public void clearPlayerProfileCache(Predicate<ProfileKey> predicate) {
-        playerFileCache.invalidateAll(Sets.filter(playerFileCache.asMap().keySet(), predicate::test));
+        playerFileCache.invalidateAll(Sets.filter(playerFileCache.asMap().keySet(), key -> predicate.test(key.forProfileType(null))));
         playerProfileCache.synchronous().invalidateAll(Sets.filter(playerProfileCache.asMap().keySet(), predicate::test));
     }
 

@@ -31,7 +31,7 @@ final class ModifyCommand extends InventoriesCommand {
         this.profileDataSource = profileDataSource;
     }
 
-    @Subcommand("bulkedit globalprofile modify")
+    @Subcommand("globalprofile modify")
     @CommandPermission("multiverse.inventories.bulkedit")
     @CommandCompletion("load-on-login|last-world @empty @mvinvplayernames")
     @Syntax("<property> <value> <players>")
