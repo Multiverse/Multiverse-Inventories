@@ -1,6 +1,8 @@
 package org.mvplugins.multiverse.inventories.handleshare;
 
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
+import org.mvplugins.multiverse.inventories.share.Sharable;
+import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
 
 import java.util.LinkedList;
@@ -10,6 +12,7 @@ public final class AffectedProfiles {
 
     private final List<PersistingProfile> writeProfiles = new LinkedList<>();
     private final List<PersistingProfile> readProfiles = new LinkedList<>();
+    private final Shares sharesToRead = Sharables.noneOf();
 
     AffectedProfiles() {
     }
@@ -28,6 +31,7 @@ public final class AffectedProfiles {
      */
     void addReadProfile(ProfileKey profileKey, Shares shares) {
         readProfiles.add(new PersistingProfile(shares, profileKey));
+        sharesToRead.addAll(shares);
     }
 
     public List<PersistingProfile> getWriteProfiles() {
@@ -36,5 +40,9 @@ public final class AffectedProfiles {
 
     public List<PersistingProfile> getReadProfiles() {
         return readProfiles;
+    }
+
+    boolean isShareToRead(Sharable<?> sharable) {
+        return sharesToRead.contains(sharable);
     }
 }
