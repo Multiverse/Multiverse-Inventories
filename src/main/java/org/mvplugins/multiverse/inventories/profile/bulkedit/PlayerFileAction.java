@@ -1,13 +1,13 @@
 package org.mvplugins.multiverse.inventories.profile.bulkedit;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
 
 import java.util.List;
 import java.util.Map;
 
-abstract sealed class PlayerFileAction extends BulkEditAction<ProfileFileKey> permits PlayerProfileClearAction {
+abstract sealed class PlayerFileAction extends BulkEditAction<ProfileFileKey>
+        permits AllSharesPlayerFileAction {
 
     private final PlayerProfilesAggregator profilesAggregator;
     protected final PlayerProfilesPayload bulkProfilesPayload;

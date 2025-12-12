@@ -1,5 +1,6 @@
 package org.mvplugins.multiverse.inventories.command;
 
+import com.google.common.collect.Streams;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.WorldInfo;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +15,10 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
 import org.mvplugins.multiverse.inventories.profile.PlayerNamesMapper;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroup;
 import org.mvplugins.multiverse.inventories.profile.group.WorldGroupManager;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
@@ -26,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +43,7 @@ public final class MVInvCommandCompletion {
     private final WorldGroupManager worldGroupManager;
     private final DataImportManager dataImportManager;
     private final PlayerNamesMapper playerNamesMapper;
+    private final ProfileDataSource profileDataSource;
 
     @Inject
     private MVInvCommandCompletion(
@@ -46,18 +51,23 @@ public final class MVInvCommandCompletion {
             @NotNull WorldGroupManager worldGroupManager,
             @NotNull DataImportManager dataImportManager,
             @NotNull MVCommandManager mvCommandManager,
-            @NotNull PlayerNamesMapper playerNamesMapper
+            @NotNull PlayerNamesMapper playerNamesMapper,
+            @NotNull ProfileDataSource profileDataSource
     ) {
         this.inventoriesConfig = inventoriesConfig;
         this.worldGroupManager = worldGroupManager;
         this.dataImportManager = dataImportManager;
         this.playerNamesMapper = playerNamesMapper;
+        this.profileDataSource = profileDataSource;
 
         MVCommandCompletions commandCompletions = mvCommandManager.getCommandCompletions();
         commandCompletions.registerAsyncCompletion("dataimporters", this::suggestDataImporters);
         commandCompletions.registerStaticCompletion("mvinvconfigs", inventoriesConfig.getStringPropertyHandle().getAllPropertyNames());
         commandCompletions.registerAsyncCompletion("mvinvconfigvalues", this::suggestConfigValues);
+        commandCompletions.registerAsyncCompletion("mvinvplayername", this::suggestPlayerName);
         commandCompletions.registerAsyncCompletion("mvinvplayernames", this::suggestPlayerNames);
+        commandCompletions.registerAsyncCompletion("mvinvcontainerkey", this::suggestContainerKey);
+        commandCompletions.registerAsyncCompletion("mvinvcontainerkeys", this::suggestContainerKeys);
         commandCompletions.registerAsyncCompletion("mvinvprofiletypes", this::suggestProfileTypes);
         commandCompletions.registerAsyncCompletion("sharables", this::suggestSharables);
         commandCompletions.registerAsyncCompletion("shares", this::suggestShares);
@@ -77,6 +87,10 @@ public final class MVInvCommandCompletion {
                 .getOrElse(Collections.emptyList());
     }
 
+    private Collection<String> suggestPlayerName(BukkitCommandCompletionContext context) {
+        return getPlayerNames();
+    }
+
     private Collection<String> suggestPlayerNames(BukkitCommandCompletionContext context) {
         if (Objects.equals(context.getInput(), "@all")) {
             return Collections.emptyList();
@@ -94,6 +108,21 @@ public final class MVInvCommandCompletion {
                 .stream()
                 .map(GlobalProfileKey::getPlayerName)
                 .collect(Collectors.toList());
+    }
+
+    private Collection<String> suggestContainerKey(BukkitCommandCompletionContext context) {
+        return Arrays.stream(ContainerType.values())
+                .flatMap(containerType -> profileDataSource.listContainerDataNames(containerType)
+                        .stream()
+                        .map(dataName -> containerType.name().toLowerCase(Locale.ENGLISH) + "=" + dataName))
+                .collect(Collectors.toList());
+    }
+
+    private Collection<String> suggestContainerKeys(BukkitCommandCompletionContext context) {
+        //todo handle multiple worlds and/or groups
+        Collection<String> strings = suggestContainerKey(context);
+        strings.add("@all");
+        return strings;
     }
 
     private Collection<String> suggestProfileTypes(BukkitCommandCompletionContext context) {

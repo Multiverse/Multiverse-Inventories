@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
 import org.mvplugins.multiverse.core.utils.StringFormatter;
+import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
@@ -12,6 +13,7 @@ import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditResult;
 
 @Contract
 @ApiStatus.Internal
+@Subcommand("bulkedit")
 public abstract class BulkEditCommand extends InventoriesCommand {
 
     protected final BulkEditCreator bulkEditCreator;

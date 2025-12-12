@@ -19,6 +19,15 @@ public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
         );
     }
 
+    public static ProfileFileKey copyOf(ProfileFileKey key) {
+        return of(
+                key.getContainerType(),
+                key.getDataName(),
+                key.getPlayerUUID(),
+                key.getPlayerName()
+        );
+    }
+
     public static ProfileFileKey of(
             ContainerType containerType,
             String dataName,
@@ -62,6 +71,10 @@ public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
 
     public ProfileKey forProfileType(@Nullable ProfileType profileType) {
         return ProfileKey.of(containerType, dataName, profileType, playerUUID, playerName);
+    }
+
+    public ProfileFileKey forContainer(@NotNull ContainerKey containerKey) {
+        return new ProfileFileKey(containerKey.getContainerType(), containerKey.getDataName(), playerUUID, playerName);
     }
 
     public ProfileFileKey forContainerType(@NotNull ContainerType containerType) {

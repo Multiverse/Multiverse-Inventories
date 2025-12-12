@@ -43,6 +43,25 @@ final class AsyncFileIO {
         return future;
     }
 
+    CompletableFuture<Void> queueFilesAction(File[] files, Runnable action) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        fileIOExecutorService.submit(() -> {
+            for (File file : files) {
+                CountDownLatch toWaitLatch = fileLocks.put(file, new CountDownLatch(1));
+                waitForLock(file, toWaitLatch);
+            }
+            Try<Void> tryResult = Try.runRunnable(action);
+            for (File file : files) {
+                CountDownLatch thisLatch = fileLocks.remove(file);
+                if (thisLatch != null) {
+                    thisLatch.countDown();
+                }
+            }
+            tryResult.onFailure(future::completeExceptionally).onSuccess(ignore -> future.complete(null));
+        });
+        return future;
+    }
+
     CompletableFuture<Void> queueFileAction(File file, Runnable action) {
         CountDownLatch thisLatch = new CountDownLatch(1);
         CountDownLatch toWaitLatch = fileLocks.put(file, thisLatch);

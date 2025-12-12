@@ -1,8 +1,10 @@
 package org.mvplugins.multiverse.inventories.profile;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jvnet.hk2.annotations.Contract;
 import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
+import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey;
@@ -69,6 +71,32 @@ public sealed interface ProfileDataSource permits FlatFileProfileDataSource {
      * @return Future that completes when the profile has been deleted.
      */
     CompletableFuture<Void> deletePlayerFile(ProfileFileKey profileKey);
+
+    /**
+     * Clones all data of selected {@link ProfileType} from one player profile to another.
+     *
+     * @param fromProfileKey   The key of the profile to clone from.
+     * @param toProfileKey     The key of the profile to clone to.
+     * @param profileTypes     The list of profile types to clone.
+     * @return Future that completes when the profile has been cloned.
+     *
+     * @since 5.3
+     */
+    @ApiStatus.AvailableSince("5.3")
+    CompletableFuture<Void> clonePlayerProfiles(ProfileFileKey fromProfileKey, ProfileFileKey toProfileKey, ProfileType[] profileTypes);
+
+    /**
+     * Clones all data from one player profile to another for all profile types.
+     * Effectively same as copying the entire profile file.
+     *
+     * @param fromProfileKey   The key of the profile to clone from.
+     * @param toProfileKey     The key of the profile to clone to.
+     * @return Future that completes when the profile has been cloned.
+     *
+     * @since 5.3
+     */
+    @ApiStatus.AvailableSince("5.3")
+    CompletableFuture<Void> clonePlayerFile(ProfileFileKey fromProfileKey, ProfileFileKey toProfileKey);
 
     /**
      * Copies all the data belonging to oldName to newName and removes the old data.

@@ -25,7 +25,7 @@ final class MigratePlayerNameCommand extends InventoriesCommand {
         this.profileDataSource = profileDataSource;
     }
 
-    @Subcommand("bulkedit migrate player-name")
+    @Subcommand("migrate player-name")
     @CommandPermission("multiverse.inventories.bulkedit")
     @Syntax("<current-name> <new-name>")
     @Description("Only use this if automatic migration failed for some reason.")

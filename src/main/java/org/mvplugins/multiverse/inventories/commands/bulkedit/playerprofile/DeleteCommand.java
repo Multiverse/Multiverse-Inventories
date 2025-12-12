@@ -6,7 +6,6 @@ import org.mvplugins.multiverse.core.command.flag.ParsedCommandFlags;
 import org.mvplugins.multiverse.core.command.queue.CommandQueueManager;
 import org.mvplugins.multiverse.core.command.queue.CommandQueuePayload;
 import org.mvplugins.multiverse.core.locale.message.Message;
-import org.mvplugins.multiverse.core.utils.StringFormatter;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
@@ -39,16 +38,26 @@ final class DeleteCommand extends BulkEditCommand {
         this.flags = flags;
     }
 
-    @Subcommand("bulkedit playerprofile delete")
+    @Subcommand("playerprofile delete")
     @CommandPermission("multiverse.inventories.bulkedit")
-    @CommandCompletion("@shares @mvinvplayernames @empty @mvinvprofiletypes:multiple @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
-    @Syntax("<sharable> <players> <groups|worlds> [profile-type] [--include-groups-worlds]")
+    @CommandCompletion("@shares @mvinvplayernames @mvinvcontainerkeys @mvinvprofiletypes:multiple @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
+    @Syntax("<sharable> <players> <groups/worlds> [profile-type] [--include-groups-worlds]")
     void onCommand(
             MVCommandIssuer issuer,
-            Sharable sharable,
+
+            @Syntax("<sharable>")
+            Sharable<?> sharable,
+
+            @Syntax("<players>")
             GlobalProfileKey[] globalProfileKeys,
+
+            @Syntax("<groups/worlds>")
             ContainerKey[] containerKeys,
+
+            @Syntax("[profile-types]")
             ProfileType[] profileTypes,
+
+            @Syntax("[--include-groups-worlds]")
             String[] flagArray
     ) {
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);
