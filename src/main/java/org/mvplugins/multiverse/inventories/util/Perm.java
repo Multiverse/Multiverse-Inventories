@@ -38,12 +38,12 @@ public enum Perm {
     /**
      * Permission for /mvinv addworld.
      */
-    COMMAND_ADDWORLD(new Permission("multiverse.inventories.addworld", "Adds a world to a world group",
+    COMMAND_ADDWORLD(new Permission("multiverse.inventories.addworlds", "Adds a world to a world group",
             PermissionDefault.OP)),
     /**
      * Permission for /mvinv remvoveworld.
      */
-    COMMAND_RMWORLD(new Permission("multiverse.inventories.removeworld", "Removes a world from a world group",
+    COMMAND_RMWORLD(new Permission("multiverse.inventories.removeworlds", "Removes a world from a world group",
             PermissionDefault.OP)),
     /**
      * Permission for /mvinv addshare.
