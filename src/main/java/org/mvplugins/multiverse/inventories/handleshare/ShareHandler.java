@@ -29,6 +29,7 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
     protected final InventoriesConfig inventoriesConfig;
     protected final WorldGroupManager worldGroupManager;
     protected final ProfileContainerStore worldProfileContainerStore;
+    private final PlayerShareHandlingState playerShareHandlingState;
 
     ShareHandler(MultiverseInventories inventories, Player player) {
         this.player = player;
@@ -41,6 +42,7 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
         this.worldProfileContainerStore = inventories.getServiceLocator()
                 .getService(ProfileContainerStoreProvider.class)
                 .getStore(ContainerType.WORLD);
+        this.playerShareHandlingState = inventories.getServiceLocator().getService(PlayerShareHandlingState.class);
     }
 
     /**
@@ -87,9 +89,11 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
     }
 
     private void updatePlayer() {
+        playerShareHandlingState.setPlayerAffectedProfiles(player, affectedProfiles);
         for (PersistingProfile readProfile : affectedProfiles.getReadProfiles()) {
             ShareHandlingUpdater.updatePlayer(inventories, player, readProfile);
         }
+        playerShareHandlingState.removePlayerAffectedProfiles(player);
     }
 
     private CompletableFuture<Void> updateProfiles(ProfileDataSnapshot snapshot) {

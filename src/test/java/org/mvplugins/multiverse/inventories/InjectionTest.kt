@@ -25,7 +25,7 @@ class InjectionTest : TestWithMockBukkit() {
 
     @Test
     fun `InventoriesListener is available as a service`() {
-        assertEquals(5, serviceLocator.getAllActiveServices(MVInvListener::class.java).size)
+        assertEquals(6, serviceLocator.getAllActiveServices(MVInvListener::class.java).size)
     }
 
     @Test

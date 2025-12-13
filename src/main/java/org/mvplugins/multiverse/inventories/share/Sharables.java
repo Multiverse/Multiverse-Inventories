@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.inventory.Inventory;
-import org.jetbrains.annotations.ApiStatus;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
 import org.mvplugins.multiverse.core.utils.ReflectHelper;
@@ -33,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.mvplugins.multiverse.inventories.util.RespawnLocation;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.mvplugins.multiverse.inventories.util.MinecraftTools.findBedFromRespawnLocation;
@@ -610,23 +610,23 @@ public final class Sharables implements Shares {
                     Location loc = profile.get(BED_SPAWN);
                     if (loc == null) {
                         Logging.finer("No respawn location saved");
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
                     World loclWorld = Try.of(loc::getWorld).getOrNull();
                     if (loclWorld == null) {
                         Logging.warning("Respawn location has invalid world!");
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
                     if (inventoriesConfig.getValidateBedAnchorRespawnLocation()
                             && loc instanceof RespawnLocation respawnLocation
                             && !respawnLocation.isValidRespawnLocation()) {
                         Logging.finer("Respawn location validation failed for respawn type: " + respawnLocation.getRespawnType());
-                        setSpawnLocation(player, player.getWorld().getSpawnLocation());
+                        player.setBedSpawnLocation(player.getWorld().getSpawnLocation(), true);
                         return false;
                     }
-                    setSpawnLocation(player, loc);
+                    player.setBedSpawnLocation(loc, true);
                     Logging.finer("updated respawn location: " + player.getBedSpawnLocation());
                     return true;
                 }
@@ -634,21 +634,8 @@ public final class Sharables implements Shares {
                     new LocationSerializer.RespawnLocationSerializer())
             .altName("bedspawn").altName("bed").altName("beds").altName("bedspawns").build();
 
-    // todo: handle this somewhere better
-    private static final List<UUID> ignoreSpawnListener = new ArrayList<>();
     private static final boolean hasSetSpawnEvent = ReflectHelper.hasClass("org.bukkit.event.player.PlayerSpawnChangeEvent")
             || ReflectHelper.hasClass("com.destroystokyo.paper.event.player.PlayerSetSpawnEvent");
-
-    private static void setSpawnLocation(Player player, Location loc) {
-        ignoreSpawnListener.add(player.getUniqueId());
-        player.setBedSpawnLocation(loc, true);
-        ignoreSpawnListener.remove(player.getUniqueId());
-    }
-
-    @ApiStatus.Internal
-    public static boolean isIgnoringSpawnListener(Player player) {
-        return ignoreSpawnListener.contains(player.getUniqueId());
-    }
 
     /**
      * Sharing Last Location.
@@ -789,6 +776,7 @@ public final class Sharables implements Shares {
                     player.setExp(exp);
                     player.setLevel(level);
                     player.setTotalExperience(totalExperience);
+                    sendAdvancementUpdateWithoutToast.accept(player);
                     if (announceAdvancements) {
                         player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
                     }
@@ -796,6 +784,27 @@ public final class Sharables implements Shares {
                     return advancements != null;
                 }
             }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").optional().build();
+
+    private static final Consumer<Player> sendAdvancementUpdateWithoutToast;
+
+    static {
+        // use reflection to send advancement update without client toast
+        // should work 1.21.5+ papermc unless Mojang changes things again
+        Option<Class<?>> craftPlayerClass = Option.of(ReflectHelper.getClass("org.bukkit.craftbukkit.entity.CraftPlayer"));
+        Option<Method> getHandleMethod = craftPlayerClass.map(cls -> ReflectHelper.getMethod(cls, "getHandle"));
+        Option<Class<?>> serverPlayerClass = Option.of(ReflectHelper.getClass("net.minecraft.server.level.ServerPlayer"));
+        Option<Method> getAdvancementsMethod = serverPlayerClass.map(cls -> ReflectHelper.getMethod(cls, "getAdvancements"));
+        Option<Class<?>> playerAdvancementsClass = Option.of(ReflectHelper.getClass("net.minecraft.server.PlayerAdvancements"));
+        Option<Method> flushDirtyMethod = playerAdvancementsClass.flatMap(cls ->
+                serverPlayerClass.map(cls2 -> ReflectHelper.getMethod(cls, "flushDirty", cls2, boolean.class)));
+
+        sendAdvancementUpdateWithoutToast = player -> getHandleMethod.flatMap(method ->
+                        Try.of(() -> method.invoke(player)).toOption())
+                .flatMap(serverPlayer -> getAdvancementsMethod.flatMap(method ->
+                                Try.of(() -> method.invoke(serverPlayer)).toOption())
+                        .flatMap(playerAdvancements -> flushDirtyMethod.flatMap(method ->
+                                Try.of(() -> method.invoke(playerAdvancements, serverPlayer, false)).toOption())));
+    }
 
     /**
      * Sharing Statistics.

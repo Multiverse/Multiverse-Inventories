@@ -21,6 +21,11 @@ repositories {
         name = "viaversion"
         url = uri("https://repo.viaversion.com")
     }
+
+    maven {
+        name = "discordsrvc"
+        url = uri("https://nexus.scarsz.me/content/groups/public/")
+    }
 }
 
 configure(apiDependencies) {
@@ -48,11 +53,10 @@ dependencies {
     // Caching
     shadowed("com.github.ben-manes.caffeine:caffeine:3.2.2")
 
-    // PlaceholderAPI
+    // Plugin Hooks
     externalPlugin 'me.clip:placeholderapi:2.11.6'
-
-    // Luckperms for group context
     compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'com.discordsrv:discordsrv:1.28.0'
 
     // hk2 for annotation processing only
     compileOnly('org.glassfish.hk2:hk2-api:3.1.1') {
