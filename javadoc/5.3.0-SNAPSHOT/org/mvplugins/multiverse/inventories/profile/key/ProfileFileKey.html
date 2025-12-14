@@ -156,8 +156,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#copyOf(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey)" class="member-name-link">copyOf</a><wbr>(<a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;key)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#forContainer(org.mvplugins.multiverse.inventories.profile.key.ContainerKey)" class="member-name-link">forContainer</a><wbr>(@NotNull <a href="ContainerKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ContainerKey</a>&nbsp;containerKey)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#forContainerType(org.mvplugins.multiverse.inventories.profile.key.ContainerType)" class="member-name-link">forContainerType</a><wbr>(@NotNull <a href="ContainerType.html" title="enum class in org.mvplugins.multiverse.inventories.profile.key">ContainerType</a>&nbsp;containerType)</code></div>
@@ -270,6 +276,13 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="copyOf(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey)">
+<h3>copyOf</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("5.3")
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></span>&nbsp;<span class="element-name">copyOf</span><wbr><span class="parameters">(<a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;key)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="of(org.mvplugins.multiverse.inventories.profile.key.ContainerType,java.lang.String,org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey)">
 <h3>of</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="ContainerType.html" title="enum class in org.mvplugins.multiverse.inventories.profile.key">ContainerType</a>&nbsp;containerType,
@@ -299,6 +312,14 @@ loadScripts(document, 'script');</script>
 <h3>forProfileType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ProfileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileKey</a></span>&nbsp;<span class="element-name">forProfileType</span><wbr><span class="parameters">(@Nullable
  @Nullable <a href="ProfileType.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileType</a>&nbsp;profileType)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="forContainer(org.mvplugins.multiverse.inventories.profile.key.ContainerKey)">
+<h3>forContainer</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("5.3")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a></span>&nbsp;<span class="element-name">forContainer</span><wbr><span class="parameters">(@NotNull
+ @NotNull <a href="ContainerKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ContainerKey</a>&nbsp;containerKey)</span></div>
 </section>
 </li>
 <li>

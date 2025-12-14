@@ -105,6 +105,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#clonePlayerFile(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey)" class="member-name-link">clonePlayerFile</a><wbr>(<a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;fromProfileKey,
+ <a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;toProfileKey)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Clones all data from one player profile to another for all profile types.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#clonePlayerProfiles(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileType%5B%5D)" class="member-name-link">clonePlayerProfiles</a><wbr>(<a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;fromProfileKey,
+ <a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;toProfileKey,
+ <a href="key/ProfileType.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileType</a>[]&nbsp;profileTypes)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Clones all data of selected <a href="key/ProfileType.html" title="class in org.mvplugins.multiverse.inventories.profile.key"><code>ProfileType</code></a> from one player profile to another.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#deleteGlobalProfile(org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey,boolean)" class="member-name-link">deleteGlobalProfile</a><wbr>(<a href="key/GlobalProfileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">GlobalProfileKey</a>&nbsp;key,
  boolean&nbsp;clearPlayerFiles)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -265,6 +278,45 @@ loadScripts(document, 'script');</script>
 <dd><code>profileKey</code> - The key of the profile to delete</dd>
 <dt>Returns:</dt>
 <dd>Future that completes when the profile has been deleted.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="clonePlayerProfiles(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileType[])">
+<h3>clonePlayerProfiles</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("5.3")
+</span><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">clonePlayerProfiles</span><wbr><span class="parameters">(<a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;fromProfileKey,
+ <a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;toProfileKey,
+ <a href="key/ProfileType.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileType</a>[]&nbsp;profileTypes)</span></div>
+<div class="block">Clones all data of selected <a href="key/ProfileType.html" title="class in org.mvplugins.multiverse.inventories.profile.key"><code>ProfileType</code></a> from one player profile to another.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>fromProfileKey</code> - The key of the profile to clone from.</dd>
+<dd><code>toProfileKey</code> - The key of the profile to clone to.</dd>
+<dd><code>profileTypes</code> - The list of profile types to clone.</dd>
+<dt>Returns:</dt>
+<dd>Future that completes when the profile has been cloned.</dd>
+<dt>Since:</dt>
+<dd>5.3</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="clonePlayerFile(org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey,org.mvplugins.multiverse.inventories.profile.key.ProfileFileKey)">
+<h3>clonePlayerFile</h3>
+<div class="member-signature"><span class="annotations">@AvailableSince("5.3")
+</span><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/CompletableFuture.html" title="class or interface in java.util.concurrent" class="external-link">CompletableFuture</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</span>&nbsp;<span class="element-name">clonePlayerFile</span><wbr><span class="parameters">(<a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;fromProfileKey,
+ <a href="key/ProfileFileKey.html" title="class in org.mvplugins.multiverse.inventories.profile.key">ProfileFileKey</a>&nbsp;toProfileKey)</span></div>
+<div class="block">Clones all data from one player profile to another for all profile types.
+ Effectively same as copying the entire profile file.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>fromProfileKey</code> - The key of the profile to clone from.</dd>
+<dd><code>toProfileKey</code> - The key of the profile to clone to.</dd>
+<dt>Returns:</dt>
+<dd>Future that completes when the profile has been cloned.</dd>
+<dt>Since:</dt>
+<dd>5.3</dd>
 </dl>
 </section>
 </li>

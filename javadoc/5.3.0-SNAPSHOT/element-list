@@ -2,6 +2,7 @@ org.mvplugins.multiverse.inventories
 org.mvplugins.multiverse.inventories.command
 org.mvplugins.multiverse.inventories.commands
 org.mvplugins.multiverse.inventories.commands.bulkedit
+org.mvplugins.multiverse.inventories.commands.bulkedit.playerprofile
 org.mvplugins.multiverse.inventories.commands.prompts
 org.mvplugins.multiverse.inventories.config
 org.mvplugins.multiverse.inventories.config.handle
