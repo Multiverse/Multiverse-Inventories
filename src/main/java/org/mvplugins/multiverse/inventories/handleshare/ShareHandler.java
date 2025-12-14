@@ -93,7 +93,6 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
         for (PersistingProfile readProfile : affectedProfiles.getReadProfiles()) {
             ShareHandlingUpdater.updatePlayer(inventories, player, readProfile);
         }
-        playerShareHandlingState.removePlayerAffectedProfiles(player);
     }
 
     private CompletableFuture<Void> updateProfiles(ProfileDataSnapshot snapshot) {
@@ -104,7 +103,8 @@ sealed abstract class ShareHandler permits GameModeShareHandler, ReadOnlyShareHa
         return CompletableFuture.allOf(affectedProfiles.getWriteProfiles()
                 .stream()
                 .map(writeProfile -> updatePersistingProfile(writeProfile, snapshot))
-                .toArray(CompletableFuture[]::new));
+                .toArray(CompletableFuture[]::new))
+                .thenRun(() -> playerShareHandlingState.removePlayerAffectedProfiles(player));
     }
 
     private CompletableFuture<Void> updatePersistingProfile(PersistingProfile persistingProfile, ProfileDataSnapshot snapshot) {
