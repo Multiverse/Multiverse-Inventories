@@ -6,9 +6,9 @@ import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Keeps track of players who are currently having their sharable handling processed.
@@ -26,7 +26,7 @@ public final class PlayerShareHandlingState {
 
     @Inject
     PlayerShareHandlingState() {
-         this.playerAffectedProfiles = new HashMap<>();
+         this.playerAffectedProfiles = new ConcurrentHashMap<>();
     }
 
     void setPlayerAffectedProfiles(Player player, AffectedProfiles status) {
