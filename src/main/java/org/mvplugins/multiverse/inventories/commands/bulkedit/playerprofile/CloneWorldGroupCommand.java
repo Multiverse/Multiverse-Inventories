@@ -12,6 +12,7 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.external.vavr.collection.Array;
 import org.mvplugins.multiverse.inventories.commands.bulkedit.BulkEditCommand;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
@@ -20,35 +21,40 @@ import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 
+import java.util.Objects;
+
 @Service
-final class ClearCommand extends BulkEditCommand {
+public class CloneWorldGroupCommand extends BulkEditCommand {
 
     private final CommandQueueManager commandQueueManager;
     private final IncludeGroupsWorldsFlag flags;
 
     @Inject
-    ClearCommand(
-            @NotNull BulkEditCreator bulkEditCreator,
-            @NotNull CommandQueueManager commandQueueManager,
-            @NotNull IncludeGroupsWorldsFlag flags
+    CloneWorldGroupCommand(@NotNull BulkEditCreator bulkEditCreator,
+                           @NotNull CommandQueueManager commandQueueManager,
+                           @NotNull IncludeGroupsWorldsFlag flags
     ) {
         super(bulkEditCreator);
         this.commandQueueManager = commandQueueManager;
         this.flags = flags;
     }
 
-    @Subcommand("playerprofile clear")
+    @Subcommand("playerprofile clone-world-group")
     @CommandPermission("multiverse.inventories.bulkedit")
-    @CommandCompletion("@mvinvplayernames @mvinvcontainerkeys @mvinvprofiletypes:multiple @flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
-    @Syntax("<players> <groups/worlds> [profile-type] [--include-groups-worlds]")
+    @CommandCompletion("@mvinvplayernames @mvinvcontainerkey @mvinvcontainerkeys @mvinvprofiletypes:multiple " +
+            "@flags:groupName=" + IncludeGroupsWorldsFlag.NAME)
+    @Syntax("<players> <from-group/world> <to-groups/worlds> [profile-type]")
     void onCommand(
             MVCommandIssuer issuer,
 
             @Syntax("<players>")
             GlobalProfileKey[] globalProfileKeys,
 
-            @Syntax("<groups/worlds>")
-            ContainerKey[] containerKeys,
+            @Syntax("<from-group/world>")
+            ContainerKey fromContainerKey,
+
+            @Syntax("<to-groups/worlds>")
+            ContainerKey[] toContainerKeys,
 
             @Syntax("[profile-types]")
             ProfileType[] profileTypes,
@@ -56,12 +62,21 @@ final class ClearCommand extends BulkEditCommand {
             @Syntax("[--include-groups-worlds]")
             String[] flagArray
     ) {
+        if (Array.of(toContainerKeys)
+                .find(toKey -> Objects.equals(fromContainerKey, toKey))
+                .peek(toKey -> issuer.sendError("Cannot copy profiles to the same "
+                        + toKey.getContainerType() + ": " + toKey.getDataName()))
+                .isDefined()) {
+            return;
+        }
+
         ParsedCommandFlags parsedFlags = flags.parse(flagArray);
 
-        BulkEditAction<?> bulkEditAction = bulkEditCreator.playerProfileClear(
+        BulkEditAction<?> bulkEditAction = bulkEditCreator.playerProfileCloneWorldGroup(
+                fromContainerKey,
                 new PlayerProfilesPayload(
                         globalProfileKeys,
-                        containerKeys,
+                        toContainerKeys,
                         profileTypes,
                         parsedFlags.hasFlag(flags.includeGroupsWorlds)
                 )
@@ -70,7 +85,8 @@ final class ClearCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clear the selected profiles?"))
+                .prompt(Message.of("Are you sure you want to clone profiles from %s %s to the selected groups/worlds?"
+                        .formatted(fromContainerKey.getContainerType(), fromContainerKey.getDataName())))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 }

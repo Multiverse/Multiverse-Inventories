@@ -21,6 +21,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -64,13 +67,12 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
     }
 
     private FileConfiguration getOrLoadPlayerProfileFile(ProfileFileKey profileKey, File playerFile) {
-        ProfileKey fileProfileKey = profileKey.forProfileType(null);
         return Try.of(() ->
-                profileCacheManager.getOrLoadPlayerFile(fileProfileKey, (key) -> playerFile.exists()
+                profileCacheManager.getOrLoadPlayerFile(profileKey, (key) -> playerFile.exists()
                         ? loadFileToJsonConfiguration(playerFile)
                         : new JsonConfiguration())
         ).getOrElseThrow(e -> {
-            Logging.severe("Could not load profile data for player: " + fileProfileKey);
+            Logging.severe("Could not load profile data for player: " + profileKey);
             return new RuntimeException(e);
         });
     }
@@ -219,6 +221,79 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
                 Logging.warning("Could not delete file for player " + profileKey.getPlayerName()
                         + " in " + profileKey.getContainerType() + " " + profileKey.getDataName());
             }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> clonePlayerProfiles(ProfileFileKey fromProfileKey, ProfileFileKey toProfileKey, ProfileType[] profileTypes) {
+        if (Strings.isNullOrEmpty(fromProfileKey.getPlayerName())) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("Player name cannot be null or empty. " + fromProfileKey));
+        }
+        if  (Strings.isNullOrEmpty(toProfileKey.getPlayerName())) {
+            return CompletableFuture.failedFuture(new IllegalArgumentException("Player name cannot be null or empty. " + toProfileKey));
+        }
+        if (ProfileTypes.isAll(profileTypes)) {
+            Logging.finer("Clone profile from " + fromProfileKey + " to " + toProfileKey + " for all profile-types");
+            return clonePlayerFile(fromProfileKey, toProfileKey);
+        }
+
+        profileCacheManager.clearCacheForFile(toProfileKey);
+
+        File fromPlayerFile = profileFilesLocator.getPlayerProfileFile(fromProfileKey);
+        File toPlayerFile = profileFilesLocator.getPlayerProfileFile(toProfileKey);
+        return asyncFileIO.queueFilesAction(new File[]{fromPlayerFile, toPlayerFile}, () ->
+                cloneSpecificProfiles(fromProfileKey, fromPlayerFile, toProfileKey, toPlayerFile, profileTypes));
+    }
+
+    private void cloneSpecificProfiles(ProfileFileKey fromProfileKey,
+                                       File fromPlayerFile,
+                                       ProfileFileKey toProfileKey,
+                                       File toPlayerFile,
+                                       ProfileType[] profileTypes) {
+        FileConfiguration fromPlayerData = getOrLoadPlayerProfileFile(fromProfileKey, fromPlayerFile);
+        FileConfiguration toPlayerData = getOrLoadPlayerProfileFile(toProfileKey, toPlayerFile);
+
+        for (var profileType : profileTypes) {
+            ConfigurationSection fromSection = fromPlayerData.getConfigurationSection(profileType.getName());
+            if (fromSection != null && !fromSection.getKeys(false).isEmpty()) {
+                toPlayerData.set(profileType.getName(), fromSection);
+            } else {
+                toPlayerData.set(profileType.getName(), null);
+            }
+        }
+
+        Try.run(() -> toPlayerData.save(toPlayerFile)).onFailure(e -> {
+            Logging.severe("Could not clone specific profiles from player " + fromProfileKey.getPlayerName()
+                    + " to " + toProfileKey.getPlayerName()
+                    + " in " + fromProfileKey.getContainerType() + " " + fromProfileKey.getDataName());
+            Logging.severe(e.getMessage());
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletableFuture<Void> clonePlayerFile(ProfileFileKey fromProfileKey, ProfileFileKey toProfileKey) {
+        File fromPlayerFile = profileFilesLocator.getPlayerProfileFile(fromProfileKey);
+        File toPlayerFile = profileFilesLocator.getPlayerProfileFile(toProfileKey);
+        if (!fromPlayerFile.exists()) {
+            Logging.finer("Attempted to clone file that did not exist for player " + fromProfileKey.getPlayerName()
+                    + " in " + fromProfileKey.getContainerType() + " " + fromProfileKey.getDataName());
+            return CompletableFuture.completedFuture(null);
+        }
+
+        profileCacheManager.clearCacheForFile(toProfileKey);
+
+        return asyncFileIO.queueFilesAction(new File[]{fromPlayerFile, toPlayerFile}, () -> {
+            Try.run(() -> Files.copy(fromPlayerFile.toPath(), toPlayerFile.toPath(), StandardCopyOption.REPLACE_EXISTING))
+                    .onFailure(e -> {
+                        Logging.severe("Could not clone file " + fromPlayerFile + " to " + toPlayerFile);
+                        e.printStackTrace();
+                    });
         });
     }
 
