@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile.key;
 
 import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
@@ -19,6 +20,7 @@ public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
         );
     }
 
+    @ApiStatus.AvailableSince("5.3")
     public static ProfileFileKey copyOf(ProfileFileKey key) {
         return of(
                 key.getContainerType(),
@@ -73,6 +75,7 @@ public sealed class ProfileFileKey extends GlobalProfileKey permits ProfileKey {
         return ProfileKey.of(containerType, dataName, profileType, playerUUID, playerName);
     }
 
+    @ApiStatus.AvailableSince("5.3")
     public ProfileFileKey forContainer(@NotNull ContainerKey containerKey) {
         return new ProfileFileKey(containerKey.getContainerType(), containerKey.getDataName(), playerUUID, playerName);
     }

@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories.profile.key;
 
 import com.google.common.base.Objects;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 
@@ -65,6 +66,7 @@ public final class ProfileKey extends ProfileFileKey {
         this.profileType = profileType;
     }
 
+    @ApiStatus.AvailableSince("5.3")
     @Override
     public ProfileKey forContainer(@NotNull ContainerKey containerKey) {
         return new ProfileKey(containerKey.getContainerType(), containerKey.getDataName(),
