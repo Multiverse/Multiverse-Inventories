@@ -36,6 +36,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -746,8 +747,7 @@ public final class Sharables implements Shares {
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
                     List<String> advancements = profile.get(ADVANCEMENTS);
-                    Set<String> processedCriteria = new HashSet<>();
-                    Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : new HashSet<>();
+                    Set<String> completedCriteria = (advancements != null) ? new HashSet<>(advancements) : Collections.emptySet();
 
                     // Advancements may cause the player to level up, which we don't want to happen
                     int totalExperience = player.getTotalExperience();
@@ -761,17 +761,13 @@ public final class Sharables implements Shares {
                     Bukkit.advancementIterator().forEachRemaining(advancement -> {
                         AdvancementProgress advancementProgress = player.getAdvancementProgress(advancement);
                         for (String criteria : advancement.getCriteria()) {
-                            if (processedCriteria.contains(criteria)) {
-                                continue;
-                            } else if (completedCriteria.contains(criteria)) {
+                            if (completedCriteria.contains(criteria)) {
                                 advancementProgress.awardCriteria(criteria);
                             } else {
                                 advancementProgress.revokeCriteria(criteria);
                             }
-                            processedCriteria.add(criteria);
                         }
                     });
-
                     // Set back the level from before applying the advancements
                     player.setExp(exp);
                     player.setLevel(level);
