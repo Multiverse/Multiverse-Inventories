@@ -753,10 +753,12 @@ public final class Sharables implements Shares {
                     int totalExperience = player.getTotalExperience();
                     int level = player.getLevel();
                     float exp = player.getExp();
-                    boolean announceAdvancements = Boolean.TRUE.equals(player.getWorld().getGameRuleValue(GameRule.ANNOUNCE_ADVANCEMENTS));
-                    if (announceAdvancements) {
-                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-                    }
+
+                    boolean announceAdvancements = announceAdvancementsRule
+                            .map(rule -> Boolean.TRUE.equals(player.getWorld().getGameRuleValue(rule)))
+                            .filter(Boolean::booleanValue)
+                            .map(ignore -> player.getWorld().setGameRule(announceAdvancementsRule.get(), false))
+                            .getOrElse(false);
 
                     Bukkit.advancementIterator().forEachRemaining(advancement -> {
                         AdvancementProgress advancementProgress = player.getAdvancementProgress(advancement);
@@ -777,14 +779,16 @@ public final class Sharables implements Shares {
                     player.setLevel(level);
                     player.setTotalExperience(totalExperience);
                     sendAdvancementUpdateWithoutToast.accept(player);
-                    if (announceAdvancements) {
-                        player.getWorld().setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, true);
+                    if (announceAdvancements && announceAdvancementsRule.isDefined()) {
+                        announceAdvancementsRule
+                                .peek(rule -> player.getWorld().setGameRule(rule, true));
                     }
 
                     return advancements != null;
                 }
             }).defaultSerializer(new ProfileEntry(false, "advancements")).altName("achievements").optional().build();
 
+    private static final Option<GameRule<Boolean>> announceAdvancementsRule;
     private static final Consumer<Player> sendAdvancementUpdateWithoutToast;
 
     static {
@@ -804,6 +808,13 @@ public final class Sharables implements Shares {
                                 Try.of(() -> method.invoke(serverPlayer)).toOption())
                         .flatMap(playerAdvancements -> flushDirtyMethod.flatMap(method ->
                                 Try.of(() -> method.invoke(playerAdvancements, serverPlayer, false)).toOption())));
+
+        //todo use 1.21.11+ Registry lookup for gamerule instead of getByName
+        @SuppressWarnings("unchecked")
+        Option<GameRule<Boolean>> rule = Try.of(() -> Option.of((GameRule<Boolean>) GameRule.getByName("announceAdvancements"))
+                .getOrElse(() -> (GameRule<Boolean>) GameRule.getByName("minecraft:show_advancement_messages")))
+                .toOption();
+        announceAdvancementsRule = rule;
     }
 
     /**
