@@ -60,7 +60,7 @@ final class SilentGrantsListener implements MVInvListener  {
         if (playerShareHandlingState.isHandlingSharable(event.getPlayer(), Sharables.ADVANCEMENTS)) {
             Logging.finest("Suppressing advancement done message for player %s due to share handling.",
                     event.getPlayer().getName());
-            event.message(null);
+            event.message(net.kyori.adventure.text.Component.text("mvinv:suppressed"));
         }
     }
 
@@ -75,9 +75,18 @@ final class SilentGrantsListener implements MVInvListener  {
     private class DiscordSrvHook {
         @Subscribe
         public void onAchievementMessage(AchievementMessagePreProcessEvent event) {
-            if (playerShareHandlingState.isHandlingSharable(event.getPlayer(), Sharables.ADVANCEMENTS)) {
-                Logging.finest("Suppressing DiscordSRV advancement grant message for player %s due to share handling.",
-                        event.getPlayer().getName());
+            if (!(event.getTriggeringBukkitEvent() instanceof PlayerAdvancementDoneEvent advancementEvent)) {
+                return;
+            }
+            if (!hasPlayerAdvancementDoneMessageMethod) {
+                // paper does not have the method to suppress notifications
+                return;
+            }
+            if (net.kyori.adventure.text.Component.EQUALS.test(
+                    advancementEvent.message(),
+                    net.kyori.adventure.text.Component.text("mvinv:suppressed"))) {
+                Logging.finest("Suppressing DiscordSRV advancement message for player %s due to share handling.",
+                        advancementEvent.getPlayer().getName());
                 event.setCancelled(true);
             }
         }
