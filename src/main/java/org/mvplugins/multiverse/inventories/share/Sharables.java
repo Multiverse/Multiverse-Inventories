@@ -6,6 +6,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.Inventory;
 import org.mvplugins.multiverse.core.economy.MVEconomist;
 import org.mvplugins.multiverse.core.teleportation.AsyncSafetyTeleporter;
@@ -820,13 +821,59 @@ public final class Sharables implements Shares {
             new SharableHandler<>() {
                 @Override
                 public void updateProfile(ProfileData profile, Player player) {
-                    Map<String, Integer> playerStats = new HashMap<>();
+                    Map<String, Object> playerStats = new HashMap<>();
                     for (Statistic stat: Statistic.values()) {
-                        if (stat.getType() == Statistic.Type.UNTYPED) {
-                            int val = player.getStatistic(stat);
-                            // no need to save values of 0, that's the default!
-                            if (val != 0) {
-                                playerStats.put(stat.name(), val);
+                        switch (stat.getType()) {
+                            case UNTYPED -> {
+                                int val = player.getStatistic(stat);
+                                if (val != 0) {
+                                    playerStats.put(stat.name(), val);
+                                }
+                            }
+                            case ITEM -> {
+                                Map<String, Integer> itemStats = new HashMap<>();
+                                for (Material mat : Material.values()) {
+                                    if (!mat.isItem()) {
+                                        continue;
+                                    }
+                                    int val = player.getStatistic(stat, mat);
+                                    if (val != 0) {
+                                        itemStats.put(mat.getKey().toString(), val);
+                                    }
+                                }
+                                if (!itemStats.isEmpty()) {
+                                    playerStats.put(stat.name(), itemStats);
+                                }
+                            }
+                            case BLOCK -> {
+                                Map<String, Integer> blockStats = new HashMap<>();
+                                for (Material mat : Material.values()) {
+                                    if (!mat.isBlock()) {
+                                        continue;
+                                    }
+                                    int val = player.getStatistic(stat, mat);
+                                    if (val != 0) {
+                                        playerStats.put(mat.getKey().toString(), val);
+                                    }
+                                }
+                                if (!blockStats.isEmpty()) {
+                                    playerStats.put(stat.name(), blockStats);
+                                }
+                            }
+                            case ENTITY -> {
+                                Map<String, Integer> entityStats = new HashMap<>();
+                                for (EntityType entityType : EntityType.values()) {
+                                    if (entityType == EntityType.UNKNOWN) {
+                                        continue;
+                                    }
+                                    int val = player.getStatistic(stat, entityType);
+                                    if (val != 0) {
+                                        entityStats.put(entityType.getKey().toString(), val);
+                                    }
+                                }
+                                if (!entityStats.isEmpty()) {
+                                    playerStats.put(stat.name(), entityStats);
+                                }
                             }
                         }
                     }
@@ -835,24 +882,99 @@ public final class Sharables implements Shares {
 
                 @Override
                 public boolean updatePlayer(Player player, ProfileData profile) {
-                    Map<String, Integer> playerStats = profile.get(GAME_STATISTICS);
+                    Map<String, Object> playerStats = profile.get(GAME_STATISTICS);
+                    boolean hasData = true;
                     if (playerStats == null) {
-                        // Set all to 0
-                        for (Statistic stat : Statistic.values()) {
-                            if (stat.getType() == Statistic.Type.UNTYPED) {
-                                player.setStatistic(stat, 0);
-                            }
-                        }
-                        return false;
+                        playerStats = Collections.emptyMap();
+                        hasData = false;
                     }
 
                     for (Statistic stat : Statistic.values()) {
-                        if (stat.getType() == Statistic.Type.UNTYPED) {
-                            player.setStatistic(stat, playerStats.getOrDefault(stat.name(), 0));
+                        Object value = playerStats.get(stat.name());
+                        switch (stat.getType()) {
+                            case UNTYPED -> {
+                                if (value == null) {
+                                    player.setStatistic(stat, 0);
+                                    break;
+                                }
+                                if (!(value instanceof Integer intValue)) {
+                                    Logging.warning("Invalid statistic value for " + stat.name() + ": " + value);
+                                    break;
+                                }
+                                Try.run(() -> player.setStatistic(stat, intValue))
+                                        .onFailure(ex -> Logging.warning("Failed to set statistic " + stat.name() +
+                                                        ": " + ex.getMessage()));
+                            }
+                            case ITEM -> {
+                                if (value == null) {
+                                    value = Collections.emptyMap();
+                                }
+                                if (!(value instanceof Map itemMap)) {
+                                    Logging.warning("Invalid statistic value for " + stat.name() + ": " + value);
+                                    break;
+                                }
+                                for (Material mat : Material.values()) {
+                                    if (!mat.isItem()) {
+                                        continue;
+                                    }
+                                    Object matValue = itemMap.getOrDefault(mat.getKey().toString(), 0);
+                                    if (!(matValue instanceof Integer intValue)) {
+                                        Logging.warning("Invalid statistic value for " + stat.name() + " and item " + mat.name() + ": " + matValue);
+                                        continue;
+                                    }
+                                    Try.run(() -> player.setStatistic(stat, mat, intValue))
+                                            .onFailure(ex -> Logging.warning("Failed to set statistic " + stat.name() +
+                                                            " for item " + mat.name() + ": " + ex.getMessage()));
+                                }
+                            }
+                            case BLOCK -> {
+                                if (value == null) {
+                                    value = Collections.emptyMap();
+                                }
+                                if  (!(value instanceof Map blockMap)) {
+                                    Logging.warning("Invalid statistic value for " + stat.name() + ": " + value);
+                                    break;
+                                }
+                                for (Material mat : Material.values()) {
+                                    if (!mat.isBlock()) {
+                                        continue;
+                                    }
+                                    Object matValue = blockMap.getOrDefault(mat.getKey().toString(), 0);
+                                    if (!(matValue instanceof Integer intValue)) {
+                                        Logging.warning("Invalid statistic value for " + stat.name() + " and block " + mat.name() + ": " + matValue);
+                                        continue;
+                                    }
+                                    Try.run(() -> player.setStatistic(stat, mat, intValue))
+                                            .onFailure(ex -> Logging.warning("Failed to set statistic " + stat.name() +
+                                                            " for block " + mat.name() + ": " + ex.getMessage()));
+                                }
+                            }
+                            case ENTITY -> {
+                                if (value == null) {
+                                    value = Collections.emptyMap();
+                                }
+                                if (!(value instanceof Map entityMap)) {
+                                    Logging.warning("Invalid statistic value for " + stat.name() + ": " + value);
+                                    break;
+                                }
+                                for (EntityType entityType : EntityType.values()) {
+                                    if (entityType == EntityType.UNKNOWN) {
+                                        continue;
+                                    }
+                                    Object entityValue = entityMap.getOrDefault(entityType.getKey().toString(), 0);
+                                    if (!(entityValue instanceof Integer intValue)) {
+                                        Logging.warning("Invalid statistic value for " + stat.name() + " and entity " + entityType.name() + ": " + entityValue);
+                                        continue;
+                                    }
+                                    Try.run(() -> player.setStatistic(stat, entityType, intValue))
+                                            .onFailure(ex -> Logging.warning("Failed to set statistic " + stat.name() +
+                                                            " for entity " + entityType.name() + ": " + ex.getMessage()));
+                                }
+                            }
                         }
                     }
 
-                    return true;
+                    return hasData;
                 }
             }).defaultSerializer(new ProfileEntry(false, "game_statistics")).altName("game_stats").optional().build();
 
