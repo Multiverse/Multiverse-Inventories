@@ -1,9 +1,6 @@
 package org.mvplugins.multiverse.inventories.listeners;
 
 import com.dumptruckman.minecraft.util.Logging;
-import github.scarsz.discordsrv.DiscordSRV;
-import github.scarsz.discordsrv.api.Subscribe;
-import github.scarsz.discordsrv.api.events.AchievementMessagePreProcessEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerRecipeDiscoverEvent;
@@ -32,9 +29,9 @@ final class SilentGrantsListener implements MVInvListener  {
         this.hasPlayerAdvancementDoneMessageMethod = ReflectHelper.getMethod(
                 PlayerAdvancementDoneEvent.class,"message") != null;
 
-        if (Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
+        if (hasPlayerAdvancementDoneMessageMethod && Bukkit.getPluginManager().isPluginEnabled("DiscordSRV")) {
             Logging.fine("Registering DiscordSRV advancement grant hook.");
-            DiscordSRV.api.subscribe(new DiscordSrvHook());
+            AdvancementDonePaperHelper.getInstance().registerDiscordSrvHook();
         }
     }
 
@@ -58,37 +55,15 @@ final class SilentGrantsListener implements MVInvListener  {
             return;
         }
         if (playerShareHandlingState.isHandlingSharable(event.getPlayer(), Sharables.ADVANCEMENTS)) {
-            Logging.finest("Suppressing advancement done message for player %s due to share handling.",
-                    event.getPlayer().getName());
-            event.message(net.kyori.adventure.text.Component.text("mvinv:suppressed"));
+            AdvancementDonePaperHelper.getInstance().handleAdvancementDoneEventSuppression(event);
         }
     }
 
     @EventMethod
     void onPluginEnable(PluginEnableEvent event) {
-        if (event.getPlugin().getName().equals("DiscordSRV")) {
+        if (hasPlayerAdvancementDoneMessageMethod && event.getPlugin().getName().equals("DiscordSRV")) {
             Logging.fine("Registering DiscordSRV advancement grant hook.");
-            DiscordSRV.api.subscribe(new DiscordSrvHook());
-        }
-    }
-
-    private class DiscordSrvHook {
-        @Subscribe
-        public void onAchievementMessage(AchievementMessagePreProcessEvent event) {
-            if (!(event.getTriggeringBukkitEvent() instanceof PlayerAdvancementDoneEvent advancementEvent)) {
-                return;
-            }
-            if (!hasPlayerAdvancementDoneMessageMethod) {
-                // paper does not have the method to suppress notifications
-                return;
-            }
-            if (net.kyori.adventure.text.Component.EQUALS.test(
-                    advancementEvent.message(),
-                    net.kyori.adventure.text.Component.text("mvinv:suppressed"))) {
-                Logging.finest("Suppressing DiscordSRV advancement message for player %s due to share handling.",
-                        advancementEvent.getPlayer().getName());
-                event.setCancelled(true);
-            }
+            AdvancementDonePaperHelper.getInstance().registerDiscordSrvHook();
         }
     }
 }
