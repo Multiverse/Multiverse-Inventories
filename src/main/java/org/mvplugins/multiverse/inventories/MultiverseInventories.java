@@ -2,6 +2,7 @@ package org.mvplugins.multiverse.inventories;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.core.config.CoreConfig;
 import org.mvplugins.multiverse.core.destination.DestinationsProvider;
 import org.mvplugins.multiverse.core.module.MultiverseModule;
@@ -12,8 +13,6 @@ import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandCompletion;
 import org.mvplugins.multiverse.inventories.command.MVInvCommandContexts;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
-import org.mvplugins.multiverse.inventories.dataimport.DataImportManager;
-import org.mvplugins.multiverse.inventories.dataimport.DataImporter;
 import org.mvplugins.multiverse.inventories.destination.LastLocationDestination;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
 import org.mvplugins.multiverse.inventories.listeners.MVInvListener;
@@ -37,6 +36,7 @@ import org.mvplugins.multiverse.external.vavr.control.Try;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 /**
  * Multiverse-Inventories plugin main class.
@@ -96,6 +96,7 @@ public class MultiverseInventories extends MultiverseModule {
         super.onEnable();
 
         initializeDependencyInjection(new MultiverseInventoriesPluginBinder(this));
+        Logging.setDebugLevel(coreConfig.get().getGlobalDebug());
         ProfileTypes.init(this);
         Sharables.init(this);
         Perm.register(this);
@@ -147,6 +148,7 @@ public class MultiverseInventories extends MultiverseModule {
         MultiverseInventoriesApi.shutdown();
         this.dupingPatch.disable();
         this.shutdownDependencyInjection();
+        Logging.info("- Disabled");
         Logging.shutdown();
     }
 
@@ -254,5 +256,14 @@ public class MultiverseInventories extends MultiverseModule {
             worldGroupManager.get().checkForConflicts()
                     .sendConflictIssue(commandManagerProvider.get().getConsoleCommandIssuer());
         }, 1L);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NotNull
+    @Override
+    public Logger getLogger() {
+        return Logging.getLogger();
     }
 }
