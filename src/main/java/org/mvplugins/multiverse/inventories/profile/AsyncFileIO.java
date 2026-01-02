@@ -2,7 +2,7 @@ package org.mvplugins.multiverse.inventories.profile;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.jvnet.hk2.annotations.Service;
-import org.mvplugins.multiverse.external.jakarta.inject.Inject;
+import org.mvplugins.multiverse.external.jakarta.annotation.PreDestroy;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 
 import java.io.File;
@@ -10,11 +10,9 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 @Service
@@ -104,5 +102,21 @@ final class AsyncFileIO {
 
     ExecutorService getExecutor() {
         return fileIOExecutorService;
+    }
+
+    @PreDestroy
+    private void completeRemainingTaskAndShutdown() {
+        fileIOExecutorService.shutdown();
+        try {
+            if (!fileIOExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                fileIOExecutorService.shutdownNow();
+                if (!fileIOExecutorService.awaitTermination(60, TimeUnit.SECONDS)) {
+                    Logging.severe("File IO executor did not terminate");
+                }
+            }
+        } catch (InterruptedException ie) {
+            fileIOExecutorService.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }
