@@ -39,7 +39,7 @@ public class CloneWorldGroupCommand extends BulkEditCommand {
         this.flags = flags;
     }
 
-    @Subcommand("playerprofile clone-world-group")
+    @Subcommand("bulkedit playerprofile clone-world-group")
     @CommandPermission("multiverse.inventories.bulkedit")
     @CommandCompletion("@mvinvplayernames @mvinvcontainerkey @mvinvcontainerkeys @mvinvprofiletypes:multiple " +
             "@flags:groupName=" + IncludeGroupsWorldsFlag.NAME)

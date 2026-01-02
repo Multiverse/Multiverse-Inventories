@@ -40,7 +40,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
         this.inventoriesConfig = inventoriesConfig;
     }
 
-    @Subcommand("migrate inventory-serialization nbt")
+    @Subcommand("bulkedit migrate inventory-serialization nbt")
     @CommandPermission("multiverse.inventories.bulkedit")
     void onNbtCommand(MVCommandIssuer issuer) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
@@ -48,7 +48,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
                 .action(() -> doMigration(issuer, true)));
     }
 
-    @Subcommand("migrate inventory-serialization bukkit")
+    @Subcommand("bulkedit migrate inventory-serialization bukkit")
     @CommandPermission("multiverse.inventories.bulkedit")
     void onBukkitCommand(MVCommandIssuer issuer) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
