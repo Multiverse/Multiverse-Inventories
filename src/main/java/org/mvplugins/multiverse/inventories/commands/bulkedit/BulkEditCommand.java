@@ -13,7 +13,6 @@ import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditResult;
 
 @Contract
 @ApiStatus.Internal
-@Subcommand("bulkedit")
 public abstract class BulkEditCommand extends InventoriesCommand {
 
     protected final BulkEditCreator bulkEditCreator;
