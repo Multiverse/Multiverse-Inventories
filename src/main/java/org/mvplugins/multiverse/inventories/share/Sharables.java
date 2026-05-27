@@ -853,7 +853,7 @@ public final class Sharables implements Shares {
                                     }
                                     int val = player.getStatistic(stat, mat);
                                     if (val != 0) {
-                                        playerStats.put(mat.getKey().toString(), val);
+                                        blockStats.put(mat.getKey().toString(), val);
                                     }
                                 }
                                 if (!blockStats.isEmpty()) {
