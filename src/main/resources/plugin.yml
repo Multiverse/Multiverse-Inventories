@@ -3,6 +3,7 @@ main: org.mvplugins.multiverse.inventories.MultiverseInventories
 version: ${version}
 api-version: 1.13
 authors: ['dumptruckman', 'benwoo1110']
-website: 'https://dev.bukkit.org/projects/multiverse-inventories'
+website: 'https://modrinth.com/plugin/multiverse-inventories'
+description: 'Lets players have separate inventories per world!'
 depend: ['Multiverse-Core']
 softdepend: [LuckPerms, PlaceholderAPI, MultiInv, WorldInventories, PerWorldInventory]
