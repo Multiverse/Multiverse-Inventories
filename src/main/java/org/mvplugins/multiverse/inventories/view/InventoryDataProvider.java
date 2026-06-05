@@ -16,10 +16,12 @@ import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareReader;
 import org.mvplugins.multiverse.inventories.handleshare.SingleShareWriter;
+import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainer;
 import org.mvplugins.multiverse.inventories.profile.container.ProfileContainerStoreProvider;
 import org.mvplugins.multiverse.inventories.profile.data.PlayerProfile;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharable;
@@ -39,16 +41,19 @@ import java.util.concurrent.CompletionException;
 @Service
 public final class InventoryDataProvider {
 
+    private final ProfileDataSource profileDataSource;
     private final ProfileContainerStoreProvider profileContainerStoreProvider;
     private final MultiverseInventories inventories;
     private final InventoriesConfig inventoriesConfig;
 
     @Inject
     InventoryDataProvider(
+            @NotNull ProfileDataSource profileDataSource,
             @NotNull ProfileContainerStoreProvider profileContainerStoreProvider,
             @NotNull MultiverseInventories inventories,
             @NotNull InventoriesConfig inventoriesConfig
     ) {
+        this.profileDataSource = profileDataSource;
         this.profileContainerStoreProvider = profileContainerStoreProvider;
         this.inventories = inventories;
         this.inventoriesConfig = inventoriesConfig;
@@ -274,11 +279,15 @@ public final class InventoryDataProvider {
     ) {
         // If the target player is online, update their live inventory
         if (!targetPlayer.isOnline()) {
+            // force appy inv data on join
+            profileDataSource.getGlobalProfile(GlobalProfileKey.of(targetPlayer))
+                    .thenAccept(globalProfile -> globalProfile.setLoadOnLogin(true));
             return;
         }
 
         Player onlinePlayer = targetPlayer.getPlayer();
         if (onlinePlayer == null) {
+            // this should never happen as we already check if player is online
             return;
         }
 
