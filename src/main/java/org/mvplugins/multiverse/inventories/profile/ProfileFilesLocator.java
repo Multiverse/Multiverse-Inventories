@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-final class ProfileFilesLocator {
+public final class ProfileFilesLocator {
 
     private static final String JSON = ".json";
 
@@ -67,7 +67,7 @@ final class ProfileFilesLocator {
         };
     }
 
-    List<File> listProfileContainerFolders(ContainerType type) {
+    public List<File> listProfileContainerFolders(ContainerType type) {
         return Option.of(getContainerFolder(type).listFiles())
                 .map(filesList -> Arrays.stream(filesList)
                         .filter(File::isDirectory)
@@ -83,7 +83,7 @@ final class ProfileFilesLocator {
         return folder;
     }
 
-    List<File> listPlayerProfileFiles(ContainerType type, String dataName) {
+    public List<File> listPlayerProfileFiles(ContainerType type, String dataName) {
         return Option.of(getProfileContainerFolder(type, dataName).listFiles())
                 .map(filesList -> Arrays.stream(filesList)
                         .filter(File::isFile)
@@ -120,7 +120,7 @@ final class ProfileFilesLocator {
         return this.globalFolder;
     }
 
-    List<File> listGlobalFiles() {
+    public List<File> listGlobalFiles() {
        return Option.of(this.globalFolder.listFiles())
                .map(filesList -> Arrays.stream(filesList)
                        .filter(File::isFile)
