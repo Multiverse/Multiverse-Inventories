@@ -19,6 +19,7 @@ import org.mvplugins.multiverse.inventories.profile.bulkedit.PlayerProfilesPaylo
 import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 @Service
 final class ClearCommand extends BulkEditCommand {
@@ -70,7 +71,7 @@ final class ClearCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clear the selected profiles?"))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_CLEAR_CONFIRMPROMPT))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 }

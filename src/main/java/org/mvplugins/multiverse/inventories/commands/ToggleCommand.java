@@ -6,7 +6,6 @@ import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
 import org.mvplugins.multiverse.inventories.share.Sharable;
 import org.mvplugins.multiverse.inventories.share.Sharables;
 import org.mvplugins.multiverse.inventories.share.Shares;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
@@ -23,6 +22,9 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 
 @Service
 class ToggleCommand extends InventoriesCommand {
+
+    private static final String LAST_LOCATION_CONFIG_URL =
+            "https://mvplugins.org/inventories/how-to/configure-last-location/";
 
     private final InventoriesConfig inventoriesConfig;
 
@@ -46,21 +48,20 @@ class ToggleCommand extends InventoriesCommand {
     ) {
         Shares optionalShares = inventoriesConfig.getActiveOptionalShares();
         if (!sharable.isOptional()) {
-            issuer.sendError(MVInvi18n.TOGGLE_NOOPTIONALSHARES, replace("{share}").with(sharable.toString()));
+            issuer.sendError(MVInvi18n.TOGGLE_NOOPTIONALSHARES, replace("{share}").with(sharable));
             return;
         }
         if (optionalShares.contains(sharable)) {
             optionalShares.remove(sharable);
-            issuer.sendInfo(MVInvi18n.TOGGLE_NOWNOTUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
+            issuer.sendInfo(MVInvi18n.TOGGLE_NOWNOTUSINGOPTIONAL, replace("{share}").with(sharable));
         } else {
             optionalShares.add(sharable);
-            issuer.sendInfo(MVInvi18n.TOGGLE_NOWUSINGOPTIONAL, replace("{share}").with(sharable.getNames()[0]));
+            issuer.sendInfo(MVInvi18n.TOGGLE_NOWUSINGOPTIONAL, replace("{share}").with(sharable));
 
             // special tip to our wiki page, hopefully this reduces the number of people asking the
             // same old questions about last location config options on discord.
             if (sharable == Sharables.LAST_LOCATION) {
-                issuer.sendInfo("For more information on configuring last location, please see: " +
-                        "https://mvplugins.org/inventories/how-to/configure-last-location/");
+                issuer.sendInfo(MVInvi18n.TOGGLE_LASTLOCATIONINFO, replace("{url}").with(LAST_LOCATION_CONFIG_URL));
             }
         }
         inventoriesConfig.setActiveOptionalShares(optionalShares);

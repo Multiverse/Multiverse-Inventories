@@ -10,6 +10,9 @@ import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditResult;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Contract
 @ApiStatus.Internal
@@ -23,25 +26,32 @@ public abstract class BulkEditCommand extends InventoriesCommand {
     }
 
     protected void outputActionSummary(MVCommandIssuer issuer, BulkEditAction<?> bulkEditAction) {
-        issuer.sendMessage("Summary of affected profiles:");
-        bulkEditAction.getActionSummary().forEach((key, value) ->
-                issuer.sendMessage("  %s: %s".formatted(key, value.size() > 10
-                        ? value.size()
-                        : StringFormatter.join(value, ", "))));
+        issuer.sendMessage(MVInvi18n.BULKEDIT_SUMMARY);
+        bulkEditAction.getActionSummary().forEach((key, value) -> {
+            Object valueSummary = value.size() > 10
+                    ? value.size()
+                    : StringFormatter.join(value, ", ");
+            issuer.sendMessage(MVInvi18n.BULKEDIT_SUMMARYENTRY,
+                    replace("{key}").with(key),
+                    replace("{value}").with(valueSummary));
+        });
 
     }
 
     protected void runBulkEditAction(MVCommandIssuer issuer, BulkEditAction<?> bulkEditAction) {
-        issuer.sendMessage("Starting bulk edit action...");
+        issuer.sendMessage(MVInvi18n.BULKEDIT_STARTING);
         bulkEditAction.execute()
                 .thenAccept(result -> outputResult(issuer, result));
     }
 
     protected void outputResult(MVCommandIssuer issuer, BulkEditResult bulkEditResult) {
-        issuer.sendMessage("Successfully processed %d profiles!".formatted(bulkEditResult.getSuccessCount()));
+        issuer.sendMessage(MVInvi18n.BULKEDIT_SUCCESSCOUNT,
+                replace("{count}").with(bulkEditResult.getSuccessCount()));
         if (bulkEditResult.getFailureCount() > 0) {
-            issuer.sendError("Failed to process %d profiles! See log for details.".formatted(bulkEditResult.getFailureCount()));
+            issuer.sendError(MVInvi18n.BULKEDIT_FAILURECOUNT,
+                    replace("{count}").with(bulkEditResult.getFailureCount()));
         }
-        issuer.sendMessage("Bulk edit action completed in %.4f ms.".formatted(bulkEditResult.getTimeTaken()));
+        issuer.sendMessage(MVInvi18n.BULKEDIT_COMPLETEDTIME,
+                replace("{milliseconds}").with("%.4f".formatted(bulkEditResult.getTimeTaken())));
     }
 }

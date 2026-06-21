@@ -21,6 +21,7 @@ import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditAction;
 import org.mvplugins.multiverse.inventories.profile.bulkedit.BulkEditCreator;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
@@ -65,7 +66,7 @@ final class ClearCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clear the selected global profiles?"))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_GLOBALPROFILE_CLEAR_CONFIRMPROMPT))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 

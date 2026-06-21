@@ -27,10 +27,13 @@ import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.share.Sharables;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import org.mvplugins.multiverse.inventories.util.PlayerStats;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class GiveCommand extends InventoriesCommand {
@@ -85,8 +88,11 @@ final class GiveCommand extends InventoriesCommand {
                 && world.getName().equals(onlinePlayer.getWorld().getName())
                 && ProfileTypes.forPlayer(onlinePlayer).equals(profileType)) {
             onlinePlayer.getInventory().addItem(itemStack);
-            issuer.sendInfo("Gave player %s %s %s in world %s."
-                    .formatted(player.getName(), itemStack.getAmount(), itemStack, world.getName()));
+            issuer.sendInfo(MVInvi18n.GIVE_SUCCESS,
+                    replace("{player}").with(player.getName()),
+                    replace("{amount}").with(itemStack.getAmount()),
+                    replace("{item}").with(itemStack),
+                    replace("{world}").with(world.getName()));
             return;
         }
 
@@ -94,7 +100,7 @@ final class GiveCommand extends InventoriesCommand {
                 .read()
                 .thenCompose(inventory -> updatePlayerInventory(issuer, player, world, profileType, inventory, itemStack))
                 .exceptionally(throwable -> {
-                    issuer.sendError(throwable.getMessage());
+                    issuer.sendError(MVInvi18n.GIVE_FAILED, replace("{error}").with(throwable));
                     return null;
                 });
     }
@@ -111,11 +117,11 @@ final class GiveCommand extends InventoriesCommand {
                     .getOrElse(1);
         }
         if (amount < 1) {
-            issuer.sendError("You have to give at least 1 item.");
+            issuer.sendError(MVInvi18n.GIVE_INVALIDAMOUNT);
             return null;
         }
         if (amount > 6400) {
-            issuer.sendError("Cannot give more than 6400 items at once.");
+            issuer.sendError(MVInvi18n.GIVE_AMOUNTTOOLARGE, replace("{amount}").with(6400));
             return null;
         }
         // Remove amount string from item
@@ -128,7 +134,7 @@ final class GiveCommand extends InventoriesCommand {
         String itemName = split[0];
         Material material = Material.matchMaterial(itemName);
         if (material == null) {
-            issuer.sendError("Invalid Material: " + split[0]);
+            issuer.sendError(MVInvi18n.GIVE_INVALIDMATERIAL, replace("{material}").with(split[0]));
             return null;
         }
 
@@ -139,7 +145,7 @@ final class GiveCommand extends InventoriesCommand {
         }
         String additionalData = split[1];
         return Try.of(() -> Bukkit.getUnsafe().modifyItemStack(itemStack, itemStack.getType().getKey() + "[" + additionalData))
-                .onFailure(throwable -> issuer.sendError(throwable.getMessage()))
+                .onFailure(throwable -> issuer.sendError(MVInvi18n.GIVE_FAILED, replace("{error}").with(throwable)))
                 .getOrNull();
     }
 
@@ -157,8 +163,11 @@ final class GiveCommand extends InventoriesCommand {
                 .thenCompose(ignore -> player.isOnline()
                         ? CompletableFuture.completedFuture(null)
                         : profileDataSource.modifyGlobalProfile(GlobalProfileKey.of(player), profile -> profile.setLoadOnLogin(true)))
-                .thenRun(() -> issuer.sendInfo("Gave player %s %s %s in world %s."
-                        .formatted(player.getName(), itemStack.getAmount(), itemStack.getI18NDisplayName(), world.getName())));
+                .thenRun(() -> issuer.sendInfo(MVInvi18n.GIVE_SUCCESS,
+                        replace("{player}").with(player.getName()),
+                        replace("{amount}").with(itemStack.getAmount()),
+                        replace("{item}").with(itemStack.getI18NDisplayName()),
+                        replace("{world}").with(world.getName())));
     }
 
     private void putItemInInventory(@Nullable ItemStack[] inventory, @NotNull ItemStack itemStack) {

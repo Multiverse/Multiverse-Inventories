@@ -19,6 +19,9 @@ import org.mvplugins.multiverse.inventories.profile.bulkedit.PlayerProfilesPaylo
 import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 public class ClonePlayerCommand extends BulkEditCommand {
@@ -74,9 +77,11 @@ public class ClonePlayerCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clone profiles from %s to %s for the selected groups/worlds?"
-                        .formatted(fromPlayer.getPlayerName(),
-                                toPlayers.length == 1 ? toPlayers[0].getPlayerName() : toPlayers.length + " players")))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_CLONEPLAYER_CONFIRMPROMPT,
+                        replace("{fromplayer}").with(fromPlayer.getPlayerName()),
+                        replace("{toplayers}").with(toPlayers.length == 1
+                                ? toPlayers[0].getPlayerName()
+                                : toPlayers.length + " players")))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 }

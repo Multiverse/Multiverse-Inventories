@@ -43,7 +43,7 @@ public final class GroupingConflictResult {
         conflicts.forEach(conflict -> issuer.sendInfo(MVInvi18n.CONFLICT_RESULTS,
                 replace("{group1}").with(conflict.getFirstGroup().getName()),
                 replace("{group2}").with(conflict.getSecondGroup().getName()),
-                replace("{shares}").with(conflict.getConflictingShares().toString()),
+                replace("{shares}").with(conflict.getConflictingShares()),
                 replace("{worlds}").with(conflict.getWorldsString())));
         issuer.sendInfo(MVInvi18n.CONFLICT_FOUND);
     }

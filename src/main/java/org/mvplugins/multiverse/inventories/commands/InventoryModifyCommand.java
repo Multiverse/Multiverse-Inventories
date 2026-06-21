@@ -2,12 +2,12 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
@@ -20,8 +20,12 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.MultiverseInventories;
 import org.mvplugins.multiverse.inventories.view.InventoryDataProvider;
 import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
+import org.mvplugins.multiverse.inventories.view.InventoryStatus;
 import org.mvplugins.multiverse.inventories.view.ModifiableInventoryHolder;
 import org.mvplugins.multiverse.inventories.view.PlayerInventoryData;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class InventoryModifyCommand extends InventoriesCommand {
@@ -63,7 +67,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
             MultiverseWorld world
     ) {
         String worldName = world.getName();
-        issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
+        issuer.sendInfo(MVInvi18n.INVENTORY_LOADING, replace("{player}").with(targetPlayer.getName()));
         handleInventoryLoadAndDisplay(issuer, player, targetPlayer, worldName);
     }
 
@@ -89,7 +93,7 @@ final class InventoryModifyCommand extends InventoriesCommand {
                         // If the player tries to modify their own live inventory, stop
                         if (player.getUniqueId().equals(targetPlayer.getUniqueId())
                             && player.getWorld().getName().equalsIgnoreCase(worldName)) {
-                            issuer.sendError(ChatColor.RED + "You cannot modify your own live inventory using this command. Use your regular inventory.");
+                            issuer.sendError(MVInvi18n.INVENTORY_MODIFYLIVESELF);
                             return; // Stop here if it's a live self-inventory
                         }
                         createAndOpenGUI(issuer, player, targetPlayer, worldName, playerInventoryData);
@@ -99,11 +103,13 @@ final class InventoryModifyCommand extends InventoriesCommand {
 
                 .exceptionally(throwable -> {
                     // This block runs if an exception occurs during data loading
-                    String errorMessage = throwable.getMessage();
+                    String errorMessage = throwable.getLocalizedMessage();
                     if (errorMessage == null || errorMessage.isEmpty()) {
-                        errorMessage = "An unknown error occurred while loading inventory data.";
+                        issuer.sendError(MVInvi18n.INVENTORY_LOADFAILED,
+                                replace("{error}").with(Message.of(MVInvi18n.INVENTORY_UNKNOWNLOADERROR)));
+                    } else {
+                        issuer.sendError(MVInvi18n.INVENTORY_LOADFAILED, replace("{error}").with(throwable));
                     }
-                    issuer.sendError(ChatColor.RED + errorMessage);
                     Logging.fine("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
                     throwable.printStackTrace();
                     return null;
@@ -141,6 +147,18 @@ final class InventoryModifyCommand extends InventoriesCommand {
         // Call the helper method to populate the GUI
         inventoryGUIHelper.populateInventoryGUI(inv, playerInventoryData, true);
         player.openInventory(inv);
-        issuer.sendInfo(ChatColor.GREEN + playerInventoryData.status.getFormattedMessage(targetPlayer.getName(), worldName) + ". Changes will save on close.");
+        issuer.sendInfo(MVInvi18n.INVENTORY_OPENED,
+                replace("{status}").with(getStatusMessage(playerInventoryData.status, targetPlayer.getName(), worldName)));
+    }
+
+    private Message getStatusMessage(InventoryStatus status, String playerName, String worldName) {
+        MVInvi18n messageKey = switch (status) {
+            case LIVE_INVENTORY -> MVInvi18n.INVENTORY_LIVEINVENTORY;
+            case STORED_INVENTORY -> MVInvi18n.INVENTORY_STOREDINVENTORY;
+            case NO_DATA_FOUND -> MVInvi18n.INVENTORY_NODATAFOUND;
+        };
+        return Message.of(messageKey,
+                replace("{player}").with(playerName),
+                replace("{world}").with(worldName));
     }
 }

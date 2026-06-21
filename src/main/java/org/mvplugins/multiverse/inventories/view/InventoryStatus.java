@@ -1,8 +1,11 @@
 package org.mvplugins.multiverse.inventories.view;
 
-import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.mvplugins.multiverse.core.locale.message.MessageReplacement;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 /**
  * Represents the status of an inventory data load operation.
@@ -10,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 5.2
  */
+//TODO: Make this enum implement LocalizableMessage
 @ApiStatus.Experimental
 @ApiStatus.AvailableSince("5.2")
 public enum InventoryStatus {
@@ -19,7 +23,9 @@ public enum InventoryStatus {
      * @since 5.2
      */
     @ApiStatus.AvailableSince("5.2")
-    LIVE_INVENTORY(ChatColor.GREEN + "Displaying LIVE inventory"),
+    LIVE_INVENTORY(
+            MVInvi18n.INVENTORY_LIVEINVENTORY,
+            "&aDisplaying LIVE inventory for {player} in world {world}"),
 
     /**
      * Indicates that stored inventory data from Multiverse-Inventories profiles was displayed.
@@ -27,7 +33,9 @@ public enum InventoryStatus {
      * @since 5.2
      */
     @ApiStatus.AvailableSince("5.2")
-    STORED_INVENTORY(ChatColor.GREEN + "Displaying STORED inventory"),
+    STORED_INVENTORY(
+            MVInvi18n.INVENTORY_STOREDINVENTORY,
+            "&aDisplaying STORED inventory for {player} in world {world}"),
 
     /**
      * Indicates that no player data was found for the specified world/player.
@@ -35,12 +43,17 @@ public enum InventoryStatus {
      * @since 5.2
      */
     @ApiStatus.AvailableSince("5.2")
-    NO_DATA_FOUND(ChatColor.RED + "No player data found");
+    NO_DATA_FOUND(
+            MVInvi18n.INVENTORY_NODATAFOUND,
+            "&cNo player data found for {player} in world {world}. "
+                    + "Try checking a different world or ensure the player has played in this world.");
 
-    private final String message;
+    private final MVInvi18n messageKey;
+    private final String nonLocalizedMessage;
 
-    InventoryStatus(@NotNull String message) {
-        this.message = message;
+    InventoryStatus(@NotNull MVInvi18n messageKey, @NotNull String nonLocalizedMessage) {
+        this.messageKey = messageKey;
+        this.nonLocalizedMessage = nonLocalizedMessage;
     }
 
     /**
@@ -54,9 +67,13 @@ public enum InventoryStatus {
      */
     @ApiStatus.AvailableSince("5.2")
     public @NotNull String getFormattedMessage(@NotNull String playerName, @NotNull String worldName) {
-        if (this == NO_DATA_FOUND) {
-            return this.message + " for " + playerName + " in world" + worldName + ". Try checking a different world or ensure the player has played in this world.";
-        }
-        return this.message + " for " + playerName + " in world " + worldName;
+        return messageKey.bundle(nonLocalizedMessage, getReplacements(playerName, worldName)).formatted();
+    }
+
+    private MessageReplacement[] getReplacements(@NotNull String playerName, @NotNull String worldName) {
+        return new MessageReplacement[]{
+                replace("{player}").with(playerName),
+                replace("{world}").with(worldName)
+        };
     }
 }

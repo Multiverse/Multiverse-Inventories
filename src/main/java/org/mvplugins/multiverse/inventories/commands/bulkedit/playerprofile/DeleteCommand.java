@@ -20,6 +20,9 @@ import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.share.Sharable;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class DeleteCommand extends BulkEditCommand {
@@ -75,7 +78,8 @@ final class DeleteCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to delete %s from the selected profiles?".formatted(sharable.getNames()[0])))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_DELETE_CONFIRMPROMPT,
+                        replace("{share}").with(sharable)))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 }
