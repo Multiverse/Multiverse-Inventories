@@ -17,10 +17,13 @@ import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class MigrateInventorySerializationCommand extends InventoriesCommand {
@@ -44,7 +47,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
     @CommandPermission("multiverse.inventories.bulkedit")
     void onNbtCommand(MVCommandIssuer issuer) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to migrate all player data to NBT?"))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEINVENTORYSERIALIZATION_NBT_CONFIRMPROMPT))
                 .action(() -> doMigration(issuer, true)));
     }
 
@@ -52,7 +55,7 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
     @CommandPermission("multiverse.inventories.bulkedit")
     void onBukkitCommand(MVCommandIssuer issuer) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to migrate all player data to old Bukkit serialization?"))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEINVENTORYSERIALIZATION_BUKKIT_CONFIRMPROMPT))
                 .action(() -> doMigration(issuer, false)));
     }
 
@@ -67,14 +70,19 @@ final class MigrateInventorySerializationCommand extends InventoriesCommand {
                         .map(playerUUID -> profileDataSource.getGlobalProfile(GlobalProfileKey.of(playerUUID, ""))
                                 .thenCompose(profile -> run(profile, profileCounter))
                                 .exceptionally(throwable -> {
-                                    issuer.sendMessage("Error updating player " + playerUUID + ": " + throwable.getMessage());
+                                    issuer.sendMessage(
+                                            MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEINVENTORYSERIALIZATION_PLAYERERROR,
+                                            replace("{player}").with(playerUUID),
+                                            replace("{error}").with(throwable));
                                     return null;
                                 }))
                         .toArray(CompletableFuture[]::new))
                 .thenRun(() -> {
                     long timeDuration = (System.nanoTime() - startTime) / 1000000;
-                    issuer.sendMessage("Updated " + profileCounter.get() + " player profiles.");
-                    issuer.sendMessage("Bulk edit completed in " + timeDuration + " ms.");
+                    issuer.sendMessage(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEINVENTORYSERIALIZATION_UPDATED,
+                            replace("{count}").with(profileCounter.get()));
+                    issuer.sendMessage(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEINVENTORYSERIALIZATION_COMPLETED,
+                            replace("{milliseconds}").with(timeDuration));
                 });
     }
 

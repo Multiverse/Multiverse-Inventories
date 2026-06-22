@@ -16,6 +16,7 @@ import org.mvplugins.multiverse.inventories.profile.key.ProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileTypes;
 import org.mvplugins.multiverse.inventories.profile.key.ContainerType;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -33,6 +34,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class FlatFileProfileDataSource implements ProfileDataSource {
@@ -420,7 +423,10 @@ final class FlatFileProfileDataSource implements ProfileDataSource {
         return getExistingGlobalProfile(key)
                 .thenCompose(globalProfile -> {
                     if (globalProfile.isEmpty()) {
-                        return CompletableFuture.failedFuture(new MultiverseException("Invalid global profile for player: " + key));
+                        return CompletableFuture.failedFuture(new MultiverseException(
+                                MVInvi18n.ERROR_INVALIDGLOBALPROFILE.bundle(
+                                        "Invalid global profile for player: {player}",
+                                        replace("{player}").with(key))));
                     }
                     return deleteGlobalProfileFromDisk(globalProfile.get());
                 })

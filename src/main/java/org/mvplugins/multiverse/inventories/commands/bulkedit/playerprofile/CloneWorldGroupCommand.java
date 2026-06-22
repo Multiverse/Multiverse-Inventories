@@ -20,8 +20,11 @@ import org.mvplugins.multiverse.inventories.profile.bulkedit.PlayerProfilesPaylo
 import org.mvplugins.multiverse.inventories.profile.key.ContainerKey;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
 import org.mvplugins.multiverse.inventories.profile.key.ProfileType;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Objects;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 public class CloneWorldGroupCommand extends BulkEditCommand {
@@ -64,8 +67,9 @@ public class CloneWorldGroupCommand extends BulkEditCommand {
     ) {
         if (Array.of(toContainerKeys)
                 .find(toKey -> Objects.equals(fromContainerKey, toKey))
-                .peek(toKey -> issuer.sendError("Cannot copy profiles to the same "
-                        + toKey.getContainerType() + ": " + toKey.getDataName()))
+                .peek(toKey -> issuer.sendError(MVInvi18n.BULKEDIT_PLAYERPROFILE_CLONEWORLDGROUP_SAMECONTAINER,
+                        replace("{containertype}").with(toKey.getContainerType()),
+                        replace("{container}").with(toKey.getDataName())))
                 .isDefined()) {
             return;
         }
@@ -85,8 +89,9 @@ public class CloneWorldGroupCommand extends BulkEditCommand {
         outputActionSummary(issuer, bulkEditAction);
 
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to clone profiles from %s %s to the selected groups/worlds?"
-                        .formatted(fromContainerKey.getContainerType(), fromContainerKey.getDataName())))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_CLONEWORLDGROUP_CONFIRMPROMPT,
+                        replace("{containertype}").with(fromContainerKey.getContainerType()),
+                        replace("{container}").with(fromContainerKey.getDataName())))
                 .action(() -> runBulkEditAction(issuer, bulkEditAction)));
     }
 }

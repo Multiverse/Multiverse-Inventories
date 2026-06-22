@@ -12,6 +12,9 @@ import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.external.vavr.control.Try;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 final class MigratePlayerNameCommand extends InventoriesCommand {
 
@@ -35,13 +38,16 @@ final class MigratePlayerNameCommand extends InventoriesCommand {
             String newName
     ) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to migrate all player data for %s to %s? This action cannot be undone."
-                        .formatted(oldName, newName)))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEPLAYERNAME_CONFIRMPROMPT,
+                        replace("{oldname}").with(oldName),
+                        replace("{newname}").with(newName)))
                 .action(() -> doMigration(issuer, oldName, newName)));
     }
 
     private void doMigration(MVCommandIssuer issuer, String oldName, String newName) {
         Try.run(() -> profileDataSource.migratePlayerProfileName(oldName, newName))
-                .onFailure(e -> issuer.sendMessage("Failed to migrate player data for " + oldName + ". " + e.getMessage()));
+                .onFailure(e -> issuer.sendMessage(MVInvi18n.BULKEDIT_PLAYERPROFILE_MIGRATEPLAYERNAME_FAILED,
+                        replace("{player}").with(oldName),
+                        replace("{error}").with(e)));
     }
 }

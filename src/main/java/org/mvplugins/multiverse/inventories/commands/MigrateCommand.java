@@ -23,6 +23,9 @@ import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.re
 @Service
 final class MigrateCommand extends InventoriesCommand {
 
+    private static final String IMPORTER_DOWNLOAD_URL = "https://modrinth.com/project/multiverse-inventoriesimporter/";
+    private static final String IMPORTER_LEARN_MORE_URL = "https://mvplugins.org/inventories/how-to/import-playerdata/";
+
     private final DataImportManager dataImportManager;
     private final CommandQueueManager commandQueueManager;
 
@@ -48,9 +51,9 @@ final class MigrateCommand extends InventoriesCommand {
             String pluginName) {
 
         if (dataImportManager.getEnabledImporterNames().isEmpty()) {
-            issuer.sendError("Please install Multiverse-InventoriesImporter plugin to use this command.");
-            issuer.sendInfo("Download Link: https://modrinth.com/project/multiverse-inventoriesimporter/");
-            issuer.sendInfo("Learn More: https://mvplugins.org/inventories/how-to/import-playerdata/");
+            issuer.sendError(MVInvi18n.MIGRATE_IMPORTERNOTINSTALLED);
+            issuer.sendInfo(MVInvi18n.MIGRATE_DOWNLOADLINK, replace("{url}").with(IMPORTER_DOWNLOAD_URL));
+            issuer.sendInfo(MVInvi18n.MIGRATE_LEARNMORE, replace("{url}").with(IMPORTER_LEARN_MORE_URL));
             return;
         }
 

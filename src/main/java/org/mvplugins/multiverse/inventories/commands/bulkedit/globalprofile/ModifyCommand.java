@@ -14,10 +14,13 @@ import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.inventories.commands.InventoriesCommand;
 import org.mvplugins.multiverse.inventories.profile.ProfileDataSource;
 import org.mvplugins.multiverse.inventories.profile.key.GlobalProfileKey;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class ModifyCommand extends InventoriesCommand {
@@ -48,7 +51,10 @@ final class ModifyCommand extends InventoriesCommand {
             GlobalProfileKey[] profileKeys
     ) {
         commandQueueManager.addToQueue(CommandQueuePayload.issuer(issuer)
-                .prompt(Message.of("Are you sure you want to modify %s to %s for %d players?".formatted(property, value, profileKeys.length)))
+                .prompt(Message.of(MVInvi18n.BULKEDIT_GLOBALPROFILE_MODIFY_CONFIRMPROMPT,
+                        replace("{property}").with(property),
+                        replace("{value}").with(value),
+                        replace("{count}").with(profileKeys.length)))
                 .action(() -> doModify(issuer, property, value, profileKeys)));
     }
 
@@ -60,10 +66,17 @@ final class ModifyCommand extends InventoriesCommand {
                                 globalProfile.getStringPropertyHandle()
                                         .modifyPropertyString(property, value, PropertyModifyAction.SET)
                                         .onSuccess(ignore -> counter.incrementAndGet())
-                                        .onFailure(throwable -> issuer.sendError("Failed to modify %s for %s. %s".formatted(property, profileKey, throwable.getMessage())))))
+                                        .onFailure(throwable -> issuer.sendError(
+                                                MVInvi18n.BULKEDIT_GLOBALPROFILE_MODIFY_FAILED,
+                                                replace("{property}").with(property),
+                                                replace("{profile}").with(profileKey),
+                                                replace("{error}").with(throwable)))))
                 .toArray(CompletableFuture[]::new);
 
         CompletableFuture.allOf(futures)
-                .thenRun(() -> issuer.sendMessage("Successfully modified %s to %s for %d players.".formatted(property, value, counter.get())));
+                .thenRun(() -> issuer.sendMessage(MVInvi18n.BULKEDIT_GLOBALPROFILE_MODIFY_SUCCESS,
+                        replace("{property}").with(property),
+                        replace("{value}").with(value),
+                        replace("{count}").with(counter.get())));
     }
 }

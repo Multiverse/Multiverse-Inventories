@@ -12,8 +12,11 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
 import org.mvplugins.multiverse.external.jetbrains.annotations.NotNull;
 import org.mvplugins.multiverse.inventories.profile.ProfileCacheManager;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
 
 import java.util.Map;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class CacheCommand extends InventoriesCommand {
@@ -30,15 +33,17 @@ final class CacheCommand extends InventoriesCommand {
     void onCacheStatsCommand(MVCommandIssuer issuer) {
         Map<String, CacheStats> stats = this.ProfileCacheManager.getCacheStats();
         for (Map.Entry<String, CacheStats> entry : stats.entrySet()) {
-            issuer.sendMessage("Cache: " + entry.getKey());
-            issuer.sendMessage("  hits count: " + entry.getValue().hitCount());
-            issuer.sendMessage("  misses count: " + entry.getValue().missCount());
-            issuer.sendMessage("  loads count: " + entry.getValue().loadCount());
-            issuer.sendMessage("  evictions: " + entry.getValue().evictionCount());
-            issuer.sendMessage("  hit rate: " + entry.getValue().hitRate() * 100 + "%");
-            issuer.sendMessage("  miss rate: " + entry.getValue().missRate() * 100 + "%");
-            issuer.sendMessage("  avg load penalty: " + entry.getValue().averageLoadPenalty() / 1000000 + "ms");
-            issuer.sendMessage("--------");
+            CacheStats cacheStats = entry.getValue();
+            issuer.sendMessage(MVInvi18n.CACHE_ENTRY, replace("{cache}").with(entry.getKey()));
+            issuer.sendMessage(MVInvi18n.CACHE_HITSCOUNT, replace("{count}").with(cacheStats.hitCount()));
+            issuer.sendMessage(MVInvi18n.CACHE_MISSESCOUNT, replace("{count}").with(cacheStats.missCount()));
+            issuer.sendMessage(MVInvi18n.CACHE_LOADSCOUNT, replace("{count}").with(cacheStats.loadCount()));
+            issuer.sendMessage(MVInvi18n.CACHE_EVICTIONS, replace("{count}").with(cacheStats.evictionCount()));
+            issuer.sendMessage(MVInvi18n.CACHE_HITRATE, replace("{rate}").with(cacheStats.hitRate() * 100));
+            issuer.sendMessage(MVInvi18n.CACHE_MISSRATE, replace("{rate}").with(cacheStats.missRate() * 100));
+            issuer.sendMessage(MVInvi18n.CACHE_AVGLOADPENALTY,
+                    replace("{milliseconds}").with(cacheStats.averageLoadPenalty() / 1000000));
+            issuer.sendMessage(MVInvi18n.CACHE_SEPARATOR);
         }
     }
 

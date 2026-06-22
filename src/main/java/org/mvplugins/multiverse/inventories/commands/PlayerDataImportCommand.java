@@ -8,9 +8,15 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermissi
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class PlayerDataImportCommand extends InventoriesCommand {
+
+    private static final String IMPORTER_DOWNLOAD_URL = "https://modrinth.com/project/multiverse-inventoriesimporter/";
+    private static final String IMPORTER_LEARN_MORE_URL = "https://mvplugins.org/inventories/how-to/import-playerdata/";
 
     @Subcommand("playerdata import")
     @Syntax("<world>")
@@ -18,8 +24,8 @@ final class PlayerDataImportCommand extends InventoriesCommand {
     @CommandCompletion("@worldwithplayerdata")
     @Description("Import player data from the world's playerdata folder.")
     void onCommand(MVCommandIssuer issuer, World world) {
-        issuer.sendError("Please install Multiverse-InventoriesImporter plugin to use this command.");
-        issuer.sendInfo("Download Link: https://modrinth.com/project/multiverse-inventoriesimporter/");
-        issuer.sendInfo("Learn More: https://mvplugins.org/inventories/how-to/import-playerdata/");
+        issuer.sendError(MVInvi18n.PLAYERDATAIMPORT_IMPORTERNOTINSTALLED);
+        issuer.sendInfo(MVInvi18n.PLAYERDATAIMPORT_DOWNLOADLINK, replace("{url}").with(IMPORTER_DOWNLOAD_URL));
+        issuer.sendInfo(MVInvi18n.PLAYERDATAIMPORT_LEARNMORE, replace("{url}").with(IMPORTER_LEARN_MORE_URL));
     }
 }

@@ -3,9 +3,6 @@ package org.mvplugins.multiverse.inventories.commands;
 import org.jetbrains.annotations.NotNull;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
-import org.mvplugins.multiverse.core.command.MVCommandManager;
-import org.mvplugins.multiverse.core.exceptions.MultiverseException;
-import org.mvplugins.multiverse.external.acf.commands.annotation.CommandAlias;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Description;
@@ -13,8 +10,10 @@ import org.mvplugins.multiverse.external.acf.commands.annotation.Optional;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Subcommand;
 import org.mvplugins.multiverse.external.acf.commands.annotation.Syntax;
 import org.mvplugins.multiverse.external.jakarta.inject.Inject;
-import org.mvplugins.multiverse.external.vavr.control.Option;
 import org.mvplugins.multiverse.inventories.config.InventoriesConfig;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class ConfigCommand extends InventoriesCommand {
@@ -51,18 +50,23 @@ final class ConfigCommand extends InventoriesCommand {
 
     private void showConfigValue(MVCommandIssuer issuer, String name) {
         config.getStringPropertyHandle().getProperty(name)
-                .onSuccess(value -> issuer.sendMessage(name + "is currently set to " + value))
-                .onFailure(e -> issuer.sendMessage(e.getMessage()));
+                .onSuccess(value -> issuer.sendMessage(MVInvi18n.CONFIG_CURRENTVALUE,
+                        replace("{name}").with(name),
+                        replace("{value}").with(value)))
+                .onFailure(e -> issuer.sendError(MVInvi18n.CONFIG_SHOWFAILED, replace("{error}").with(e)));
     }
 
     private void updateConfigValue(MVCommandIssuer issuer, String name, String value) {
-        // TODO: Update with localization
         config.getStringPropertyHandle().setPropertyString(name, value)
                 .onSuccess(ignore -> {
                     config.save();
-                    issuer.sendMessage("Successfully set " + name + " to " + value);
+                    issuer.sendMessage(MVInvi18n.CONFIG_SET,
+                            replace("{name}").with(name),
+                            replace("{value}").with(value));
                 })
-                .onFailure(ignore -> issuer.sendMessage("Unable to set " + name + " to " + value + "."))
-                .onFailure(MultiverseException.class, e -> Option.of(e.getLocalizableMessage()).peek(issuer::sendError));
+                .onFailure(e -> issuer.sendError(MVInvi18n.CONFIG_SETFAILED,
+                        replace("{name}").with(name),
+                        replace("{value}").with(value),
+                        replace("{error}").with(e)));
     }
 }

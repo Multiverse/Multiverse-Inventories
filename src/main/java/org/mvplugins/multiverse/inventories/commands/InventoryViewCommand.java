@@ -2,12 +2,12 @@ package org.mvplugins.multiverse.inventories.commands;
 
 import com.dumptruckman.minecraft.util.Logging;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jvnet.hk2.annotations.Service;
 import org.mvplugins.multiverse.core.command.MVCommandIssuer;
+import org.mvplugins.multiverse.core.locale.message.Message;
 import org.mvplugins.multiverse.core.world.MultiverseWorld;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandCompletion;
 import org.mvplugins.multiverse.external.acf.commands.annotation.CommandPermission;
@@ -22,6 +22,10 @@ import org.mvplugins.multiverse.inventories.view.InventoryGUIHelper;
 import org.mvplugins.multiverse.inventories.view.PlayerInventoryData;
 import org.mvplugins.multiverse.inventories.view.ReadOnlyInventoryHolder;
 import org.mvplugins.multiverse.inventories.view.InventoryDataProvider;
+import org.mvplugins.multiverse.inventories.view.InventoryStatus;
+import org.mvplugins.multiverse.inventories.util.MVInvi18n;
+
+import static org.mvplugins.multiverse.core.locale.message.MessageReplacement.replace;
 
 @Service
 final class InventoryViewCommand extends InventoriesCommand {
@@ -64,7 +68,7 @@ final class InventoryViewCommand extends InventoriesCommand {
         String worldName = world.getName();
 
         // Asynchronously load data using InventoryDataProvider
-        issuer.sendInfo(ChatColor.YELLOW + "Loading inventory data for " + targetPlayer.getName() + "...");
+        issuer.sendInfo(MVInvi18n.INVENTORY_LOADING, replace("{player}").with(targetPlayer.getName()));
         handleInventoryLoadAndDisplay(issuer, player, targetPlayer, worldName);
     }
 
@@ -90,7 +94,7 @@ final class InventoryViewCommand extends InventoriesCommand {
             })
             .exceptionally(throwable -> {
                 // This block runs if an exception occurs during data loading
-                issuer.sendError(ChatColor.RED + "Failed to load inventory data: " + throwable.getMessage());
+                issuer.sendError(MVInvi18n.INVENTORY_LOADFAILED, replace("{error}").with(throwable));
                 Logging.severe("Error loading inventory for " + targetPlayer.getName() + ": " + throwable.getMessage());
                 throwable.printStackTrace();
                 return null; // Must return null for CompletableFuture<Void> in exceptionally
@@ -123,6 +127,18 @@ final class InventoryViewCommand extends InventoriesCommand {
         // Call the helper method to populate the GUI
         inventoryGUIHelper.populateInventoryGUI(inv, playerInventoryData, false);
         player.openInventory(inv);
-        issuer.sendInfo(ChatColor.GREEN + playerInventoryData.status.getFormattedMessage(targetPlayer.getName(), worldName) + ". Changes will save on close.");
+        issuer.sendInfo(MVInvi18n.INVENTORY_OPENED,
+                replace("{status}").with(getStatusMessage(playerInventoryData.status, targetPlayer.getName(), worldName)));
+    }
+
+    private Message getStatusMessage(InventoryStatus status, String playerName, String worldName) {
+        MVInvi18n messageKey = switch (status) {
+            case LIVE_INVENTORY -> MVInvi18n.INVENTORY_LIVEINVENTORY;
+            case STORED_INVENTORY -> MVInvi18n.INVENTORY_STOREDINVENTORY;
+            case NO_DATA_FOUND -> MVInvi18n.INVENTORY_NODATAFOUND;
+        };
+        return Message.of(messageKey,
+                replace("{player}").with(playerName),
+                replace("{world}").with(worldName));
     }
 }
