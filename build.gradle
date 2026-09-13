@@ -13,11 +13,6 @@ repositories {
     }
 
     maven {
-        name = 'benwoo1110'
-        url = uri('https://repo.c0ding.party/multiverse-beta')
-    }
-
-    maven {
         name = "viaversion"
         url = uri("https://repo.viaversion.com")
     }
@@ -51,10 +46,10 @@ dependencies {
     }
 
     // Caching
-    shadowed("com.github.ben-manes.caffeine:caffeine:3.2.2")
+    shadowed("com.github.ben-manes.caffeine:caffeine:3.2.4")
 
     // Plugin Hooks
-    externalPlugin 'me.clip:placeholderapi:2.11.6'
+    externalPlugin 'me.clip:placeholderapi:2.12.3'
     compileOnly 'net.luckperms:api:5.4'
     compileOnly 'com.discordsrv:discordsrv:1.28.0'
 
